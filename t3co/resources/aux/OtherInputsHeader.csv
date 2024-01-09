@@ -1,0 +1,2 @@
+selection,driveCycle,vmtReductPerYear,VMT,constTripDistMiles,vehLifeYears,desiredEssReplacements,discRate,essDolPerKw,essDolPerKwh,essPackageCost,essCostRedPerYear,essSalvageVal,peAndMcDolPerKw,peAndMcBaseCost,iceDolPerKw,iceBaseCost,fuelCellDolPerKw,fuelStorDolPerKwh,fuelStorH2DolPerKwh,plugCost,markup,tax,cngIceDolPerKw,fuelStorCngDolPerKwh,vehGliderPrice
+1,cycles/C8_LineHaul_Lammert.csv,0,0,0,7,0,0.04,0,197,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1

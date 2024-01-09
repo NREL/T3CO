@@ -1,0 +1,44 @@
+site_name: T3CO 
+site_description: Transportation Technology Total Cost of Ownership
+repo_url: https://github.com/NREL/T3CO-private
+
+plugins:
+  - search
+  - mkdocstrings
+
+
+markdown_extensions:
+  - toc:
+      permalink: true
+      
+theme:
+  name: readthedocs
+  highlightjs: true
+  hljs_languages:
+    - python
+    - yaml
+  features:
+    - search.highlight
+
+nav:
+    - Home: index.md
+    - Installation: installation.md
+    - Code Reference:
+      - CodeFlow: CodeFlow.md      
+      - T3CO Modules:
+        - Sweep: sweep.md  
+        - Run:
+          - Run Scenario: run_scenario.md
+          - Generate Inputs: generateinputs.md
+          - Global Variables: Global.md        
+        - TCO Modules:
+          - Opportunity Costs: opportunity_cost.md
+          - TCO Analysis: tco_analysis.md
+          - TCO Stock and Emissions: tco_stock_emissions.md
+          - TCO Calculations: tcocalc.md
+        - Multi Objective Optimization Module:
+          - MOO: moo.md
+        - Objectives Modules: 
+          - Acceleration Test: accel.md
+          - Gradeability Test: gradeability.md
+          - Fuel Economy: fueleconomy.md

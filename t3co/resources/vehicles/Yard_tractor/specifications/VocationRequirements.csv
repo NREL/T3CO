@@ -1,0 +1,8 @@
+﻿Index,vocation,segmentName,region,Year,MinRangeMiles,rangeDriveCycleFilePath,cargoKg,GVWRkg,minSpeed6PercentGradeIn5min,minSpeed1point25PercentGradeIn5min,max0to60secAtGVWR,max0to30secAtGVWR,TakeOffPowerRatingkW,TakeOffPowerAverageUsekW,TakeOffPowerHoursPerDay,constTripDistMiles,tax,discRate,vehLifeYears,VMT
+1,YardTractor,HDTC8,United States,2020,[200],yard_tractor_typical.csv,17944.22387,68333.33333,30,65,80,20,1.1,0.55,1.3,0,0,0.041,10,"[16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000]"
+2,YardTractor,HDTC8,United States,2025,[200],yard_tractor_typical.csv,17944.22387,68333.33333,30,65,80,20,1.1,0.55,1.3,0,0,0.041,10,"[16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000]"
+3,YardTractor,HDTC8,United States,2030,[200],yard_tractor_typical.csv,17944.22387,68333.33333,30,65,80,20,1.1,0.55,1.3,0,0,0.041,10,"[16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000]"
+4,YardTractor,HDTC8,United States,2035,[200],yard_tractor_typical.csv,17944.22387,68333.33333,30,65,80,20,1.1,0.55,1.3,0,0,0.041,10,"[16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000]"
+5,YardTractor,HDTC8,United States,2040,[200],yard_tractor_typical.csv,17944.22387,68333.33333,30,65,80,20,1.1,0.55,1.3,0,0,0.041,10,"[16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000]"
+6,YardTractor,HDTC8,United States,2045,[200],yard_tractor_typical.csv,17944.22387,68333.33333,30,65,80,20,1.1,0.55,1.3,0,0,0.041,10,"[16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000]"
+7,YardTractor,HDTC8,United States,2050,[200],yard_tractor_typical.csv,17944.22387,68333.33333,30,65,80,20,1.1,0.55,1.3,0,0,0.041,10,"[16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000, 16000]"

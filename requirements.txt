@@ -1,0 +1,7 @@
+pymoo==0.6.1
+bleach
+docutils
+Pygments
+mkdocs
+mkdocstrings-python
+fastsim==2.1.1
