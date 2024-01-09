@@ -211,7 +211,7 @@ def calculate_opp_costs(vehicle, scenario, range_dict):
         assert not np.isnan(scenario.dlf_avg_noncharge_per_dwell_hr)
         assert (
             gl.not_falsy(scenario.shifts_per_year)
-            and len(oppcostobj.shifts_per_year) >= scenario.vehLifeYears
+            and len(scenario.shifts_per_year) >= scenario.vehLifeYears
         ), f"Provide scenario.shifts_per_year as a vector of length > scenario.vehLifeYears. Currently {len(oppcostobj.shifts_per_year)}"
         assert gl.not_falsy(scenario.dlf_frac_fullcharge_bounds)
         oppcostobj.get_dwell_time_cost(vehicle, scenario)
