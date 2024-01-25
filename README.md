@@ -43,7 +43,7 @@ to be compatible with the current code in T3CO.
 
 ```bash
 cd t3co
-pytho sweep.py --analysis_id 0
+python sweep.py --analysis_id 0
 ```
 
 ** or get some quick TCO results**
