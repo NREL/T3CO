@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-#%%
+# %%
 import pandas as pd
 import numpy as np
 import csv
@@ -59,17 +59,7 @@ REPORT_COLS = {
     "max0to30secAtGVWRAch": "",
     "target_max0to30secAtGVWR": "",
     "delta_0to30sec": "",
-    "discounted_tco": "",
-    "glider_cost_Dol": "",
-    "fuel_converter_cost_Dol": "",
-    "fuel_storage_cost_Dol": "",
-    "motor_pwr_electrics_cost_Dol": "",
-    "plug_cost_Dol": "",
-    "battery_cost_Dol": "",
-    "purchase_tax_Dol": "",
-    "msrp_total_Dol": "",
-    "total_fuel_cost_Dol": "",
-    "total_maintenance_cost_Dol": "",
+    # "discounted_tco": "",
 }
 
 
@@ -400,8 +390,13 @@ def check_input_files(df, filetype, filepath):
         filepath (str): filepath of the vehicle or scenario input files
     """
     blank_lines = [i for i in df.index.isnull().cumsum() if i != 0]
-    assert df.index.isnull().any() == False, f"\n\n{filetype} file selection column cannot have blank values\nlines: {blank_lines}\npath: {filepath}\n\n\n\n"  # noqa: E712
-    assert df['scenario_name'].isnull().any() == False, f"\n\n{filetype} file scenario_name column cannot have blank values\nlines: {blank_lines}\npath: {filepath}\n\n\n\n"  # noqa: E712
+    assert (
+        df.index.isnull().any() == False
+    ), f"\n\n{filetype} file selection column cannot have blank values\nlines: {blank_lines}\npath: {filepath}\n\n\n\n"  # noqa: E712
+    assert (
+        df["scenario_name"].isnull().any() == False
+    ), f"\n\n{filetype} file scenario_name column cannot have blank values\nlines: {blank_lines}\npath: {filepath}\n\n\n\n"  # noqa: E712
+
 
 def run_vehicle_scenarios(
     vehicles, scenarios, eng_curves_p, lw_curves_p, aero_curves_p, config, **kwargs
@@ -464,8 +459,8 @@ def run_vehicle_scenarios(
     f_tol = kwargs.pop("f_tol", 3.0)  # objective space tolerance
     verbose = kwargs.pop("verbose", False)
     look_for = kwargs.pop("look_for", [""])
-    assert (
-        isinstance(look_for,list)
+    assert isinstance(
+        look_for, list
     ), "look_for should have been input or cast as a list at this point"
     selections = kwargs.pop(
         "selections", -1
@@ -483,15 +478,21 @@ def run_vehicle_scenarios(
 
     # results dir setup
     ts = strftime("%Y-%m-%d_%H-%M-%S", gmtime())
-    RES_FILE = f"{file_mark}results_{ts}_sel_{str(selections).strip('[]').replace(' ','').replace(',','-')}.csv".strip(
-        "_"
-    )
+    if config.resfile_suffix is not None:
+        RES_FILE = f"{file_mark}results_{ts}_{str(config.resfile_suffix)}.csv".strip(
+            "_"
+        )
+    else:
+        selections_string = (
+            str(selections).strip("[]").replace(" ", "").replace(",", "-")
+        )
+        RES_FILE = f"{file_mark}results_{ts}_sel_{selections_string}.csv".strip("_")
 
     if selections == -1:
         selections = range(len(vdf))
 
     if args.dst_dir is None and config.dst_dir is None:
-        resdir = Path(os.path.abspath(__file__)).parents[1]/ f"results{dir_mark}"
+        resdir = Path(os.path.abspath(__file__)).parents[1] / f"results{dir_mark}"
     elif args.dst_dir is not None:
         resdir = Path(args.dst_dir)
     else:
@@ -626,9 +627,7 @@ def run_vehicle_scenarios(
                 report_vehicle = moo_problem.mooadvancedvehicle
                 report_scenario = moo_problem.opt_scenario
             else:
-                input_vehicle = rs.get_vehicle(
-                    sel, veh_input_path=gl.FASTSIM_INPUTS
-                )
+                input_vehicle = rs.get_vehicle(sel, veh_input_path=gl.FASTSIM_INPUTS)
                 report_vehicle = None
                 report_scenario, design_cycle = rs.get_scenario_and_cycle(
                     sel, gl.OTHER_INPUTS, a_vehicle=input_vehicle, config=config
@@ -647,9 +646,7 @@ def run_vehicle_scenarios(
             # TODO, is moo_problem.moobasevehicle really the right vehicle here?
             num_results = 1
             moo_code = "NA"
-            input_vehicle = rs.get_vehicle(
-                sel, veh_input_path=gl.FASTSIM_INPUTS
-            )
+            input_vehicle = rs.get_vehicle(sel, veh_input_path=gl.FASTSIM_INPUTS)
             report_scenario, design_cycle = rs.get_scenario_and_cycle(
                 sel, gl.OTHER_INPUTS, a_vehicle=input_vehicle, config=config
             )
@@ -878,28 +875,8 @@ def run_vehicle_scenarios(
                     )
 
                 report_i.update(mpgge)
-                report_i["discounted_tco_Dol"] = disc_cost
                 # report_i["payload_capacity_loss_kg"] = outdict["payload_capacity_loss_kg"] This might be a good var to have
-                report_i["payload_cap_cost_multiplier"] = veh_opp_cost_set[
-                    "payload_cap_cost_multiplier"
-                ]
-                report_i["fueling_dwell_time_hr"] = sum(
-                    veh_opp_cost_set["net_dwell_time_hr"]
-                )
-                report_i["MR_downtime_hr"] = sum(veh_opp_cost_set["MR_downtime_hr"])
-                report_i["total_downtime_hr"] = sum(
-                    veh_opp_cost_set["total_downtime_hrPerYr"]
-                )
-                report_i["dwell_time_cost_Dol"] = disc_cost_agg.loc[
-                    "fueling downtime cost", "Discounted Cost [$]"
-                ]
-                report_i["MR_downtime_cost_Dol"] = disc_cost_agg.loc[
-                    "MR downtime cost", "Discounted Cost [$]"
-                ]
-                report_i["downtime_cost_Dol"] = oppy_cost_set["downtime_oppy_cost_Dol"]
-                report_i["payload_capacity_cost_Dol"] = oppy_cost_set[
-                    "payload_capacity_cost_Dol"
-                ]
+
                 report_i["glider_cost_Dol"] = veh_cost_set["Glider"]
                 report_i["fuel_converter_cost_Dol"] = veh_cost_set["Fuel converter"]
                 report_i["fuel_storage_cost_Dol"] = veh_cost_set["Fuel Storage"]
@@ -919,10 +896,31 @@ def run_vehicle_scenarios(
                 report_i["total_fuel_cost_Dol"] = disc_cost_agg.loc[
                     "Fuel", "Discounted Cost [$]"
                 ]
-
                 report_i["total_maintenance_cost_Dol"] = disc_cost_agg.loc[
                     "maintenance", "Discounted Cost [$]"
                 ]
+                report_i["payload_cap_cost_multiplier"] = veh_opp_cost_set[
+                    "payload_cap_cost_multiplier"
+                ]
+                report_i["payload_capacity_cost_Dol"] = oppy_cost_set[
+                    "payload_capacity_cost_Dol"
+                ]
+                report_i["fueling_dwell_time_hr"] = sum(
+                    veh_opp_cost_set["net_dwell_time_hr"]
+                )
+                report_i["MR_downtime_hr"] = sum(veh_opp_cost_set["MR_downtime_hr"])
+                report_i["total_downtime_hr"] = sum(
+                    veh_opp_cost_set["total_downtime_hrPerYr"]
+                )
+                report_i["dwell_time_cost_Dol"] = disc_cost_agg.loc[
+                    "fueling downtime cost", "Discounted Cost [$]"
+                ]
+                report_i["MR_downtime_cost_Dol"] = disc_cost_agg.loc[
+                    "MR downtime cost", "Discounted Cost [$]"
+                ]
+                report_i["downtime_cost_Dol"] = oppy_cost_set["downtime_oppy_cost_Dol"]
+
+                report_i["discounted_tco_Dol"] = disc_cost
 
                 if outdict["design_cycle_sim_drive_record"] is not None:
                     report_i["design_cycle_EA_err"] = {
@@ -1080,6 +1078,7 @@ def run_vehicle_scenarios(
 
 
 if __name__ == "__main__":
+    start = time.time()
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--selections",
@@ -1143,11 +1142,7 @@ if __name__ == "__main__":
         default=1000,
         help="max number of optimizer iterations regardless of algorithm",
     )
-    parser.add_argument(
-        "--pop-size", 
-        default=25, 
-        help="population of each generation"
-    )
+    parser.add_argument("--pop-size", default=25, help="population of each generation")
     parser.add_argument(
         "--nth-gen",
         default=1,
@@ -1187,49 +1182,46 @@ if __name__ == "__main__":
     # input files
     parser.add_argument(
         "--vehicles",
-        default=gl.SWEEP_PATH.parents[0]/"resources/inputs/demo/Demo_FY22_vehicle_model_assumptions.csv",
+        default=gl.SWEEP_PATH.parents[0]
+        / "resources/inputs/demo/Demo_FY22_vehicle_model_assumptions.csv",
         help="input file for vehicles",
     )
     parser.add_argument(
         "--scenarios",
-        default=gl.SWEEP_PATH.parents[0]/"resources/inputs/demo/Demo_FY22_scenario_assumptions.csv",
+        default=gl.SWEEP_PATH.parents[0]
+        / "resources/inputs/demo/Demo_FY22_scenario_assumptions.csv",
         help="input file for scenarios",
     )
     parser.add_argument(
         "--eng-curves",
-        default=gl.SWEEP_PATH.parents[0]/ "resources/aux/eng_imp_cost_curves_for_demo.csv",
+        default=gl.SWEEP_PATH.parents[0]
+        / "resources/aux/eng_imp_cost_curves_for_demo.csv",
         help="input file for engine efficiency curves",
     )
     parser.add_argument(
         "--lw-curves",
-        default=gl.SWEEP_PATH.parents[0]/"resources/aux/matlltwt_imp_cost_curves_for_demo.csv",
+        default=gl.SWEEP_PATH.parents[0]
+        / "resources/aux/matlltwt_imp_cost_curves_for_demo.csv",
         help="input file for lightweighting curves",
     )
     parser.add_argument(
         "--aero-curves",
-        default=gl.SWEEP_PATH.parents[0]/"resources/aux/aero_imp_cost_curves_for_demo.csv",
+        default=gl.SWEEP_PATH.parents[0]
+        / "resources/aux/aero_imp_cost_curves_for_demo.csv",
         help="input file for aerodynamics improvement curves",
     )
-    parser.add_argument(
-        "--delete-me", 
-        default=True
-    )
-    parser.add_argument(
-        "--write-tsv", 
-        default=False
-    )
+    parser.add_argument("--delete-me", default=True)
+    parser.add_argument("--write-tsv", default=False)
     parser.add_argument(
         "--config",
-        default=gl.SWEEP_PATH.parents[0]/"resources/T3COConfig.csv",
+        default=gl.SWEEP_PATH.parents[0] / "resources/T3COConfig.csv",
         help="input config file",
     )
     parser.add_argument(
-        "--analysis-id", 
-        default='0', 
-        help="analysis selection from input config file"
+        "--analysis-id", default="0", help="analysis selection from input config file"
     )
 
-    print(f'gl.SWEEP_PATH: {gl.SWEEP_PATH}')
+    print(f"gl.SWEEP_PATH: {gl.SWEEP_PATH}")
 
     args = parser.parse_args()
     # selections can be an int, or list of ints, or range expression
@@ -1259,11 +1251,11 @@ if __name__ == "__main__":
             config = rs.Config()
             config.validate_analysis_id(filename=args.config)
         selections = config.selections
-        vehicles = gl.SWEEP_PATH.parents[0]/config.vehicle_file
-        scenarios = gl.SWEEP_PATH.parents[0]/config.scenario_file
-        eng_curves = gl.SWEEP_PATH.parents[0]/config.eng_curves
-        lw_curves = gl.SWEEP_PATH.parents[0]/config.lw_curves
-        aero_curves = gl.SWEEP_PATH.parents[0]/config.aero_curves
+        vehicles = gl.SWEEP_PATH.parents[0] / config.vehicle_file
+        scenarios = gl.SWEEP_PATH.parents[0] / config.scenario_file
+        eng_curves = gl.SWEEP_PATH.parents[0] / config.eng_curves
+        lw_curves = gl.SWEEP_PATH.parents[0] / config.lw_curves
+        aero_curves = gl.SWEEP_PATH.parents[0] / config.aero_curves
         write_tsv = config.write_tsv
 
     look_for = args.look_for
@@ -1320,5 +1312,6 @@ if __name__ == "__main__":
     run_vehicle_scenarios(
         vehicles, scenarios, eng_curves, lw_curves, aero_curves, config=config, **kwargs
     )
+    end = time.time()
 
 # %%
