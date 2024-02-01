@@ -466,7 +466,6 @@ class Scenario:
                 if (config.__dict__[field_select] != None):
                 # and (
                     # not self.__dict__[field_select])
-                    print(field_select,config.__dict__[field_select])
                     setattr(self, field_select, config.__getattribute__(field_select))
                     # print(f'field: {field}, type: {type(self.__getattribute__(field))}, value: {self.__getattribute__(field)}')
                     self.fields_overriden.append(field_select)
