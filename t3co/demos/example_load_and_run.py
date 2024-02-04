@@ -66,9 +66,9 @@ To run this as a script that drives all the t3co files as a module:
     >>> print('running', __name__)
     >>> generateinputs.generate('Class8_long_haul')
     >>> use_jit = False
-    >>> start = time.time()
+    >>> start = time.perf_counter()
     >>> res1 = run_scenario.run(1, 'Class8_long_haul', use_jit=use_jit)
-    >>> print(f'classic time [s] {time.time()-start} | use jit? {use_jit}')
+    >>> print(f'classic time [s] {time.perf_counter()-start} | use jit? {use_jit}')
 """
 
 import time
@@ -82,23 +82,23 @@ if __name__ == "__main__":
     #     generateinputs.generate()
     generateinputs.generate('Class8_long_haul')
     use_jit = False
-    start = time.time()
+    start = time.perf_counter()
     res1 = run_scenario.run(1, 'Class8_long_haul', use_jit=use_jit)
     # res10 = run_one.run_one_scenario(10, use_jit=False)
     # res15 = run_one.run_one_scenario(15, use_jit=False)
     # res22 = run_one.run_one_scenario(22, use_jit=False)
     # res29 = run_one.run_one_scenario(29, use_jit=False)
 
-    print(f'classic time [s] {time.time()-start} | use jit? {use_jit}')
+    print(f'classic time [s] {time.perf_counter()-start} | use jit? {use_jit}')
 
-    # start = time.time()
+    # start = time.perf_counter()
     # jres1 = run_one.run_one_scenario(1, use_jit=True)
     # # jres10 = run_one.run_one_scenario(10, use_jit=True)
     # # jres15 = run_one.run_one_scenario(15, use_jit=True)
     # # jres22 = run_one.run_one_scenario(22, use_jit=True)
     # # jres29 = run_one.run_one_scenario(29, use_jit=True)
     #
-    # print(f'jit time [s] {time.time()-start}')
+    # print(f'jit time [s] {time.perf_counter()-start}')
     #
     # print(res1['zero_to_30']==jres1['zero_to_30'])
     # print(res1['zero_to_60_loaded']==jres1['zero_to_60_loaded'])

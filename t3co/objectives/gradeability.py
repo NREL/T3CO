@@ -40,14 +40,14 @@ def get_gradeability(
     CYC_SECONDS = 100
     CYC_MPH = 90
 
-    t0 = time.time()
+    t0 = time.perf_counter()
 
     if scenario is not None and set_weight_to_max_kg:
         kg_before = analysis_vehicle.veh_kg
         run_scenario.set_test_weight(analysis_vehicle, scenario)
 
     if verbose:
-        print(f"f'{Path(__file__).name}:: Vehicle load time: {time.time() - t0:.3f} s")
+        print(f"f'{Path(__file__).name}:: Vehicle load time: {time.perf_counter() - t0:.3f} s")
     # load the cycles
 
     def get_grade_perf(target_grade):
@@ -94,7 +94,7 @@ def get_gradeability(
 
         if verbose:
             print(
-                f"f'{Path(__file__).name}:: Cycle load time: {time.time() - t0:.3f} s"
+                f"f'{Path(__file__).name}:: Cycle load time: {time.perf_counter() - t0:.3f} s"
             )
 
         grade_simdrive = run_scenario.get_objective_simdrive(

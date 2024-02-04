@@ -431,7 +431,7 @@ class Scenario:
     mr_tire_life_mi: float = 0
     mr_tire_replace_downtime_hrPerEvent: float = 0
 
-    def from_config(self, config: Config = None):
+    def from_config(self, config: Config = None, verbose = False):
         """
         This method overrides certain scenario fields if use_config is True and config object is not None
 
@@ -469,7 +469,7 @@ class Scenario:
                     setattr(self, field_select, config.__getattribute__(field_select))
                     # print(f'field: {field}, type: {type(self.__getattribute__(field))}, value: {self.__getattribute__(field)}')
                     self.fields_overriden.append(field_select)
-            print(f"Scenario Fields overridden from config: {self.fields_overriden}")
+            print(f"Scenario Fields overridden from config: {self.fields_overriden}") if verbose else None
         else:
             print(
                 f"Config file not attached or scenario.use_config set to False: {config}"
@@ -717,7 +717,7 @@ def load_scenario(veh_no, scenario_inputs_path, a_vehicle=None, config=None):
     )
     # if config: scenario_dict['config'] = config
     scenario = Scenario(**scenario_dict)
-    scenario = scenario.from_config(config)
+    scenario = scenario.from_config(config, verbose = False)
 
     # convert insurance rates string into float list
     scenario.insurance_rates_pctPerYr = list(

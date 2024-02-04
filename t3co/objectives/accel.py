@@ -43,12 +43,12 @@ def get_accel(
         run_scenario.set_test_weight(analysis_vehicle, scenario)
 
     # load the vehicle
-    t0 = time.time()
+    t0 = time.perf_counter()
 
     if verbose:
-        print(f"f'{Path(__file__).name}:: Vehicle load time: {time.time() - t0:.3f} s")
+        print(f"f'{Path(__file__).name}:: Vehicle load time: {time.perf_counter() - t0:.3f} s")
     # load the cycles
-    t0 = time.time()
+    t0 = time.perf_counter()
     accel_cyc_secs = np.arange(300)
     cyc_dict = {
         "time_s": accel_cyc_secs,
