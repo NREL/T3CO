@@ -589,7 +589,7 @@ def run_vehicle_scenarios(
             f"Running selection {sel} for scenario {scenario_name} - skip opt = {skip_opt} -algo = {algo}"
         )
 
-        ti = time.time()
+        ti = time.perf_counter()
         sel = float(sel)
 
         gl.vocation_scenario = scenario_name
@@ -691,7 +691,7 @@ def run_vehicle_scenarios(
             if "input_vehicle_value_props" in report_i:
                 del report_i["input_vehicle_value_props"]
 
-            opt_time = round(time.time() - ti)
+            opt_time = round(time.perf_counter() - ti)
 
             report_i["selection"] = sel
 
@@ -1005,7 +1005,7 @@ def run_vehicle_scenarios(
         return False
 
     if do_input_validation:
-        st = time.time()
+        st = time.perf_counter()
         print("sweep:: Running input validation...")
         badinputs = False
         noinputs = True
@@ -1033,7 +1033,7 @@ def run_vehicle_scenarios(
                         exc_info=True,
                     )
                 noinputs = False
-        print(f"sweep:: Finished input validation, time [s] {round(time.time()-st)}")
+        print(f"sweep:: Finished input validation, time [s] {round(time.perf_counter()-st)}")
         if badinputs:
             raise Exception(
                 f"sweep:: input_validation failure, see log file!\n{loggingfname}"
@@ -1078,7 +1078,7 @@ def run_vehicle_scenarios(
 
 
 if __name__ == "__main__":
-    start = time.time()
+    start = time.perf_counter()
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--selections",
@@ -1312,6 +1312,7 @@ if __name__ == "__main__":
     run_vehicle_scenarios(
         vehicles, scenarios, eng_curves, lw_curves, aero_curves, config=config, **kwargs
     )
-    end = time.time()
+    end = time.perf_counter()
+    print(f'Total analysis time: {round((end - start),5)}s')
 
 # %%

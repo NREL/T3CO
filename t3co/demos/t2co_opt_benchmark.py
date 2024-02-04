@@ -33,7 +33,7 @@ if __name__ == '__main__':
         'wt_delta_perc': (0, 25),
     }
 
-    t0 = time.time()
+    t0 = time.perf_counter()
 
     res, problem, solutions, solution = moo.run_optimization(
         pop_size, n_max_gen, knobs_bounds, vnum,
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     # cProfile.run('res, resd = run_optimization(pop_size, n_max_gen, knobs, knobs_bounds, vnum)',
     #              sort=SortKey.CUMULATIVE
     #              )
-    t1 = time.time()
+    t1 = time.perf_counter()
 
     res_df = solutions
     res_df.to_csv(gl.T2COBENCHMARKDATADIR / "moo_res_df_benchmark_bev.csv")

@@ -1208,7 +1208,7 @@ def run_optimization(
     # elif algo == 'LocalSearch':
     #     print('moo.run_optimization LocalSearch')
     #     algorithm = LocalSearch()
-    t0 = time.time()
+    t0 = time.perf_counter()
 
     termination = MODT(
         xtol=x_tol,
@@ -1239,7 +1239,7 @@ def run_optimization(
         res, problem = None, None
         return res, problem, EXCEPTION_THROWN
 
-    t1 = time.time()
+    t1 = time.perf_counter()
     print(f"\nElapsed time for optimization: {t1 - t0} s")
     if verbose:
         print("\nParameter pareto sets:")
