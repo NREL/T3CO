@@ -39,7 +39,6 @@ def find_residual_rates(
         (residual_rates_all["VehicleClass"].str.lower() == vehicle_class)
         & (residual_rates_all["PowertrainType"].str.lower() == powertrain_type)
     ][year].values[0]
-    print(residual_rates)
     scenario.residual_rate_percent = residual_rates
     return residual_rates
 

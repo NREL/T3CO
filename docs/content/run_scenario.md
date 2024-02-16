@@ -182,7 +182,7 @@ This helper method is used within T3COProblem to set cargo_kg to optimization ve
 class Config()
 ```
 
-New class to read T3COConfig file containing analysis attributes like vehicle and scenario paths, and scenario attribute overrides
+New class to read T3CO_Config file containing analysis attributes like vehicle and scenario paths, and scenario attribute overrides
 
 <a id="run.run_scenario.Config.from_file"></a>
 

@@ -652,7 +652,11 @@ def run_vehicle_scenarios(
             )
 
             outdict = rs.vehicle_scenario_sweep(
-                input_vehicle, report_scenario, design_cycle, write_tsv=write_tsv
+                input_vehicle,
+                report_scenario,
+                design_cycle,
+                write_tsv=write_tsv,
+                verbose=False,
             )
 
         # iterate thru all results from run, num_results can singleton [1] from analysis-only runs
@@ -1033,7 +1037,9 @@ def run_vehicle_scenarios(
                         exc_info=True,
                     )
                 noinputs = False
-        print(f"sweep:: Finished input validation, time [s] {round(time.perf_counter()-st)}")
+        print(
+            f"sweep:: Finished input validation, time [s] {round(time.perf_counter()-st)}"
+        )
         if badinputs:
             raise Exception(
                 f"sweep:: input_validation failure, see log file!\n{loggingfname}"
@@ -1214,7 +1220,7 @@ if __name__ == "__main__":
     parser.add_argument("--write-tsv", default=False)
     parser.add_argument(
         "--config",
-        default=gl.SWEEP_PATH.parents[0] / "resources/T3COConfig.csv",
+        default=gl.SWEEP_PATH.parents[0] / "resources/T3CO_Config_Demo.csv",
         help="input config file",
     )
     parser.add_argument(
@@ -1275,7 +1281,6 @@ if __name__ == "__main__":
         algorithms = ast.literal_eval(args.algorithms)
     else:
         algorithms = [args.algorithms]
-
     kwargs = {
         "selections": selections,
         "look_for": look_for,
@@ -1290,9 +1295,9 @@ if __name__ == "__main__":
         "pop_size": int(args.pop_size),
         "nth_gen": int(args.nth_gen),
         "n_last": int(args.n_last),
-        "skip_all_opt": args.skip_all_opt
-        if args.config is None
-        else config.skip_all_opt,
+        "skip_all_opt": (
+            args.skip_all_opt if args.config is None else config.skip_all_opt
+        ),
         "do_input_validation": args.skip_input_validation,
         "range_overshoot_tol": float(args.range_overshoot_tol)
         if args.range_overshoot_tol is not None
@@ -1313,6 +1318,6 @@ if __name__ == "__main__":
         vehicles, scenarios, eng_curves, lw_curves, aero_curves, config=config, **kwargs
     )
     end = time.perf_counter()
-    print(f'Total analysis time: {round((end - start),5)}s')
+    print(f"Total analysis time: {round((end - start),5)}s")
 
 # %%

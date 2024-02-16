@@ -75,7 +75,7 @@ class OpportunityCost:
                 np.float_(scenario.dlf_frac_fullcharge_bounds.strip(" ][").split(","))
             )
             scenario.shifts_per_year = list(
-                np.float_(scenario.shifts_per_year.strip(" ][").split(","))
+                np.float_(str(scenario.shifts_per_year).strip(" ][").split(","))
             )
             if 0 in scenario.shifts_per_year:
                 scenario.shifts_per_year = [round(scenario.VMT[i] / self.total_range_mi) for i in range(scenario.vehLifeYears)]
