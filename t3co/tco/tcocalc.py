@@ -39,6 +39,7 @@ def find_residual_rates(
         (residual_rates_all["VehicleClass"].str.lower() == vehicle_class)
         & (residual_rates_all["PowertrainType"].str.lower() == powertrain_type)
     ][year].values[0]
+    scenario.residual_rate_percent = residual_rates
     return residual_rates
 
 
@@ -380,7 +381,7 @@ def fill_trav_exp_tsv(vehicle, scenario):
     maint = list(np.float_(maint.strip(" ][").split(",")))
     veh_life_years = int(scenario.vehLifeYears)
 
-    assert len(maint) == veh_life_years, (
+    assert len(maint) >= veh_life_years, (
         f"vehLifeYears of {veh_life_years} & length of input maintDolPerMi {len(maint)} do not align; "
         f"vehLifeYears life years & number of years in vmt should match\n"
         f"[vehLifeYears/[maintDolPerMi_1,...,maintDolPerMi_N]]:[{veh_life_years}/{maint}]"
@@ -555,7 +556,7 @@ def fill_annual_tsv(scenario):
     veh_life_years = int(scenario.vehLifeYears)
 
     vmt = scenario.VMT
-    assert len(vmt) == veh_life_years, (
+    assert len(vmt) >= veh_life_years, (
         f"vehLifeYears of {veh_life_years} & length of input VMT {len(vmt)} do not align; "
         f"vehLifeYears life years & number of years in vmt should match\n"
         f"[vehLifeYears/[VMT_1,...,VMT_N]]:[{veh_life_years}/{vmt}]"

@@ -9,12 +9,14 @@ import numpy as np
 import pandas as pd
 from fastsim import cycle, simdrive, vehicle
 import os
+
 # for debugging convenience
 from typing_extensions import Self
 
 from t3co.objectives import accel, fueleconomy, gradeability
 from t3co.run import Global as gl
 from t3co.tco import tco_analysis
+import logging
 
 # import importlib
 # tco_analysis = importlib.reload(tco_analysis)
@@ -167,7 +169,7 @@ def set_cargo_kg(analysis_vehicle, cargo_kg):
 @dataclass
 class Config:
     """
-    New class to read T3COConfig file containing analysis attributes like vehicle and scenario paths, and scenario attribute overrides
+    New class to read T3CO_Config_Demo file containing analysis attributes like vehicle and scenario paths, and scenario attribute overrides
 
     """
 
@@ -176,8 +178,10 @@ class Config:
     vehicle_file: str = ""
     scenario_file: str = ""
     dst_dir: str = ""
+    resfile_suffix: str = ""
     write_tsv: bool = False
     selections: str = ""
+    driveCycle: str = ""
     # selections: list = field(default_factory=list)
     vehLifeYears: float = 0
 
@@ -224,9 +228,11 @@ class Config:
         Returns:
             Self.from_dict: method that gets Config instance from config_dict
         """
-        filename = str(filename)
+        self.filename = str(filename)
 
-        config_df = pd.read_csv(filename, index_col="analysis_id").loc[analysis_id]
+        config_df = pd.read_csv(self.filename, index_col="analysis_id").loc[analysis_id]
+        config_df = config_df.replace({np.nan: None})
+
         config_dict = config_df.to_dict()
 
         return self.from_dict(config_dict=config_dict)
@@ -275,6 +281,7 @@ class Scenario:
     """
 
     selection: float = 0
+    veh_year: int = 0
     driveCycle: str = ""
     use_config: bool = True
     vmtReductPerYear: float = 0
@@ -392,6 +399,7 @@ class Scenario:
     trace_miss_dist_percent: float = 0
     constraint_phev_minimize_fuel_use_on: bool = False
     constraint_phev_minimize_fuel_use_percent: float = 0
+    residual_rate_percent: list = field(default_factory=list)
 
     #
     ### TCO Element Activations and vars
@@ -435,6 +443,7 @@ class Scenario:
         """
         fields_override = [
             "vehLifeYears",
+            "driveCycle",
             "fsFillRate_kgPerMin",
             "fsFillRateGasoline_GPM",
             "fsFillRateDiesel_GPM",
@@ -454,20 +463,26 @@ class Scenario:
             "activate_mr_downtime_cost",
         ]
         self.fields_overriden = []
-        if self.use_config == True and config != None:
-            for field_select in fields_override:
-                if (config.__dict__[field_select] is not None) and (
-                    not self.__dict__[field_select]
-                ):
-                    setattr(self, field_select, config.__getattribute__(field_select))
-                    # print(f'field: {field}, type: {type(self.__getattribute__(field))}, value: {self.__getattribute__(field)}')
-                    self.fields_overriden.append(field_select)
-            print(f"Scenario Fields overridden from config: {self.fields_overriden}")
-        else:
-            print(
-                f"Config file not attached or scenario.use_config set to False: {config}"
-            )
 
+        try:
+            if self.use_config == True:
+                for field_select in fields_override:
+                    if config.__dict__[field_select] != None:
+                        # and (
+                        # not self.__dict__[field_select])
+                        setattr(
+                            self, field_select, config.__getattribute__(field_select)
+                        )
+                        # print(f'field: {field}, type: {type(self.__getattribute__(field))}, value: {self.__getattribute__(field)}')
+                        self.fields_overriden.append(field_select)
+                logging.info(
+                    f"Scenario Fields overridden from config: {self.fields_overriden}"
+                )
+                # print(f"Scenario Fields overridden from config: {self.fields_overriden}") if verbose else None
+        except ValueError:
+            logging.exception(f"Config file not attached {config.filename}")
+        else:
+            logging.info(f"scenario.use_config set to False: {self.use_config}")
         return self
 
 

@@ -26,3 +26,5 @@
 *.Rhistory
 *venv*
 *.DS_Store
+
+t3co/resources/T3CO_Config_Local.csv
