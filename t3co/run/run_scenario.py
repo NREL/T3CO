@@ -184,6 +184,7 @@ class Config:
     driveCycle: str = ""
     # selections: list = field(default_factory=list)
     vehLifeYears: float = 0
+    TCO_method: str = ""
 
     # Fueling
     essMaxChargePower_kW: float = 0
@@ -252,6 +253,7 @@ class Config:
             config_dict["selections"] = ast.literal_eval(config_dict["selections"])
         except:  # noqa: E722
             config_dict["selections"] = int(config_dict["selections"])
+
         self.__dict__.update(config_dict)
 
     def validate_analysis_id(self, filename: str, analysis_id: int = 0):
@@ -266,11 +268,26 @@ class Config:
         """
         filename = str(filename)
         config_df = pd.read_csv(filename)
-        print(f"Try these analysis IDs instead: {list(config_df['analysis_id'])}")
+        try:
+            config_selection = config_df[config_df["analysis_id"] == analysis_id]
+            logging.info(
+                f"Running analysis id = {analysis_id}, {config_selection['analysis_name']}"
+            )
+
+        except Exception:
+            logging.exception(
+                f"Given analysis_id = {analysis_id} not in config input file: {filename}"
+            )
+        print( str(config_selection["TCO_method"].values[0]).upper())
         assert (
-            analysis_id in config_df["analysis_id"]
-        ), "Given analysis_id not in config input file"
-        raise Exception
+            str(config_selection["TCO_method"].values[0]).upper()
+            in ["EFFICIENCY", "DIRECT", "NONE", "","NAN"]
+        ), f"Invalid TCO_method provided:{config_selection['TCO_method'].values[0]}. Defaults to 'DIRECT'. Choose between ['EFFICIENCY', 'DIRECT', None]"
+        self.TCO_method = (
+            str(config_selection["TCO_method"].values[0]).upper()
+            if str(config_selection["TCO_method"].values[0]).upper() in ["EFFICIENCY", "DIRECT"]
+            else "DIRECT"
+        )
 
 
 @dataclass
@@ -837,7 +854,9 @@ def load_design_cycle_from_path(cyc_file_path):
     return range_cyc
 
 
-def vehicle_scenario_sweep(vehicle, scenario, range_cyc, verbose=False, **kwargs):
+def vehicle_scenario_sweep(
+    vehicle, scenario, range_cyc, config=None, verbose=False, **kwargs
+):
     """
     This function contains helper methods such as get_tco_of_vehicle, check_phev_init_socs, get_accel, and get_gradeability\
     and returns a dictionary of all TCO related outputs
@@ -872,7 +891,7 @@ def vehicle_scenario_sweep(vehicle, scenario, range_cyc, verbose=False, **kwargs
         veh_opp_cost_set,
         tco_files,
     ) = tco_analysis.get_tco_of_vehicle(
-        vehicle, range_cyc, scenario, write_tsv=write_tsv
+        vehicle, range_cyc, scenario, config, write_tsv=write_tsv
     )
 
     # tco_analysis.get_operating_costs(scenario, ownership_costs_df, veh_opp_cost_set)

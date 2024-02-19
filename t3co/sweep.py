@@ -657,6 +657,7 @@ def run_vehicle_scenarios(
                 design_cycle,
                 write_tsv=write_tsv,
                 verbose=False,
+                config= config,
             )
 
         # iterate thru all results from run, num_results can singleton [1] from analysis-only runs
@@ -814,8 +815,8 @@ def run_vehicle_scenarios(
                     opt_time,
                 )
                 print(
-                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} total cost",
-                    tot_cost,
+                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} total cost using {config.TCO_method} Method: {tot_cost}"
+                    ,
                 )
                 print(f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} mpgge", mpgge)
                 print(
@@ -1252,10 +1253,9 @@ if __name__ == "__main__":
         try:
             config = rs.Config()
             config.from_file(filename=args.config, analysis_id=args.analysis_id)
-        except ValueError:
-            print(f"Config analysis_id not valid: {args.analysis_id}")
-            config = rs.Config()
             config.validate_analysis_id(filename=args.config)
+        except ValueError:
+            logging.exception('Config file invalid')
         selections = config.selections
         vehicles = gl.SWEEP_PATH.parents[0] / config.vehicle_file
         scenarios = gl.SWEEP_PATH.parents[0] / config.scenario_file
@@ -1263,6 +1263,7 @@ if __name__ == "__main__":
         lw_curves = gl.SWEEP_PATH.parents[0] / config.lw_curves
         aero_curves = gl.SWEEP_PATH.parents[0] / config.aero_curves
         write_tsv = config.write_tsv
+        print(f'sweep TCO_method = {config.TCO_method}')
 
     look_for = args.look_for
     exclude = args.exclude
