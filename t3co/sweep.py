@@ -1263,7 +1263,6 @@ if __name__ == "__main__":
         lw_curves = gl.SWEEP_PATH.parents[0] / config.lw_curves
         aero_curves = gl.SWEEP_PATH.parents[0] / config.aero_curves
         write_tsv = config.write_tsv
-        print(f'sweep TCO_method = {config.TCO_method}')
 
     look_for = args.look_for
     exclude = args.exclude

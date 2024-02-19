@@ -278,7 +278,6 @@ class Config:
             logging.exception(
                 f"Given analysis_id = {analysis_id} not in config input file: {filename}"
             )
-        print( str(config_selection["TCO_method"].values[0]).upper())
         assert (
             str(config_selection["TCO_method"].values[0]).upper()
             in ["EFFICIENCY", "DIRECT", "NONE", "","NAN"]
