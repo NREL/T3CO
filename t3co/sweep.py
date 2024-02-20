@@ -489,7 +489,7 @@ def run_vehicle_scenarios(
         RES_FILE = f"{file_mark}results_{ts}_sel_{selections_string}.csv".strip("_")
 
     if selections == -1:
-        selections = range(len(vdf))
+        selections = vdf.index
 
     if args.dst_dir is None and config.dst_dir is None:
         resdir = Path(os.path.abspath(__file__)).parents[1] / f"results{dir_mark}"
