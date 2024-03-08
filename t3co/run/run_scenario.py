@@ -255,6 +255,17 @@ class Config:
             config_dict["selections"] = int(config_dict["selections"])
 
         self.__dict__.update(config_dict)
+        
+        assert (
+            str(config_dict["TCO_method"]).upper()
+            in ["EFFICIENCY", "DIRECT", "NONE", "","NAN"]
+        ), f"Invalid TCO_method provided:{config_dict['TCO_method']}. Defaults to 'DIRECT'. Choose between ['EFFICIENCY', 'DIRECT', None]"
+        
+        self.TCO_method = (
+            str(config_dict["TCO_method"]).upper()
+            if str(config_dict["TCO_method"]).upper() in ["EFFICIENCY", "DIRECT"]
+            else "DIRECT"
+        )
 
     def validate_analysis_id(self, filename: str, analysis_id: int = 0):
         """
@@ -269,26 +280,15 @@ class Config:
         filename = str(filename)
         config_df = pd.read_csv(filename)
         try:
-            config_selection = config_df[config_df["analysis_id"] == analysis_id]
+            config_selection = config_df.loc[analysis_id, "analysis_id"]
             logging.info(
                 f"Running analysis id = {analysis_id}, {config_selection['analysis_name']}"
             )
-
-        except Exception:
+        except:
             logging.exception(
                 f"Given analysis_id = {analysis_id} not in config input file: {filename}"
             )
-        assert (
-            str(config_selection["TCO_method"].values[0]).upper()
-            in ["EFFICIENCY", "DIRECT", "NONE", "","NAN"]
-        ), f"Invalid TCO_method provided:{config_selection['TCO_method'].values[0]}. Defaults to 'DIRECT'. Choose between ['EFFICIENCY', 'DIRECT', None]"
-        self.TCO_method = (
-            str(config_selection["TCO_method"].values[0]).upper()
-            if str(config_selection["TCO_method"].values[0]).upper() in ["EFFICIENCY", "DIRECT"]
-            else "DIRECT"
-        )
-
-
+        
 @dataclass
 class Scenario:
     """

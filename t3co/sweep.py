@@ -1252,8 +1252,8 @@ if __name__ == "__main__":
         args.analysis_id = ast.literal_eval(args.analysis_id)
         try:
             config = rs.Config()
+            config.validate_analysis_id(filename=args.config, analysis_id=args.analysis_id)
             config.from_file(filename=args.config, analysis_id=args.analysis_id)
-            config.validate_analysis_id(filename=args.config)
         except ValueError:
             logging.exception('Config file invalid')
         selections = config.selections
