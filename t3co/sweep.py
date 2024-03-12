@@ -489,7 +489,7 @@ def run_vehicle_scenarios(
         RES_FILE = f"{file_mark}results_{ts}_sel_{selections_string}.csv".strip("_")
 
     if selections == -1:
-        selections = range(len(vdf))
+        selections = vdf.index
 
     if args.dst_dir is None and config.dst_dir is None:
         resdir = Path(os.path.abspath(__file__)).parents[1] / f"results{dir_mark}"
@@ -657,6 +657,7 @@ def run_vehicle_scenarios(
                 design_cycle,
                 write_tsv=write_tsv,
                 verbose=False,
+                config= config,
             )
 
         # iterate thru all results from run, num_results can singleton [1] from analysis-only runs
@@ -814,8 +815,8 @@ def run_vehicle_scenarios(
                     opt_time,
                 )
                 print(
-                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} total cost",
-                    tot_cost,
+                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} total cost using {config.TCO_method} Method: {tot_cost}"
+                    ,
                 )
                 print(f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} mpgge", mpgge)
                 print(
@@ -1251,11 +1252,10 @@ if __name__ == "__main__":
         args.analysis_id = ast.literal_eval(args.analysis_id)
         try:
             config = rs.Config()
+            config.validate_analysis_id(filename=args.config, analysis_id=args.analysis_id)
             config.from_file(filename=args.config, analysis_id=args.analysis_id)
         except ValueError:
-            print(f"Config analysis_id not valid: {args.analysis_id}")
-            config = rs.Config()
-            config.validate_analysis_id(filename=args.config)
+            logging.exception('Config file invalid')
         selections = config.selections
         vehicles = gl.SWEEP_PATH.parents[0] / config.vehicle_file
         scenarios = gl.SWEEP_PATH.parents[0] / config.scenario_file

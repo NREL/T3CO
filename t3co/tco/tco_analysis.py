@@ -172,7 +172,7 @@ def calc_discountedTCO(
     return discountedTCO, oppy_cost_Dol_set, veh_oper_cost_set
 
 
-def get_tco_of_vehicle(vehicle, range_cyc, scenario, write_tsv=False):
+def get_tco_of_vehicle(vehicle, range_cyc, scenario, config = None, write_tsv=False):
     """
     This function calculates the Total Cost of Ownership of a vehicle and scenario for a given cycle. The three main components are:
     - Opportunity Costs
@@ -254,7 +254,7 @@ def get_tco_of_vehicle(vehicle, range_cyc, scenario, write_tsv=False):
         veh_cost_set,
         veh_opp_cost_set,
         sim_drives[-1],
-        TCO_switch="EFFICIENCY",
+        TCO_switch=config.TCO_method,
     )
     # print(f'New disc EFFICIENCY TCO: {discounted_TCO_Dol}')
 
