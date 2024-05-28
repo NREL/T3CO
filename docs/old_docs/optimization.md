@@ -73,7 +73,7 @@ lw_imp_curve | eng_imp_curve | aero_imp_curve
 -- | -- | --
 MDHD_xyz | MDHD_large_noprogram_2025 | MDHD_abcdef
 
-See: [eng_imp_cost_curves_for_demo.csv](https://github.com/NREL/T3CO-private/blob/7b56eb37bf5a57e6cd0ce761fc1708ee151c956f/t3co/resources/aux/eng_imp_cost_curves_for_demo.csv)
+See: [eng_imp_cost_curves_for_demo.csv](https://github.com/NREL/T3CO-private/blob/7b56eb37bf5a57e6cd0ce761fc1708ee151c956f/t3co/resources/auxiliary/eng_imp_cost_curves_for_demo.csv)
 
 where small medium large engine sizes refers to 
 6.7 L,   <250 kW

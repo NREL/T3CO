@@ -121,7 +121,7 @@ def set_tco_results():
         TCO_RES_FIGS.mkdir(parents=True)
 
 
-OPTIMIZATION_RESOURCES_AUX = OPTIMIZATION_AND_TCO_RCRS / "aux"
+OPTIMIZATION_RESOURCES_AUX = OPTIMIZATION_AND_TCO_RCRS / "auxiliary"
 # FASTSim and Scenario input files
 FASTSIM_INPUTS_FILE = "FASTSimInputsHeader.csv"
 OTHER_INPUTS_FILE = "OtherInputs.csv"
