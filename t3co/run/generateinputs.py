@@ -48,9 +48,9 @@ def generate(vocation, dst=gl.OPTIMIZATION_AND_TCO_RCRS):
         / vocation
         / "specifications/VocationRequirements.csv"
     )
-    FastsimHeader_path = Path(__file__).parent / "resources" / "aux" / "FASTSimInputsHeader.csv"
+    FastsimHeader_path = Path(__file__).parent / "resources" / "auxiliary" / "FASTSimInputsHeader.csv"
     Other_Inputs_Header_path = (
-        Path(__file__).parent / "resources" / "aux" / "OtherInputsHeader.csv"
+        Path(__file__).parent / "resources" / "auxiliary" / "OtherInputsHeader.csv"
     )
 
     BaselineVehicleSpec = pd.read_csv(BaselineVehicle_path)

@@ -1197,17 +1197,17 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--eng-curves",
-        default=gl.SWEEP_PATH.parents[0]/ "resources/aux/eng_imp_cost_curves_for_demo.csv",
+        default=gl.SWEEP_PATH.parents[0]/ "resources/auxiliary/eng_imp_cost_curves_for_demo.csv",
         help="input file for engine efficiency curves",
     )
     parser.add_argument(
         "--lw-curves",
-        default=gl.SWEEP_PATH.parents[0]/"resources/aux/matlltwt_imp_cost_curves_for_demo.csv",
+        default=gl.SWEEP_PATH.parents[0]/"resources/auxiliary/matlltwt_imp_cost_curves_for_demo.csv",
         help="input file for lightweighting curves",
     )
     parser.add_argument(
         "--aero-curves",
-        default=gl.SWEEP_PATH.parents[0]/"resources/aux/aero_imp_cost_curves_for_demo.csv",
+        default=gl.SWEEP_PATH.parents[0]/"resources/auxiliary/aero_imp_cost_curves_for_demo.csv",
         help="input file for aerodynamics improvement curves",
     )
     parser.add_argument(
