@@ -103,7 +103,7 @@ class OpportunityCost:
         # weight distribution file to load
         self.wt_dist_file = kwargs.pop(
             "wt_dist_file",
-            Path(os.path.abspath(__file__)).parents[1] / "resources" / "aux" / "tractorweightvars.csv",
+            Path(os.path.abspath(__file__)).parents[1] / "resources" / "auxiliary" / "tractorweightvars.csv",
         )
         self.df_veh_wt = pd.read_csv(self.wt_dist_file, index_col=0)
 

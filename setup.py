@@ -19,7 +19,7 @@ setuptools.setup(
     name="t3co",
     version="0.0.1",
     author="AVCI Group",
-    author_email="chad.baker@nrel.gov",
+    author_email="t3co@nrel.gov",
     description="Tool for modeling and optimizing Total Cost of Ownership of commercial vehicles",
     long_description=long_description,
     long_description_content_type="text/markdown",
