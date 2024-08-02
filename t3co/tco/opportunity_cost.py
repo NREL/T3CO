@@ -46,7 +46,7 @@ class OpportunityCost:
         self.cost_per_lb_mi = kwargs.pop("cost_per_lb_mi", 0.0003)
         # trip distance[mi] for typical point A to point B trip
         # self.d_trip_mi = kwargs.pop('d_trip_mi', 500)
-        # self.d_trip_mi = scenario.VMT[0]/scenario.shifts_per_year
+        # self.d_trip_mi = scenario.vmt[0]/scenario.shifts_per_year
         self.payload_cap_cost_multiplier = None
         # distance[mi] that can be traveled with a full battery.
         # self.total_range_mi = kwargs.pop('d_fullbatt_mi', 300)
@@ -54,35 +54,35 @@ class OpportunityCost:
             self.total_range_mi = range_dict["primary_fuel_range_mi"]
             # print('primary_fuel_range_mi')
         else:
-            self.total_range_mi = scenario.TargetRangeMi
+            self.total_range_mi = scenario.target_range_mi
         # print(range_dict)
         # self.cycle_distance_mi = range_dict['cycle_distance_mi']
         # average vehicle speed[mph] over trip, should come from FASTSim
         # self.v_mean_mph = range_dict['mean_cyc_speed_mph']
         # driver hourly labor rate[$/hr].
-        # self.labor_rate = kwargs.pop('labor_rate', 30.60) # labor cost from Alicia.  Expect a report that can be cited for this.
-        self.labor_rate = scenario.dlf_cost_dolperhr
-        # self.free_dwell_time_hr = scenario.dlf_freetime_dwell_hr
+        # self.labor_rate_dol_per_hr = kwargs.pop('labor_rate_dol_per_hr', 30.60) # labor cost from Alicia.  Expect a report that can be cited for this.
+        self.labor_rate_dol_per_hr = scenario.fdt_oppy_cost_dol_per_hr
+        # self.free_dwell_time_hr = scenario.fdt_available_freetime_hr
         # dwell time [hr] driven by non-charging needs (e.g. required work breaks) that can be used for charging.
         # self.free_dwell_time_hr = kwargs.pop('free_dwell_time_hr', 3)
         # fraction of dwell time that can actually be used for charging
         # self.dwell_time_efficiency = kwargs.pop('dwell_time_efficiency', 1.)
-        if scenario.activate_dwell_time_loss_factor:
+        if scenario.activate_tco_fueling_dwell_time_cost:
             self.dwell_time_efficiency = scenario.dlf_dwell_efficiency_pct
             self.time_available_charge_hr = scenario.dlf_time_available_charge_hr
-            self.dwell_overhead_hr = scenario.dlf_avg_noncharge_per_dwell_hr
+            self.dwell_overhead_hr = scenario.fdt_avg_overhead_hr_per_dwell_hr
             self.frac_of_fullcharge_bounds = list(
-                np.float_(scenario.dlf_frac_fullcharge_bounds.strip(" ][").split(","))
+                np.float_(scenario.fdt_frac_full_charge_bounds.strip(" ][").split(","))
             )
             self.shifts_per_year = list(
                 np.float_(scenario.shifts_per_year.strip(" ][").split(","))
             )
 
         self.payload_cap_cost_multiplier = 0
-        self.net_dwell_time_hr = np.zeros(scenario.vehLifeYears)
-        self.dwell_time_cost_Dol = np.zeros(scenario.vehLifeYears)
-        self.net_MR_downtime_hrPerYr = np.zeros(scenario.vehLifeYears)
-        self.net_MR_downtime_oppcosts_DolPerYr = np.zeros(scenario.vehLifeYears)
+        self.net_dwell_time_hr = np.zeros(scenario.vehicle_life_yr)
+        self.dwell_time_cost_Dol = np.zeros(scenario.vehicle_life_yr)
+        self.net_MR_downtime_hrPerYr = np.zeros(scenario.vehicle_life_yr)
+        self.net_MR_downtime_oppcosts_DolPerYr = np.zeros(scenario.vehicle_life_yr)
 
         # rate[kW] at which battery is recharged
         self.charge_rate_kW = kwargs.pop("charge_rate_kW", 200)
@@ -91,7 +91,7 @@ class OpportunityCost:
         # number of full battery trips that don't incur dwell time penalty
         # battery is allowed `num_free_trips` charging events without penalty
         # self.num_free_trips = kwargs.pop('num_free_trips', 1.)
-        self.num_free_trips = scenario.dlf_free_dwell_trips
+        self.num_free_trips = scenario.fdt_num_free_dwell_trips
         # number of weight weight bins
         self.num_bins = kwargs.pop("num_bins", 1_000)
 
@@ -142,11 +142,11 @@ class OpportunityCost:
         probability_payload.to_csv(Path(self.wt_dist_file).parents[0]/"payload_pdf.csv")
         normalization_factor = probability_payload[
             probability_payload["vehicle_weights_bins_kg"].between(
-                scenario.plf_reference_vehicle_empty_kg, scenario.GVWRkg
+                scenario.plf_ref_veh_empty_mass_kg, scenario.gvwr_kg
             )
         ]["p_of_weights"].sum()
         self.p_of_weights_normalized = self.p_of_weights / normalization_factor
-        # print(f'plf_reference_vehicle_empty_kg {scenario.plf_reference_vehicle_empty_kg}')
+        # print(f'plf_ref_veh_empty_mass_kg {scenario.plf_ref_veh_empty_mass_kg}')
 
     def get_payload_loss_factor(
         self,
@@ -169,10 +169,10 @@ class OpportunityCost:
 
         new_empty_weight_kg = a_vehicle.veh_kg - a_vehicle.cargo_kg
         empty_increase_kg = (
-            new_empty_weight_kg - scenario.plf_reference_vehicle_empty_kg
+            new_empty_weight_kg - scenario.plf_ref_veh_empty_mass_kg
         )
         new_cargo_cieling_kg = (
-            scenario.GVWRkg - empty_increase_kg + scenario.GVWRCredit_kg
+            scenario.gvwr_kg - empty_increase_kg + scenario.gvwr_credit_kg
         )
         # print(new_cargo_cieling_lb)
 
@@ -180,7 +180,7 @@ class OpportunityCost:
         # and get the corresponding indices for p_of_weights
         # based on current vehicle's new_cargo_cieling_lb and base_vehicle_gvwr_lb
 
-        if empty_increase_kg >= scenario.GVWRCredit_kg:
+        if empty_increase_kg >= scenario.gvwr_credit_kg:
             a = self.vehicle_weights_bins_kg - new_cargo_cieling_kg
             # print(a)
             minidx = (
@@ -188,9 +188,9 @@ class OpportunityCost:
                     self.vehicle_weights_bins_kg == a[a > 0][0] + new_cargo_cieling_kg
                 )
             )[0][0]
-            a = self.vehicle_weights_bins_kg - scenario.GVWRkg
+            a = self.vehicle_weights_bins_kg - scenario.gvwr_kg
             maxidx = (
-                np.where(self.vehicle_weights_bins_kg == a[a > 0][0] + scenario.GVWRkg)
+                np.where(self.vehicle_weights_bins_kg == a[a > 0][0] + scenario.gvwr_kg)
             )[0][0]
             # print(f'Vehicle bin limits: {self.vehicle_weights_bins_kg[minidx]}, {self.vehicle_weights_bins_kg[maxidx]}')
 
@@ -206,7 +206,7 @@ class OpportunityCost:
 
             # payload cost multiplier
             self.payload_cap_cost_multiplier = 1 + estimated_lost_payload_kg / (
-                scenario.GVWRkg - new_empty_weight_kg + scenario.GVWRCredit_kg
+                scenario.gvwr_kg - new_empty_weight_kg + scenario.gvwr_credit_kg
             )
 
             scenario.estimated_lost_payload_kg = estimated_lost_payload_kg
@@ -215,10 +215,10 @@ class OpportunityCost:
         # recording final report data on vehicle empty weights and cargo capcities
         scenario.plf_scenario_vehicle_empty_kg = new_empty_weight_kg
         scenario.plf_reference_vehicle_cargo_capacity_kg = (
-            scenario.GVWRkg - scenario.plf_reference_vehicle_empty_kg
+            scenario.gvwr_kg - scenario.plf_ref_veh_empty_mass_kg
         )
         scenario.plf_scenario_vehicle_cargo_capacity_kg = (
-            scenario.GVWRkg + scenario.GVWRCredit_kg - new_empty_weight_kg
+            scenario.gvwr_kg + scenario.gvwr_credit_kg - new_empty_weight_kg
         )
 
         def make_plots(save_dir=None):
@@ -254,13 +254,13 @@ class OpportunityCost:
                 label=f"estimated cargo lost [kg]: {round(estimated_lost_payload_kg)}",
             )
             ax2.axvline(
-                scenario.GVWRkg,
-                label=f"GVWR [kg] {round(scenario.GVWRkg)}",
+                scenario.gvwr_kg,
+                label=f"GVWR [kg] {round(scenario.gvwr_kg)}",
                 color="orange",
             )
             ax2.axvline(
                 new_cargo_cieling_kg,
-                label=f"GVWR + credit - empty weight increase [kg] : {round(scenario.GVWRkg)} + {round(scenario.GVWRCredit_kg)}  - {round(empty_increase_kg)} = {round(new_cargo_cieling_kg)}",
+                label=f"GVWR + credit - empty weight increase [kg] : {round(scenario.gvwr_kg)} + {round(scenario.gvwr_credit_kg)}  - {round(empty_increase_kg)} = {round(new_cargo_cieling_kg)}",
                 color="purple",
             )
             fig.suptitle(
@@ -303,10 +303,10 @@ class OpportunityCost:
         self.dwell_time_cost_Dol = []
         dwellparams = np.array(
             [
-                scenario.dlf_fraction_dwpt,
-                scenario.dlf_frac_fullcharge_bounds,
-                scenario.dlf_avg_noncharge_per_dwell_hr,
-                scenario.dlf_cost_dolperhr,
+                scenario.fdt_dwpt_fraction_power_pct,
+                scenario.fdt_frac_full_charge_bounds,
+                scenario.fdt_avg_overhead_hr_per_dwell_hr,
+                scenario.fdt_oppy_cost_dol_per_hr,
             ]
         )
         assert any(
@@ -314,46 +314,46 @@ class OpportunityCost:
         ), f"Missing parameters in {str(dwellparams)}: {np.isnan(dwellparams)}"
 
         if a_vehicle.veh_pt_type in ["BEV"]:
-            self.full_dwell_hr = (1 - scenario.dlf_fraction_dwpt) * (
-                a_vehicle.ess_max_kwh / scenario.essMaxChargePower_kW
+            self.full_dwell_hr = (1 - scenario.fdt_dwpt_fraction_power_pct) * (
+                a_vehicle.ess_max_kwh / scenario.ess_max_charging_power_kw
             )
         elif a_vehicle.veh_pt_type in ["Conv"]:
-            if scenario.fuel in ["gasoline"]:
+            if scenario.fuel_type in ["gasoline"]:
                 self.full_dwell_hr = (
                     a_vehicle.fs_kwh
                     / (gl.kwh_per_gge)
-                    / scenario.fsFillRateGasoline_GPM
+                    / scenario.fs_fueling_rate_gasoline_gpm
                 ) / 60
             else:
                 self.full_dwell_hr = (
                     a_vehicle.fs_kwh
                     / (gl.kwh_per_gge / gl.DieselGalPerGasGal)
-                    / scenario.fsFillRateDiesel_GPM
+                    / scenario.fs_fueling_rate_diesel_gpm
                 ) / 60
         else:
             self.full_dwell_hr = (
-                (1 - scenario.dlf_fraction_dwpt)
+                (1 - scenario.fdt_dwpt_fraction_power_pct)
                 * (
                     a_vehicle.fs_kwh
                     / (gl.kwh_per_gge / gl.kgH2_per_gge)
-                    / scenario.fsFillRate_kgPerMin
+                    / scenario.fs_fueling_rate_kg_per_min
                 )
                 / 60
             )
 
-        for i in range(scenario.vehLifeYears):
-            # self.shifts_per_year = (scenario.VMT[i])/ self.cycle_distance_mi
-            self.d_trip_mi = scenario.VMT[i] / self.shifts_per_year[i]
+        for i in range(scenario.vehicle_life_yr):
+            # self.shifts_per_year = (scenario.vmt[i])/ self.cycle_distance_mi
+            self.d_trip_mi = scenario.vmt[i] / self.shifts_per_year[i]
             self.num_of_dwells = max(
                 0,
                 (
                     (self.d_trip_mi)
-                    * (1 - scenario.dlf_fraction_dwpt)
+                    * (1 - scenario.fdt_dwpt_fraction_power_pct)
                     / self.total_range_mi
                     - self.num_free_trips
                 ),
             )
-            # print(f'num_of_dwells: {self.num_of_dwells}\n VMT: {scenario.VMT[i]}')
+            # print(f'num_of_dwells: {self.num_of_dwells}\n vmt: {scenario.vmt[i]}')
             # print(f'd_trip_mi: {self.d_trip_mi}')
             if self.num_of_dwells != 0:
                 self.remaining_dwells = self.num_of_dwells % 1
@@ -371,10 +371,10 @@ class OpportunityCost:
                     self.num_of_dwells += 1 - self.remaining_dwells
             # else:
 
-            if (self.num_of_dwells < 1 and not self.num_free_trips) or (scenario.fuel):
+            if (self.num_of_dwells < 1 and not self.num_free_trips) or (scenario.fuel_type):
                 self.net_dwell_time_hr.append(
-                    scenario.VMT[i]
-                    * (1 - scenario.dlf_fraction_dwpt)
+                    scenario.vmt[i]
+                    * (1 - scenario.fdt_dwpt_fraction_power_pct)
                     / self.total_range_mi
                     * (self.full_dwell_hr + self.dwell_overhead_hr)
                 )
@@ -386,11 +386,11 @@ class OpportunityCost:
                 self.net_dwell_time_hr.append(
                     self.shifts_per_year[i]
                     * max(
-                        0, (self.dwell_time_hr - max(0, scenario.dlf_freetime_dwell_hr))
+                        0, (self.dwell_time_hr - max(0, scenario.fdt_available_freetime_hr))
                     )
                 )
 
-            self.dwell_time_cost_Dol.append(self.net_dwell_time_hr[i] * self.labor_rate)
+            self.dwell_time_cost_Dol.append(self.net_dwell_time_hr[i] * self.labor_rate_dol_per_hr)
             self.total_dwell_time_hr += self.net_dwell_time_hr[i]
 
         # self.dwell_time_factor = max(1, (self.d_trip_mi / self.v_mean_mph + self.net_dwell_time_hr[i]) /
@@ -407,7 +407,7 @@ class OpportunityCost:
     #     self.time_frac_charge_hr = self.time_full_charge_hr *(1- (self.dwell_time_hr/self.time_full_charge_hr - floor(self.dwell_time_hr/self.time_full_charge_hr) ))
     #     self.dwell_time_hr = self.dwell_time_hr if self.time_frac_charge_hr < self.time_available_charge_hr else (self.dwell_time_hr+ self.time_frac_charge_hr)
 
-    #     self.dwell_time_cost_Dol = self.dwell_time_hr/self.dwell_time_efficiency * self.labor_rate
+    #     self.dwell_time_cost_Dol = self.dwell_time_hr/self.dwell_time_efficiency * self.labor_rate_dol_per_hr
     #     print(f'Dwell time hr per year: {self.dwell_time_hr}')
     #     print(f'Dwell cost dol: {self.dwell_time_cost_Dol}')
 
@@ -420,28 +420,28 @@ class OpportunityCost:
             scenario (run_scenario.Scenario): Scenario object for the current selection
         """
         self.planned_downtime_hr = [
-            scenario.mr_regular_hrPerYear for _ in range(scenario.vehLifeYears)
+            scenario.mr_planned_downtime_hr_per_yr for _ in range(scenario.vehicle_life_yr)
         ]  # regular maintenance and inspections
         self.unplanned_downtime_hr = [
-            scenario.mr_unplanned_hrPerMile[i] * scenario.VMT[i]
-            for i in range(scenario.vehLifeYears)
+            scenario.mr_unplanned_downtime_hr_per_mi[i] * scenario.vmt[i]
+            for i in range(scenario.vehicle_life_yr)
         ]  # increases with age
         self.tire_replacement_downtime_hr = [
-            (scenario.VMT[i])
-            / scenario.mr_tire_life_mi
-            * scenario.mr_tire_replace_downtime_hrPerEvent
-            for i in range(scenario.vehLifeYears)
+            (scenario.vmt[i])
+            / scenario.mr_avg_tire_life_mi
+            * scenario.mr_tire_replace_downtime_hr_per_event
+            for i in range(scenario.vehicle_life_yr)
         ]
         self.net_MR_downtime_hrPerYr = np.array(
             [
                 self.planned_downtime_hr[i]
                 + self.unplanned_downtime_hr[i]
                 + self.tire_replacement_downtime_hr[i]
-                for i in range(scenario.vehLifeYears)
+                for i in range(scenario.vehicle_life_yr)
             ]
         )
         self.net_MR_downtime_oppcosts_DolPerYr = (
-            self.net_MR_downtime_hrPerYr * self.labor_rate
+            self.net_MR_downtime_hrPerYr * self.labor_rate_dol_per_hr
         )
         # print(f'Total M&R downtime hr: {self.net_MR_downtime_hr}')
         # print(f'M&R Downtime cost Dol: {self.net_MR_downtime_oppcosts_Dol}')
@@ -463,8 +463,8 @@ def main():
     v = run_scenario.get_vehicle(33, vehicles_file)
     oc = OpportunityCost(v, s)
 
-    print("GVWRlb", gl.kg_to_lbs(s.GVWRkg))
-    print("GvwrCreditlb", gl.kg_to_lbs(s.GVWRCredit_kg))
+    print("GVWRlb", gl.kg_to_lbs(s.gvwr_kg))
+    print("GvwrCreditlb", gl.kg_to_lbs(s.gvwr_credit_kg))
     print("veh_lb", gl.kg_to_lbs(v.veh_kg))
     print("ess_mass_lb", gl.kg_to_lbs(v.ess_mass_kg))
     print("original empty lb", gl.kg_to_lbs(v.veh_kg - v.cargo_kg))

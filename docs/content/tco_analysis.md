@@ -38,7 +38,7 @@ This function creates a dataframe of operating cost from ownershipCosts datafram
 def discounted_costs(scenario, ownershipCosts)
 ```
 
-This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discRate
+This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discount_rate_pct_per_yr
 
 **Arguments**:
 

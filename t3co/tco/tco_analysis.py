@@ -49,7 +49,7 @@ def get_operating_costs(ownershipCosts, TCO_switch="DIRECT"):
 
 def discounted_costs(scenario, ownershipCosts):
     """
-    This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discRate
+    This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discount_rate_pct_per_yr
 
     Args:
         scenario (run_scenario.Scenario): Scenario object for current selection
@@ -59,10 +59,10 @@ def discounted_costs(scenario, ownershipCosts):
         ownershipCosts (pd.DataFrame): ownershipCosts dataframe with additional 'Discounted Cost [$]' column
     """
     ownershipCosts["Discounted Cost [$]"] = ownershipCosts["Cost [$]"] / (
-        1.0 + scenario.discRate
+        1.0 + scenario.discount_rate_pct_per_yr
     ) ** (ownershipCosts["Year"] - ownershipCosts["Model Year"])
-    # veh_opp_cost_set['Discounted Cost [$]'] = veh_opp_cost_set['Cost [$]'] / (1. + scenario.discRate) ** (veh_opp_cost_set['Year'] - veh_opp_cost_set['Model Year'])
-    # veh_residual_df['Discounted Cost [$]'] = veh_residual_df['Cost [$]'] / (1. + scenario.discRate) ** (veh_residual_df['Year'] - veh_residual_df['Model Year'])
+    # veh_opp_cost_set['Discounted Cost [$]'] = veh_opp_cost_set['Cost [$]'] / (1. + scenario.discount_rate_pct_per_yr) ** (veh_opp_cost_set['Year'] - veh_opp_cost_set['Model Year'])
+    # veh_residual_df['Discounted Cost [$]'] = veh_residual_df['Cost [$]'] / (1. + scenario.discount_rate_pct_per_yr) ** (veh_residual_df['Year'] - veh_residual_df['Model Year'])
 
     return ownershipCosts
 
@@ -134,15 +134,15 @@ def calc_discountedTCO(
     elif TCO_switch == "EFFICIENCY":
         disc_VMT_sum = sum(
             [
-                scenario.VMT[i] / (1 + scenario.discRate) ** (i)
-                for i in range(scenario.vehLifeYears)
+                scenario.vmt[i] / (1 + scenario.discount_rate_pct_per_yr) ** (i)
+                for i in range(scenario.vehicle_life_yr)
             ]
         )
         disc_downtime_sum = sum(
             [
                 veh_opp_cost_set["total_downtime_hrPerYr"][i]
-                / (1 + scenario.discRate) ** (i + 1)
-                for i in range(scenario.vehLifeYears)
+                / (1 + scenario.discount_rate_pct_per_yr) ** (i + 1)
+                for i in range(scenario.vehicle_life_yr)
             ]
         )
         avg_speed_mph = (
@@ -239,7 +239,7 @@ def get_tco_of_vehicle(vehicle, range_cyc, scenario, write_tsv=False):
         write_files=gl.write_files,
     )
 
-    # discountRate = float(scenario.discRate)
+    # discountRate = float(scenario.discount_rate_pct_per_yr)
     # discounted_costs_df = DCF(ownership_costs_df.copy(), rate=discountRate)
     # print(discounted_costs_df)
     discounted_costs_df = discounted_costs(scenario, ownership_costs_df)

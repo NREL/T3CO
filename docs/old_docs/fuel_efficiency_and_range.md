@@ -15,7 +15,7 @@ Composite drive cycle input example: `[("EPA_Ph2_rural_interstate_65mph.csv", .8
 
 Input file example:
 
-| selection | scenario_name | driveCycle |
+| selection | scenario_name | drive_cycle |
 |-----------|---------------| -----------|
 | 1 | Class 8 Sleeper cab high roof (Diesel, 2020, no program) | [("EPA_Ph2_rural_interstate_65mph.csv", .86), ("EPA_Ph2_urban_highway_55mph.csv", .09), ("EPA_Ph2_transient.csv", .05)] |
 | 2 | Class 8 Sleeper cab mid roof (Diesel, 2020, no program) | [("EPA_Ph2_rural_interstate_65mph.csv", .86), ("EPA_Ph2_urban_highway_55mph.csv", .09), ("EPA_Ph2_transient.csv", .05)] |
@@ -52,7 +52,7 @@ For each drive cycle in the **T3CO** scenario file, a weighted value for these f
 
 ## Range From Fuel Efficiency <a name="rangefromfueleff"></a>
 
-The process for determining range depends on determining the fuel economy of the vehicle based on design cycles or a set of design cycles with weights. Design cycle or composite design cycles are specifed in the `Scenario` input file under the `driveCycle` column. Fuel economy is determined in the `t3co\objectives\fueleconomy.py` module. The logic for fuel economy is essentially
+The process for determining range depends on determining the fuel economy of the vehicle based on design cycles or a set of design cycles with weights. Design cycle or composite design cycles are specifed in the `Scenario` input file under the `drive_cycle` column. Fuel economy is determined in the `t3co\objectives\fueleconomy.py` module. The logic for fuel economy is essentially
 ```
 for cycle_i, weight_i in (cycles, cycle_weights)
     if PHEV

@@ -38,7 +38,7 @@ To run this as a script that drives all the t3co files as a module:
 
             gl.OTHER_INPUTS content:
                 # all information necessary to determine vehicle TCO as well as performance targets
-                selection,driveCycle,vmtReductPerYear,VMT,constTripDistMiles,vehLifeYears,...,region,TargetRangeMi,minSpeed6PercentGradeIn5min,minSpeed1point25PercentGradeIn5min,max0to60secAtGV
+                selection,drive_cycle,vmt_reduct_per_yr,vmt,constant_trip_distance_mi,vehicle_life_yr,...,region,target_range_mi,min_speed_at_6pct_grade_in_5min_mph,min_speed_at_125pct_grade_in_5min_mph,max0to60secAtGV
                 1.0,long_haul_cyc.csv,0.0,"[100000, 100000, 100000, 100000, 100000, 100000...United States,750.0,30.0,65.0,80.0,20.0
                 2.0,long_haul_cyc.csv,,"[100000, 100000, 100000, 100000, 100000, 100000, 1...United States,750.0,30.0,65.0,80.0,20.0
                 3.0,long_haul_cyc.csv,,"[100000, 100000, 100000, 100000, 100000, 100000, 1...United States,750.0,30.0,65.0,80.0,20.0

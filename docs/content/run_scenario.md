@@ -287,7 +287,7 @@ This method overrides certain scenario fields if use_config is True and config o
 def check_phev_init_socs(a_vehicle: vehicle.Vehicle, scenario: Scenario)
 ```
 
-This function checks that soc_norm_init_for_grade and soc_norm_init_for_accel are present only for PHEVs
+This function checks that soc_norm_init_for_grade_pct and soc_norm_init_for_accel_pct are present only for PHEVs
 
 **Arguments**:
 
@@ -303,7 +303,7 @@ def get_phev_util_factor(scenario, v, mpgge)
 ```
 
 This function gets the PHEV utility factor derived from the computed range of the
-vehicle and the operational day range computed from shifts per year and the first VMT year
+vehicle and the operational day range computed from shifts per year and the first vmt year
 
 **Arguments**:
 
@@ -465,7 +465,7 @@ def load_design_cycle_from_scenario(scenario,
 
 This helper method loads the design cycle used for mpgge and range determination.
 It can also be used standalone to get cycles not in standard gl.OPTIMIZATION_DRIVE_CYCLES location,
-but still needs cycle name from scenario object, carried in scenario.driveCycle.
+but still needs cycle name from scenario object, carried in scenario.drive_cycle.
 If the drive cycles are a list of tuples, handle accordingly with eval.
 
 **Arguments**:

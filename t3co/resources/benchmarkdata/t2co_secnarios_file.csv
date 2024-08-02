@@ -1,35 +1,35 @@
 ﻿,stdVarNames,t2cobaseline1,t3co baseline Other Inputs; not for use -just comparison,coment on t3co value
-Target number of battery replacements,desiredEssReplacements,0,0,
+Target number of battery replacements,desired_ess_replacements,0,0,
 Gasoline price ($/gallon),gasolineDolPerGal,2.88,NA,not doing gasoline baseline
 Diesel price ($/gallon),dieselDolPerGal,2.93224976,2.93224976,"fuel cost = f(fuel type, region, year  in range(model year, model year + life span years); Year 1: 2020; Year1 fuel cost = f(diesel,United States, 2020)"
 Electricity price ($/kWh),dolPerKwh,0.115710422,0.115710422,"fuel cost = f(fuel type, region, year  in range(model year, model year + life span years); Year 1: 2020; Year1 fuel cost = f(electricity, United States, 2020)"
 Hydrogen price ($/GGE),hydrogenDolPerGGE,4,NA,
-Sales tax,tax,0,0,
-Discount rate,discRate,0.041,0.041,
-Battery cost coefficient A ($/kW),essDolPerKw,0,0,
-Battery cost coefficient B ($/kWh),essDolPerKwh,197,197,
-Battery base packaging cost,essPackageCost,0,0,
-Battery cost reduction per year,essCostRedPerYear,0,0,
-Battery salvage value (percent),essSalvageVal,0,0,
-Power electronics and motor cost ($/kW),peAndMcDolPerKw,17,17,
-Power electronics and motor base cost,peAndMcBaseCost,0,0,
-Engine cost ($/kW),iceDolPerKw,47.3,47.3,
-Engine base cost,iceBaseCost,5000,5000,
-Fuel cell cost ($/kW),fuelCellDolPerKw,190,190,
-Gasoline/diesel tank cost ($/kWh),fuelStorDolPerKwh,0.07,0.07,
-Hydrogen tank cost ($/kWh),fuelStorH2DolPerKwh,36,36,
-"Plug cost (PHEVs, Evs, and HEVs with roadway charging)",plugCost,500,500,
-Markup,markup,1.5,1.5,
-"testing glider cost, const value",vehGliderPrice,121918.9997,121918.9997,
-,modelYear,2020,2020,
-,segmentName,t3cobaselining,NA,
+Sales tax_rate_pct,tax_rate_pct,0,0,
+Discount rate,discount_rate_pct_per_yr,0.041,0.041,
+Battery cost coefficient A ($/kW),ess_cost_dol_per_kw,0,0,
+Battery cost coefficient B ($/kWh),ess_cost_dol_per_kwh,197,197,
+Battery base packaging cost,ess_base_cost_dol,0,0,
+Battery cost reduction per year,ess_cost_reduction_dol_per_yr,0,0,
+Battery salvage value (percent),ess_salvage_value_dol,0,0,
+Power electronics and motor cost ($/kW),pe_mc_cost_dol_per_kw,17,17,
+Power electronics and motor base cost,pe_mc_base_cost_dol,0,0,
+Engine cost ($/kW),fc_ice_cost_dol_per_kw,47.3,47.3,
+Engine base cost,fc_ice_base_cost_dol,5000,5000,
+Fuel cell cost ($/kW),fc_fuelcell_cost_dol_per_kw,190,190,
+Gasoline/diesel tank cost ($/kWh),fs_cost_dol_per_kwh,0.07,0.07,
+Hydrogen tank cost ($/kWh),fs_h2_cost_dol_per_kwh,36,36,
+"Plug cost (PHEVs, Evs, and HEVs with roadway charging)",plug_base_cost_dol,500,500,
+Markup,markup_pct,1.5,1.5,
+"testing glider cost, const value",vehicle_glider_cost_dol,121918.9997,121918.9997,
+,model_year,2020,2020,
+,segment_name,t3cobaselining,NA,
 ,vocation,HDTC6,HDTC7,
 will always be US for now,region,US,United States,
-,evGVWRAllowanceLbs,2000,907.1847, GVWRCredit_kg in Other Inputs; 2000lb == 907.1847 kg
-,maxGvwrKg,36287.43275,36287.43275,GVWRkg in T3CO other inputs
-Average vehicle miles traveled per year,VMT,"[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]","[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]",
-Vehicle life (years),vehLifeYears,7,7,
-Reduction in vehicle travel per year,vmtReductPerYear,0,0,
+,evGVWRAllowanceLbs,2000,907.1847, gvwr_credit_kg in Other Inputs; 2000lb == 907.1847 kg
+,maxGvwrKg,36287.43275,36287.43275,gvwr_kg in T3CO other inputs
+Average vehicle miles traveled per year,vmt,"[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]","[100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000]",
+Vehicle life (years),vehicle_life_yr,7,7,
+Reduction in vehicle travel per year,vmt_reduct_per_yr,0,0,
 override base vehicle fuelStorKwh,fuelStorKwh,-1,NA,vehicle overrides don't work the same way in T3CO (for each permutation in overrides there's a FASTSim Inputs row
 conventional $/mi maintenance cost ,CONV_maintDolPerMi,0.22,0.22,
 electrified vehicle $/mi maintenance cost,ADV_maintDolPerMi,0.11,0.11,
@@ -38,7 +38,7 @@ override vehicle motor efficiency,motorPeakEff,-1,NA,
 override electric transmission efficiency (transEff) for optimization vehicles,elecTransEff,-1,NA,
 "Engine efficiency map, used for Conventional and HEV",engineMap,"[0.05, 0.07, 0.12, 0.21, 0.26, 0.34, 0.38, 0.42, 0.45, 0.46, 0.46, 0.46]","[0.05, 0.07, 0.12, 0.21, 0.26, 0.34, 0.38, 0.42, 0.45, 0.46, 0.46, 0.46]",this is the default map in t2co (fastsim); stored in t3co benchmark FASTSim Inputs as fcEffMap
 mph decrement of target speed at grade for HEVs grade testing,HEVGradeSpeedTolMPH,5,NA,"NA, T3CO has no speed-at-grade targets and measures grade error differently"
-"EV range (miles), if -1, use baseline range",evEssRangeMiles,500,500,TargetRangeMi in Other Inputs
+"EV range (miles), if -1, use baseline range",evEssRangeMiles,500,500,target_range_mi in Other Inputs
 mean cargo wt of conventional vehicle.  Default = 42223 ,mu,-1,NA,
  standard deviation of cargo weight of conventional vehicle.  Default = 8435 ,sigma,-1,NA,
 trip distance(mi) for typical point A to point B trip.  default = 500 mi.,dDripMi,-1,NA,

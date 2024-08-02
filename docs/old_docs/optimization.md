@@ -23,7 +23,7 @@ RANGE, ACCEL, GRADE
 In general, all knobs that apply to each powertrain will be active.
 
 A blank in either min or max of the knob will disable that knob. (use value from vehicle input)
-A blank in eng_imp_curve, aero_imp_curve, and ltwt_imp_curve will turn those off. (set to cda imp and ltwt redux to zeros, and leave fuel converter peak efficiency unchanged)
+A blank in eng_eff_imp_curve_file, aero_drag_imp_curve_file, and ltwt_imp_curve will turn those off. (set to cda imp and ltwt redux to zeros, and leave fuel converter peak efficiency unchanged)
 
 ```
 # Decision variables / "knobs":
@@ -61,7 +61,7 @@ An example use, employing both [**NSGA2** and **PatternSearch**](https://pymoo.o
 ## Optimization Inputs <a name="optInputs"></a>
 
 ### example means of specifying targets in **scenario** file
-TargetRangeMi | minSpeed6PercentGradeIn5min | minSpeed1point25PercentGradeIn5min | max0to60secAtGVWR | max0to30secAtGVWR
+target_range_mi | min_speed_at_6pct_grade_in_5min_mph | min_speed_at_125pct_grade_in_5min_mph | max_time_0_to_60mph_at_gvwr_s | max_time_0_to_30mph_at_gvwr_s
 -- | -- | -- | -- | --
 750 | 30 | 65 | 80 | 20
 750 | 30 | 65 | 80 | 20
@@ -69,7 +69,7 @@ TargetRangeMi | minSpeed6PercentGradeIn5min | minSpeed1point25PercentGradeIn5min
 
 
 ### example means of specifying improvement cost curves in **scenario** file
-lw_imp_curve | eng_imp_curve | aero_imp_curve
+lw_imp_curve_file | eng_eff_imp_curve_file | aero_drag_imp_curve_file
 -- | -- | --
 MDHD_xyz | MDHD_large_noprogram_2025 | MDHD_abcdef
 
@@ -99,7 +99,7 @@ For the other decision variables / knobs, the scenario file will need to specify
 (code will use the appropriate combinations of fc/motor/ess for each powertrain)
 
 
-### example of **engine cost curves input**, referred to via **scenario file** selection in `eng_imp_curve` column
+### example of **engine cost curves input**, referred to via **scenario file** selection in `eng_eff_imp_curve_file` column
 
 name | MDHD_large_noprogram_2020 | MDHD_large_noprogram_2025
 -- | -- | --
@@ -123,10 +123,10 @@ rural     = EPA_Ph2_rural_interstate_65mph.csv
 urban     = EPA_Ph2_urban_highway_55mph.csv
 transient = EPA_Ph2_transient.csv
 
-#### vehicle input file example for driveCycle
+#### vehicle input file example for drive_cycle
 
 
-selection | scenario_name | driveCycle | …
+selection | scenario_name | drive_cycle | …
 -- | -- | -- | --
 1 | Class 8 Sleeper cab (Diesel, 2021, program success) | [(EPA_Ph2_rural_interstate_65mph.csv, .86),   (EPA_Ph2_urban_highway_55mph.csv, .09), (EPA_Ph2_transient.csv, .05)] | …
 2 | Class 8 Sleeper cab (Diesel, 2027, program success) | [(EPA_Ph2_rural_interstate_65mph.csv, .86),   (EPA_Ph2_urban_highway_55mph.csv, .09), (EPA_Ph2_transient.csv, .05)] | …
@@ -144,13 +144,13 @@ selection | scenario_name | driveCycle | …
 
 ## PHEV Considerations <a name="PHEVConsiderations"></a>
 
-#### `perc_motor_power_override_kw_fc_demand_on`
-During PHEV optimization, an adjustment for PHEVs that is not made for any other powertrain types to the value of `kw_demand_fc_on` for the vehicle. `kw_demand_fc_on` is a vehicle file input and a type of hyrbid vehicle controls parameter. This parameter is the kW threshold of power demand from the drive cycle at which the fuel converter is activated to meet trace. In order to have the kW threshold float along with the sizing of the motor during optimization, **T3CO** sets the value of `kw_demand_fc_on` based on a set percentage of the motor size, `perc_motor_power_override_kw_fc_demand_on`. This percentage is specified in the **T3CO** scenario file. 
+#### `motor_power_override_kw_fc_demand_on_pct`
+During PHEV optimization, an adjustment for PHEVs that is not made for any other powertrain types to the value of `kw_demand_fc_on` for the vehicle. `kw_demand_fc_on` is a vehicle file input and a type of hyrbid vehicle controls parameter. This parameter is the kW threshold of power demand from the drive cycle at which the fuel converter is activated to meet trace. In order to have the kW threshold float along with the sizing of the motor during optimization, **T3CO** sets the value of `kw_demand_fc_on` based on a set percentage of the motor size, `motor_power_override_kw_fc_demand_on_pct`. This percentage is specified in the **T3CO** scenario file. 
 
-If this percentage is not specified in the **T3CO** scenario file, then `kw_demand_fc_on` is not adjusted and remains the static value from the vehicle input file. `perc_motor_power_override_kw_fc_demand_on` overrides `kw_demand_fc_on`. If neither are provided then T3CO will error out.
+If this percentage is not specified in the **T3CO** scenario file, then `kw_demand_fc_on` is not adjusted and remains the static value from the vehicle input file. `motor_power_override_kw_fc_demand_on_pct` overrides `kw_demand_fc_on`. If neither are provided then T3CO will error out.
 
 This adjustment happens in `t3co.run_scenario.set_max_motor_kw(vehicle, new_kw_value)` when the optimization loop calls `set_max_motor_kw`
     
     if vehicle.veh_pt_type == PHEV:
         vehicle.mc_max_kw = optimization_function(TCO, grade and acceleration performance)
-        kw_demand_fc_on = perc_motor_power_override_kw_fc_demand_on * vehicle.mc_max_kw
+        kw_demand_fc_on = motor_power_override_kw_fc_demand_on_pct * vehicle.mc_max_kw

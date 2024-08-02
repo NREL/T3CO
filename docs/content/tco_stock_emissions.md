@@ -55,7 +55,7 @@ This function generates the ownershipCosts dataframe from the dataframes for eac
 - `sales` _pd.DataFrame_ - Dataframe of yearly number of vehicles sales
 - `marketShares` _pd.DataFrame_ - Dataframe of yearly Market Share of selection's vocation per vehicle [veh/veh]
 - `survival` _pd.DataFrame_ - Dataframe of yearly Surviving vehicle per each vehicle [veh/veh]
-- `annualTravel` _pd.DataFrame_ - Dataframe of vehicle's VMT: Annual Travel [mi/yr]
+- `annualTravel` _pd.DataFrame_ - Dataframe of vehicle's vmt: Annual Travel [mi/yr]
 - `fuelSplit` _pd.DataFrame_ - Dataframe of fraction of travel using each fuel [mi/mi]
 - `fuelEfficiency` _pd.DataFrame_ - Dataframe of vehicle's yearly average fuel efficiency [mi/gge]
 - `emissions` _pd.DataFrame_ - Dataframe of vehicle's yearly average emissions

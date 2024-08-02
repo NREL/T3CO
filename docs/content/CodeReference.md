@@ -345,7 +345,7 @@ This helper method generates a dataframe of fuel operating costs in Cost [$/gge]
 def fill_annual_tsv(scenario)
 ```
 
-This helper method generates a dataframe of annual vehicle miles traveled (VMT) - Annual Travel [mi/yr]
+This helper method generates a dataframe of annual vehicle miles traveled (vmt) - Annual Travel [mi/yr]
 
 **Arguments**:
 
@@ -617,7 +617,7 @@ This function generates the ownershipCosts dataframe from the dataframes for eac
 - `sales` _pd.DataFrame_ - Dataframe of yearly number of vehicles sales
 - `marketShares` _pd.DataFrame_ - Dataframe of yearly Market Share of selection's vocation per vehicle [veh/veh]
 - `survival` _pd.DataFrame_ - Dataframe of yearly Surviving vehicle per each vehicle [veh/veh]
-- `annualTravel` _pd.DataFrame_ - Dataframe of vehicle's VMT: Annual Travel [mi/yr]
+- `annualTravel` _pd.DataFrame_ - Dataframe of vehicle's vmt: Annual Travel [mi/yr]
 - `fuelSplit` _pd.DataFrame_ - Dataframe of fraction of travel using each fuel [mi/mi]
 - `fuelEfficiency` _pd.DataFrame_ - Dataframe of vehicle's yearly average fuel efficiency [mi/gge]
 - `emissions` _pd.DataFrame_ - Dataframe of vehicle's yearly average emissions
@@ -668,7 +668,7 @@ This function creates a dataframe of operating cost from ownershipCosts datafram
 def discounted_costs(scenario, ownershipCosts)
 ```
 
-This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discRate
+This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discount_rate_pct_per_yr
 
 **Arguments**:
 
@@ -1145,7 +1145,7 @@ def get_accel(analysis_vehicle,
               ess_init_soc=None)
 ```
 
-This function runs a simdrive for getting 0-to-60 and 0-30 mph time with fully laden weight at GVWR (plus GVWRCredit_kg?)
+This function runs a simdrive for getting 0-to-60 and 0-30 mph time with fully laden weight at GVWR (plus gvwr_credit_kg?)
 
 
 **Arguments**:
@@ -1857,7 +1857,7 @@ This method overrides certain scenario fields if use_config is True and config o
 def check_phev_init_socs(a_vehicle: vehicle.Vehicle, scenario: Scenario)
 ```
 
-This function checks that soc_norm_init_for_grade and soc_norm_init_for_accel are present only for PHEVs
+This function checks that soc_norm_init_for_grade_pct and soc_norm_init_for_accel_pct are present only for PHEVs
 
 **Arguments**:
 
@@ -1873,7 +1873,7 @@ def get_phev_util_factor(scenario, v, mpgge)
 ```
 
 This function gets the PHEV utility factor derived from the computed range of the
-vehicle and the operational day range computed from shifts per year and the first VMT year
+vehicle and the operational day range computed from shifts per year and the first vmt year
 
 **Arguments**:
 
@@ -2035,7 +2035,7 @@ def load_design_cycle_from_scenario(scenario,
 
 This helper method loads the design cycle used for mpgge and range determination.
 It can also be used standalone to get cycles not in standard gl.OPTIMIZATION_DRIVE_CYCLES location,
-but still needs cycle name from scenario object, carried in scenario.driveCycle.
+but still needs cycle name from scenario object, carried in scenario.drive_cycle.
 If the drive cycles are a list of tuples, handle accordingly with eval.
 
 **Arguments**:
@@ -2196,7 +2196,7 @@ selection,scenario_name,veh_pt_type,drag_coef,frontalAreaM2,glid...
 
 gl.OTHER_INPUTS content:
 # all information necessary to determine vehicle TCO as well as performance targets
-selection,driveCycle,vmtReductPerYear,VMT,constTripDistMiles,vehLifeYears,...,region,TargetRangeMi,minSpeed6PercentGradeIn5min,minSpeed1point25PercentGradeIn5min,max0to60secAtGV
+selection,drive_cycle,vmt_reduct_per_yr,vmt,constant_trip_distance_mi,vehicle_life_yr,...,region,target_range_mi,min_speed_at_6pct_grade_in_5min_mph,min_speed_at_125pct_grade_in_5min_mph,max0to60secAtGV
 1.0,long_haul_cyc.csv,0.0,"[100000, 100000, 100000, 100000, 100000, 100000...United States,750.0,30.0,65.0,80.0,20.0
 2.0,long_haul_cyc.csv,,"[100000, 100000, 100000, 100000, 100000, 100000, 1...United States,750.0,30.0,65.0,80.0,20.0
 3.0,long_haul_cyc.csv,,"[100000, 100000, 100000, 100000, 100000, 100000, 1...United States,750.0,30.0,65.0,80.0,20.0

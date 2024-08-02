@@ -167,11 +167,11 @@ def get_knobs_bounds_curves(
     }
 
     if (
-        "lw_imp_curve" in sd
-        and sd["lw_imp_curve"]
-        and not pd.isnull(sd["lw_imp_curve"])
+        "lw_imp_curve_file" in sd
+        and sd["lw_imp_curve_file"]
+        and not pd.isnull(sd["lw_imp_curve_file"])
     ):
-        lw_curve_selection = sd["lw_imp_curve"]
+        lw_curve_selection = sd["lw_imp_curve_file"]
         ltwt_cost_curve = lw_curves_file.loc["ltwt_cost", lw_curve_selection]
         ltwt_pct_curve = lw_curves_file.loc["ltwt_pct", lw_curve_selection]
         wt_delta_perc_knob_max = float(
@@ -193,11 +193,11 @@ def get_knobs_bounds_curves(
         )
 
     if (
-        "aero_imp_curve" in sd
-        and sd["aero_imp_curve"]
-        and not pd.isnull(sd["aero_imp_curve"])
+        "aero_drag_imp_curve_file" in sd
+        and sd["aero_drag_imp_curve_file"]
+        and not pd.isnull(sd["aero_drag_imp_curve_file"])
     ):
-        cda_curve_selection = sd["aero_imp_curve"]
+        cda_curve_selection = sd["aero_drag_imp_curve_file"]
         CdA_perc_imp_at_which_wt_penalty_maxes_out = float(
             aero_curves_file.loc[
                 "CdA_perc_imp_at_which_wt_penalty_maxes_out", cda_curve_selection
@@ -232,13 +232,13 @@ def get_knobs_bounds_curves(
         )
 
     if (
-        "eng_imp_curve" in sd
-        and sd["eng_imp_curve"]
-        and not pd.isnull(sd["eng_imp_curve"])
+        "eng_eff_imp_curve_file" in sd
+        and sd["eng_eff_imp_curve_file"]
+        and not pd.isnull(sd["eng_eff_imp_curve_file"])
         and vpttype != gl.BEV
     ):
         # TODO, FCEV should not get eng imp curve parameter
-        eng_imp_curve_selection = sd["eng_imp_curve"]
+        eng_imp_curve_selection = sd["eng_eff_imp_curve_file"]
         fc_peak_eff_knob_min = float(
             eng_eff_curves_file.loc["fc_peak_eff_knob_min", eng_imp_curve_selection]
         )
@@ -834,18 +834,18 @@ def run_vehicle_scenarios(
                     numeric_only=True
                 )
                 report_i["RangeMiAch"] = outdict["primary_fuel_range_mi"]
-                report_i["target_TargetRangeMi"] = report_scenario.TargetRangeMi
+                report_i["target_TargetRangeMi"] = report_scenario.target_range_mi
                 report_i["delta_TargetRangeMi"] = (
-                    outdict["primary_fuel_range_mi"] - report_scenario.TargetRangeMi
+                    outdict["primary_fuel_range_mi"] - report_scenario.target_range_mi
                 )
 
                 report_i["minSpeed6PercentGradeIn5minAch"] = outdict["grade_6_mph_ach"]
                 report_i[
                     "target_minSpeed6PercentGradeIn5min"
-                ] = report_scenario.minSpeed6PercentGradeIn5min
+                ] = report_scenario.min_speed_at_6pct_grade_in_5min_mph
                 report_i["delta_6PercentGrade"] = (
                     outdict["grade_6_mph_ach"]
-                    - report_scenario.minSpeed6PercentGradeIn5min
+                    - report_scenario.min_speed_at_6pct_grade_in_5min_mph
                 )
 
                 report_i["minSpeed1point25PercentGradeIn5minAch"] = outdict[
@@ -853,28 +853,28 @@ def run_vehicle_scenarios(
                 ]
                 report_i[
                     "target_minSpeed1point25PercentGradeIn5min"
-                ] = report_scenario.minSpeed1point25PercentGradeIn5min
+                ] = report_scenario.min_speed_at_125pct_grade_in_5min_mph
                 report_i["delta_1point25PercentGrade"] = (
                     outdict["grade_1_25_mph_ach"]
-                    - report_scenario.minSpeed1point25PercentGradeIn5min
+                    - report_scenario.min_speed_at_125pct_grade_in_5min_mph
                 )
 
                 report_i["max0to60secAtGVWRAch"] = outdict["zero_to_60_loaded"]
-                report_i["target_max0to60secAtGVWR"] = report_scenario.max0to60secAtGVWR
+                report_i["target_max0to60secAtGVWR"] = report_scenario.max_time_0_to_60mph_at_gvwr_s
                 if (
                     outdict["zero_to_60_loaded"] is not None
                 ):  # cannot calculate if it is none (but for some reason, range and grade are handled when none)
                     report_i["delta_0to60sec"] = (
-                        outdict["zero_to_60_loaded"] - report_scenario.max0to60secAtGVWR
+                        outdict["zero_to_60_loaded"] - report_scenario.max_time_0_to_60mph_at_gvwr_s
                     )
 
                 report_i["max0to30secAtGVWRAch"] = outdict["zero_to_30_loaded"]
-                report_i["target_max0to30secAtGVWR"] = report_scenario.max0to30secAtGVWR
+                report_i["target_max0to30secAtGVWR"] = report_scenario.max_time_0_to_30mph_at_gvwr_s
                 if (
                     outdict["zero_to_30_loaded"] is not None
                 ):  # cannot calculate if it is none (but for some reason, range and grade are handled when none)
                     report_i["delta_0to30sec"] = (
-                        outdict["zero_to_30_loaded"] - report_scenario.max0to30secAtGVWR
+                        outdict["zero_to_30_loaded"] - report_scenario.max_time_0_to_30mph_at_gvwr_s
                     )
 
                 report_i.update(mpgge)

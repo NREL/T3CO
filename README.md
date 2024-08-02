@@ -15,7 +15,7 @@ To start, go to the [Overview](https://github.com/NREL/T3CO-private/blob/451dfbf
 
 Current release does **not** have:
 
-- cargo `payload opportunity cost` combined with `GVWRCredit_kg` validated  
+- cargo `payload opportunity cost` combined with `gvwr_credit_kg` validated  
 
 ## Installation
 

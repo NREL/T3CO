@@ -372,17 +372,17 @@ class T3COProblem(ElementwiseProblem):
             "r_sec_to_ach_30mph_ldd": self.r_accel_30l,
             "r_sec_to_ach_60mph_ldd": self.r_accel_60l,
             "r_ach_ranges_mi": self.r_ranges,
-            "target_mph_grade_6s": [self.opt_scenario.minSpeed6PercentGradeIn5min]
+            "target_mph_grade_6s": [self.opt_scenario.min_speed_at_6pct_grade_in_5min_mph]
             * len(self.r_grade_6s),
             "target_mph_grade_125s": [
-                self.opt_scenario.minSpeed1point25PercentGradeIn5min
+                self.opt_scenario.min_speed_at_125pct_grade_in_5min_mph
             ]
             * len(self.r_grade_6s),
-            "target_sec_to_30mph_ldd": [self.opt_scenario.max0to30secAtGVWR]
+            "target_sec_to_30mph_ldd": [self.opt_scenario.max_time_0_to_30mph_at_gvwr_s]
             * len(self.r_grade_6s),
-            "target_sec_to_60mph_ldd": [self.opt_scenario.max0to60secAtGVWR]
+            "target_sec_to_60mph_ldd": [self.opt_scenario.max_time_0_to_60mph_at_gvwr_s]
             * len(self.r_grade_6s),
-            "target_range_mi": [self.opt_scenario.TargetRangeMi] * len(self.r_grade_6s),
+            "target_range_mi": [self.opt_scenario.target_range_mi] * len(self.r_grade_6s),
             "r_ach_fuel_efficiencies": self.r_fuel_efficiencies,
             "accel_30_constraint_vals": self.accel_30_constraint,
             "accel_60_constraint_vals": self.accel_60_constraint,
@@ -423,15 +423,15 @@ class T3COProblem(ElementwiseProblem):
         )
 
         if (
-            self.opt_scenario.fuel == "diesel and electricity"
+            self.opt_scenario.fuel_type == "diesel and electricity"
             and self.moobasevehicle.veh_pt_type == gl.HEV
         ):
-            self.opt_scenario.fuel = "diesel"
+            self.opt_scenario.fuel_type = "diesel"
 
         # save baseline values for optimization diffs
-        self.opt_scenario.originalGliderPrice = self.opt_scenario.vehGliderPrice
+        self.opt_scenario.originalGliderPrice = self.opt_scenario.vehicle_glider_cost_dol
         self.opt_scenario.originalglider_kg = self.moobasevehicle.glider_kg
-        self.opt_scenario.originalIceDolPerKw = self.opt_scenario.iceDolPerKw
+        self.opt_scenario.originalIceDolPerKw = self.opt_scenario.fc_ice_cost_dol_per_kw
         self.opt_scenario.origfc_eff_map = self.moobasevehicle.fc_eff_map.copy()
         self.opt_scenario.originalcargo_kg = self.moobasevehicle.cargo_kg
         self.opt_scenario.originaldrag_coef = self.moobasevehicle.drag_coef
@@ -460,7 +460,7 @@ class T3COProblem(ElementwiseProblem):
 
         # establish payload opp cost calc module
         # TODO, this should include FCEV, and this TCO element should be True/False activated
-        # if self.opt_scenario.activate_tco_payload_cap_cost_multiplier or self.opt_scenario.activate_dwell_time_loss_factor or self.opt_scenario.activate_mr_downtime_cost:
+        # if self.opt_scenario.activate_tco_payload_cap_cost_multiplier or self.opt_scenario.activate_tco_fueling_dwell_time_cost or self.opt_scenario.activate_mr_downtime_cost:
         #     self.oppcostobj = opportunity_cost.OpportunityCost(self.opt_scenario)
 
     # --------- optimizer parameter application methods ---------
@@ -518,7 +518,7 @@ class T3COProblem(ElementwiseProblem):
         )
         # glider cost penalty due to CdA improvement
         CdA_cost = get_cost_per_CdA_delta(CdA_perc_reduction)
-        self.opt_scenario.vehGliderPrice = self.opt_scenario.vehGliderPrice + CdA_cost
+        self.opt_scenario.vehicle_glider_cost_dol = self.opt_scenario.vehicle_glider_cost_dol + CdA_cost
         # mass adjustments. Add CdA mass FIRST, if applicable. Then limit cargo_kg if overweight from battery.
         optvehicle.glider_kg = optvehicle.glider_kg + get_mass_per_CdA_delta(
             CdA_perc_reduction
@@ -546,7 +546,7 @@ class T3COProblem(ElementwiseProblem):
         if wt_delta_kg not in x_new:
             x_new = np.append(x_new, wt_delta_kg)
             y_new = np.append(y_new, wt_delta_cost_per_kg)
-        self.opt_scenario.vehGliderPrice = self.opt_scenario.vehGliderPrice + np.trapz(
+        self.opt_scenario.vehicle_glider_cost_dol = self.opt_scenario.vehicle_glider_cost_dol + np.trapz(
             y_new, x_new
         )
         optvehicle.glider_kg = optvehicle.glider_kg - wt_delta_kg
@@ -563,7 +563,7 @@ class T3COProblem(ElementwiseProblem):
         fc_eff_array = self.fc_eff_array
         cost_coeff_array = self.fc_cost_coeff_array
         d_eff_dol_per_kw = np.interp(fc_peak_eff, fc_eff_array, cost_coeff_array)
-        self.opt_scenario.iceDolPerKw = (
+        self.opt_scenario.fc_ice_cost_dol_per_kw = (
             self.opt_scenario.originalIceDolPerKw + d_eff_dol_per_kw
         )
         self.adjust_fc_peak_eff(fc_peak_eff, self.opt_scenario, optvehicle)
@@ -598,7 +598,7 @@ class T3COProblem(ElementwiseProblem):
         optvehicle = self.mooadvancedvehicle
 
         # reset glider price and weight for light-weighting and/or CdA percent improvement
-        self.opt_scenario.vehGliderPrice = self.opt_scenario.originalGliderPrice
+        self.opt_scenario.vehicle_glider_cost_dol = self.opt_scenario.originalGliderPrice
         optvehicle.glider_kg = self.opt_scenario.originalglider_kg
 
         wt_delta_perc_guess = x_dict.pop(KNOB_WTDELTAPERC, None)
@@ -673,7 +673,7 @@ class T3COProblem(ElementwiseProblem):
         if optvehicle.veh_pt_type in [gl.BEV, gl.CONV, gl.HEV]:
             range_achvd = rs_sweep["primary_fuel_range_mi"]
         elif optvehicle.veh_pt_type == gl.PHEV:
-            # need range from PHEV that is used to compare to TargetRangeMi
+            # need range from PHEV that is used to compare to target_range_mi
             range_achvd = rs_sweep["cd_aer_phev_range_mi"]
 
         if self.verbose:
@@ -728,22 +728,22 @@ class T3COProblem(ElementwiseProblem):
         # speed at grade minus target should be negative when constraint is met
         if GRADE6 in self.constr_list:
             constraint_results_G.append(
-                self.opt_scenario.minSpeed6PercentGradeIn5min - g6_acvhd
+                self.opt_scenario.min_speed_at_6pct_grade_in_5min_mph - g6_acvhd
             )
         if GRADE125 in self.constr_list:
             constraint_results_G.append(
-                self.opt_scenario.minSpeed1point25PercentGradeIn5min - g125_acvhd
+                self.opt_scenario.min_speed_at_125pct_grade_in_5min_mph - g125_acvhd
             )
         if ACCEL60 in self.constr_list:
             # zero-to-speed time should minus max allowable (target value) should
             # be negative when constraint is met
             # 9 sec achvd - 10 sec target = -1
             constraint_results_G.append(
-                z60l_acvhd - self.opt_scenario.max0to60secAtGVWR
+                z60l_acvhd - self.opt_scenario.max_time_0_to_60mph_at_gvwr_s
             )
         if ACCEL30 in self.constr_list:
             constraint_results_G.append(
-                z30l_acvhd - self.opt_scenario.max0to30secAtGVWR
+                z30l_acvhd - self.opt_scenario.max_time_0_to_30mph_at_gvwr_s
             )
 
         # calculate limiting grade/accel requirement if all constraints met
@@ -752,28 +752,28 @@ class T3COProblem(ElementwiseProblem):
             if GRADE125 in self.constr_list:
                 # todo, -abs() for all of these?
                 g125c = (
-                    -(g125_acvhd - self.opt_scenario.minSpeed1point25PercentGradeIn5min)
-                    / self.opt_scenario.minSpeed1point25PercentGradeIn5min
+                    -(g125_acvhd - self.opt_scenario.min_speed_at_125pct_grade_in_5min_mph)
+                    / self.opt_scenario.min_speed_at_125pct_grade_in_5min_mph
                 )
                 constr_perc[GRADE125] = g125c
                 self.grade_125_constraint[-1] = g125c
             if GRADE6 in self.constr_list:
                 g6c = (
-                    -(g6_acvhd - self.opt_scenario.minSpeed6PercentGradeIn5min)
-                    / self.opt_scenario.minSpeed6PercentGradeIn5min
+                    -(g6_acvhd - self.opt_scenario.min_speed_at_6pct_grade_in_5min_mph)
+                    / self.opt_scenario.min_speed_at_6pct_grade_in_5min_mph
                 )
                 constr_perc[GRADE6] = g6c
                 self.grade_6_constraint[-1] = g6c
             if ACCEL60 in self.constr_list:
                 z60c = (
-                    z60l_acvhd - self.opt_scenario.max0to60secAtGVWR
-                ) / self.opt_scenario.max0to60secAtGVWR
+                    z60l_acvhd - self.opt_scenario.max_time_0_to_60mph_at_gvwr_s
+                ) / self.opt_scenario.max_time_0_to_60mph_at_gvwr_s
                 constr_perc[ACCEL60] = z60c
                 self.accel_60_constraint[-1] = z60c
             if ACCEL30 in self.constr_list:
                 z30c = (
-                    z30l_acvhd - self.opt_scenario.max0to30secAtGVWR
-                ) / self.opt_scenario.max0to30secAtGVWR
+                    z30l_acvhd - self.opt_scenario.max_time_0_to_30mph_at_gvwr_s
+                ) / self.opt_scenario.max_time_0_to_30mph_at_gvwr_s
                 constr_perc[ACCEL30] = z30c
                 self.accel_30_constraint[-1] = z30c
 
@@ -797,16 +797,16 @@ class T3COProblem(ElementwiseProblem):
             # if you fall short of range target
             if self.range_overshoot_tol is None:
                 range_mi_cv = (
-                    self.opt_scenario.TargetRangeMi - range_achvd
+                    self.opt_scenario.target_range_mi - range_achvd
                 )  # pos return, failed
             else:
-                if range_achvd <= self.opt_scenario.TargetRangeMi:
+                if range_achvd <= self.opt_scenario.target_range_mi:
                     range_mi_cv = (
-                        self.opt_scenario.TargetRangeMi - range_achvd
+                        self.opt_scenario.target_range_mi - range_achvd
                     )  # pos return, failed
                 else:
                     range_mi_cv = range_achvd - (
-                        self.opt_scenario.TargetRangeMi * (1 + self.range_overshoot_tol)
+                        self.opt_scenario.target_range_mi * (1 + self.range_overshoot_tol)
                     )
 
             constraint_results_G.append(range_mi_cv)
@@ -956,12 +956,12 @@ class T3COProblem(ElementwiseProblem):
                 sixty_mph_times.append([z60l, x])
             for res in sixty_mph_times:
                 z60l, x = res
-                if z60l > self.opt_scenario.max0to60secAtGVWR and x < opt_res_kw:
+                if z60l > self.opt_scenario.max_time_0_to_60mph_at_gvwr_s and x < opt_res_kw:
                     largest_infeasible_60s_size = x
                     failed_60_s_time = z60l
             for res in sixty_mph_times:
                 z30l, x = res
-                if z30l > self.opt_scenario.max0to30secAtGVWR and x < opt_res_kw:
+                if z30l > self.opt_scenario.max_time_0_to_30mph_at_gvwr_s and x < opt_res_kw:
                     largest_infeasible_30s_size = x
                     failed_30_s_time = z30l
 
@@ -995,7 +995,7 @@ class T3COProblem(ElementwiseProblem):
                         min(tcos),
                         max(tcos),
                         color="orange",
-                        label=f"failed accel test 0 to 30 res: {failed_30_s_time} target: {self.opt_scenario.max0to30secAtGVWR} {knob} size: {largest_infeasible_30s_size}",
+                        label=f"failed accel test 0 to 30 res: {failed_30_s_time} target: {self.opt_scenario.max_time_0_to_30mph_at_gvwr_s} {knob} size: {largest_infeasible_30s_size}",
                     )
                 if largest_infeasible_60s_size is not None:
                     plt.vlines(
@@ -1003,7 +1003,7 @@ class T3COProblem(ElementwiseProblem):
                         min(tcos),
                         max(tcos),
                         color="yellow",
-                        label=f"failed accel test 0 to 60 res: {failed_60_s_time} target: {self.opt_scenario.max0to60secAtGVWR} {knob} size: {largest_infeasible_30s_size}",
+                        label=f"failed accel test 0 to 60 res: {failed_60_s_time} target: {self.opt_scenario.max_time_0_to_60mph_at_gvwr_s} {knob} size: {largest_infeasible_30s_size}",
                     )
             plt.legend()
             plt.savefig(resdir / f"{knob}_{label}_{ts}.png")
