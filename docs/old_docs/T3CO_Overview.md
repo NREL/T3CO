@@ -35,7 +35,7 @@ More on that below.
 
 ## T3CO Input Files <a name="T3CO_Input_Files"></a>
 
-There are two main files that form the basis of T3CO TCO calculations and T3CO optimizations. The first is the vehicle file, which is a [FASTSim input file](https://github.com/NREL/fastsim/blob/rust-port/fastsim/resources/FASTSim_py_veh_db.csv). The second type of file is the T3CO file, or Scenario File (https://github.com/NREL/T3CO-private/blob/7b56eb37bf5a57e6cd0ce761fc1708ee151c956f/docs/old_docs/ScenarioFile.md), which specifies the operating conditions that make up the TCO calculation for the vehicle. These are conditoins such as $ per kilowatt for engine or motor size, operating years, operating regions, whether to optimize the vehicle or not, range, grade and acceleration performance targets, etc.
+There are three main files that form the basis of T3CO TCO calculations and T3CO optimizations. The first is the vehicle file, which is a [FASTSim input file](https:https://docs.rs/fastsim-core/0.1.6/fastsim_core/vehicle/struct.RustVehicle.html). The second type of file is the T3CO file, or Scenario File (https://github.com/NREL/T3CO-private/blob/7b56eb37bf5a57e6cd0ce761fc1708ee151c956f/docs/old_docs/ScenarioFile.md), which specifies the operating conditions that make up the TCO calculation for the vehicle. These are conditions such as $ per kilowatt for engine or motor size, operating years, operating regions, whether to optimize the vehicle or not, range, grade and acceleration performance targets, etc. The third file is the Config File, which provides an easier way to manage analyses with minimal command line inputs, containing overrides for major scenario input parameters.
 
 ## Optimization Flow <a name="Optimization_Flow"></a>
 
