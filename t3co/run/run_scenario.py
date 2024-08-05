@@ -30,12 +30,12 @@ def set_test_weight(vehicle, scenario):
         vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
         scenario (t3co.run_scenario.Scenario): T3CO scenario object
     """
-    # June 15,16 confirming that the test weight of vehicle should be GVWRKg + GVWRCredit_kg
-    vehicle.veh_override_kg = scenario.GVWRkg + scenario.GVWRCredit_kg
+    # June 15,16 confirming that the test weight of vehicle should be GVWRKg + gvwr_credit_kg
+    vehicle.veh_override_kg = scenario.gvwr_kg + scenario.gvwr_credit_kg
     vehicle.set_veh_mass()
     assert (
         vehicle.veh_kg > 0
-    ), "vehicle weight [kg] cannot be zero, check Scenario values for GVWRkg and GVWRCredit_kg"
+    ), "vehicle weight [kg] cannot be zero, check Scenario values for gvwr_kg and gvwr_credit_kg"
 
 
 def reset_vehicle_weight(vehicle):
@@ -58,7 +58,7 @@ def limit_cargo_kg_for_moo_hev_bev(opt_scenario, mooadvancedvehicle):
         mooadvancedvehicle (fastsim.vehicle.Vehicle): pymoo optimization vehicle
     """
     # limit cargo to a value <= its original mass, decrease it if vehicle is overweight
-    max_allowable_weight_kg = opt_scenario.GVWRkg + opt_scenario.GVWRCredit_kg
+    max_allowable_weight_kg = opt_scenario.gvwr_kg + opt_scenario.gvwr_credit_kg
     cargo_limited = max_allowable_weight_kg - (
         mooadvancedvehicle.veh_kg - mooadvancedvehicle.cargo_kg
     )
@@ -95,9 +95,9 @@ def set_max_motor_kw(analysis_vehicle, scenario, max_motor_kw):
 
     # PHEV adjustment
     if analysis_vehicle.veh_pt_type == gl.PHEV:
-        if scenario.perc_motor_power_override_kw_fc_demand_on != -1:
+        if scenario.motor_power_override_kw_fc_demand_on_pct != -1:
             analysis_vehicle.kw_demand_fc_on = (
-                max_motor_kw * scenario.perc_motor_power_override_kw_fc_demand_on
+                max_motor_kw * scenario.motor_power_override_kw_fc_demand_on_pct
             )
 
     analysis_vehicle.set_derived()
@@ -179,22 +179,22 @@ class Config:
     write_tsv: bool = False
     selections: str = ""
     # selections: list = field(default_factory=list)
-    vehLifeYears: float = 0
+    vehicle_life_yr: float = 0
 
     # Fueling
-    essMaxChargePower_kW: float = 0
-    fsFillRate_kgPerMin: float = 0
-    fsFillRateGasoline_GPM: float = 0
-    fsFillRateDiesel_GPM: float = 0
+    ess_max_charging_power_kw: float = 0
+    fs_fueling_rate_kg_per_min: float = 0
+    fs_fueling_rate_gasoline_gpm: float = 0
+    fs_fueling_rate_diesel_gpm: float = 0
 
     # Optimization
     algorithms: str = ""
-    lw_curves: str = ""
-    eng_curves: str = ""
-    aero_curves: str = ""
-    lw_imp_curve: str = ""
-    eng_imp_curve: str = ""
-    aero_imp_curve: str = ""
+    lw_imp_curves: str = ""
+    eng_eff_imp_curves: str = ""
+    aero_drag_imp_curves: str = ""
+    lw_imp_curve_sel: str = ""
+    eng_eff_imp_curve_sel: str = ""
+    aero_drag_imp_curve_sel: str = ""
     skip_all_opt: bool = True
     constraint_range: bool = False
     constraint_accel: bool = False
@@ -206,8 +206,8 @@ class Config:
 
     # Opportunity Cost
     activate_tco_payload_cap_cost_multiplier: bool = False
-    activate_dwell_time_loss_factor: bool = False
-    dlf_frac_fullcharge_bounds: list = field(default_factory=list)
+    activate_tco_fueling_dwell_time_cost: bool = False
+    fdt_frac_full_charge_bounds: list = field(default_factory=list)
     activate_mr_downtime_cost: bool = False
 
     def __init__(self):
@@ -275,54 +275,54 @@ class Scenario:
     """
 
     selection: float = 0
-    driveCycle: str = ""
+    drive_cycle: str = ""
     use_config: bool = True
-    vmtReductPerYear: float = 0
-    VMT: list = field(default_factory=list)
-    constTripDistMiles: float = 0
-    vehLifeYears: float = 0
-    desiredEssReplacements: float = 0
-    discRate: float = 0
+    vmt_reduct_per_yr: float = 0
+    vmt: list = field(default_factory=list)
+    constant_trip_distance_mi: float = 0
+    vehicle_life_yr: float = 0
+    desired_ess_replacements: float = 0
+    discount_rate_pct_per_yr: float = 0
 
-    essMaxChargePower_kW: float = 0
-    essDolPerKw: float = 0
-    essDolPerKwh: float = 0
-    essPackageCost: float = 0
-    essCostRedPerYear: float = 0
-    essSalvageVal: float = 0
+    ess_max_charging_power_kw: float = 0
+    ess_cost_dol_per_kw: float = 0
+    ess_cost_dol_per_kwh: float = 0
+    ess_base_cost_dol: float = 0
+    ess_cost_reduction_dol_per_yr: float = 0
+    ess_salvage_value_dol: float = 0
     ess_charge_rate_kW: float = 0
-    peAndMcDolPerKw: float = 0
-    peAndMcBaseCost: float = 0
-    iceDolPerKw: float = 0
-    iceBaseCost: float = 0
-    fuelCellDolPerKw: float = 0
-    fuelStorDolPerKwh: float = 0
-    fuelStorH2DolPerKwh: float = 0
-    plugCost: float = 0
-    markup: float = 0
-    tax: float = 0
-    cngIceDolPerKw: float = 0
-    fuelStorCngDolPerKwh: float = 0
-    vehGliderPrice: float = 0
-    segmentName: str = ""
-    GVWRkg: float = 0
-    GVWRCredit_kg: float = 0
+    pe_mc_cost_dol_per_kw: float = 0
+    pe_mc_base_cost_dol: float = 0
+    fc_ice_cost_dol_per_kw: float = 0
+    fc_ice_base_cost_dol: float = 0
+    fc_fuelcell_cost_dol_per_kw: float = 0
+    fs_cost_dol_per_kwh: float = 0
+    fs_h2_cost_dol_per_kwh: float = 0
+    plug_base_cost_dol: float = 0
+    markup_pct: float = 0
+    tax_rate_pct: float = 0
+    fc_cng_ice_cost_dol_per_kw: float = 0
+    fs_cng_cost_dol_per_kwh: float = 0
+    vehicle_glider_cost_dol: float = 0
+    segment_name: str = ""
+    gvwr_kg: float = 0
+    gvwr_credit_kg: float = 0
     # a list of fuels, basecase fuel is singleton list
-    fuel: list = field(default_factory=list)
-    maintDolPerMi: list = field(default_factory=list)
+    fuel_type: list = field(default_factory=list)
+    maint_oper_cost_dol_per_mi: list = field(default_factory=list)
     vocation: str = ""
     vehicle_class: str = ""
-    modelYear: float = 0
+    model_year: float = 0
     region: str = ""
-    TargetRangeMi: float = 0
-    minSpeed6PercentGradeIn5min: float = 0
-    minSpeed1point25PercentGradeIn5min: float = 0
-    max0to60secAtGVWR: float = 0
-    max0to30secAtGVWR: float = 0
+    target_range_mi: float = 0
+    min_speed_at_6pct_grade_in_5min_mph: float = 0
+    min_speed_at_125pct_grade_in_5min_mph: float = 0
+    max_time_0_to_60mph_at_gvwr_s: float = 0
+    max_time_0_to_30mph_at_gvwr_s: float = 0
     # TDA vars
-    lw_imp_curve: str = ""
-    eng_imp_curve: str = ""
-    aero_imp_curve: str = ""
+    lw_imp_curve_sel: str = ""
+    eng_eff_imp_curve_sel: str = ""
+    aero_drag_imp_curve_sel: str = ""
     # computed vars
     # scenario_gge_regional_temporal_fuel_price: str = ""
     originalcargo_kg: float = (
@@ -343,20 +343,20 @@ class Scenario:
     ess_init_soc_grade: float = -1.0
     ess_init_soc_accel: float = -1.0
 
-    soc_norm_init_for_accel: float = -1
-    soc_norm_init_for_grade: float = -1
+    soc_norm_init_for_accel_pct: float = -1
+    soc_norm_init_for_grade_pct: float = -1
 
     # fuel storage
-    fsFillRateGasoline_GPM: float = 0
-    fsFillRateDiesel_GPM: float = 0
-    fsFillRate_kgPerMin: float = 0
+    fs_fueling_rate_gasoline_gpm: float = 0
+    fs_fueling_rate_diesel_gpm: float = 0
+    fs_fueling_rate_kg_per_min: float = 0
 
     ### PHEV stuff
     # UF for % of miles in charge depleting mode
     phev_utility_factor_override: float = -1
     phev_utility_factor_computed: float = -1
     # percent (fractional) of motor power for setting kw_fc_demand_on during optimization
-    perc_motor_power_override_kw_fc_demand_on: float = -1
+    motor_power_override_kw_fc_demand_on_pct: float = -1
 
     # This will be used to figure out the number of miles travelled before needing to charge
     # must be greater than 0
@@ -398,32 +398,32 @@ class Scenario:
     #
     # payload loss factor vars, PLF
     activate_tco_payload_cap_cost_multiplier: bool = True
-    plf_reference_vehicle_empty_kg: float = 0
+    plf_ref_veh_empty_mass_kg: float = 0
     plf_scenario_vehicle_empty_kg: float = 0
     plf_reference_vehicle_cargo_capacity_kg: float = 0
     plf_scenario_vehicle_cargo_capacity_kg: float = 0  # includes cargo credit kg
     estimated_lost_payload_kg: float = 0
 
     # Dwell time factors, DLF
-    activate_dwell_time_loss_factor: bool = False
+    activate_tco_fueling_dwell_time_cost: bool = False
     dlf_min_charge_time_hr: float = 0
-    dlf_cost_dolperhr: float = 0
+    fdt_oppy_cost_dol_per_hr: float = 0
     dlf_dwell_efficiency_pct: float = 0
     dlf_time_available_charge_hr: float = 0
-    dlf_fraction_dwpt: float = 0
-    dlf_avg_noncharge_per_dwell_hr: float = 0
-    dlf_frac_fullcharge_bounds: float = 0
-    dlf_free_dwell_trips: float = 0
-    dlf_freetime_dwell_hr: float = 0
+    fdt_dwpt_fraction_power_pct: float = 0
+    fdt_avg_overhead_hr_per_dwell_hr: float = 0
+    fdt_frac_full_charge_bounds: float = 0
+    fdt_num_free_dwell_trips: float = 0
+    fdt_available_freetime_hr: float = 0
     # Insurance factors
-    insurance_rates_pctPerYr: list = field(default_factory=list)
+    insurance_rates_pct_per_yr: list = field(default_factory=list)
 
     # M&R Downtime factors
     activate_mr_downtime_cost: bool = False
-    mr_regular_hrPerYear: float = 0
-    mr_unplanned_hrPerMile: list = field(default_factory=list)
-    mr_tire_life_mi: float = 0
-    mr_tire_replace_downtime_hrPerEvent: float = 0
+    mr_planned_downtime_hr_per_yr: float = 0
+    mr_unplanned_downtime_hr_per_mi: list = field(default_factory=list)
+    mr_avg_tire_life_mi: float = 0
+    mr_tire_replace_downtime_hr_per_event: float = 0
 
     def from_config(self, config: Config = None):
         """
@@ -434,13 +434,13 @@ class Scenario:
 
         """
         fields_override = [
-            "vehLifeYears",
-            "fsFillRate_kgPerMin",
-            "fsFillRateGasoline_GPM",
-            "fsFillRateDiesel_GPM",
-            "lw_imp_curve",
-            "eng_imp_curve",
-            "aero_imp_curve",
+            "vehicle_life_yr",
+            "fs_fueling_rate_kg_per_min",
+            "fs_fueling_rate_gasoline_gpm",
+            "fs_fueling_rate_diesel_gpm",
+            "lw_imp_curve_sel",
+            "eng_eff_imp_curve_sel",
+            "aero_drag_imp_curve_sel",
             "constraint_range",
             "constraint_accel",
             "constraint_grade",
@@ -449,8 +449,8 @@ class Scenario:
             "constraint_trace_miss_dist_percent_on",
             "objective_phev_minimize_fuel_use",
             "activate_tco_payload_cap_cost_multiplier",
-            "activate_dwell_time_loss_factor",
-            "dlf_frac_fullcharge_bounds",
+            "activate_tco_fueling_dwell_time_cost",
+            "fdt_frac_full_charge_bounds",
             "activate_mr_downtime_cost",
         ]
         self.fields_overriden = []
@@ -474,7 +474,7 @@ class Scenario:
 # PHEV utility methods
 def check_phev_init_socs(a_vehicle: vehicle.Vehicle, scenario: Scenario):
     """
-    This function checks that soc_norm_init_for_grade and soc_norm_init_for_accel are present only for PHEVs
+    This function checks that soc_norm_init_for_grade_pct and soc_norm_init_for_accel_pct are present only for PHEVs
 
     Args:
         a_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
@@ -482,33 +482,33 @@ def check_phev_init_socs(a_vehicle: vehicle.Vehicle, scenario: Scenario):
     """
     # these override ess_init_soc_grade and ess_init_soc_accel
     # these should ONLY be used for PHEV, for now, until discussed for use for HEV, BEV
-    # init_soc = min_soc + (soc_norm_init_for_accel * (max_soc - min_soc))
+    # init_soc = min_soc + (soc_norm_init_for_accel_pct * (max_soc - min_soc))
     if (
-        np.isnan(scenario.soc_norm_init_for_grade) == False
-        and scenario.soc_norm_init_for_grade != -1
+        np.isnan(scenario.soc_norm_init_for_grade_pct) == False
+        and scenario.soc_norm_init_for_grade_pct != -1
     ):
         assert (
             a_vehicle.veh_pt_type == gl.PHEV
-        ), "soc_norm_init_for_grade only available for PHEVs"
+        ), "soc_norm_init_for_grade_pct only available for PHEVs"
         assert (
             scenario.ess_init_soc_grade == -1
-        ), f"INPUT ERROR, user specifed ess_init_soc_grade {scenario.ess_init_soc_grade}, & soc_norm_init_for_grade {scenario.soc_norm_init_for_grade} for PHEV; the question of which one to use is ambiguous"
+        ), f"INPUT ERROR, user specifed ess_init_soc_grade {scenario.ess_init_soc_grade}, & soc_norm_init_for_grade_pct {scenario.soc_norm_init_for_grade_pct} for PHEV; the question of which one to use is ambiguous"
     if (
-        np.isnan(scenario.soc_norm_init_for_accel) == False
-        and scenario.soc_norm_init_for_accel != -1
+        np.isnan(scenario.soc_norm_init_for_accel_pct) == False
+        and scenario.soc_norm_init_for_accel_pct != -1
     ):
         assert (
             a_vehicle.veh_pt_type == gl.PHEV
-        ), "soc_norm_init_for_accel only available for PHEVs"
+        ), "soc_norm_init_for_accel_pct only available for PHEVs"
         assert (
             scenario.ess_init_soc_accel == -1
-        ), f"INPUT ERROR, user specifed ess_init_soc_accel {scenario.ess_init_soc_accel}, & soc_norm_init_for_accel {scenario.soc_norm_init_for_accel} for PHEV; the question of which one to use is ambiguous"
+        ), f"INPUT ERROR, user specifed ess_init_soc_accel {scenario.ess_init_soc_accel}, & soc_norm_init_for_accel_pct {scenario.soc_norm_init_for_accel_pct} for PHEV; the question of which one to use is ambiguous"
 
 
 def get_phev_util_factor(scenario, v, mpgge):
     """
     This function gets the PHEV utility factor derived from the computed range of the
-    vehicle and the operational day range computed from shifts per year and the first VMT year
+    vehicle and the operational day range computed from shifts per year and the first vmt year
 
     Args:
         scenario (Scenario): T3CO scenario object
@@ -526,7 +526,7 @@ def get_phev_util_factor(scenario, v, mpgge):
     cd_range_mi = fueleconomy.get_range_mi(mpgge, v, scenario)["cd_aer_phev_range_mi"]
 
     if uf == -1:
-        shift_range_mi = scenario.VMT[0] / scenario.shifts_per_year
+        shift_range_mi = scenario.vmt[0] / scenario.shifts_per_year
         scenario.phev_utility_factor_computed = round(
             min(shift_range_mi, cd_range_mi) / shift_range_mi, 3
         )
@@ -694,27 +694,27 @@ def load_scenario(veh_no, scenario_inputs_path, a_vehicle=None, config=None):
         del scenario_dict["scenario_name"]
 
     # handle PHEV fuels list and UF list, convert to lists
-    fuels = scenario_dict["fuel"]
+    fuels = scenario_dict["fuel_type"]
     if "[" in fuels and "]" in fuels:
         fuels = ast.literal_eval(
             fuels
         )  # PHEV ["CD electricity", "CD diesel", "CS diesel"]
     else:
         fuels = [fuels]
-    scenario_dict["fuel"] = fuels
+    scenario_dict["fuel_type"] = fuels
 
-    # handle VMT, turn into list
-    scenario_dict["VMT"] = ast.literal_eval(scenario_dict["VMT"])
-    scenario_dict["mr_unplanned_hrPerMile"] = ast.literal_eval(
-        scenario_dict["mr_unplanned_hrPerMile"]
+    # handle vmt, turn into list
+    scenario_dict["vmt"] = ast.literal_eval(scenario_dict["vmt"])
+    scenario_dict["mr_unplanned_downtime_hr_per_mi"] = ast.literal_eval(
+        scenario_dict["mr_unplanned_downtime_hr_per_mi"]
     )
     # if config: scenario_dict['config'] = config
     scenario = Scenario(**scenario_dict)
     scenario = scenario.from_config(config)
 
     # convert insurance rates string into float list
-    scenario.insurance_rates_pctPerYr = list(
-        np.float_(scenario.insurance_rates_pctPerYr.strip(" ][").split(","))
+    scenario.insurance_rates_pct_per_yr = list(
+        np.float_(scenario.insurance_rates_pct_per_yr.strip(" ][").split(","))
     )
 
     # validate some inputs, assign as -1 if not provided by user in input file
@@ -722,10 +722,10 @@ def load_scenario(veh_no, scenario_inputs_path, a_vehicle=None, config=None):
         scenario.ess_init_soc_grade = -1
     if np.isnan(scenario.ess_init_soc_accel):
         scenario.ess_init_soc_accel = -1
-    if np.isnan(scenario.soc_norm_init_for_accel):
-        scenario.soc_norm_init_for_accel = -1
-    if np.isnan(scenario.soc_norm_init_for_grade):
-        scenario.soc_norm_init_for_grade = -1
+    if np.isnan(scenario.soc_norm_init_for_accel_pct):
+        scenario.soc_norm_init_for_accel_pct = -1
+    if np.isnan(scenario.soc_norm_init_for_grade_pct):
+        scenario.soc_norm_init_for_grade_pct = -1
 
     # PHEV settings and checks
     if (
@@ -733,25 +733,25 @@ def load_scenario(veh_no, scenario_inputs_path, a_vehicle=None, config=None):
         or scenario.phev_utility_factor_override is None
     ):
         scenario.phev_utility_factor_override = -1
-        # we need non-None VMT and shifts_per_year since there is no phev_utility_factor_override provided
+        # we need non-None vmt and shifts_per_year since there is no phev_utility_factor_override provided
         assert (
             scenario.shifts_per_year not in [False, None, np.nan]
         ), f"invalid shifts_per_year value {scenario.shifts_per_year}, need a valid shifts_per_year (positive integer) value to compute utility factor since there is no phev_utility_factor_override provided"
         assert (
-            scenario.VMT[0] is not None
-        ), "we need non-None VMT since there is no phev_utility_factor_override provided"
+            scenario.vmt[0] is not None
+        ), "we need non-None vmt since there is no phev_utility_factor_override provided"
     if (
-        np.isnan(scenario.perc_motor_power_override_kw_fc_demand_on)
-        or scenario.perc_motor_power_override_kw_fc_demand_on is None
+        np.isnan(scenario.motor_power_override_kw_fc_demand_on_pct)
+        or scenario.motor_power_override_kw_fc_demand_on_pct is None
     ):
-        scenario.perc_motor_power_override_kw_fc_demand_on = -1
-    elif scenario.perc_motor_power_override_kw_fc_demand_on != -1:
+        scenario.motor_power_override_kw_fc_demand_on_pct = -1
+    elif scenario.motor_power_override_kw_fc_demand_on_pct != -1:
         assert (
-            scenario.perc_motor_power_override_kw_fc_demand_on < 1
-            and scenario.perc_motor_power_override_kw_fc_demand_on > 0
-        ), f"perc_motor_power_override_kw_fc_demand_on {scenario.perc_motor_power_override_kw_fc_demand_on}"
+            scenario.motor_power_override_kw_fc_demand_on_pct < 1
+            and scenario.motor_power_override_kw_fc_demand_on_pct > 0
+        ), f"motor_power_override_kw_fc_demand_on_pct {scenario.motor_power_override_kw_fc_demand_on_pct}"
     if a_vehicle is not None and a_vehicle.veh_pt_type == gl.PHEV:
-        if scenario.perc_motor_power_override_kw_fc_demand_on != 1:
+        if scenario.motor_power_override_kw_fc_demand_on_pct != 1:
             assert (
                 a_vehicle.kw_demand_fc_on != None
                 and np.isnan(a_vehicle.kw_demand_fc_on) != True
@@ -769,7 +769,7 @@ def load_design_cycle_from_scenario(
     """
     This helper method loads the design cycle used for mpgge and range determination.
     It can also be used standalone to get cycles not in standard gl.OPTIMIZATION_DRIVE_CYCLES location,
-    but still needs cycle name from scenario object, carried in scenario.driveCycle.
+    but still needs cycle name from scenario object, carried in scenario.drive_cycle.
     If the drive cycles are a list of tuples, handle accordingly with eval.
 
     Args:
@@ -779,12 +779,12 @@ def load_design_cycle_from_scenario(
     Returns:
         range_cyc (fastsim.cycle.Cycle): FASTSim cycle object for current Scenario object
     """
-    # determine if scenario.driveCycle is a simple string path or a list of tuples as a string
-    sdc = scenario.driveCycle
+    # determine if scenario.drive_cycle is a simple string path or a list of tuples as a string
+    sdc = scenario.drive_cycle
     if "[" in sdc and "]" in sdc and "(" in sdc and ")" in sdc:
-        scenario.driveCycle = ast.literal_eval(sdc)
+        scenario.drive_cycle = ast.literal_eval(sdc)
         range_cyc = []
-        for dc_weight in scenario.driveCycle:
+        for dc_weight in scenario.drive_cycle:
             cycle_file_name = Path(dc_weight[0]).name
             dc = load_design_cycle_from_path(
                 cyc_file_path=Path(cyc_file_path) / dc_weight[0]
@@ -793,9 +793,9 @@ def load_design_cycle_from_scenario(
             weight = dc_weight[1]
             range_cyc.append((dc, weight))
     else:
-        cycle_file_name = Path(scenario.driveCycle).name
+        cycle_file_name = Path(scenario.drive_cycle).name
         range_cyc = load_design_cycle_from_path(
-            cyc_file_path=Path(cyc_file_path) / scenario.driveCycle
+            cyc_file_path=Path(cyc_file_path) / scenario.drive_cycle
         )
         range_cyc.name = cycle_file_name
 
@@ -901,13 +901,13 @@ def vehicle_scenario_sweep(vehicle, scenario, range_cyc, verbose=False, **kwargs
 
     check_phev_init_socs(vehicle, scenario)
 
-    if scenario.soc_norm_init_for_grade != -1:
+    if scenario.soc_norm_init_for_grade_pct != -1:
         ess_init_soc_grade = vehicle.min_soc + (
-            scenario.soc_norm_init_for_grade * (vehicle.max_soc - vehicle.min_soc)
+            scenario.soc_norm_init_for_grade_pct * (vehicle.max_soc - vehicle.min_soc)
         )
-    if scenario.soc_norm_init_for_accel != -1:
+    if scenario.soc_norm_init_for_accel_pct != -1:
         ess_init_soc_accel = vehicle.min_soc + (
-            scenario.soc_norm_init_for_accel * (vehicle.max_soc - vehicle.min_soc)
+            scenario.soc_norm_init_for_accel_pct * (vehicle.max_soc - vehicle.min_soc)
         )
 
     if get_accel:

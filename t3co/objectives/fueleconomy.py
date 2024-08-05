@@ -254,7 +254,7 @@ def get_mpgge(eff_range_cyc:fastsim.cycle.Cycle | List[Tuple[fastsim.cycle.Cycle
             # FASTSim BEV and PHEV have two different fuel efficiencies, the mpgge from battery and the mpgge from grid
             # grid_mpgge is really just mpgge multiplied by the charger efficiency fraction
             # grid_mpgge is used for fuel cost calculations
-            # TCO fuel cost = VMT / mpgge * $/gge
+            # TCO fuel cost = vmt / mpgge * $/gge
             # for CONV and HEV
             # this is on an energy basis (mpgge has no electric component if the vehicle is CONV)
             # if vehicle is HEV mpgge = mpgge_from_fs_kwh_used + mpgge_from_battery_kwh_used

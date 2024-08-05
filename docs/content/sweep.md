@@ -35,7 +35,7 @@ This function saves the intermediary files as tsv
 #### get\_knobs\_bounds\_curves
 
 ```python
-def get_knobs_bounds_curves(selection, vpttype, sdf, lw_curves, aero_curves,
+def get_knobs_bounds_curves(selection, vpttype, sdf, lw_imp_curves, aero_drag_imp_curves,
                             eng_eff_curves)
 ```
 
@@ -46,8 +46,8 @@ This function fetches the knobs and constraints for running the optimization for
 - `selection` _float_ - selection number
 - `vpttype` _str_ - vehicle powertrain type = veh_pt_type
 - `sdf` _DataFrame_ - scenario dataframe
-- `lw_curves` _DataFrame_ - light weighting curve dataframe
-- `aero_curves` _DataFrame_ - aero drag curve dataframe
+- `lw_imp_curves` _DataFrame_ - light weighting curve dataframe
+- `aero_drag_imp_curves` _DataFrame_ - aero drag curve dataframe
 - `eng_eff_curves` _DataFrame_ - engine efficiency curve dataframe
   
 
@@ -84,8 +84,8 @@ This function appends to list of necessary variables based on the constraints an
 
 ```python
 def run_moo(sel, sdf, optpt, algo, skip_opt, pop_size, n_max_gen, n_last,
-            nth_gen, x_tol, verbose, f_tol, resdir, lw_curves, aero_curves,
-            eng_curves, config, **kwargs)
+            nth_gen, x_tol, verbose, f_tol, resdir, lw_imp_curves, aero_drag_imp_curves,
+            eng_eff_imp_curves, config, **kwargs)
 ```
 
 This function calls get_objectives_constraints and get_knobs_bounds_curves, and then calls run_optimization to perform the multiobjective optimization
@@ -105,9 +105,9 @@ This function calls get_objectives_constraints and get_knobs_bounds_curves, and 
 - `verbose` _book_ - if selected, function prints the optimization process
 - `f_tol` _float_ - tolerance in objective space
 - `resdir` _str_ - results directory
-- `lw_curves` _DataFrame_ - light weighting curves dataframe
-- `aero_curves` _DataFrame_ - aero drag curves dataframe
-- `eng_curves` _DataFrame_ - engine efficiency curve dataframe
+- `lw_imp_curves` _DataFrame_ - light weighting curves dataframe
+- `aero_drag_imp_curves` _DataFrame_ - aero drag curves dataframe
+- `eng_eff_imp_curves` _DataFrame_ - engine efficiency curve dataframe
 - `config` _Config_ - Config class object
   
 
@@ -138,8 +138,8 @@ This function contains assert statements that make sure input vehicle and scenar
 #### run\_vehicle\_scenarios
 
 ```python
-def run_vehicle_scenarios(vehicles, scenarios, eng_curves_p, lw_curves_p,
-                          aero_curves_p, config, **kwargs)
+def run_vehicle_scenarios(vehicles, scenarios, eng_eff_imp_curves_p, lw_imp_curves_p,
+                          aero_drag_imp_curves_p, config, **kwargs)
 ```
 
 This is the main function that runs T3CO for all the selections input
@@ -148,9 +148,9 @@ This is the main function that runs T3CO for all the selections input
 
 - `vehicles` _str_ - path of vehicle input file
 - `scenarios` _str_ - path of scenarios input file
-- `eng_curves_p` _str_ - path of engine efficiency curve file
-- `lw_curves_p` _str_ - path of light weighting curve file
-- `aero_curves_p` _str_ - path of aero drag curve file
+- `eng_eff_imp_curves_p` _str_ - path of engine efficiency curve file
+- `lw_imp_curves_p` _str_ - path of light weighting curve file
+- `aero_drag_imp_curves_p` _str_ - path of aero drag curve file
 - `config` _Config_ - Config object containing analysis attributes and scenario attribute overrides
   
 

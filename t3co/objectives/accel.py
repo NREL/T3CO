@@ -19,7 +19,7 @@ def get_accel(
     ess_init_soc=None,
 ):
     """
-    This function runs a simdrive for getting 0-to-60 and 0-30 mph time with fully laden weight at GVWR (plus GVWRCredit_kg?)
+    This function runs a simdrive for getting 0-to-60 and 0-30 mph time with fully laden weight at GVWR (plus gvwr_credit_kg?)
 
 
     Args:

@@ -225,7 +225,7 @@ This helper method generates a dataframe of fuel operating costs in Cost [$/gge]
 def fill_annual_tsv(scenario)
 ```
 
-This helper method generates a dataframe of annual vehicle miles traveled (VMT) - Annual Travel [mi/yr]
+This helper method generates a dataframe of annual vehicle miles traveled (vmt) - Annual Travel [mi/yr]
 
 **Arguments**:
 

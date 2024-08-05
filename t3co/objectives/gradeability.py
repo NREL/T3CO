@@ -65,16 +65,16 @@ def get_gradeability(
         first_time_step_mph = 0
         if scenario is not None:
             if target_grade == SIX_GRADE:
-                first_time_step_mph = scenario.minSpeed6PercentGradeIn5min
+                first_time_step_mph = scenario.min_speed_at_6pct_grade_in_5min_mph
                 if verbose:
                     print(
-                        f"f'{Path(__file__).name}:: scenario.minSpeed6PercentGradeIn5min: {scenario.minSpeed6PercentGradeIn5min}"
+                        f"f'{Path(__file__).name}:: scenario.min_speed_at_6pct_grade_in_5min_mph: {scenario.min_speed_at_6pct_grade_in_5min_mph}"
                     )
             if target_grade == ONE_POINT_TWENTY_FIVE_GRADE:
-                first_time_step_mph = scenario.minSpeed1point25PercentGradeIn5min
+                first_time_step_mph = scenario.min_speed_at_125pct_grade_in_5min_mph
                 if verbose:
                     print(
-                        f"f'{Path(__file__).name}:: scenario.minSpeed1point25PercentGradeIn5min: {scenario.minSpeed1point25PercentGradeIn5min}"
+                        f"f'{Path(__file__).name}:: scenario.min_speed_at_125pct_grade_in_5min_mph: {scenario.min_speed_at_125pct_grade_in_5min_mph}"
                     )
         if verbose:
             print(

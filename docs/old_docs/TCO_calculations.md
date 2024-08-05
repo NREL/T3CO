@@ -17,7 +17,7 @@
 The Total Cost of Ownership is a core metric calculated by T3CO. It is made up of a few parts. The first is **MSRP**, or the purchase cost of the vehicle. Then there is fuel cost for each operational year. Then there are "other costs" as well as Payload Opportunity Costs.
 
 ## Vehicle MSRP <a name="MSRP"></a>
-The vehicle MSRP is composed of a glider cost, powertrain costs from engine and/or motor, energy storage for liquid fuel or battery pack, the plug for PHEVs and EVs, the battery replacement cost (rarely used), & the purchase tax. 
+The vehicle MSRP is composed of a glider cost, powertrain costs from engine and/or motor, energy storage for liquid fuel or battery pack, the plug for PHEVs and EVs, the battery replacement cost (rarely used), & the Purchase tax. 
 
 **example**
 
@@ -38,89 +38,89 @@ The Glider and Plug costs are straight inputs from the T3CO scenario file. Batte
 ##### MSRP Inputs
 |column name|example value| bounds |
 |---|----|----|
-|`essDolPerKw`|`0`| `float` |
-|`essDolPerKwh`|`85`| `float`|
-|`essPackageCost`|`0`| `float`|
-|`essCostRedPerYear`|`0`| `float`|
-|`essSalvageVal`|`0`| `float`|
-|`peAndMcDolPerKw`|`11`| `float`|
-|`peAndMcBaseCost`|`350`| `float`|
-|`iceDolPerKw`|`50`| `float`|
-|`iceBaseCost`|`6250`| `float`|
-|`fuelCellDolPerKw`|`85`| `float`|
-|`fuelStorDolPerKwh`|`0.07`| `float`|
-|`fuelStorH2DolPerKwh`|`9.5`| `float`|
-|`plugCost`|`500`| `float`|
-|`markup`|`1.2`| `float`|
-|`tax`|`0.035`| `float`|
-|`cngIceDolPerKw`|`55`|`float` |
-|`fuelStorCngDolPerKwh`|`7.467735503`|`float` |
-|`vehGliderPrice`|`112759`| `float`|
+|`ess_cost_dol_per_kw`|`0`| `float` |
+|`ess_cost_dol_per_kwh`|`85`| `float`|
+|`ess_base_cost_dol`|`0`| `float`|
+|`ess_cost_reduction_dol_per_yr`|`0`| `float`|
+|`ess_salvage_value_dol`|`0`| `float`|
+|`pe_mc_cost_dol_per_kw`|`11`| `float`|
+|`pe_mc_base_cost_dol`|`350`| `float`|
+|`fc_ice_cost_dol_per_kw`|`50`| `float`|
+|`fc_ice_base_cost_dol`|`6250`| `float`|
+|`fc_fuelcell_cost_dol_per_kw`|`85`| `float`|
+|`fs_cost_dol_per_kwh`|`0.07`| `float`|
+|`fs_h2_cost_dol_per_kwh`|`9.5`| `float`|
+|`plug_base_cost_dol`|`500`| `float`|
+|`markup_pct`|`1.2`| `float`|
+|`tax_rate_pct`|`0.035`| `float`|
+|`fc_cng_ice_cost_dol_per_kw`|`55`|`float` |
+|`fs_cng_cost_dol_per_kwh`|`7.467735503`|`float` |
+|`vehicle_glider_cost_dol`|`112759`| `float`|
 ##### MSRP Formula
 
-    vehGliderPrice = scenario.vehGliderPrice
+    vehicle_glider_cost_dol = scenario.vehicle_glider_cost_dol
     
     # fcPrice
     if veh.veh_pt_type == gl.BEV or veh.fc_max_kw == 0:
         fcPrice = 0
 
     elif veh.fc_eff_type == 'H2FC':
-        fcPrice = scenario.fuelCellDolPerKw * fc_max_kw
+        fcPrice = scenario.fc_fuelcell_cost_dol_per_kw * fc_max_kw
 
     elif veh.fc_eff_type == 9:
-        fcPrice = ((scenario.cngIceDolPerKw * fc_max_kw) + iceBaseCost)
+        fcPrice = ((scenario.fc_cng_ice_cost_dol_per_kw * fc_max_kw) + fc_ice_base_cost_dol)
 
     else:
-        fcPrice = ((iceDolPerKw * fc_max_kw) + iceBaseCost)
-    fcPrice *= markup
+        fcPrice = ((fc_ice_cost_dol_per_kw * fc_max_kw) + fc_ice_base_cost_dol)
+    fcPrice *= markup_pct
     
     # fuelStorPrice
     if veh.veh_pt_type == gl.BEV:
         fuelStorPrice = 0
-    elif veh.veh_pt_type == gl.HEV and scenario.fuel == 'hydrogen':
-        fuelStorPrice = scenario.fuelStorH2DolPerKwh * veh.fs_kwh
-    elif veh.veh_pt_type in [gl.CONV, gl.HEV, gl.PHEV] and scenario.fuel == 'cng':
-        fuelStorPrice = scenario.fuelStorCngDolPerKwh * veh.fs_kwh
+    elif veh.veh_pt_type == gl.HEV and scenario.fuel_type == 'hydrogen':
+        fuelStorPrice = scenario.fs_h2_cost_dol_per_kwh * veh.fs_kwh
+    elif veh.veh_pt_type in [gl.CONV, gl.HEV, gl.PHEV] and scenario.fuel_type == 'cng':
+        fuelStorPrice = scenario.fs_cng_cost_dol_per_kwh * veh.fs_kwh
     elif veh.veh_pt_type in [gl.CONV, gl.HEV, gl.PHEV]:
-        fuelStorPrice = scenario.fuelStorDolPerKwh * veh.fs_kwh
-    fuelStorPrice *= markup
+        fuelStorPrice = scenario.fs_cost_dol_per_kwh * veh.fs_kwh
+    fuelStorPrice *= markup_pct
 
     # calculate mcPrice
     mc_max_kw = veh.mc_max_kw
     if mc_max_kw == 0:
         mcPrice = 0
     else:
-        mcPrice = (peAndMcBaseCost + (peAndMcDolPerKw * mc_max_kw))
-    mc_max_kw *= markup
+        mcPrice = (pe_mc_base_cost_dol + (pe_mc_cost_dol_per_kw * mc_max_kw))
+    mc_max_kw *= markup_pct
 
     # calc ESS price
     if veh.ess_max_kwh == 0:
         essPrice = 0
     else:
-        essPrice = (essPackageCost + (essDolPerKwh * veh.ess_max_kwh))
-    essPrice *= markup
+        essPrice = (ess_base_cost_dol + (ess_cost_dol_per_kwh * veh.ess_max_kwh))
+    essPrice *= markup_pct
 
     # calc plugPrice
     if veh_pt_type == gl.PHEV or veh_pt_type == gl.BEV or (veh_pt_type == gl.HEV and chargingOn):
         plugPrice = plugPrice
     else:
         plugPrice = 0
-    plugPrice *= markup
+    plugPrice *= markup_pct
 
     if veh_pt_type == gl.CONV:
-        msrp = vehGliderPrice + fuelStorPrice + fcPrice
+        msrp = vehicle_glider_cost_dol + fuelStorPrice + fcPrice
     # could be HEV or FCEV
     elif veh_pt_type == gl.HEV:
-        msrp = vehGliderPrice + fuelStorPrice + fcPrice + mcPrice + essPrice
+        msrp = vehicle_glider_cost_dol + fuelStorPrice + fcPrice + mcPrice + essPrice
     elif veh_pt_type == gl.PHEV:
-        msrp = vehGliderPrice + fuelStorPrice + fcPrice + mcPrice + essPrice + plugPrice
+        msrp = vehicle_glider_cost_dol + fuelStorPrice + fcPrice + mcPrice + essPrice + plugPrice
     elif veh_pt_type == gl.BEV:
-        msrp = vehGliderPrice + mcPrice + essPrice + plugPrice
+        msrp = vehicle_glider_cost_dol + mcPrice + essPrice + plugPrice
 
-    pTaxCost = tax * msrp
+    pTaxCost = tax_rate_pct * msrp
 
     cost_set = {
-        "Glider": vehGliderPrice,
+        "Glider": vehicle_glider_cost_dol,
         "Fuel converter": fcPrice,
         "Fuel Storage": fuelStorPrice,
         "Motor & power electronics": mcPrice,
@@ -158,7 +158,7 @@ This table is eventually joined in the Stock Model Code with other tables. For e
 |2025|Diesel|Fuel| 4.29 |
 |2026|Diesel|Fuel| 4.35 |
 
-Then there is the annual travel table ([code](https://github.com/NREL/T3CO-private/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L367)), made up from `VMT` in the Scenario file 
+Then there is the annual travel table ([code](https://github.com/NREL/T3CO-private/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L367)), made up from `vmt` in the Scenario file 
 
 |Age [yr]|Annual Travel [mi/yr]|
 |----|----|
@@ -192,7 +192,7 @@ These joins happen in the [Stock Model Code](https://github.com/NREL/T3CO-privat
 
 ## Other Costs <a name="othercosts"></a>
 
-There are other costs for vehicles during their TCO operational period ([code](https://github.com/NREL/T3CO-private/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L263)). These costs are, but not limited to, maintenance costs  `$/mile`, for both conventional and advanced powertrains, denoted from the Scenario input file as `maintDolPerMi` provided as a list across the vehicle life
+There are other costs for vehicles during their TCO operational period ([code](https://github.com/NREL/T3CO-private/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L263)). These costs are, but not limited to, maintenance costs  `$/mile`, for both conventional and advanced powertrains, denoted from the Scenario input file as `maint_oper_cost_dol_per_mi` provided as a list across the vehicle life
 
 There is also `payload opportunity cost` (under development), as well as optional `time opportunity costs` and `labor opportunity costs`. Also under development.
 

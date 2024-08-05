@@ -169,7 +169,7 @@ t2vehicle="""
     'fs_mass_kg': 0.0,
     'mpgge': 13.330364402123372,
     'is_base': False,
-    'fuel': 'electricity',
+    'fuel_type': 'electricity',
 }
 """
 

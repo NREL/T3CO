@@ -19,9 +19,9 @@
   - `if optimizing`
     - `run_moo(selection int, scenarios DataFrame, *args, **kwargs)` [link](https://github.com/NREL/T3CO-private/blob/731d07d9b2b25f6faff583348467fb79c0d5ccf6/run_scripts/sweep.py#L187)
     - get [get knobs-bounds & curves](https://github.com/NREL/T3CO-private/blob/4a91dc12add268faaa08a092ef6c8f010cb99f86/run_scripts/sweep.py#L88)
-      - note: optimization parameters (knobs) are implicitly activated by their minimum and maximum bounds being populated. See [Scenario inputs](./ScenarioFile.md). For example, if the row for your selection has populated values in columns `knob_min_ess_kwh` and `knob_max_ess_kwh` then that tells the optimizer that battery size, `ess_kwh`, is an optimization parameter (knob). The curves work the same way, for example `eng_imp_curve` being populated means that the opimization parameter for engine efficiency should be used.
+      - note: optimization parameters (knobs) are implicitly activated by their minimum and maximum bounds being populated. See [Scenario inputs](./ScenarioFile.md). For example, if the row for your selection has populated values in columns `knob_min_ess_kwh` and `knob_max_ess_kwh` then that tells the optimizer that battery size, `ess_kwh`, is an optimization parameter (knob). The curves work the same way, for example `eng_eff_imp_curve_sel` being populated means that the opimization parameter for engine efficiency should be used.
     - get [objectives and constraints](https://github.com/NREL/T3CO-private/blob/4a91dc12add268faaa08a092ef6c8f010cb99f86/run_scripts/sweep.py#L170)
-      - note: unlike knobs, constraints need to be explicitly turned on with `True`. For example: The Scenario file will have `constraint_range` value of `True`, and by necessity the target range must be specified as well, in `TargetRangeMi` 
+      - note: unlike knobs, constraints need to be explicitly turned on with `True`. For example: The Scenario file will have `constraint_range` value of `True`, and by necessity the target range must be specified as well, in `target_range_mi` 
     - begin optimization [loop](https://github.com/NREL/T3CO-private/blob/731d07d9b2b25f6faff583348467fb79c0d5ccf6/t3co/moopack/moo.py#L361)
 
 

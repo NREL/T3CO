@@ -56,9 +56,9 @@ if __name__ == '__main__':
             set_max_battery_kwh(sweep_vehicle, kwh)
             set_max_motor_kw(sweep_vehicle, motor)
             limit_cargo_kg_for_moo_hev_bev(problem.opt_scenario, sweep_vehicle)
-            problem.opt_scenario.fuel = "electricity"
+            problem.opt_scenario.fuel_type = "electricity"
         else:
-            problem.opt_scenario.fuel = "diesel"
+            problem.opt_scenario.fuel_type = "diesel"
             sweep_vehicle = problem.moobasevehicle
         outdf = rerun(sweep_vehicle, vocation, problem.opt_scenario, use_jit=True)
         outdf["CONV"] = conv
@@ -92,9 +92,9 @@ if __name__ == '__main__':
     # pd.DataFrame(asdict(scenario), index=[0]).to_csv(gl.T2COBENCHMARKDATADIR / "t3co_benchmark_scenario.csv")
     sweep_df = pd.concat(sweep_results)
     sweep_df.sort_values(inplace=True, by='tot_cost')
-    sweep_df['GVWRLb'] = gl.kg_to_lbs(scenario.GVWRkg)
-    sweep_df['GVWRCreditLb'] = gl.kg_to_lbs(scenario.GVWRCredit_kg)
-    sweep_df['GVWRMaxLb'] = gl.kg_to_lbs(scenario.GVWRCredit_kg) + gl.kg_to_lbs(scenario.GVWRkg)
+    sweep_df['GVWRLb'] = gl.kg_to_lbs(scenario.gvwr_kg)
+    sweep_df['GVWRCreditLb'] = gl.kg_to_lbs(scenario.gvwr_credit_kg)
+    sweep_df['GVWRMaxLb'] = gl.kg_to_lbs(scenario.gvwr_credit_kg) + gl.kg_to_lbs(scenario.gvwr_kg)
     sweep_df.to_csv(gl.T2COBENCHMARKDATADIR / "t2co_moo_sweep_solution_set.csv")
 
 

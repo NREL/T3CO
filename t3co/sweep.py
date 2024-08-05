@@ -136,7 +136,7 @@ def save_tco_files(tco_files, resdir, scenario_name, sel, ts):
 
 
 def get_knobs_bounds_curves(
-    selection, vpttype, sdf, lw_curves, aero_curves, eng_eff_curves
+    selection, vpttype, sdf, lw_imp_curves, aero_drag_imp_curves, eng_eff_curves
 ):
     """
     This function fetches the knobs and constraints for running the optimization for a given selection
@@ -145,16 +145,16 @@ def get_knobs_bounds_curves(
         selection (float): selection number
         vpttype (str): vehicle powertrain type = veh_pt_type
         sdf (DataFrame): scenario dataframe
-        lw_curves (DataFrame): light weighting curve dataframe
-        aero_curves (DataFrame): aero drag curve dataframe
+        lw_imp_curves (DataFrame): light weighting curve dataframe
+        aero_drag_imp_curves (DataFrame): aero drag curve dataframe
         eng_eff_curves (DataFrame): engine efficiency curve dataframe
 
     Returns:
         knobs_bounds (dict): dict of knobs and bounds
         curves (dict): dict of lw, aero, and engine efficiency curve parameters
     """
-    lw_curves_file = lw_curves.set_index("name")
-    aero_curves_file = aero_curves.set_index("name")
+    lw_imp_curves_file = lw_imp_curves.set_index("name")
+    aero_drag_imp_curves_file = aero_drag_imp_curves.set_index("name")
     eng_eff_curves_file = eng_eff_curves.set_index("name")
     sd = dict(sdf.loc[selection, :])
     curves = {}
@@ -167,18 +167,18 @@ def get_knobs_bounds_curves(
     }
 
     if (
-        "lw_imp_curve" in sd
-        and sd["lw_imp_curve"]
-        and not pd.isnull(sd["lw_imp_curve"])
+        "lw_imp_curve_sel" in sd
+        and sd["lw_imp_curve_sel"]
+        and not pd.isnull(sd["lw_imp_curve_sel"])
     ):
-        lw_curve_selection = sd["lw_imp_curve"]
-        ltwt_cost_curve = lw_curves_file.loc["ltwt_cost", lw_curve_selection]
-        ltwt_pct_curve = lw_curves_file.loc["ltwt_pct", lw_curve_selection]
+        lw_curve_selection = sd["lw_imp_curve_sel"]
+        ltwt_cost_curve = lw_imp_curves_file.loc["ltwt_cost", lw_curve_selection]
+        ltwt_pct_curve = lw_imp_curves_file.loc["ltwt_pct", lw_curve_selection]
         wt_delta_perc_knob_max = float(
-            lw_curves_file.loc["wt_delta_perc_knob_max", lw_curve_selection]
+            lw_imp_curves_file.loc["wt_delta_perc_knob_max", lw_curve_selection]
         )
         wt_delta_perc_knob_min = float(
-            lw_curves_file.loc["wt_delta_perc_knob_min", lw_curve_selection]
+            lw_imp_curves_file.loc["wt_delta_perc_knob_min", lw_curve_selection]
         )
         assert (
             wt_delta_perc_knob_max <= 1
@@ -193,26 +193,26 @@ def get_knobs_bounds_curves(
         )
 
     if (
-        "aero_imp_curve" in sd
-        and sd["aero_imp_curve"]
-        and not pd.isnull(sd["aero_imp_curve"])
+        "aero_drag_imp_curve_sel" in sd
+        and sd["aero_drag_imp_curve_sel"]
+        and not pd.isnull(sd["aero_drag_imp_curve_sel"])
     ):
-        cda_curve_selection = sd["aero_imp_curve"]
+        cda_curve_selection = sd["aero_drag_imp_curve_sel"]
         CdA_perc_imp_at_which_wt_penalty_maxes_out = float(
-            aero_curves_file.loc[
+            aero_drag_imp_curves_file.loc[
                 "CdA_perc_imp_at_which_wt_penalty_maxes_out", cda_curve_selection
             ]
         )
         CdA_perc_imp_knob_max = float(
-            aero_curves_file.loc["CdA_perc_imp_knob_max", cda_curve_selection]
+            aero_drag_imp_curves_file.loc["CdA_perc_imp_knob_max", cda_curve_selection]
         )
         CdA_perc_imp_knob_min = float(
-            aero_curves_file.loc["CdA_perc_imp_knob_min", cda_curve_selection]
+            aero_drag_imp_curves_file.loc["CdA_perc_imp_knob_min", cda_curve_selection]
         )
-        cost_a = float(aero_curves_file.loc["cost_a", cda_curve_selection])
-        cost_b = float(aero_curves_file.loc["cost_b", cda_curve_selection])
-        mass_a = float(aero_curves_file.loc["mass_a", cda_curve_selection])
-        mass_b = float(aero_curves_file.loc["mass_b", cda_curve_selection])
+        cost_a = float(aero_drag_imp_curves_file.loc["cost_a", cda_curve_selection])
+        cost_b = float(aero_drag_imp_curves_file.loc["cost_b", cda_curve_selection])
+        mass_a = float(aero_drag_imp_curves_file.loc["mass_a", cda_curve_selection])
+        mass_b = float(aero_drag_imp_curves_file.loc["mass_b", cda_curve_selection])
         assert (
             CdA_perc_imp_knob_max <= 1
         ), f"input invalid, value for CdA_perc_imp_knob_max must decimal form, got percentage point value as {CdA_perc_imp_knob_max}"
@@ -232,13 +232,13 @@ def get_knobs_bounds_curves(
         )
 
     if (
-        "eng_imp_curve" in sd
-        and sd["eng_imp_curve"]
-        and not pd.isnull(sd["eng_imp_curve"])
+        "eng_eff_imp_curve_sel" in sd
+        and sd["eng_eff_imp_curve_sel"]
+        and not pd.isnull(sd["eng_eff_imp_curve_sel"])
         and vpttype != gl.BEV
     ):
         # TODO, FCEV should not get eng imp curve parameter
-        eng_imp_curve_selection = sd["eng_imp_curve"]
+        eng_imp_curve_selection = sd["eng_eff_imp_curve_sel"]
         fc_peak_eff_knob_min = float(
             eng_eff_curves_file.loc["fc_peak_eff_knob_min", eng_imp_curve_selection]
         )
@@ -327,9 +327,9 @@ def run_moo(
     verbose,
     f_tol,
     resdir,
-    lw_curves,
-    aero_curves,
-    eng_curves,
+    lw_imp_curves,
+    aero_drag_imp_curves,
+    eng_eff_imp_curves,
     config,
     **kwargs,
 ):
@@ -350,9 +350,9 @@ def run_moo(
         verbose (book): if selected, function prints the optimization process
         f_tol (float): tolerance in objective space
         resdir (str): results directory
-        lw_curves (DataFrame): light weighting curves dataframe
-        aero_curves (DataFrame): aero drag curves dataframe
-        eng_curves (DataFrame): engine efficiency curve dataframe
+        lw_imp_curves (DataFrame): light weighting curves dataframe
+        aero_drag_imp_curves (DataFrame): aero drag curves dataframe
+        eng_eff_imp_curves (DataFrame): engine efficiency curve dataframe
         config (Config): Config class object
 
     Returns:
@@ -363,7 +363,7 @@ def run_moo(
     objectives, constraints = get_objectives_constraints(sel, sdf)
 
     knobs_bounds, curve_settings = get_knobs_bounds_curves(
-        sel, optpt, sdf, lw_curves, aero_curves, eng_curves
+        sel, optpt, sdf, lw_imp_curves, aero_drag_imp_curves, eng_eff_imp_curves
     )
 
     # moo_reults has res.X, res.F np arrays of opt params & objective space resutls, respectively
@@ -404,7 +404,7 @@ def check_input_files(df, filetype, filepath):
     assert df['scenario_name'].isnull().any() == False, f"\n\n{filetype} file scenario_name column cannot have blank values\nlines: {blank_lines}\npath: {filepath}\n\n\n\n"  # noqa: E712
 
 def run_vehicle_scenarios(
-    vehicles, scenarios, eng_curves_p, lw_curves_p, aero_curves_p, config, **kwargs
+    vehicles, scenarios, eng_eff_imp_curves_p, lw_imp_curves_p, aero_drag_imp_curves_p, config, **kwargs
 ):
     """
     This is the main function that runs T3CO for all the selections input
@@ -412,9 +412,9 @@ def run_vehicle_scenarios(
     Args:
         vehicles (str): path of vehicle input file
         scenarios (str): path of scenarios input file
-        eng_curves_p (str): path of engine efficiency curve file
-        lw_curves_p (str): path of light weighting curve file
-        aero_curves_p (str): path of aero drag curve file
+        eng_eff_imp_curves_p (str): path of engine efficiency curve file
+        lw_imp_curves_p (str): path of light weighting curve file
+        aero_drag_imp_curves_p (str): path of aero drag curve file
         config (Config): Config object containing analysis attributes and scenario attribute overrides
 
     Raises:
@@ -426,9 +426,9 @@ def run_vehicle_scenarios(
     sdf = pd.read_csv(scenarios, index_col="selection", skip_blank_lines=True)
     check_input_files(vdf, "vehicles", vehicles)
     check_input_files(sdf, "scenario", scenarios)
-    eng_curves = pd.read_csv(eng_curves_p)
-    lw_curves = pd.read_csv(lw_curves_p)
-    aero_curves = pd.read_csv(aero_curves_p)
+    eng_eff_imp_curves = pd.read_csv(eng_eff_imp_curves_p)
+    lw_imp_curves = pd.read_csv(lw_imp_curves_p)
+    aero_drag_imp_curves = pd.read_csv(aero_drag_imp_curves_p)
 
     # optimization scenario parameters where we get our baseline vehicle and scenario
     gl.FASTSIM_INPUTS = vehicles
@@ -545,7 +545,7 @@ def run_vehicle_scenarios(
         rs.check_phev_init_socs(v, s)
 
         knobs_bounds, curve_settings = get_knobs_bounds_curves(
-            sel, optpt, sdf, lw_curves, aero_curves, eng_curves
+            sel, optpt, sdf, lw_imp_curves, aero_drag_imp_curves, eng_eff_imp_curves
         )
         objectives, constraints = get_objectives_constraints(sel, sdf, verbose=False)
 
@@ -607,9 +607,9 @@ def run_vehicle_scenarios(
                 verbose,
                 f_tol,
                 resdir,
-                lw_curves,
-                aero_curves,
-                eng_curves,
+                lw_imp_curves,
+                aero_drag_imp_curves,
+                eng_eff_imp_curves,
                 config,
                 **kwargs,
             )
@@ -834,18 +834,18 @@ def run_vehicle_scenarios(
                     numeric_only=True
                 )
                 report_i["RangeMiAch"] = outdict["primary_fuel_range_mi"]
-                report_i["target_TargetRangeMi"] = report_scenario.TargetRangeMi
+                report_i["target_TargetRangeMi"] = report_scenario.target_range_mi
                 report_i["delta_TargetRangeMi"] = (
-                    outdict["primary_fuel_range_mi"] - report_scenario.TargetRangeMi
+                    outdict["primary_fuel_range_mi"] - report_scenario.target_range_mi
                 )
 
                 report_i["minSpeed6PercentGradeIn5minAch"] = outdict["grade_6_mph_ach"]
                 report_i[
                     "target_minSpeed6PercentGradeIn5min"
-                ] = report_scenario.minSpeed6PercentGradeIn5min
+                ] = report_scenario.min_speed_at_6pct_grade_in_5min_mph
                 report_i["delta_6PercentGrade"] = (
                     outdict["grade_6_mph_ach"]
-                    - report_scenario.minSpeed6PercentGradeIn5min
+                    - report_scenario.min_speed_at_6pct_grade_in_5min_mph
                 )
 
                 report_i["minSpeed1point25PercentGradeIn5minAch"] = outdict[
@@ -853,28 +853,28 @@ def run_vehicle_scenarios(
                 ]
                 report_i[
                     "target_minSpeed1point25PercentGradeIn5min"
-                ] = report_scenario.minSpeed1point25PercentGradeIn5min
+                ] = report_scenario.min_speed_at_125pct_grade_in_5min_mph
                 report_i["delta_1point25PercentGrade"] = (
                     outdict["grade_1_25_mph_ach"]
-                    - report_scenario.minSpeed1point25PercentGradeIn5min
+                    - report_scenario.min_speed_at_125pct_grade_in_5min_mph
                 )
 
                 report_i["max0to60secAtGVWRAch"] = outdict["zero_to_60_loaded"]
-                report_i["target_max0to60secAtGVWR"] = report_scenario.max0to60secAtGVWR
+                report_i["target_max0to60secAtGVWR"] = report_scenario.max_time_0_to_60mph_at_gvwr_s
                 if (
                     outdict["zero_to_60_loaded"] is not None
                 ):  # cannot calculate if it is none (but for some reason, range and grade are handled when none)
                     report_i["delta_0to60sec"] = (
-                        outdict["zero_to_60_loaded"] - report_scenario.max0to60secAtGVWR
+                        outdict["zero_to_60_loaded"] - report_scenario.max_time_0_to_60mph_at_gvwr_s
                     )
 
                 report_i["max0to30secAtGVWRAch"] = outdict["zero_to_30_loaded"]
-                report_i["target_max0to30secAtGVWR"] = report_scenario.max0to30secAtGVWR
+                report_i["target_max0to30secAtGVWR"] = report_scenario.max_time_0_to_30mph_at_gvwr_s
                 if (
                     outdict["zero_to_30_loaded"] is not None
                 ):  # cannot calculate if it is none (but for some reason, range and grade are handled when none)
                     report_i["delta_0to30sec"] = (
-                        outdict["zero_to_30_loaded"] - report_scenario.max0to30secAtGVWR
+                        outdict["zero_to_30_loaded"] - report_scenario.max_time_0_to_30mph_at_gvwr_s
                     )
 
                 report_i.update(mpgge)
@@ -1244,9 +1244,9 @@ if __name__ == "__main__":
             selections = [int(args.selections)]
         vehicles = Path(args.vehicles)
         scenarios = Path(args.scenarios)
-        eng_curves = Path(args.eng_curves)
-        lw_curves = Path(args.lw_curves)
-        aero_curves = Path(args.aero_curves)
+        eng_eff_imp_curves = Path(args.eng_eff_imp_curves)
+        lw_imp_curves = Path(args.lw_imp_curves)
+        aero_drag_imp_curves = Path(args.aero_drag_imp_curves)
         write_tsv = args.write_tsv
         # config = None
     else:
@@ -1261,9 +1261,9 @@ if __name__ == "__main__":
         selections = config.selections
         vehicles = gl.SWEEP_PATH.parents[0]/config.vehicle_file
         scenarios = gl.SWEEP_PATH.parents[0]/config.scenario_file
-        eng_curves = gl.SWEEP_PATH.parents[0]/config.eng_curves
-        lw_curves = gl.SWEEP_PATH.parents[0]/config.lw_curves
-        aero_curves = gl.SWEEP_PATH.parents[0]/config.aero_curves
+        eng_eff_imp_curves = gl.SWEEP_PATH.parents[0]/config.eng_eff_imp_curves
+        lw_imp_curves = gl.SWEEP_PATH.parents[0]/config.lw_imp_curves
+        aero_drag_imp_curves = gl.SWEEP_PATH.parents[0]/config.aero_drag_imp_curves
         write_tsv = config.write_tsv
 
     look_for = args.look_for
@@ -1318,7 +1318,7 @@ if __name__ == "__main__":
         )
 
     run_vehicle_scenarios(
-        vehicles, scenarios, eng_curves, lw_curves, aero_curves, config=config, **kwargs
+        vehicles, scenarios, eng_eff_imp_curves, lw_imp_curves, aero_drag_imp_curves, config=config, **kwargs
     )
 
 # %%

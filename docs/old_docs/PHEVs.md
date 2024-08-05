@@ -59,12 +59,12 @@ The code fills out fuel usage in GGE based on the utility factor adjusted mpgges
 
 ## PHEV Acceleration & Grade Tests <a name="phev-accel-grade"></a>
 
-**PHEVs** have a special input for determining intial SOC during the acceleration test: `soc_norm_init_for_accel`.
-Similarly, **PHEVs** have a special input for determining intial SOC during the grade test: `soc_norm_init_for_grade`. This is used to determine the normalized percentage of available SOC within the vehicle's minimum and maximum SOC range. The formula is:
+**PHEVs** have a special input for determining intial SOC during the acceleration test: `soc_norm_init_for_accel_pct`.
+Similarly, **PHEVs** have a special input for determining intial SOC during the grade test: `soc_norm_init_for_grade_pct`. This is used to determine the normalized percentage of available SOC within the vehicle's minimum and maximum SOC range. The formula is:
 	
 	ess_init_soc_for_test = vehicle.min_soc + (scenario.soc_norm_init_for_test * (vehicle.max_soc - vehicle.min_soc) )
 
-There are other inputs from the **T3CO** scenario file that can override initial SOC behavior. `ess_init_soc_grade` and `ess_init_soc_accel`. As of now, it is treated as an error for a user to provide these along with values for `soc_norm_init_for_grade` and `soc_norm_init_for_accel` as it is ambiguous as to which initial SOC is supposed to be used. These general initial SOC overrides should be supplied only for HEVs and BEVs. The *default* behavior, what the code does for inital SOC for tests in the absense of any input for `ess_init_soc_grade/accel`, or `ess_init_soc_for_grade/accel`, is a mix of **FASTSim's** default behaviors and some overrides that **T3CO** configures. This is described in **acceleration_and_grade_tests.md**
+There are other inputs from the **T3CO** scenario file that can override initial SOC behavior. `ess_init_soc_grade` and `ess_init_soc_accel`. As of now, it is treated as an error for a user to provide these along with values for `soc_norm_init_for_grade_pct` and `soc_norm_init_for_accel_pct` as it is ambiguous as to which initial SOC is supposed to be used. These general initial SOC overrides should be supplied only for HEVs and BEVs. The *default* behavior, what the code does for inital SOC for tests in the absense of any input for `ess_init_soc_grade/accel`, or `ess_init_soc_for_grade/accel`, is a mix of **FASTSim's** default behaviors and some overrides that **T3CO** configures. This is described in **acceleration_and_grade_tests.md**
 
 applied at: https://github.com/NREL/T3CO-private/blob/47d92dadef3451f403275159888811e01057416d/t3co/run_scenario.py#L539
 
@@ -101,17 +101,17 @@ It is worth noting that initial SOC inputs for grade and acceleration of PHEVs d
 
 ## PHEV Optimization <a name="PHEVOptimization"></a>
 
-PHEV optimization uses an optional, special input called `perc_motor_power_override_kw_fc_demand_on`. This is the percentage of motor power value set to the vehicle field `kw_fc_demand_on` to allow `kw_fc_demand_on` to increase or decrease proportionally with changes in `mc_max_kw` from the optimizer. This is described in more detail in the opimization docs.
+PHEV optimization uses an optional, special input called `motor_power_override_kw_fc_demand_on_pct`. This is the percentage of motor power value set to the vehicle field `kw_fc_demand_on` to allow `kw_fc_demand_on` to increase or decrease proportionally with changes in `mc_max_kw` from the optimizer. This is described in more detail in the opimization docs.
 
 ## PHEV Special Inputs <a name="special-inputs"></a>
 
 |**PHEV** scenario file inputs| description | required/optional | default | range |
 |--|--|--|--|--|
 |phev_utility_factor_override| prescribed utility factor, code will no longer compute it |optional | if not supplied, will be -1 and UF will be computed by T3CO | [0,1] |
-|shifts_per_year| Get the PHEV utility factor derived from the computed range of the vehicle and the operational day range computed from shifts per year and the first VMT year |required | *Suggested value*: 250 (weekdays/yr, assuming 1 shift/day) | [1,inf] |
-|soc_norm_init_for_grade| **Strictly PHEV only, will throw error for other types** For grade test, determines the normalized percentage of available SOC within the vehicle's minimum and maximum SOC range |optional | if not supplied, will be -1, FASTSim sets PHEV init SOC as max_soc | [0,1] |
-|soc_norm_init_for_accel| **Strictly PHEV only, will throw error for other types** For accel test, determines the normalized percentage of available SOC within the vehicle's minimum and maximum SOC range |optional | if not supplied, will be -1, FASTSim sets PHEV init SOC as max_soc | [0,1] |
-|perc_motor_power_override_kw_fc_demand_on| The percentage of motor power value set to the vehicle field `kw_fc_demand_on` to allow `kw_fc_demand_on` to increase or decrease proportionally with changes in `mc_max_kw` from the optimizer. |optional | *suggested value*: .85. If not supplied, will be -1 and `vehicle.kw_fc_demand_on defaults` to vehicle file input | (0,1] |
+|shifts_per_year| Get the PHEV utility factor derived from the computed range of the vehicle and the operational day range computed from shifts per year and the first vmt year |required | *Suggested value*: 250 (weekdays/yr, assuming 1 shift/day) | [1,inf] |
+|soc_norm_init_for_grade_pct| **Strictly PHEV only, will throw error for other types** For grade test, determines the normalized percentage of available SOC within the vehicle's minimum and maximum SOC range |optional | if not supplied, will be -1, FASTSim sets PHEV init SOC as max_soc | [0,1] |
+|soc_norm_init_for_accel_pct| **Strictly PHEV only, will throw error for other types** For accel test, determines the normalized percentage of available SOC within the vehicle's minimum and maximum SOC range |optional | if not supplied, will be -1, FASTSim sets PHEV init SOC as max_soc | [0,1] |
+|motor_power_override_kw_fc_demand_on_pct| The percentage of motor power value set to the vehicle field `kw_fc_demand_on` to allow `kw_fc_demand_on` to increase or decrease proportionally with changes in `mc_max_kw` from the optimizer. |optional | *suggested value*: .85. If not supplied, will be -1 and `vehicle.kw_fc_demand_on defaults` to vehicle file input | (0,1] |
 
 
 ## PHEVs Not Doing What You Want? <a name="phev-issues"></a>

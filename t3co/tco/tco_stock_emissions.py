@@ -46,7 +46,7 @@ def stockModel(
         sales (pd.DataFrame): Dataframe of yearly number of vehicles sales
         marketShares (pd.DataFrame): Dataframe of yearly Market Share of selection's vocation per vehicle [veh/veh]
         survival (pd.DataFrame): Dataframe of yearly Surviving vehicle per each vehicle [veh/veh]
-        annualTravel (pd.DataFrame): Dataframe of vehicle's VMT: Annual Travel [mi/yr]
+        annualTravel (pd.DataFrame): Dataframe of vehicle's vmt: Annual Travel [mi/yr]
         fuelSplit (pd.DataFrame): Dataframe of fraction of travel using each fuel [mi/mi]
         fuelEfficiency (pd.DataFrame): Dataframe of vehicle's yearly average fuel efficiency [mi/gge]
         emissions (pd.DataFrame): Dataframe of vehicle's yearly average emissions
@@ -101,7 +101,7 @@ def stockModel(
     stock["Stock [veh]"] = stock["Sales [veh]"] * stock["Surviving Vehicles [veh/veh]"]
     stock = stock.drop(["Surviving Vehicles [veh/veh]"], axis=1)
 
-    # compute VMT
+    # compute vmt
     stock = pd.merge(stock, annualTravel)
     stock["Travel [mi]"] = stock["Annual Travel [mi/yr]"] * stock["Stock [veh]"]
     # stock['Maintenance Cost [Dol/mi]'] = stock['Maintenance Cost [Dol/mi]'] * stock['Stock [veh]']

@@ -179,7 +179,7 @@ gl.vocation_scenario = vocation
 # load the generated file of vehicles, drive cycles, and tech targets
 t3vehicle = run_scenario.get_vehicle(veh_no, gl.T2COBENCHMARKDATADIR / 't3cobenchmarkFASTSimInputs.csv', use_jit=False)
 scenario, range_cyc = run_scenario.get_scenario_and_cycle(veh_no, gl.T2COBENCHMARKDATADIR / 't3cobenchmarkOtherInputs.csv', use_jit=False)
-scenario.driveCycle = r't3co_benchmarking_long_haul_cyc.csv'
+scenario.drive_cycle = r't3co_benchmarking_long_haul_cyc.csv'
 cycpath = Path(r'C:\Users\gpayne\Documents\__old_projects\_Truck_FSIM_TCO\fastsim_src\cycles')
 range_cyc = run_scenario.load_design_cycle_from_scenario(scenario, cyc_file_path=Path(cycpath))
 
