@@ -189,12 +189,12 @@ class Config:
 
     # Optimization
     algorithms: str = ""
-    lw_curves: str = ""
-    eng_curves: str = ""
-    aero_curves: str = ""
-    lw_imp_curve_file: str = ""
-    eng_eff_imp_curve_file: str = ""
-    aero_drag_imp_curve_file: str = ""
+    lw_imp_curves: str = ""
+    eng_eff_imp_curves: str = ""
+    aero_drag_imp_curves: str = ""
+    lw_imp_curve_sel: str = ""
+    eng_eff_imp_curve_sel: str = ""
+    aero_drag_imp_curve_sel: str = ""
     skip_all_opt: bool = True
     constraint_range: bool = False
     constraint_accel: bool = False
@@ -320,9 +320,9 @@ class Scenario:
     max_time_0_to_60mph_at_gvwr_s: float = 0
     max_time_0_to_30mph_at_gvwr_s: float = 0
     # TDA vars
-    lw_imp_curve_file: str = ""
-    eng_eff_imp_curve_file: str = ""
-    aero_drag_imp_curve_file: str = ""
+    lw_imp_curve_sel: str = ""
+    eng_eff_imp_curve_sel: str = ""
+    aero_drag_imp_curve_sel: str = ""
     # computed vars
     # scenario_gge_regional_temporal_fuel_price: str = ""
     originalcargo_kg: float = (
@@ -438,9 +438,9 @@ class Scenario:
             "fs_fueling_rate_kg_per_min",
             "fs_fueling_rate_gasoline_gpm",
             "fs_fueling_rate_diesel_gpm",
-            "lw_imp_curve_file",
-            "eng_eff_imp_curve_file",
-            "aero_drag_imp_curve_file",
+            "lw_imp_curve_sel",
+            "eng_eff_imp_curve_sel",
+            "aero_drag_imp_curve_sel",
             "constraint_range",
             "constraint_accel",
             "constraint_grade",

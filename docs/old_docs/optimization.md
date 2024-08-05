@@ -23,7 +23,7 @@ RANGE, ACCEL, GRADE
 In general, all knobs that apply to each powertrain will be active.
 
 A blank in either min or max of the knob will disable that knob. (use value from vehicle input)
-A blank in eng_eff_imp_curve_file, aero_drag_imp_curve_file, and ltwt_imp_curve will turn those off. (set to cda imp and ltwt redux to zeros, and leave fuel converter peak efficiency unchanged)
+A blank in eng_eff_imp_curve_sel, aero_drag_imp_curve_sel, and ltwt_imp_curve will turn those off. (set to cda imp and ltwt redux to zeros, and leave fuel converter peak efficiency unchanged)
 
 ```
 # Decision variables / "knobs":
@@ -69,7 +69,7 @@ target_range_mi | min_speed_at_6pct_grade_in_5min_mph | min_speed_at_125pct_grad
 
 
 ### example means of specifying improvement cost curves in **scenario** file
-lw_imp_curve_file | eng_eff_imp_curve_file | aero_drag_imp_curve_file
+lw_imp_curve_sel | eng_eff_imp_curve_sel | aero_drag_imp_curve_sel
 -- | -- | --
 MDHD_xyz | MDHD_large_noprogram_2025 | MDHD_abcdef
 
@@ -99,7 +99,7 @@ For the other decision variables / knobs, the scenario file will need to specify
 (code will use the appropriate combinations of fc/motor/ess for each powertrain)
 
 
-### example of **engine cost curves input**, referred to via **scenario file** selection in `eng_eff_imp_curve_file` column
+### example of **engine cost curves input**, referred to via **scenario file** selection in `eng_eff_imp_curve_sel` column
 
 name | MDHD_large_noprogram_2020 | MDHD_large_noprogram_2025
 -- | -- | --
