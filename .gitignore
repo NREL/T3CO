@@ -3,7 +3,6 @@
 *.pyc
 *.idea
 *.tsv
-*.png
 *.docx
 *.pdf
 *.svg
