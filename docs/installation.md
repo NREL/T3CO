@@ -40,7 +40,7 @@ cd run_scripts
 pytho sweep.py -analysis_id 0
 ```
 
-**using optimiztion in sweep module** [see](https://github.com/NREL/T3CO-private/blob/52252a06fd16cc7bae377f169b78d02c30887b96/docs/old_docs/optimization.md)
+**using optimiztion in sweep module** [see](https://github.com/NREL/T3CO-private/blob/52252a06fd16cc7bae377f169b78d02c30887b96/docs/models/optimization.md)
 
 ## Generate MD Documentation from Docstrings
 **On Windows**
