@@ -5,7 +5,7 @@
 
 This repo houses T3CO (Transportation Technology Total Cost of Ownership), software for modeling total cost of ownership for commercial vehicles with advanced powertrains.
 
-To start, go to the [Overview]([https://github.com/NREL/T3CO-private/blob/main/docs/old_docs/T3CO_Overview.md](https://github.com/NREL/T3CO-private/blob/264a730de942671eb2345a5afca7e1afd6d67666/docs/T3CO_Overview.md))
+To start, go to the [Overview](https://github.com/NREL/T3CO-private/blob/264a730de942671eb2345a5afca7e1afd6d67666/docs/T3CO_Overview.md)
 
 ## Usage
 
