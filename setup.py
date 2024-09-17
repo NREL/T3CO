@@ -17,7 +17,7 @@ def get_install_requires() -> List[str]:
 
 setuptools.setup(
     name="t3co",
-    version="1.0.0",
+    version="1.0.1",
     author="NREL",
     author_email="t3co@nrel.gov",
     description="Tool for modeling and optimizing Total Cost of Ownership of commercial vehicles",
