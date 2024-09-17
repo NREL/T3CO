@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "t3co"
+version = "1.0.1"
+dependencies = [
+    "pymoo==0.6.1",
+    "mkdocs",
+    "mkdocstrings",
+    "mkdocstrings-python",
+    "fastsim==2.1.1",
+    "numpy==1.24.1",
+    "scipy==1.13.1",
+    "pandas==2.2.2",
+    "pathlib",
+]
+
+requires-python = ">=3.8"
+authors = [
+  {name = "Harish Panneer Selvam", email = "Harish.PanneerSelvam@nrel.gov"},
+  {name = "Alicia Birky", email = "Alicia.Birky@nrel.gov"},
+  {name = "Chad Baker", email = "Chad.Baker@nrel.gov"},
+]
+maintainers = [
+  {name = "NREL-AVCI", email = "t3co@nrel.gov"}
+]
+description = "Transportation Technology Total Cost of Ownership"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["tco", "vehicle-cost", "total-cost", "vehicle-simulation", "total-cost-of-ownership"]
+classifiers = [
+  "Programming Language :: Python"
+]
+
+[project.urls]
+Homepage = "https://www.nrel.gov/transportation/t3co.html"
+Documentation = "https://pages.github.com/NREL/T3CO"
+Repository = "https://github.com/NREL/T3CO"
+"Bug Tracker" = "https://github.com/NREL/T3CO/issues"
+
+[project.scripts]
+t3co-cli = "t3co:sweep"

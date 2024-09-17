@@ -1,9 +1,0 @@
-pymoo==0.6.1
-mkdocs
-mkdocstrings
-mkdocstrings-python
-fastsim==2.1.1
-numpy==1.24.1
-scipy==1.13.1
-pandas==2.2.2
-pathlib
