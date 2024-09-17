@@ -17,13 +17,13 @@ def get_install_requires() -> List[str]:
 
 setuptools.setup(
     name="t3co",
-    version="0.0.1",
-    author="AVCI Group",
+    version="1.0.0",
+    author="NREL",
     author_email="t3co@nrel.gov",
     description="Tool for modeling and optimizing Total Cost of Ownership of commercial vehicles",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/NREL/T3CO-private",  
+    url="https://github.com/NREL/T3CO",  
 
     packages=setuptools.find_packages(),
     classifiers=[
