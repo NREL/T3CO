@@ -13,6 +13,7 @@
 *.json
 *.txt
 !requirements.txt
+!requirements-dev.txt
 *.yaml
 /.idea
 /.ipynb_checkpoints

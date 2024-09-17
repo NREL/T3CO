@@ -47,10 +47,6 @@ jobs:
           isort --check-only . 2>&1
           black --check . 2>&1
 
-      - name: Codecov
-        run: |
-          bash <(curl -s https://codecov.io/bash)
-
       - name: Install distribution dependencies
         run: |
           pip install build
