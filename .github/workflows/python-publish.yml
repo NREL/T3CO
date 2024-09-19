@@ -41,8 +41,7 @@ jobs:
       - name: Run linters
         run: |
           echo "Running linters"
-
-          pip install black
+          pip install black flake8
           flake8 .
           isort --check-only . 2>&1
           black --check . 2>&1
