@@ -4,8 +4,9 @@ build-backend = "hatchling.build"
 
 [project]
 name = "t3co"
-version = "1.0.1"
+version = "1.0.3"
 dynamic = ["dependencies"]
+readme = "README.md"
 
 [tool.hatch.metadata.hooks.requirements_txt]
 files = ["requirements.txt"]
