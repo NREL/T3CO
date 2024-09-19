@@ -1,5 +1,14 @@
 ![T3CO Logo](https://www.nrel.gov/transportation/assets/images/t3co-icon-web.jpg)
 
+[![homepage](https://img.shields.io/badge/homepage-t3co-blue)](https://www.nrel.gov/transportation/t3co.html) [![github](https://img.shields.io/badge/github-t3co-blue.svg)](https://github.com/NREL/T3CO) [![PyPI version](https://badge.fury.io/py/t3co.svg)](https://badge.fury.io/py/t3co) ![GitHub License](https://img.shields.io/github/license/NREL/T3CO) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/t3co) 
+
+
+
+
+
+
+
+
 # **T3CO** : Transportation Technology Total Cost of Ownership Tool
 ## Description
 
@@ -10,12 +19,6 @@ To start, go to the [Overview](https://github.com/NREL/T3CO-private/blob/264a730
 ## Usage
 
 **T3CO** is a general framework allowing a user to determine the total cost of ownership (TCO) of a FASTSim vehicle (paired with a FASTSim DriveCycle(s) for determining fuel efficiency). The user can also determine performance of gradability, acceleration, and range. In addition to straight TCO computation there is also the option to optimize a vehicle powertrain such that it meets performance optional targets while also optionally minimizing TCO.
-
-### Note
-
-Current release does **not** have:
-
-- cargo `payload opportunity cost` combined with `gvwr_credit_kg` validated  
 
 ## Installation
 
