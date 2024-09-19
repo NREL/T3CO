@@ -4,13 +4,25 @@ build-backend = "hatchling.build"
 
 [project]
 name = "t3co"
-version = "1.0.3"
+version = "1.0.5"
 dynamic = ["dependencies"]
+description = """
+NREL's Transportation Technology Total Cost of Ownership tool
+"""
 readme = "README.md"
-
-[tool.hatch.metadata.hooks.requirements_txt]
-files = ["requirements.txt"]
-
+license = {file = "LICENSE"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
 requires-python = ">=3.8"
 authors = [
   {name = "Harish Panneer Selvam", email = "Harish.PanneerSelvam@nrel.gov"},
@@ -20,13 +32,10 @@ authors = [
 maintainers = [
   {name = "NREL-AVCI", email = "t3co@nrel.gov"}
 ]
-description = "Transportation Technology Total Cost of Ownership"
-readme = "README.md"
-license = {file = "LICENSE"}
 keywords = ["tco", "vehicle-cost", "totl-cost", "vehicle-simulation", "total-cost-of-ownership"]
-classifiers = [
-  "Programming Language :: Python"
-]
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
 
 [project.urls]
 Homepage = "https://www.nrel.gov/transportation/t3co.html"
