@@ -1,152 +1,154 @@
 # Table of Contents
 
-* [.](#.)
-* [..tco](#..tco)
-* [..tco.tcocalc](#..tco.tcocalc)
-  * [find\_residual\_rates](#..tco.tcocalc.find_residual_rates)
-  * [calculate\_dollar\_cost](#..tco.tcocalc.calculate_dollar_cost)
-  * [calculate\_opp\_costs](#..tco.tcocalc.calculate_opp_costs)
-  * [fill\_fuel\_eff\_file](#..tco.tcocalc.fill_fuel_eff_file)
-  * [fill\_veh\_expense\_file](#..tco.tcocalc.fill_veh_expense_file)
-  * [fill\_trav\_exp\_tsv](#..tco.tcocalc.fill_trav_exp_tsv)
-  * [fill\_downtimelabor\_cost\_tsv](#..tco.tcocalc.fill_downtimelabor_cost_tsv)
-  * [fill\_market\_share\_tsv](#..tco.tcocalc.fill_market_share_tsv)
-  * [fill\_fuel\_expense\_tsv](#..tco.tcocalc.fill_fuel_expense_tsv)
-  * [fill\_annual\_tsv](#..tco.tcocalc.fill_annual_tsv)
-  * [fill\_reg\_sales\_tsv](#..tco.tcocalc.fill_reg_sales_tsv)
-  * [fill\_insurance\_tsv](#..tco.tcocalc.fill_insurance_tsv)
-  * [fill\_residual\_cost\_tsc](#..tco.tcocalc.fill_residual_cost_tsc)
-  * [fill\_survival\_tsv](#..tco.tcocalc.fill_survival_tsv)
-  * [fill\_fuel\_split\_tsv](#..tco.tcocalc.fill_fuel_split_tsv)
-* [..tco.opportunity\_cost](#..tco.opportunity_cost)
-  * [OpportunityCost](#..tco.opportunity_cost.OpportunityCost)
-    * [\_\_init\_\_](#..tco.opportunity_cost.OpportunityCost.__init__)
-    * [set\_kdes](#..tco.opportunity_cost.OpportunityCost.set_kdes)
-    * [get\_payload\_loss\_factor](#..tco.opportunity_cost.OpportunityCost.get_payload_loss_factor)
-    * [get\_dwell\_time\_cost](#..tco.opportunity_cost.OpportunityCost.get_dwell_time_cost)
-    * [get\_M\_R\_downtime\_cost](#..tco.opportunity_cost.OpportunityCost.get_M_R_downtime_cost)
-  * [main](#..tco.opportunity_cost.main)
-* [..tco.tco\_stock\_emissions](#..tco.tco_stock_emissions)
-  * [dropCols](#..tco.tco_stock_emissions.dropCols)
-  * [stockModel](#..tco.tco_stock_emissions.stockModel)
-* [..tco.tco\_analysis](#..tco.tco_analysis)
-  * [get\_operating\_costs](#..tco.tco_analysis.get_operating_costs)
-  * [discounted\_costs](#..tco.tco_analysis.discounted_costs)
-  * [calc\_discountedTCO](#..tco.tco_analysis.calc_discountedTCO)
-  * [get\_tco\_of\_vehicle](#..tco.tco_analysis.get_tco_of_vehicle)
-* [..tests.test\_tcos](#..tests.test_tcos)
-  * [remove](#..tests.test_tcos.remove)
-  * [RunCONVTCOTests](#..tests.test_tcos.RunCONVTCOTests)
-    * [compare](#..tests.test_tcos.RunCONVTCOTests.compare)
-* [..tests](#..tests)
-* [..tests.tco\_tests.t2co\_tco\_benchmark](#..tests.tco_tests.t2co_tco_benchmark)
-  * [veh\_no](#..tests.tco_tests.t2co_tco_benchmark.veh_no)
-* [..tests.tco\_tests.t2co\_bev\_mpgge\_benchmark](#..tests.tco_tests.t2co_bev_mpgge_benchmark)
-  * [veh\_no](#..tests.tco_tests.t2co_bev_mpgge_benchmark.veh_no)
-* [..tests.test\_moo](#..tests.test_moo)
-* [..moopack](#..moopack)
-* [..moopack.moo](#..moopack.moo)
-  * [T3COProblem](#..moopack.moo.T3COProblem)
-    * [setup\_opt\_records](#..moopack.moo.T3COProblem.setup_opt_records)
-    * [\_\_init\_\_](#..moopack.moo.T3COProblem.__init__)
-    * [compile\_reporting\_vars](#..moopack.moo.T3COProblem.compile_reporting_vars)
-    * [instantiate\_moo\_vehicles\_and\_scenario](#..moopack.moo.T3COProblem.instantiate_moo_vehicles_and_scenario)
-    * [cda\_percent\_delta\_knob](#..moopack.moo.T3COProblem.cda_percent_delta_knob)
-    * [weight\_delta\_percent\_knob](#..moopack.moo.T3COProblem.weight_delta_percent_knob)
-    * [fc\_peak\_eff\_knob](#..moopack.moo.T3COProblem.fc_peak_eff_knob)
-    * [get\_objs](#..moopack.moo.T3COProblem.get_objs)
-    * [adjust\_fc\_peak\_eff](#..moopack.moo.T3COProblem.adjust_fc_peak_eff)
-    * [sweep\_knob](#..moopack.moo.T3COProblem.sweep_knob)
-    * [get\_tco\_from\_moo\_advanced\_result](#..moopack.moo.T3COProblem.get_tco_from_moo_advanced_result)
-  * [T3CODisplay](#..moopack.moo.T3CODisplay)
-    * [\_\_init\_\_](#..moopack.moo.T3CODisplay.__init__)
-  * [run\_optimization](#..moopack.moo.run_optimization)
-* [..objectives.accel](#..objectives.accel)
-  * [get\_accel](#..objectives.accel.get_accel)
-* [..objectives.fueleconomy](#..objectives.fueleconomy)
-  * [get\_range\_mi](#..objectives.fueleconomy.get_range_mi)
-  * [get\_sim\_drive](#..objectives.fueleconomy.get_sim_drive)
-  * [get\_mpgge](#..objectives.fueleconomy.get_mpgge)
-* [..objectives.gradeability](#..objectives.gradeability)
-  * [get\_gradeability](#..objectives.gradeability.get_gradeability)
-* [..objectives](#..objectives)
-* [..sweep](#..sweep)
-  * [save\_tco\_files](#..sweep.save_tco_files)
-  * [get\_knobs\_bounds\_curves](#..sweep.get_knobs_bounds_curves)
-  * [get\_objectives\_constraints](#..sweep.get_objectives_constraints)
-  * [run\_moo](#..sweep.run_moo)
-  * [check\_input\_files](#..sweep.check_input_files)
-  * [run\_vehicle\_scenarios](#..sweep.run_vehicle_scenarios)
-* [..run.Global](#..run.Global)
-  * [DieselGalPerGasGal](#..run.Global.DieselGalPerGasGal)
-  * [kgH2\_per\_gge](#..run.Global.kgH2_per_gge)
-  * [mps\_to\_mph](#..run.Global.mps_to_mph)
-  * [m\_to\_mi](#..run.Global.m_to_mi)
-  * [get\_kwh\_per\_gge](#..run.Global.get_kwh_per_gge)
-  * [set\_tco\_intermediates](#..run.Global.set_tco_intermediates)
-  * [set\_tco\_results](#..run.Global.set_tco_results)
-  * [kg\_to\_lbs](#..run.Global.kg_to_lbs)
-  * [lbs\_to\_kgs](#..run.Global.lbs_to_kgs)
-  * [not\_falsy](#..run.Global.not_falsy)
-* [..run](#..run)
-* [..run.generateinputs](#..run.generateinputs)
-  * [generate](#..run.generateinputs.generate)
-* [..run.run\_scenario](#..run.run_scenario)
-  * [set\_test\_weight](#..run.run_scenario.set_test_weight)
-  * [reset\_vehicle\_weight](#..run.run_scenario.reset_vehicle_weight)
-  * [limit\_cargo\_kg\_for\_moo\_hev\_bev](#..run.run_scenario.limit_cargo_kg_for_moo_hev_bev)
-  * [set\_max\_motor\_kw](#..run.run_scenario.set_max_motor_kw)
-  * [set\_max\_battery\_kwh](#..run.run_scenario.set_max_battery_kwh)
-  * [set\_max\_battery\_power\_kw](#..run.run_scenario.set_max_battery_power_kw)
-  * [set\_max\_fuel\_converter\_kw](#..run.run_scenario.set_max_fuel_converter_kw)
-  * [set\_fuel\_store\_kwh](#..run.run_scenario.set_fuel_store_kwh)
-  * [set\_cargo\_kg](#..run.run_scenario.set_cargo_kg)
-  * [Config](#..run.run_scenario.Config)
-    * [from\_file](#..run.run_scenario.Config.from_file)
-    * [from\_dict](#..run.run_scenario.Config.from_dict)
-    * [validate\_analysis\_id](#..run.run_scenario.Config.validate_analysis_id)
-  * [Scenario](#..run.run_scenario.Scenario)
-    * [originalcargo\_kg](#..run.run_scenario.Scenario.originalcargo_kg)
-    * [plf\_scenario\_vehicle\_cargo\_capacity\_kg](#..run.run_scenario.Scenario.plf_scenario_vehicle_cargo_capacity_kg)
-    * [from\_config](#..run.run_scenario.Scenario.from_config)
-  * [check\_phev\_init\_socs](#..run.run_scenario.check_phev_init_socs)
-  * [get\_phev\_util\_factor](#..run.run_scenario.get_phev_util_factor)
-  * [get\_objective\_simdrive](#..run.run_scenario.get_objective_simdrive)
-  * [run\_grade\_or\_accel](#..run.run_scenario.run_grade_or_accel)
-  * [create\_fastsim\_vehicle](#..run.run_scenario.create_fastsim_vehicle)
-  * [get\_vehicle](#..run.run_scenario.get_vehicle)
-  * [get\_scenario\_and\_cycle](#..run.run_scenario.get_scenario_and_cycle)
-  * [load\_scenario](#..run.run_scenario.load_scenario)
-  * [load\_design\_cycle\_from\_scenario](#..run.run_scenario.load_design_cycle_from_scenario)
-  * [load\_design\_cycle\_from\_path](#..run.run_scenario.load_design_cycle_from_path)
-  * [vehicle\_scenario\_sweep](#..run.run_scenario.vehicle_scenario_sweep)
-  * [run](#..run.run_scenario.run)
-  * [rerun](#..run.run_scenario.rerun)
-* [..demos.opp\_cost\_demo](#..demos.opp_cost_demo)
-* [..demos.hev\_sweep\_and\_moo](#..demos.hev_sweep_and_moo)
-  * [vnum](#..demos.hev_sweep_and_moo.vnum)
-* [..demos.example\_load\_and\_run](#..demos.example_load_and_run)
-* [..demos.t2co\_opt\_benchmark](#..demos.t2co_opt_benchmark)
-* [..demos.Spencer](#..demos.Spencer)
+* [t3co](#t3co)
+* [t3co.tco](#t3co.tco)
+* [t3co.tco.tcocalc](#t3co.tco.tcocalc)
+  * [find\_residual\_rates](#t3co.tco.tcocalc.find_residual_rates)
+  * [calculate\_dollar\_cost](#t3co.tco.tcocalc.calculate_dollar_cost)
+  * [calculate\_opp\_costs](#t3co.tco.tcocalc.calculate_opp_costs)
+  * [fill\_fuel\_eff\_file](#t3co.tco.tcocalc.fill_fuel_eff_file)
+  * [fill\_veh\_expense\_file](#t3co.tco.tcocalc.fill_veh_expense_file)
+  * [fill\_trav\_exp\_tsv](#t3co.tco.tcocalc.fill_trav_exp_tsv)
+  * [fill\_downtimelabor\_cost\_tsv](#t3co.tco.tcocalc.fill_downtimelabor_cost_tsv)
+  * [fill\_market\_share\_tsv](#t3co.tco.tcocalc.fill_market_share_tsv)
+  * [fill\_fuel\_expense\_tsv](#t3co.tco.tcocalc.fill_fuel_expense_tsv)
+  * [fill\_annual\_tsv](#t3co.tco.tcocalc.fill_annual_tsv)
+  * [fill\_reg\_sales\_tsv](#t3co.tco.tcocalc.fill_reg_sales_tsv)
+  * [fill\_insurance\_tsv](#t3co.tco.tcocalc.fill_insurance_tsv)
+  * [fill\_residual\_cost\_tsc](#t3co.tco.tcocalc.fill_residual_cost_tsc)
+  * [fill\_survival\_tsv](#t3co.tco.tcocalc.fill_survival_tsv)
+  * [fill\_fuel\_split\_tsv](#t3co.tco.tcocalc.fill_fuel_split_tsv)
+* [t3co.tco.opportunity\_cost](#t3co.tco.opportunity_cost)
+  * [OpportunityCost](#t3co.tco.opportunity_cost.OpportunityCost)
+    * [\_\_init\_\_](#t3co.tco.opportunity_cost.OpportunityCost.__init__)
+    * [set\_kdes](#t3co.tco.opportunity_cost.OpportunityCost.set_kdes)
+    * [set\_payload\_loss\_factor](#t3co.tco.opportunity_cost.OpportunityCost.set_payload_loss_factor)
+    * [set\_dwell\_time\_cost](#t3co.tco.opportunity_cost.OpportunityCost.set_dwell_time_cost)
+    * [set\_M\_R\_downtime\_cost](#t3co.tco.opportunity_cost.OpportunityCost.set_M_R_downtime_cost)
+  * [main](#t3co.tco.opportunity_cost.main)
+* [t3co.tco.tco\_stock\_emissions](#t3co.tco.tco_stock_emissions)
+  * [dropCols](#t3co.tco.tco_stock_emissions.dropCols)
+  * [stockModel](#t3co.tco.tco_stock_emissions.stockModel)
+* [t3co.tco.tco\_analysis](#t3co.tco.tco_analysis)
+  * [get\_operating\_costs](#t3co.tco.tco_analysis.get_operating_costs)
+  * [discounted\_costs](#t3co.tco.tco_analysis.discounted_costs)
+  * [calc\_discountedTCO](#t3co.tco.tco_analysis.calc_discountedTCO)
+  * [get\_tco\_of\_vehicle](#t3co.tco.tco_analysis.get_tco_of_vehicle)
+* [t3co.tests.test\_tcos](#t3co.tests.test_tcos)
+  * [remove](#t3co.tests.test_tcos.remove)
+  * [RunCONVTCOTests](#t3co.tests.test_tcos.RunCONVTCOTests)
+    * [compare](#t3co.tests.test_tcos.RunCONVTCOTests.compare)
+* [t3co.tests](#t3co.tests)
+* [t3co.tests.tco\_tests.t2co\_tco\_benchmark](#t3co.tests.tco_tests.t2co_tco_benchmark)
+  * [veh\_no](#t3co.tests.tco_tests.t2co_tco_benchmark.veh_no)
+* [t3co.tests.tco\_tests.t2co\_bev\_mpgge\_benchmark](#t3co.tests.tco_tests.t2co_bev_mpgge_benchmark)
+  * [veh\_no](#t3co.tests.tco_tests.t2co_bev_mpgge_benchmark.veh_no)
+* [t3co.tests.test\_moo](#t3co.tests.test_moo)
+* [t3co.moopack](#t3co.moopack)
+* [t3co.moopack.moo](#t3co.moopack.moo)
+  * [T3COProblem](#t3co.moopack.moo.T3COProblem)
+    * [setup\_opt\_records](#t3co.moopack.moo.T3COProblem.setup_opt_records)
+    * [\_\_init\_\_](#t3co.moopack.moo.T3COProblem.__init__)
+    * [compile\_reporting\_vars](#t3co.moopack.moo.T3COProblem.compile_reporting_vars)
+    * [instantiate\_moo\_vehicles\_and\_scenario](#t3co.moopack.moo.T3COProblem.instantiate_moo_vehicles_and_scenario)
+    * [cda\_percent\_delta\_knob](#t3co.moopack.moo.T3COProblem.cda_percent_delta_knob)
+    * [weight\_delta\_percent\_knob](#t3co.moopack.moo.T3COProblem.weight_delta_percent_knob)
+    * [fc\_peak\_eff\_knob](#t3co.moopack.moo.T3COProblem.fc_peak_eff_knob)
+    * [get\_objs](#t3co.moopack.moo.T3COProblem.get_objs)
+    * [adjust\_fc\_peak\_eff](#t3co.moopack.moo.T3COProblem.adjust_fc_peak_eff)
+    * [sweep\_knob](#t3co.moopack.moo.T3COProblem.sweep_knob)
+    * [get\_tco\_from\_moo\_advanced\_result](#t3co.moopack.moo.T3COProblem.get_tco_from_moo_advanced_result)
+  * [T3CODisplay](#t3co.moopack.moo.T3CODisplay)
+    * [\_\_init\_\_](#t3co.moopack.moo.T3CODisplay.__init__)
+  * [run\_optimization](#t3co.moopack.moo.run_optimization)
+* [t3co.objectives.accel](#t3co.objectives.accel)
+  * [get\_accel](#t3co.objectives.accel.get_accel)
+* [t3co.objectives.fueleconomy](#t3co.objectives.fueleconomy)
+  * [get\_range\_mi](#t3co.objectives.fueleconomy.get_range_mi)
+  * [get\_sim\_drive](#t3co.objectives.fueleconomy.get_sim_drive)
+  * [get\_mpgge](#t3co.objectives.fueleconomy.get_mpgge)
+* [t3co.objectives.gradeability](#t3co.objectives.gradeability)
+  * [get\_gradeability](#t3co.objectives.gradeability.get_gradeability)
+* [t3co.objectives](#t3co.objectives)
+* [t3co.sweep](#t3co.sweep)
+  * [deug\_traces](#t3co.sweep.deug_traces)
+  * [save\_tco\_files](#t3co.sweep.save_tco_files)
+  * [get\_knobs\_bounds\_curves](#t3co.sweep.get_knobs_bounds_curves)
+  * [get\_objectives\_constraints](#t3co.sweep.get_objectives_constraints)
+  * [run\_moo](#t3co.sweep.run_moo)
+  * [check\_input\_files](#t3co.sweep.check_input_files)
+  * [run\_vehicle\_scenarios](#t3co.sweep.run_vehicle_scenarios)
+* [t3co.run.Global](#t3co.run.Global)
+  * [DieselGalPerGasGal](#t3co.run.Global.DieselGalPerGasGal)
+  * [kgH2\_per\_gge](#t3co.run.Global.kgH2_per_gge)
+  * [mps\_to\_mph](#t3co.run.Global.mps_to_mph)
+  * [m\_to\_mi](#t3co.run.Global.m_to_mi)
+  * [get\_kwh\_per\_gge](#t3co.run.Global.get_kwh_per_gge)
+  * [set\_tco\_intermediates](#t3co.run.Global.set_tco_intermediates)
+  * [set\_tco\_results](#t3co.run.Global.set_tco_results)
+  * [kg\_to\_lbs](#t3co.run.Global.kg_to_lbs)
+  * [lbs\_to\_kgs](#t3co.run.Global.lbs_to_kgs)
+  * [not\_falsy](#t3co.run.Global.not_falsy)
+* [t3co.run](#t3co.run)
+* [t3co.run.generateinputs](#t3co.run.generateinputs)
+  * [generate](#t3co.run.generateinputs.generate)
+* [t3co.run.run\_scenario](#t3co.run.run_scenario)
+  * [Config](#t3co.run.run_scenario.Config)
+    * [from\_file](#t3co.run.run_scenario.Config.from_file)
+    * [from\_dict](#t3co.run.run_scenario.Config.from_dict)
+    * [validate\_analysis\_id](#t3co.run.run_scenario.Config.validate_analysis_id)
+  * [Scenario](#t3co.run.run_scenario.Scenario)
+    * [originalcargo\_kg](#t3co.run.run_scenario.Scenario.originalcargo_kg)
+    * [plf\_scenario\_vehicle\_cargo\_capacity\_kg](#t3co.run.run_scenario.Scenario.plf_scenario_vehicle_cargo_capacity_kg)
+    * [from\_config](#t3co.run.run_scenario.Scenario.from_config)
+  * [check\_phev\_init\_socs](#t3co.run.run_scenario.check_phev_init_socs)
+  * [get\_phev\_util\_factor](#t3co.run.run_scenario.get_phev_util_factor)
+  * [get\_objective\_simdrive](#t3co.run.run_scenario.get_objective_simdrive)
+  * [run\_grade\_or\_accel](#t3co.run.run_scenario.run_grade_or_accel)
+  * [create\_fastsim\_vehicle](#t3co.run.run_scenario.create_fastsim_vehicle)
+  * [get\_vehicle](#t3co.run.run_scenario.get_vehicle)
+  * [get\_scenario\_and\_cycle](#t3co.run.run_scenario.get_scenario_and_cycle)
+  * [load\_scenario](#t3co.run.run_scenario.load_scenario)
+  * [load\_design\_cycle\_from\_scenario](#t3co.run.run_scenario.load_design_cycle_from_scenario)
+  * [load\_design\_cycle\_from\_path](#t3co.run.run_scenario.load_design_cycle_from_path)
+  * [set\_test\_weight](#t3co.run.run_scenario.set_test_weight)
+  * [reset\_vehicle\_weight](#t3co.run.run_scenario.reset_vehicle_weight)
+  * [limit\_cargo\_kg\_for\_moo\_hev\_bev](#t3co.run.run_scenario.limit_cargo_kg_for_moo_hev_bev)
+  * [set\_max\_motor\_kw](#t3co.run.run_scenario.set_max_motor_kw)
+  * [set\_max\_battery\_kwh](#t3co.run.run_scenario.set_max_battery_kwh)
+  * [set\_max\_battery\_power\_kw](#t3co.run.run_scenario.set_max_battery_power_kw)
+  * [set\_max\_fuel\_converter\_kw](#t3co.run.run_scenario.set_max_fuel_converter_kw)
+  * [set\_fuel\_store\_kwh](#t3co.run.run_scenario.set_fuel_store_kwh)
+  * [set\_cargo\_kg](#t3co.run.run_scenario.set_cargo_kg)
+  * [vehicle\_scenario\_sweep](#t3co.run.run_scenario.vehicle_scenario_sweep)
+  * [run](#t3co.run.run_scenario.run)
+  * [rerun](#t3co.run.run_scenario.rerun)
+* [t3co.demos.opp\_cost\_demo](#t3co.demos.opp_cost_demo)
+* [t3co.demos.hev\_sweep\_and\_moo](#t3co.demos.hev_sweep_and_moo)
+  * [vnum](#t3co.demos.hev_sweep_and_moo.vnum)
+* [t3co.demos.example\_load\_and\_run](#t3co.demos.example_load_and_run)
+* [t3co.demos.t2co\_opt\_benchmark](#t3co.demos.t2co_opt_benchmark)
+* [t3co.demos.Spencer](#t3co.demos.Spencer)
 
-<a id="."></a>
+<a id="t3co"></a>
 
-# .
+# t3co
 
-<a id="..tco"></a>
+<a id="t3co.tco"></a>
 
-# ..tco
+# t3co.tco
 
-<a id="..tco.tcocalc"></a>
+<a id="t3co.tco.tcocalc"></a>
 
-# ..tco.tcocalc
+# t3co.tco.tcocalc
 
-<a id="..tco.tcocalc.find_residual_rates"></a>
+<a id="t3co.tco.tcocalc.find_residual_rates"></a>
 
 #### find\_residual\_rates
 
 ```python
-def find_residual_rates(vehicle, scenario)
+def find_residual_rates(vehicle: fastsim.vehicle.Vehicle,
+                        scenario: run_scenario.Scenario) -> float
 ```
 
 This helper method gets the residual rates from ResidualValues.csv
@@ -161,12 +163,13 @@ This helper method gets the residual rates from ResidualValues.csv
 
 - `residual_rates` _float_ - Residual rate as percentage of MSRP
 
-<a id="..tco.tcocalc.calculate_dollar_cost"></a>
+<a id="t3co.tco.tcocalc.calculate_dollar_cost"></a>
 
 #### calculate\_dollar\_cost
 
 ```python
-def calculate_dollar_cost(veh, scenario)
+def calculate_dollar_cost(veh: fastsim.vehicle.Vehicle,
+                          scenario: run_scenario.Scenario) -> dict
 ```
 
 This helper method calculates the MSRP breakdown dictionary from
@@ -189,12 +192,14 @@ This helper method calculates the MSRP breakdown dictionary from
 
 - `cost_set` _dict_ - Dictionary containing MSRP breakdown
 
-<a id="..tco.tcocalc.calculate_opp_costs"></a>
+<a id="t3co.tco.tcocalc.calculate_opp_costs"></a>
 
 #### calculate\_opp\_costs
 
 ```python
-def calculate_opp_costs(vehicle, scenario, range_dict)
+def calculate_opp_costs(vehicle: fastsim.vehicle.Vehicle,
+                        scenario: run_scenario.Scenario,
+                        range_dict: dict) -> dict
 ```
 
 This helper method calculates opportunity costs and generates veh_opp_cost_set from
@@ -207,13 +212,20 @@ This helper method calculates opportunity costs and generates veh_opp_cost_set f
 - `vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object of analysis vehicle
 - `scenario` _run_scenario.Scenario_ - Scenario object of current selection
 - `range_dict` _dict_ - Dictionary containing range values from fueleconomy.get_range_mi()
+  
 
-<a id="..tco.tcocalc.fill_fuel_eff_file"></a>
+**Returns**:
+
+- `veh_opp_cost_set` _dict_ - Dictionary containing opportunity cost results
+
+<a id="t3co.tco.tcocalc.fill_fuel_eff_file"></a>
 
 #### fill\_fuel\_eff\_file
 
 ```python
-def fill_fuel_eff_file(vehicle, scenario, mpgge_dict)
+def fill_fuel_eff_file(vehicle: fastsim.vehicle.Vehicle,
+                       scenario: run_scenario.Scenario,
+                       mpgge_dict: dict) -> pd.DataFrame
 ```
 
 This helper method generates a dataframe of Fuel Efficiency [mi/gge]
@@ -232,12 +244,13 @@ For HEV and CONV, mpgge
 
 - `fefdata` _pd.DataFrame_ - Dictionary containing Fuel Efficiency [mi/gge]
 
-<a id="..tco.tcocalc.fill_veh_expense_file"></a>
+<a id="t3co.tco.tcocalc.fill_veh_expense_file"></a>
 
 #### fill\_veh\_expense\_file
 
 ```python
-def fill_veh_expense_file(scenario, cost_set)
+def fill_veh_expense_file(scenario: run_scenario.Scenario,
+                          cost_set: dict) -> pd.DataFrame
 ```
 
 This helper method generates a dataframe of MSRP breakdown costs as Cost [$/veh]
@@ -252,12 +265,13 @@ This helper method generates a dataframe of MSRP breakdown costs as Cost [$/veh]
 
 - `vexpdf` _pd.DataFrame_ - Dataframe containing MSRP components costs as Cost [$/veh]
 
-<a id="..tco.tcocalc.fill_trav_exp_tsv"></a>
+<a id="t3co.tco.tcocalc.fill_trav_exp_tsv"></a>
 
 #### fill\_trav\_exp\_tsv
 
 ```python
-def fill_trav_exp_tsv(vehicle, scenario)
+def fill_trav_exp_tsv(vehicle: fastsim.vehicle.Vehicle,
+                      scenario: run_scenario.Scenario) -> pd.DataFrame
 ```
 
 This helper method generates a dataframe containing maintenance costs in Cost [$/mi]
@@ -272,12 +286,13 @@ This helper method generates a dataframe containing maintenance costs in Cost [$
 
 - `df` _pd.DataFrame_ - Dataframe containing maintenance costs in Cost [$/mi]
 
-<a id="..tco.tcocalc.fill_downtimelabor_cost_tsv"></a>
+<a id="t3co.tco.tcocalc.fill_downtimelabor_cost_tsv"></a>
 
 #### fill\_downtimelabor\_cost\_tsv
 
 ```python
-def fill_downtimelabor_cost_tsv(scenario, oppy_cost_set)
+def fill_downtimelabor_cost_tsv(scenario: run_scenario.Scenario,
+                                oppy_cost_set: dict) -> pd.DataFrame
 ```
 
 This helper method generates a dataframe containing fueling downtime and M&R downtime costs in Cost [$/Yr]
@@ -292,12 +307,13 @@ This helper method generates a dataframe containing fueling downtime and M&R dow
 
 - `df` _pd.DataFrame_ - Dataframe containing fueling and MR downtime costs in Cost [$/Yr]
 
-<a id="..tco.tcocalc.fill_market_share_tsv"></a>
+<a id="t3co.tco.tcocalc.fill_market_share_tsv"></a>
 
 #### fill\_market\_share\_tsv
 
 ```python
-def fill_market_share_tsv(scenario, num_vs=1)
+def fill_market_share_tsv(scenario: run_scenario.Scenario,
+                          num_vs: int = 1) -> pd.DataFrame
 ```
 
 This helper method generates a dataframe containing market share of current vehicle selection per vehicle sold
@@ -312,12 +328,13 @@ This helper method generates a dataframe containing market share of current vehi
 
 - `df` _pd.DataFrame_ - Dataframe containing market share of current vehicle in Market Share [veh/veh]
 
-<a id="..tco.tcocalc.fill_fuel_expense_tsv"></a>
+<a id="t3co.tco.tcocalc.fill_fuel_expense_tsv"></a>
 
 #### fill\_fuel\_expense\_tsv
 
 ```python
-def fill_fuel_expense_tsv(vehicle, scenario)
+def fill_fuel_expense_tsv(vehicle: fastsim.vehicle.Vehicle,
+                          scenario: run_scenario.Scenario) -> pd.DataFrame
 ```
 
 This helper method generates a dataframe of fuel operating costs in Cost [$/gge]
@@ -330,19 +347,19 @@ This helper method generates a dataframe of fuel operating costs in Cost [$/gge]
 
 **Raises**:
 
-- `Exception` - Invalid fuel type
+- `Exception` - Invalid fuel_type type
   
 
 **Returns**:
 
 - `df` _pd.DataFrame_ - Dataframe containing fuel operating costs in Cost [$/gge]
 
-<a id="..tco.tcocalc.fill_annual_tsv"></a>
+<a id="t3co.tco.tcocalc.fill_annual_tsv"></a>
 
 #### fill\_annual\_tsv
 
 ```python
-def fill_annual_tsv(scenario)
+def fill_annual_tsv(scenario: run_scenario.Scenario) -> pd.DataFrame
 ```
 
 This helper method generates a dataframe of annual vehicle miles traveled (vmt) - Annual Travel [mi/yr]
@@ -356,12 +373,13 @@ This helper method generates a dataframe of annual vehicle miles traveled (vmt) 
 
 - `df` _pd.DataFrame_ - Dataframe containing Annual Travel [mi/yr]
 
-<a id="..tco.tcocalc.fill_reg_sales_tsv"></a>
+<a id="t3co.tco.tcocalc.fill_reg_sales_tsv"></a>
 
 #### fill\_reg\_sales\_tsv
 
 ```python
-def fill_reg_sales_tsv(scenario, num_vs=1)
+def fill_reg_sales_tsv(scenario: run_scenario.Scenario,
+                       num_vs: int = 1) -> pd.DataFrame
 ```
 
 This helper method generates a dataframe containing vehicle sales per year - Sales [veh]
@@ -376,12 +394,13 @@ This helper method generates a dataframe containing vehicle sales per year - Sal
 
 - `df` _pd.DataFrame_ - Dataframe containing vehicle sales in Sales [veh]
 
-<a id="..tco.tcocalc.fill_insurance_tsv"></a>
+<a id="t3co.tco.tcocalc.fill_insurance_tsv"></a>
 
 #### fill\_insurance\_tsv
 
 ```python
-def fill_insurance_tsv(scenario, veh_cost_set)
+def fill_insurance_tsv(scenario: run_scenario.Scenario,
+                       veh_cost_set: dict) -> pd.DataFrame
 ```
 
 This helper method generates a dataframe containing vehicle insurance costs as Cost [$/Yr]
@@ -396,12 +415,14 @@ This helper method generates a dataframe containing vehicle insurance costs as C
 
 - `df` _pd.DataFrame_ - Dataframe containing insurance costs in Cost [$/Yr]
 
-<a id="..tco.tcocalc.fill_residual_cost_tsc"></a>
+<a id="t3co.tco.tcocalc.fill_residual_cost_tsc"></a>
 
 #### fill\_residual\_cost\_tsc
 
 ```python
-def fill_residual_cost_tsc(vehicle, scenario, veh_cost_set)
+def fill_residual_cost_tsc(vehicle: fastsim.vehicle.Vehicle,
+                           scenario: run_scenario.Scenario,
+                           veh_cost_set: dict) -> pd.DataFrame
 ```
 
 This helper method generates a dataframe of residual costs as Cost [$/Yr]
@@ -417,12 +438,13 @@ This helper method generates a dataframe of residual costs as Cost [$/Yr]
 
 - `df` _pd.DataFrame_ - Dataframe containing vehicle residual costs as Cost [$/Yr]
 
-<a id="..tco.tcocalc.fill_survival_tsv"></a>
+<a id="t3co.tco.tcocalc.fill_survival_tsv"></a>
 
 #### fill\_survival\_tsv
 
 ```python
-def fill_survival_tsv(scenario, num_vs=1)
+def fill_survival_tsv(scenario: run_scenario.Scenario,
+                      num_vs=1) -> pd.DataFrame
 ```
 
 This helper method generates a dataframe containing surviving vehicles as Surviving Vehicles [veh/veh]
@@ -437,12 +459,14 @@ This helper method generates a dataframe containing surviving vehicles as Surviv
 
 - `df` _pd.DataFrame_ - Dataframe containing number of surviving vehicles on road in Surviving Vehicles [veh/veh]
 
-<a id="..tco.tcocalc.fill_fuel_split_tsv"></a>
+<a id="t3co.tco.tcocalc.fill_fuel_split_tsv"></a>
 
 #### fill\_fuel\_split\_tsv
 
 ```python
-def fill_fuel_split_tsv(vehicle, scenario, mpgge)
+def fill_fuel_split_tsv(vehicle: fastsim.vehicle.Vehicle,
+                        scenario: run_scenario.Scenario,
+                        mpgge: dict) -> pd.DataFrame
 ```
 
 This helper method generates a dataframe of fraction of travel in each fuel type as Fraction of Travel [mi/mi]
@@ -458,11 +482,11 @@ This helper method generates a dataframe of fraction of travel in each fuel type
 
 - `df` _pd.DataFrame_ - Dataframe containing fraction of travel in each fuel type as Fraction of Travel [mi/mi]
 
-<a id="..tco.opportunity_cost"></a>
+<a id="t3co.tco.opportunity_cost"></a>
 
-# ..tco.opportunity\_cost
+# t3co.tco.opportunity\_cost
 
-<a id="..tco.opportunity_cost.OpportunityCost"></a>
+<a id="t3co.tco.opportunity_cost.OpportunityCost"></a>
 
 ## OpportunityCost Objects
 
@@ -475,12 +499,14 @@ This class is used to calculate the different opportunity costs for a scenario a
 - Fueling Downtime Cost
 - Maintenance and Repair Downtime Cost
 
-<a id="..tco.opportunity_cost.OpportunityCost.__init__"></a>
+<a id="t3co.tco.opportunity_cost.OpportunityCost.__init__"></a>
 
 #### \_\_init\_\_
 
 ```python
-def __init__(scenario, range_dict=None, **kwargs)
+def __init__(scenario: run_scenario.Scenario,
+             range_dict: dict = None,
+             **kwargs) -> None
 ```
 
 Initializes OpportunityCost object using Scenario object, range_dict (from fueleconomy module), and other arguments
@@ -490,12 +516,14 @@ Initializes OpportunityCost object using Scenario object, range_dict (from fuele
 - `scenario` _run_scenario.Scenario_ - Scenario object
 - `range_dict` _dict, optional_ - dictionary containing primary_fuel_range_mi from fueleconomy.get_range_mi function. Defaults to None.
 
-<a id="..tco.opportunity_cost.OpportunityCost.set_kdes"></a>
+<a id="t3co.tco.opportunity_cost.OpportunityCost.set_kdes"></a>
 
 #### set\_kdes
 
 ```python
-def set_kdes(scenario, bw_method=0.15, verbose=False)
+def set_kdes(scenario: run_scenario.Scenario,
+             bw_method: float = 0.15,
+             verbose: bool = False) -> None
 ```
 
 This method sets tje kde kernel. This is time-consuming, only call this once, if possible.
@@ -506,15 +534,15 @@ This method sets tje kde kernel. This is time-consuming, only call this once, if
 - `bw_method` _float, optional_ - kernel bandwidth method used by guassian_kde. Defaults to .15.
 - `verbose` _bool, optional_ - if True, prints process sets. Defaults to False.
 
-<a id="..tco.opportunity_cost.OpportunityCost.get_payload_loss_factor"></a>
+<a id="t3co.tco.opportunity_cost.OpportunityCost.set_payload_loss_factor"></a>
 
-#### get\_payload\_loss\_factor
+#### set\_payload\_loss\_factor
 
 ```python
-def get_payload_loss_factor(a_vehicle: fastsim.vehicle,
-                            scenario,
-                            plots=False,
-                            plots_dir=None)
+def set_payload_loss_factor(a_vehicle: fastsim.vehicle.Vehicle,
+                            scenario: run_scenario.Scenario,
+                            plots: bool = False,
+                            plots_dir: str = None) -> None
 ```
 
 This method runs teh kernel density estimation function set_kdes and calculates the payload capacity loss factor (payload_cap_cost_multiplier)             of the new vehicle compared to a conventional vehicle's reference empty weight.
@@ -526,12 +554,13 @@ This method runs teh kernel density estimation function set_kdes and calculates 
 - `plots` _bool, optional_ - if True, creates histogram of KDE weight bins. Defaults to False.
 - `plots_dir` _str, optional_ - output diretory for saving plot figure. Defaults to None.
 
-<a id="..tco.opportunity_cost.OpportunityCost.get_dwell_time_cost"></a>
+<a id="t3co.tco.opportunity_cost.OpportunityCost.set_dwell_time_cost"></a>
 
-#### get\_dwell\_time\_cost
+#### set\_dwell\_time\_cost
 
 ```python
-def get_dwell_time_cost(a_vehicle: fastsim.vehicle, scenario)
+def set_dwell_time_cost(a_vehicle: fastsim.vehicle.Vehicle,
+                        scenario: run_scenario.Scenario) -> None
 ```
 
 This function calculates the fueling dwell time cost for a vehicle based on fuel fill rate/charging power and shifts_per_year
@@ -541,12 +570,13 @@ This function calculates the fueling dwell time cost for a vehicle based on fuel
 - `a_vehicle` _fastsim.vehicle_ - FASTSim vehicle object of analysis vehicle
 - `scenario` _run_scenario.Scenario_ - Scenario object for current selection
 
-<a id="..tco.opportunity_cost.OpportunityCost.get_M_R_downtime_cost"></a>
+<a id="t3co.tco.opportunity_cost.OpportunityCost.set_M_R_downtime_cost"></a>
 
-#### get\_M\_R\_downtime\_cost
+#### set\_M\_R\_downtime\_cost
 
 ```python
-def get_M_R_downtime_cost(a_vehicle: fastsim.vehicle, scenario)
+def set_M_R_downtime_cost(a_vehicle: fastsim.vehicle.Vehicle,
+                          scenario: run_scenario.Scenario) -> None
 ```
 
 This function calculates the Maintenance and Repair (M&R) downtime cost based on planned, unplanned, and tire replacement downtime inputs
@@ -556,7 +586,7 @@ This function calculates the Maintenance and Repair (M&R) downtime cost based on
 - `a_vehicle` _fastsim.vehicle_ - FASTSim object of the analysis vehicle
 - `scenario` _run_scenario.Scenario_ - Scenario object for the current selection
 
-<a id="..tco.opportunity_cost.main"></a>
+<a id="t3co.tco.opportunity_cost.main"></a>
 
 #### main
 
@@ -566,16 +596,16 @@ def main()
 
 Runs the opportunity cost module as a standalone code based on input vehicles and scenarios
 
-<a id="..tco.tco_stock_emissions"></a>
+<a id="t3co.tco.tco_stock_emissions"></a>
 
-# ..tco.tco\_stock\_emissions
+# t3co.tco.tco\_stock\_emissions
 
-<a id="..tco.tco_stock_emissions.dropCols"></a>
+<a id="t3co.tco.tco_stock_emissions.dropCols"></a>
 
 #### dropCols
 
 ```python
-def dropCols(df)
+def dropCols(df: pd.DataFrame) -> pd.DataFrame
 ```
 
 This helper method drops columns if any row contains ['*']
@@ -589,25 +619,27 @@ This helper method drops columns if any row contains ['*']
 
 - `df` _pd.DataFrame_ - Output dataframe with dropped dummy columns
 
-<a id="..tco.tco_stock_emissions.stockModel"></a>
+<a id="t3co.tco.tco_stock_emissions.stockModel"></a>
 
 #### stockModel
 
 ```python
-def stockModel(sales,
-               marketShares,
-               survival,
-               annualTravel,
-               fuelSplit,
-               fuelEfficiency,
-               emissions,
-               vehicleCosts=None,
-               travelCosts=None,
-               fuelCosts=None,
-               insuranceCosts=None,
-               residualCosts=None,
-               downtimeCosts=None,
-               write_files=False)
+def stockModel(
+    sales: pd.DataFrame,
+    marketShares: pd.DataFrame,
+    survival: pd.DataFrame,
+    annualTravel: pd.DataFrame,
+    fuelSplit: pd.DataFrame,
+    fuelEfficiency: pd.DataFrame,
+    emissions: pd.DataFrame,
+    vehicleCosts: pd.DataFrame = None,
+    travelCosts: pd.DataFrame = None,
+    fuelCosts: pd.DataFrame = None,
+    insuranceCosts: pd.DataFrame = None,
+    residualCosts: pd.DataFrame = None,
+    downtimeCosts: pd.DataFrame = None,
+    write_files: bool = False
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]
 ```
 
 This function generates the ownershipCosts dataframe from the dataframes for each cost category
@@ -636,16 +668,17 @@ This function generates the ownershipCosts dataframe from the dataframes for eac
 - `emissions` _pd.DataFrame_ - Dataframe of total emissions
 - `ownershipCosts` _pd.DataFrame_ - Dataframe of all ownership costs for given selection
 
-<a id="..tco.tco_analysis"></a>
+<a id="t3co.tco.tco_analysis"></a>
 
-# ..tco.tco\_analysis
+# t3co.tco.tco\_analysis
 
-<a id="..tco.tco_analysis.get_operating_costs"></a>
+<a id="t3co.tco.tco_analysis.get_operating_costs"></a>
 
 #### get\_operating\_costs
 
 ```python
-def get_operating_costs(ownershipCosts, TCO_switch="DIRECT")
+def get_operating_costs(ownershipCosts,
+                        TCO_switch: str = "DIRECT") -> pd.DataFrame
 ```
 
 This function creates a dataframe of operating cost from ownershipCosts dataframe based on TCO_switch ('DIRECT' or 'EFFICIENCY')
@@ -660,12 +693,13 @@ This function creates a dataframe of operating cost from ownershipCosts datafram
 
 - `operatingCosts_df` _pd.DataFrame_ - Dataframe containing operating cost categories based on TCO_switch
 
-<a id="..tco.tco_analysis.discounted_costs"></a>
+<a id="t3co.tco.tco_analysis.discounted_costs"></a>
 
 #### discounted\_costs
 
 ```python
-def discounted_costs(scenario, ownershipCosts)
+def discounted_costs(scenario: run_scenario.Scenario,
+                     ownershipCosts: pd.DataFrame) -> pd.DataFrame
 ```
 
 This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discount_rate_pct_per_yr
@@ -680,17 +714,17 @@ This function calculates the yearly discounted costs for each category of owners
 
 - `ownershipCosts` _pd.DataFrame_ - ownershipCosts dataframe with additional 'Discounted Cost [$]' column
 
-<a id="..tco.tco_analysis.calc_discountedTCO"></a>
+<a id="t3co.tco.tco_analysis.calc_discountedTCO"></a>
 
 #### calc\_discountedTCO
 
 ```python
-def calc_discountedTCO(scenario,
-                       discounted_costs_df,
-                       veh_cost_set,
-                       veh_opp_cost_set,
-                       sim_drive,
-                       TCO_switch="DIRECT")
+def calc_discountedTCO(scenario: run_scenario.Scenario,
+                       discounted_costs_df: pd.DataFrame,
+                       veh_cost_set: dict,
+                       veh_opp_cost_set: dict,
+                       sim_drive: fastsim.simdrive.SimDrive,
+                       TCO_switch: str = "DIRECT") -> Tuple[float, dict, dict]
 ```
 
 This function calculates the discounted Total Cost of Ownerhip (discounted to account for time-value of money).
@@ -712,12 +746,29 @@ There are two methods to calculate discounted TCO - 'DIRECT' and 'EFFICIENCY'
 - `oppy_cost_Dol_set` _dict_ - Dictionary containing discounted opportunity costs breakdown
 - `veh_oper_cost_set` _dict_ - Dictionary containing discounted operating costs breakdown
 
-<a id="..tco.tco_analysis.get_tco_of_vehicle"></a>
+<a id="t3co.tco.tco_analysis.get_tco_of_vehicle"></a>
 
 #### get\_tco\_of\_vehicle
 
 ```python
-def get_tco_of_vehicle(vehicle, range_cyc, scenario, write_tsv=False)
+def get_tco_of_vehicle(
+    vehicle: fastsim.vehicle.Vehicle,
+    range_cyc: fastsim.cycle.Cycle,
+    scenario: run_scenario.Scenario,
+    write_tsv: bool = False
+) -> Tuple[
+        float,
+        float,
+        dict,
+        pd.DataFrame,
+        pd.DataFrame,
+        dict,
+        dict,
+        fastsim.simdrive.SimDrive,
+        dict,
+        dict,
+        dict,
+]
 ```
 
 This function calculates the Total Cost of Ownership of a vehicle and scenario for a given cycle. The three main components are:
@@ -747,9 +798,9 @@ This function calculates the Total Cost of Ownership of a vehicle and scenario f
 - `veh_opp_cost_set` _dict_ - Dictionary containing opportunity costs breakdown
 - `tco_files` _dict_ - Dictionary containing TCO intermediate dataframes
 
-<a id="..tests.test_tcos"></a>
+<a id="t3co.tests.test_tcos"></a>
 
-# ..tests.test\_tcos
+# t3co.tests.test\_tcos
 
 Testing module for TCO to ensure the TCO related results remain consistent over time
 
@@ -757,7 +808,7 @@ Flow:
 code reads TCO tests vehicles and scenarios one at a time. Generates TCO output dictionaries
 and compares the results with the hard coded dictionaries below in comparison_dict.
 
-<a id="..tests.test_tcos.remove"></a>
+<a id="t3co.tests.test_tcos.remove"></a>
 
 #### remove
 
@@ -767,7 +818,7 @@ def remove(out)
 
 removes key-values from output dict that can't be compared very easily
 
-<a id="..tests.test_tcos.RunCONVTCOTests"></a>
+<a id="t3co.tests.test_tcos.RunCONVTCOTests"></a>
 
 ## RunCONVTCOTests Objects
 
@@ -775,7 +826,7 @@ removes key-values from output dict that can't be compared very easily
 class RunCONVTCOTests(unittest.TestCase)
 ```
 
-<a id="..tests.test_tcos.RunCONVTCOTests.compare"></a>
+<a id="t3co.tests.test_tcos.RunCONVTCOTests.compare"></a>
 
 #### compare
 
@@ -794,32 +845,15 @@ Check all key-value pairs between dicts for equality
 
 None
 
-<a id="..tests"></a>
+<a id="t3co.tests"></a>
 
-# ..tests
+# t3co.tests
 
 Package for testing modules compliant with unittest folder structure.
 
-<a id="..tests.tco_tests.t2co_tco_benchmark"></a>
+<a id="t3co.tests.tco_tests.t2co_tco_benchmark"></a>
 
-# ..tests.tco\_tests.t2co\_tco\_benchmark
-
-Testing module for TCO to ensure the TCO related results remain consistent over time with
-previous model (Tech Targets c 2019)
-
-Flow:
-code reads TCO tests vehicles and scenarios one at a time. Generates TCO output dictionaries
-and compares the results with the hard coded dictionaries below in comparison_dict.
-
-<a id="..tests.tco_tests.t2co_tco_benchmark.veh_no"></a>
-
-#### veh\_no
-
-
-
-<a id="..tests.tco_tests.t2co_bev_mpgge_benchmark"></a>
-
-# ..tests.tco\_tests.t2co\_bev\_mpgge\_benchmark
+# t3co.tests.tco\_tests.t2co\_tco\_benchmark
 
 Testing module for TCO to ensure the TCO related results remain consistent over time with
 previous model (Tech Targets c 2019)
@@ -828,31 +862,48 @@ Flow:
 code reads TCO tests vehicles and scenarios one at a time. Generates TCO output dictionaries
 and compares the results with the hard coded dictionaries below in comparison_dict.
 
-<a id="..tests.tco_tests.t2co_bev_mpgge_benchmark.veh_no"></a>
+<a id="t3co.tests.tco_tests.t2co_tco_benchmark.veh_no"></a>
 
 #### veh\_no
 
 
 
-<a id="..tests.test_moo"></a>
+<a id="t3co.tests.tco_tests.t2co_bev_mpgge_benchmark"></a>
 
-# ..tests.test\_moo
+# t3co.tests.tco\_tests.t2co\_bev\_mpgge\_benchmark
+
+Testing module for TCO to ensure the TCO related results remain consistent over time with
+previous model (Tech Targets c 2019)
+
+Flow:
+code reads TCO tests vehicles and scenarios one at a time. Generates TCO output dictionaries
+and compares the results with the hard coded dictionaries below in comparison_dict.
+
+<a id="t3co.tests.tco_tests.t2co_bev_mpgge_benchmark.veh_no"></a>
+
+#### veh\_no
+
+
+
+<a id="t3co.tests.test_moo"></a>
+
+# t3co.tests.test\_moo
 
 Module for testing moo.  Folder structure, file name, and code 
 are written to be compliant with python's unittest package, but 
 main() can be called via importing
 
-<a id="..moopack"></a>
+<a id="t3co.moopack"></a>
 
-# ..moopack
+# t3co.moopack
 
 Sub-package contaning module that runs PyMOO optimization
 
-<a id="..moopack.moo"></a>
+<a id="t3co.moopack.moo"></a>
 
-# ..moopack.moo
+# t3co.moopack.moo
 
-<a id="..moopack.moo.T3COProblem"></a>
+<a id="t3co.moopack.moo.T3COProblem"></a>
 
 ## T3COProblem Objects
 
@@ -862,7 +913,7 @@ class T3COProblem(ElementwiseProblem)
 
 Class for creating PyMoo problem.
 
-<a id="..moopack.moo.T3COProblem.setup_opt_records"></a>
+<a id="t3co.moopack.moo.T3COProblem.setup_opt_records"></a>
 
 #### setup\_opt\_records
 
@@ -872,19 +923,19 @@ def setup_opt_records()
 
 This method sets up the empty optimization record arrays
 
-<a id="..moopack.moo.T3COProblem.__init__"></a>
+<a id="t3co.moopack.moo.T3COProblem.__init__"></a>
 
 #### \_\_init\_\_
 
 ```python
-def __init__(knobs_bounds,
-             vnum,
-             optimize_pt=gl.BEV,
-             obj_list=None,
-             constr_list=None,
-             verbose=False,
-             config=None,
-             **kwargs)
+def __init__(knobs_bounds: dict,
+             vnum: float,
+             optimize_pt: str = gl.BEV,
+             obj_list: list = None,
+             constr_list: list = None,
+             verbose: bool = False,
+             config: run_scenario.Config = None,
+             **kwargs) -> None
 ```
 
 This constructor initializes optimization input variables
@@ -893,35 +944,35 @@ This constructor initializes optimization input variables
 
 - `knobs_bounds` _dict_ - Dictionary containing knobs bounds for optimization
 - `vnum` _float_ - Vehicle selection number
-- `optimize_pt` _vehicle.veh_pt_type, optional_ - Vehicle powertrain type - Conv, BEV, HEV, PHEV. Defaults to gl.BEV.
+- `optimize_pt` _str, optional_ - Vehicle powertrain type - Conv, BEV, HEV, PHEV. Defaults to gl.BEV.
 - `obj_list` _list, optional_ - List of objectives. Defaults to None.
 - `constr_list` _list, optional_ - List of constraints. Defaults to None.
 - `verbose` _bool, optional_ - if True, prints process steps. Defaults to False.
 - `config` _run_scenario.Config, optional_ - T3CO Config object containing analysis attributes and scenario attribute overrides. Defaults to None.
 
-<a id="..moopack.moo.T3COProblem.compile_reporting_vars"></a>
+<a id="t3co.moopack.moo.T3COProblem.compile_reporting_vars"></a>
 
 #### compile\_reporting\_vars
 
 ```python
-def compile_reporting_vars()
+def compile_reporting_vars() -> None
 ```
 
 This method creates an output dictionary containing optimization results
 
-<a id="..moopack.moo.T3COProblem.instantiate_moo_vehicles_and_scenario"></a>
+<a id="t3co.moopack.moo.T3COProblem.instantiate_moo_vehicles_and_scenario"></a>
 
 #### instantiate\_moo\_vehicles\_and\_scenario
 
 ```python
-def instantiate_moo_vehicles_and_scenario(vnum, config=None)
+def instantiate_moo_vehicles_and_scenario(vnum: int, config=None) -> None
 ```
 
 This method instantiates the multi-objective optimization problem vehicles and scenarios, starting with the baseline Conventional vehicle.
 
 **Arguments**:
 
-- `vnum` _float_ - vehicle selection number
+- `vnum` _int_ - vehicle selection number
 - `config` _run_scenario.Config, optional_ - T3CO Config object containing analysis attributes and scenario attribute overrides. Defaults to None.
   
 
@@ -929,12 +980,13 @@ This method instantiates the multi-objective optimization problem vehicles and s
 
 - `TypeError` - Invalid optimize_pt selection
 
-<a id="..moopack.moo.T3COProblem.cda_percent_delta_knob"></a>
+<a id="t3co.moopack.moo.T3COProblem.cda_percent_delta_knob"></a>
 
 #### cda\_percent\_delta\_knob
 
 ```python
-def cda_percent_delta_knob(CdA_perc_reduction, optvehicle)
+def cda_percent_delta_knob(CdA_perc_reduction: str,
+                           optvehicle: fastsim.vehicle.Vehicle) -> None
 ```
 
 This method sets the drag_coef based on aero improvement curve and glider_kg based on cda_cost_coeff_a and cda_cost_coeff_b
@@ -944,12 +996,13 @@ This method sets the drag_coef based on aero improvement curve and glider_kg bas
 - `CdA_perc_reduction` _str_ - Name of aero improvement curve file
 - `optvehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object for optimization vehicle
 
-<a id="..moopack.moo.T3COProblem.weight_delta_percent_knob"></a>
+<a id="t3co.moopack.moo.T3COProblem.weight_delta_percent_knob"></a>
 
 #### weight\_delta\_percent\_knob
 
 ```python
-def weight_delta_percent_knob(wt_perc_reduction, optvehicle)
+def weight_delta_percent_knob(wt_perc_reduction: float,
+                              optvehicle: fastsim.vehicle.Vehicle) -> None
 ```
 
 This method sets the knob from the lightweighting curve
@@ -959,12 +1012,13 @@ This method sets the knob from the lightweighting curve
 - `wt_perc_reduction` _float_ - Weight reduction percentage value from lightweighting curve
 - `optvehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object of the optimization vehicle
 
-<a id="..moopack.moo.T3COProblem.fc_peak_eff_knob"></a>
+<a id="t3co.moopack.moo.T3COProblem.fc_peak_eff_knob"></a>
 
 #### fc\_peak\_eff\_knob
 
 ```python
-def fc_peak_eff_knob(fc_peak_eff, optvehicle)
+def fc_peak_eff_knob(fc_peak_eff: float,
+                     optvehicle: fastsim.vehicle.Vehicle) -> None
 ```
 
 This method sets the knob from the engine efficiency curve
@@ -974,12 +1028,13 @@ This method sets the knob from the engine efficiency curve
 - `fc_peak_eff` _float_ - Fuel converter peak effiency override from engine efficiency improvement curve
 - `optvehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object for optimization vehicle
 
-<a id="..moopack.moo.T3COProblem.get_objs"></a>
+<a id="t3co.moopack.moo.T3COProblem.get_objs"></a>
 
 #### get\_objs
 
 ```python
-def get_objs(x, write_tsv=False)
+def get_objs(x: dict,
+             write_tsv: bool = False) -> Tuple[np.array, np.array, dict]
 ```
 
 This method gets called when PyMoo calls _evaluate. It initializes objectives and constraints and runs vehicle_scenario_sweep
@@ -1003,12 +1058,13 @@ chromosome is a full gene, all values in x
 - `constraint_results_G` _np.array_ - Array of constraints
 - `rs_sweep` _dict_ - Output dictionary from vehicle_scenario_sweep
 
-<a id="..moopack.moo.T3COProblem.adjust_fc_peak_eff"></a>
+<a id="t3co.moopack.moo.T3COProblem.adjust_fc_peak_eff"></a>
 
 #### adjust\_fc\_peak\_eff
 
 ```python
-def adjust_fc_peak_eff(fc_peak_eff, scenario, optvehicle)
+def adjust_fc_peak_eff(fc_peak_eff: float, scenario: run_scenario.Scenario,
+                       optvehicle: fastsim.vehicle.Vehicle) -> None
 ```
 
 This method augments an advanced vehicle fc_eff_array based on new fc_peak_eff using baseline fc_eff_array
@@ -1020,12 +1076,16 @@ This method augments an advanced vehicle fc_eff_array based on new fc_peak_eff u
 - `scenario` _run_scenario.Scenario_ - Scenario object of current selection
 - `optvehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object of optimization vehicle
 
-<a id="..moopack.moo.T3COProblem.sweep_knob"></a>
+<a id="t3co.moopack.moo.T3COProblem.sweep_knob"></a>
 
 #### sweep\_knob
 
 ```python
-def sweep_knob(knob, definition=100, plot=False, optres=None, **kwargs)
+def sweep_knob(knob: list,
+               definition: int = 100,
+               plot: bool = False,
+               optres: float = None,
+               **kwargs) -> list
 ```
 
 This method sweeps the optimization knob of vehicle from lbound to ubound, return TCO             plot optres to see if there's agreement from opt solution and your sweep
@@ -1042,12 +1102,12 @@ This method sweeps the optimization knob of vehicle from lbound to ubound, retur
 
 - `tcos` _list_ - List of TCOs of length=definition
 
-<a id="..moopack.moo.T3COProblem.get_tco_from_moo_advanced_result"></a>
+<a id="t3co.moopack.moo.T3COProblem.get_tco_from_moo_advanced_result"></a>
 
 #### get\_tco\_from\_moo\_advanced\_result
 
 ```python
-def get_tco_from_moo_advanced_result(x)
+def get_tco_from_moo_advanced_result(x: dict) -> dict
 ```
 
 This method is a utility function to get detailed TCO information from optimized MOO result
@@ -1061,7 +1121,7 @@ This method is a utility function to get detailed TCO information from optimized
 
 - `out` _dict_ - Dictionary containing TCO results for optimization runs
 
-<a id="..moopack.moo.T3CODisplay"></a>
+<a id="t3co.moopack.moo.T3CODisplay"></a>
 
 ## T3CODisplay Objects
 
@@ -1075,33 +1135,34 @@ This class contains the display object for Pymoo optimization printouts - pymoo.
 
 - `Output` _pymoo.util.display.output.Output_ - Pymoo minimize display object
 
-<a id="..moopack.moo.T3CODisplay.__init__"></a>
+<a id="t3co.moopack.moo.T3CODisplay.__init__"></a>
 
 #### \_\_init\_\_
 
 ```python
-def __init__(**kwargs)
+def __init__(**kwargs) -> None
 ```
 
 This constructor initializes the pymoo.util.display.Display object
 
-<a id="..moopack.moo.run_optimization"></a>
+<a id="t3co.moopack.moo.run_optimization"></a>
 
 #### run\_optimization
 
 ```python
-def run_optimization(pop_size,
-                     n_max_gen,
-                     knobs_bounds,
-                     vnum,
-                     x_tol,
-                     f_tol,
-                     nth_gen,
-                     n_last,
-                     algo,
-                     obj_list=None,
-                     config=None,
-                     **kwargs)
+def run_optimization(
+        pop_size: int,
+        n_max_gen: int,
+        knobs_bounds: dict,
+        vnum: int,
+        x_tol: float,
+        f_tol: float,
+        nth_gen: int,
+        n_last: int,
+        algo: str,
+        obj_list: list = None,
+        config: run_scenario.Config = None,
+        **kwargs) -> Tuple[pymoo.core.result.Result, T3COProblem, bool]
 ```
 
 This method creates and runs T3COProblem minimization
@@ -1111,7 +1172,7 @@ This method creates and runs T3COProblem minimization
 - `pop_size` _int_ - Population size for optimization
 - `n_max_gen` _int_ - maximum number of generations for optimization
 - `knobs_bounds` _dict_ - Dictionary containing knobs and bounds
-- `vnum` _float_ - vehicle selection number
+- `vnum` _int_ - vehicle selection number
 - `x_tol` _float_ - tolerance in parameter space
 - `f_tol` _float_ - tolerance in objective space
 - `nth_gen` _int_ - number of generations to evaluate if convergence occurs
@@ -1127,22 +1188,23 @@ This method creates and runs T3COProblem minimization
 - `problem` _moo.T3COProblem_ - T3COProblem ElementwiseProblem object
 - `OPTIMIZATION_SUCCEEDED` _bool_ - if True, pymoo.minimize succeeded
 
-<a id="..objectives.accel"></a>
+<a id="t3co.objectives.accel"></a>
 
-# ..objectives.accel
+# t3co.objectives.accel
 
 Module for simulating acceleration performance.
 
-<a id="..objectives.accel.get_accel"></a>
+<a id="t3co.objectives.accel.get_accel"></a>
 
 #### get\_accel
 
 ```python
-def get_accel(analysis_vehicle,
-              scenario=None,
-              set_weight_to_max_kg=True,
-              verbose=False,
-              ess_init_soc=None)
+def get_accel(
+        analysis_vehicle: fastsim.vehicle.Vehicle,
+        scenario: run_scenario.Scenario = None,
+        set_weight_to_max_kg: bool = True,
+        verbose=False,
+        ess_init_soc=None) -> Tuple[float, float, fastsim.vehicle.Vehicle]
 ```
 
 This function runs a simdrive for getting 0-to-60 and 0-30 mph time with fully laden weight at GVWR (plus gvwr_credit_kg?)
@@ -1163,19 +1225,19 @@ This function runs a simdrive for getting 0-to-60 and 0-30 mph time with fully l
 - `zero_to_thirty` _float_ - 0-30 mph acceleration time in sec
 - `accel_simdrive` _fastsim.simdrive.SimDrive_ - FASTSim.simdrive.SimDrive object for running the acceleration drivecycle
 
-<a id="..objectives.fueleconomy"></a>
+<a id="t3co.objectives.fueleconomy"></a>
 
-# ..objectives.fueleconomy
+# t3co.objectives.fueleconomy
 
 Module containing functions for calculating fuel economy objectives.
 
-<a id="..objectives.fueleconomy.get_range_mi"></a>
+<a id="t3co.objectives.fueleconomy.get_range_mi"></a>
 
 #### get\_range\_mi
 
 ```python
 def get_range_mi(mpgge_info: dict, vehicle: fastsim.vehicle.Vehicle,
-                 scenario) -> dict
+                 scenario: run_scenario.Scenario) -> dict
 ```
 
 This funcion computes range [miles] from mpgge using vehicle powertrain type and energy (or fuel) store size.
@@ -1201,7 +1263,7 @@ i.e. the CD range that PHEVs are commonly specified with
 
 - `range_dict` _dict_ - Dictionary containing different range results
 
-<a id="..objectives.fueleconomy.get_sim_drive"></a>
+<a id="t3co.objectives.fueleconomy.get_sim_drive"></a>
 
 #### get\_sim\_drive
 
@@ -1222,16 +1284,18 @@ This helper method returns a FASTSim SimDrive object using the vehicle, drive cy
 
 - `sim_drive` _fastsim.simdrive.SimDrive_ - FASTSim SimDrive object
 
-<a id="..objectives.fueleconomy.get_mpgge"></a>
+<a id="t3co.objectives.fueleconomy.get_mpgge"></a>
 
 #### get\_mpgge
 
 ```python
-def get_mpgge(eff_range_cyc: fastsim.cycle.Cycle
-              | List[Tuple[fastsim.cycle.Cycle, float]],
-              v: fastsim.vehicle.Vehicle,
-              scenario,
-              diagnostic=False)
+def get_mpgge(
+    eff_range_cyc: fastsim.cycle.Cycle
+    | List[Tuple[fastsim.cycle.Cycle, float]],
+    v: fastsim.vehicle.Vehicle,
+    scenario,
+    diagnostic=False
+) -> Tuple[dict, List[fastsim.simdrive.SimDrive], List[dict]]
 ```
 
 This helper method gets the composite mpgge fuel efficiency of vehicle for each efficiency_range Drive Cycle and weight.
@@ -1262,20 +1326,22 @@ Also updates the vehicle's corresponding scenario object
 - `sim_drives` _List[fastsim.simdrive.SimDrive]_ - List of simdrives for charge depleting and charge sustaining cycles
 - `mpgges` _List[dict], optional_ - if diagnostic==True, returns additional
 
-<a id="..objectives.gradeability"></a>
+<a id="t3co.objectives.gradeability"></a>
 
-# ..objectives.gradeability
+# t3co.objectives.gradeability
 
-<a id="..objectives.gradeability.get_gradeability"></a>
+<a id="t3co.objectives.gradeability.get_gradeability"></a>
 
 #### get\_gradeability
 
 ```python
-def get_gradeability(analysis_vehicle,
-                     scenario=None,
-                     verbose=False,
-                     ess_init_soc=None,
-                     set_weight_to_max_kg=True)
+def get_gradeability(
+    analysis_vehicle: fastsim.vehicle.Vehicle,
+    scenario: run_scenario.Scenario = None,
+    verbose: bool = False,
+    ess_init_soc: float = None,
+    set_weight_to_max_kg: bool = True
+) -> Tuple[float, float, fastsim.simdrive.SimDrive, fastsim.simdrive.SimDrive]
 ```
 
 This function runs SimDrives to determine the gradeability at given speed and the grade vehicle is
@@ -1297,22 +1363,41 @@ evaluated at how much it meets or exceeds target speed at the target grade.
 - `grade_6_simdrive` _fastsim.simdrive.SimDrive_ - FASTSim SimDrive for gradeability test of 6% grade
 - `grade_125_simdrive` _fastsim.simdrive.SimDrive_ - FASTSim SimDrive for gradeability test of 1.25% grade
 
-<a id="..objectives"></a>
+<a id="t3co.objectives"></a>
 
-# ..objectives
+# t3co.objectives
 
 Sub-package contaning modules that calculate optimization objectives.
 
-<a id="..sweep"></a>
+<a id="t3co.sweep"></a>
 
-# ..sweep
+# t3co.sweep
 
-<a id="..sweep.save_tco_files"></a>
+<a id="t3co.sweep.deug_traces"></a>
+
+#### deug\_traces
+
+```python
+def deug_traces(vehicle: fastsim.vehicle.Vehicle,
+                cycles: List[fastsim.cycle.Cycle],
+                scenario: run_scenario.Scenario) -> None
+```
+
+This function gets a diagnostic trace of get_mpgge
+
+**Arguments**:
+
+- `vehicle` _fastsim.vehicle.Vehicle_ - FASTSim Vehicle object
+- `cycles` _List[fastsim.cycle.Cycle]_ - List of FASTSim drivecycle objects
+- `scenario` _run_scenario.Scenario_ - Scenario object
+
+<a id="t3co.sweep.save_tco_files"></a>
 
 #### save\_tco\_files
 
 ```python
-def save_tco_files(tco_files, resdir, scenario_name, sel, ts)
+def save_tco_files(tco_files: dict, resdir: str, scenario_name: str, sel: str,
+                   ts: str) -> None
 ```
 
 This function saves the intermediary files as tsv
@@ -1325,25 +1410,27 @@ This function saves the intermediary files as tsv
 - `sel` _str_ - selection(s)
 - `ts` _str_ - timestring
 
-<a id="..sweep.get_knobs_bounds_curves"></a>
+<a id="t3co.sweep.get_knobs_bounds_curves"></a>
 
 #### get\_knobs\_bounds\_curves
 
 ```python
-def get_knobs_bounds_curves(selection, vpttype, sdf, lw_imp_curves, aero_drag_imp_curves,
-                            eng_eff_curves)
+def get_knobs_bounds_curves(selection: int, vpttype: str, sdf: pd.DataFrame,
+                            lw_imp_curves: pd.DataFrame,
+                            aero_drag_imp_curves: pd.DataFrame,
+                            eng_eff_curves: pd.DataFrame) -> Tuple[dict, dict]
 ```
 
 This function fetches the knobs and constraints for running the optimization for a given selection
 
 **Arguments**:
 
-- `selection` _float_ - selection number
+- `selection` _int_ - selection number
 - `vpttype` _str_ - vehicle powertrain type = veh_pt_type
-- `sdf` _DataFrame_ - scenario dataframe
-- `lw_imp_curves` _DataFrame_ - light weighting curve dataframe
-- `aero_drag_imp_curves` _DataFrame_ - aero drag curve dataframe
-- `eng_eff_curves` _DataFrame_ - engine efficiency curve dataframe
+- `sdf` _pd.DataFrame_ - scenario dataframe
+- `lw_imp_curves` _pd.DataFrame_ - light weighting curve dataframe
+- `aero_drag_imp_curves` _pd.DataFrame_ - aero drag curve dataframe
+- `eng_eff_curves` _pd.DataFrame_ - engine efficiency curve dataframe
   
 
 **Returns**:
@@ -1351,19 +1438,21 @@ This function fetches the knobs and constraints for running the optimization for
 - `knobs_bounds` _dict_ - dict of knobs and bounds
 - `curves` _dict_ - dict of lw, aero, and engine efficiency curve parameters
 
-<a id="..sweep.get_objectives_constraints"></a>
+<a id="t3co.sweep.get_objectives_constraints"></a>
 
 #### get\_objectives\_constraints
 
 ```python
-def get_objectives_constraints(selection, sdf, verbose=True)
+def get_objectives_constraints(selection: int,
+                               sdf: pd.DataFrame,
+                               verbose: bool = True) -> Tuple[list, list]
 ```
 
 This function appends to list of necessary variables based on the constraints and objectives selected
 
 **Arguments**:
 
-- `selection` _float_ - selection number
+- `selection` _int_ - selection number
 - `sdf` _DataFrame_ - scenario dataframe
 - `verbose` _bool, optional_ - if selected, function will print objectives and constraints. Defaults to True.
   
@@ -1373,21 +1462,25 @@ This function appends to list of necessary variables based on the constraints an
 - `objectives` _list_ - list of selected objective variables
 - `constraints` _list_ - list of selected constraint variables
 
-<a id="..sweep.run_moo"></a>
+<a id="t3co.sweep.run_moo"></a>
 
 #### run\_moo
 
 ```python
-def run_moo(sel, sdf, optpt, algo, skip_opt, pop_size, n_max_gen, n_last,
-            nth_gen, x_tol, verbose, f_tol, resdir, lw_imp_curves, aero_drag_imp_curves,
-            eng_eff_imp_curves, config, **kwargs)
+def run_moo(
+        sel: int, sdf: pd.DataFrame, optpt: str, algo: str, skip_opt: bool,
+        pop_size: float, n_max_gen: int, n_last: int, nth_gen: int,
+        x_tol: float, verbose: bool, f_tol: float, resdir: str,
+        lw_imp_curves: pd.DataFrame, aero_drag_imp_curves: pd.DataFrame,
+        eng_eff_imp_curves: pd.DataFrame, config: run_scenario.Scenario,
+        **kwargs) -> Tuple[pymoo.core.result.Result, moo.T3COProblem, bool]
 ```
 
 This function calls get_objectives_constraints and get_knobs_bounds_curves, and then calls run_optimization to perform the multiobjective optimization
 
 **Arguments**:
 
-- `sel` _float_ - selection number
+- `sel` _int_ - selection number
 - `sdf` _DataFrame_ - scenario dataframe
 - `optpt` _str_ - vehicle powertrain type
 - `algo` _str_ - algorithm name
@@ -1410,14 +1503,14 @@ This function calls get_objectives_constraints and get_knobs_bounds_curves, and 
 
 - `moo_results` _pymoo.core.result.Result_ - optimization results object
 - `moo_problem` _T3COProblem_ - minimization problem that calculates TCO
-- `moo_code` _Error_ - Error message
+- `moo_code` _bool_ - Error message
 
-<a id="..sweep.check_input_files"></a>
+<a id="t3co.sweep.check_input_files"></a>
 
 #### check\_input\_files
 
 ```python
-def check_input_files(df, filetype, filepath)
+def check_input_files(df: pd.DataFrame, filetype: str, filepath: str) -> None
 ```
 
 This function contains assert statements that make sure input vehicle and scenario dataframes do not contain numm rows
@@ -1428,13 +1521,15 @@ This function contains assert statements that make sure input vehicle and scenar
 - `filetype` _str_ - 'vehicle' or 'scenario'
 - `filepath` _str_ - filepath of the vehicle or scenario input files
 
-<a id="..sweep.run_vehicle_scenarios"></a>
+<a id="t3co.sweep.run_vehicle_scenarios"></a>
 
 #### run\_vehicle\_scenarios
 
 ```python
-def run_vehicle_scenarios(vehicles, scenarios, eng_eff_imp_curves_p, lw_imp_curves_p,
-                          aero_drag_imp_curves_p, config, **kwargs)
+def run_vehicle_scenarios(vehicles: str, scenarios: str,
+                          eng_eff_imp_curves_p: str, lw_imp_curves_p: str,
+                          aero_drag_imp_curves_p: str,
+                          config: run_scenario.Config, **kwargs) -> None
 ```
 
 This is the main function that runs T3CO for all the selections input
@@ -1454,38 +1549,38 @@ This is the main function that runs T3CO for all the selections input
 - `Exception` - input validation error
 - `Exception` - optimization error
 
-<a id="..run.Global"></a>
+<a id="t3co.run.Global"></a>
 
-# ..run.Global
+# t3co.run.Global
 
 Global constants
 Stores paths to directories used for input files, as well as constants referenced throughout the code base
 
-<a id="..run.Global.DieselGalPerGasGal"></a>
+<a id="t3co.run.Global.DieselGalPerGasGal"></a>
 
 #### DieselGalPerGasGal
 
 energy equivalent gallons of diesel per 1 gallon gas
 
-<a id="..run.Global.kgH2_per_gge"></a>
+<a id="t3co.run.Global.kgH2_per_gge"></a>
 
 #### kgH2\_per\_gge
 
 https://epact.energy.gov/fuel-conversion-factors for Hydrogen
 
-<a id="..run.Global.mps_to_mph"></a>
+<a id="t3co.run.Global.mps_to_mph"></a>
 
 #### mps\_to\_mph
 
 1 mps = 2.23694 mph
 
-<a id="..run.Global.m_to_mi"></a>
+<a id="t3co.run.Global.m_to_mi"></a>
 
 #### m\_to\_mi
 
 1 m = 0.000621371 mi
 
-<a id="..run.Global.get_kwh_per_gge"></a>
+<a id="t3co.run.Global.get_kwh_per_gge"></a>
 
 #### get\_kwh\_per\_gge
 
@@ -1500,7 +1595,7 @@ important to get from one location each time so we can track when and how it's u
 
 - `kwh_per_gge` _float_ - kWh per Gasoline Gallon Equivalent
 
-<a id="..run.Global.set_tco_intermediates"></a>
+<a id="t3co.run.Global.set_tco_intermediates"></a>
 
 #### set\_tco\_intermediates
 
@@ -1510,7 +1605,7 @@ def set_tco_intermediates()
 
 This function sets path for TCO_INTERMEDIATES to save tsv files
 
-<a id="..run.Global.set_tco_results"></a>
+<a id="t3co.run.Global.set_tco_results"></a>
 
 #### set\_tco\_results
 
@@ -1520,12 +1615,12 @@ def set_tco_results()
 
 This function sets path for TCO_RESULTS
 
-<a id="..run.Global.kg_to_lbs"></a>
+<a id="t3co.run.Global.kg_to_lbs"></a>
 
 #### kg\_to\_lbs
 
 ```python
-def kg_to_lbs(kgs)
+def kg_to_lbs(kgs: float) -> float
 ```
 
 This function converts kg to lb
@@ -1539,12 +1634,12 @@ This function converts kg to lb
 
 - `(float)` - mass in pounds
 
-<a id="..run.Global.lbs_to_kgs"></a>
+<a id="t3co.run.Global.lbs_to_kgs"></a>
 
 #### lbs\_to\_kgs
 
 ```python
-def lbs_to_kgs(lbs)
+def lbs_to_kgs(lbs: float) -> float
 ```
 
 This function converts lb to kg
@@ -1558,12 +1653,12 @@ This function converts lb to kg
 
 - `(float)` - mass in kg
 
-<a id="..run.Global.not_falsy"></a>
+<a id="t3co.run.Global.not_falsy"></a>
 
 #### not\_falsy
 
 ```python
-def not_falsy(var)
+def not_falsy(var: float) -> bool
 ```
 
 This function returns True to verify that var is NOT falsy: not in [None, np.nan, 0, False]
@@ -1578,20 +1673,20 @@ This function returns True to verify that var is NOT falsy: not in [None, np.nan
 
 - `(bool)` - True if not in [None, 0, False]
 
-<a id="..run"></a>
+<a id="t3co.run"></a>
 
-# ..run
+# t3co.run
 
-<a id="..run.generateinputs"></a>
+<a id="t3co.run.generateinputs"></a>
 
-# ..run.generateinputs
+# t3co.run.generateinputs
 
-<a id="..run.generateinputs.generate"></a>
+<a id="t3co.run.generateinputs.generate"></a>
 
 #### generate
 
 ```python
-def generate(vocation, dst=gl.OPTIMIZATION_AND_TCO_RCRS)
+def generate(vocation: str, dst: str = gl.OPTIMIZATION_AND_TCO_RCRS)
 ```
 
 This function aggregates specifications from users for powertrains, desired ranges, component costs etc. into two
@@ -1602,148 +1697,13 @@ csv files - FASTSimInputs and OtherInputs
 - `vocation` _str_ - Vocation type description
 - `dst` _str, optional_ - results directory file path. Defaults to gl.OPTIMIZATION_AND_TCO_RCRS.
 
-<a id="..run.run_scenario"></a>
+<a id="t3co.run.run_scenario"></a>
 
-# ..run.run\_scenario
+# t3co.run.run\_scenario
 
 Module for loading vehicles, scenarios, running them and managing them
 
-<a id="..run.run_scenario.set_test_weight"></a>
-
-#### set\_test\_weight
-
-```python
-def set_test_weight(vehicle, scenario)
-```
-
-assign standardized vehicle mass for accel and grade test using GVWR and GVWR Credit
-
-**Arguments**:
-
-- `vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
-- `scenario` _t3co.run_scenario.Scenario_ - T3CO scenario object
-
-<a id="..run.run_scenario.reset_vehicle_weight"></a>
-
-#### reset\_vehicle\_weight
-
-```python
-def reset_vehicle_weight(vehicle)
-```
-
-This function resets vehicle mass after loaded weight tests are done for accel and grade
-
-**Arguments**:
-
-- `vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
-
-<a id="..run.run_scenario.limit_cargo_kg_for_moo_hev_bev"></a>
-
-#### limit\_cargo\_kg\_for\_moo\_hev\_bev
-
-```python
-def limit_cargo_kg_for_moo_hev_bev(opt_scenario, mooadvancedvehicle)
-```
-
-This helper method is used within T3COProblem to assign limited cargo capacity based on GVWR + GVWRCredit and optimization vehicle mass for advanced vehicles
-
-**Arguments**:
-
-- `opt_scenario` _t3co.run_scenario.Scenario_ - T3CO scenario object
-- `mooadvancedvehicle` _fastsim.vehicle.Vehicle_ - pymoo optimization vehicle
-
-<a id="..run.run_scenario.set_max_motor_kw"></a>
-
-#### set\_max\_motor\_kw
-
-```python
-def set_max_motor_kw(analysis_vehicle, scenario, max_motor_kw)
-```
-
-This helper method is used within T3COProblem to set max_motor_kw to optimization vehicle and set kw_demand_fc_on if PHEV
-
-**Arguments**:
-
-- `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
-- `scenario` _t3co.run_scenario.Scenario_ - T3CO Scenarion object
-- `max_motor_kw` _float_ - max motor power /kW
-
-<a id="..run.run_scenario.set_max_battery_kwh"></a>
-
-#### set\_max\_battery\_kwh
-
-```python
-def set_max_battery_kwh(analysis_vehicle, max_ess_kwh)
-```
-
-This helper method is used within T3COProblem to set max_ess_kwh to optimization vehicle
-
-**Arguments**:
-
-- `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
-- `max_ess_kwh` _float_ - max energy storage system energy capacity /kWh
-
-<a id="..run.run_scenario.set_max_battery_power_kw"></a>
-
-#### set\_max\_battery\_power\_kw
-
-```python
-def set_max_battery_power_kw(analysis_vehicle, max_ess_kw)
-```
-
-This helper method is used within T3COProblem to set max_ess_kwx to optimization vehicle
-
-**Arguments**:
-
-- `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
-- `max_ess_kw` _float_ - max energy storage system power /kW
-
-<a id="..run.run_scenario.set_max_fuel_converter_kw"></a>
-
-#### set\_max\_fuel\_converter\_kw
-
-```python
-def set_max_fuel_converter_kw(analysis_vehicle, fc_max_out_kw)
-```
-
-This helper method is used within T3COProblem to set fc_max_out_kw to optimization vehicle
-
-**Arguments**:
-
-- `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
-- `fc_max_out_kw` _float_ - max fuel converter power /kW
-
-<a id="..run.run_scenario.set_fuel_store_kwh"></a>
-
-#### set\_fuel\_store\_kwh
-
-```python
-def set_fuel_store_kwh(analysis_vehicle, fs_kwh)
-```
-
-This helper method is used within T3COProblem to set fs_kwh to optimization vehicle
-
-**Arguments**:
-
-- `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
-- `fs_kwh` _float_ - fuel storage energy capacity /kWh
-
-<a id="..run.run_scenario.set_cargo_kg"></a>
-
-#### set\_cargo\_kg
-
-```python
-def set_cargo_kg(analysis_vehicle, cargo_kg)
-```
-
-This helper method is used within T3COProblem to set cargo_kg to optimization vehicle
-
-**Arguments**:
-
-- `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
-- `cargo_kg` _float_ - vehicle cargo capacity /kg
-
-<a id="..run.run_scenario.Config"></a>
+<a id="t3co.run.run_scenario.Config"></a>
 
 ## Config Objects
 
@@ -1754,7 +1714,7 @@ class Config()
 
 New class to read T3COConfig file containing analysis attributes like vehicle and scenario paths, and scenario attribute overrides
 
-<a id="..run.run_scenario.Config.from_file"></a>
+<a id="t3co.run.run_scenario.Config.from_file"></a>
 
 #### from\_file
 
@@ -1774,7 +1734,7 @@ This method generates a Config dictionary from CSV file and calls Config.from_di
 
 - `Self.from_dict` - method that gets Config instance from config_dict
 
-<a id="..run.run_scenario.Config.from_dict"></a>
+<a id="t3co.run.run_scenario.Config.from_dict"></a>
 
 #### from\_dict
 
@@ -1793,12 +1753,12 @@ This method generates a Config instance from config_dict
 
 - `Self` - Config instance containining all values from T3CO Config CSV file
 
-<a id="..run.run_scenario.Config.validate_analysis_id"></a>
+<a id="t3co.run.run_scenario.Config.validate_analysis_id"></a>
 
 #### validate\_analysis\_id
 
 ```python
-def validate_analysis_id(filename: str, analysis_id: int = 0)
+def validate_analysis_id(filename: str, analysis_id: int = 0) -> Self
 ```
 
 This method validates that correct analysis id is input
@@ -1812,7 +1772,7 @@ This method validates that correct analysis id is input
 
 - `Exception` - Error if analysis_id not found
 
-<a id="..run.run_scenario.Scenario"></a>
+<a id="t3co.run.run_scenario.Scenario"></a>
 
 ## Scenario Objects
 
@@ -1823,24 +1783,24 @@ class Scenario()
 
 Class object that contains all TCO parameters and performance target (range, grade, accel) information         for a vehicle such that performance and TCO can be computed during optimization
 
-<a id="..run.run_scenario.Scenario.originalcargo_kg"></a>
+<a id="t3co.run.run_scenario.Scenario.originalcargo_kg"></a>
 
 #### originalcargo\_kg
 
 if needed, should be assigned immediately after vehicle read in
 
-<a id="..run.run_scenario.Scenario.plf_scenario_vehicle_cargo_capacity_kg"></a>
+<a id="t3co.run.run_scenario.Scenario.plf_scenario_vehicle_cargo_capacity_kg"></a>
 
 #### plf\_scenario\_vehicle\_cargo\_capacity\_kg
 
 includes cargo credit kg
 
-<a id="..run.run_scenario.Scenario.from_config"></a>
+<a id="t3co.run.run_scenario.Scenario.from_config"></a>
 
 #### from\_config
 
 ```python
-def from_config(config: Config = None)
+def from_config(config: Config = None) -> Self
 ```
 
 This method overrides certain scenario fields if use_config is True and config object is not None
@@ -1849,12 +1809,13 @@ This method overrides certain scenario fields if use_config is True and config o
 
 - `config` _Config, optional_ - Config object. Defaults to None.
 
-<a id="..run.run_scenario.check_phev_init_socs"></a>
+<a id="t3co.run.run_scenario.check_phev_init_socs"></a>
 
 #### check\_phev\_init\_socs
 
 ```python
-def check_phev_init_socs(a_vehicle: vehicle.Vehicle, scenario: Scenario)
+def check_phev_init_socs(a_vehicle: vehicle.Vehicle,
+                         scenario: Scenario) -> None
 ```
 
 This function checks that soc_norm_init_for_grade_pct and soc_norm_init_for_accel_pct are present only for PHEVs
@@ -1864,12 +1825,13 @@ This function checks that soc_norm_init_for_grade_pct and soc_norm_init_for_acce
 - `a_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
 - `scenario` _Scenario_ - T3CO scenario object
 
-<a id="..run.run_scenario.get_phev_util_factor"></a>
+<a id="t3co.run.run_scenario.get_phev_util_factor"></a>
 
 #### get\_phev\_util\_factor
 
 ```python
-def get_phev_util_factor(scenario, v, mpgge)
+def get_phev_util_factor(scenario: Scenario, v: fastsim.vehicle.Vehicle,
+                         mpgge: dict) -> float
 ```
 
 This function gets the PHEV utility factor derived from the computed range of the
@@ -1878,7 +1840,7 @@ vehicle and the operational day range computed from shifts per year and the firs
 **Arguments**:
 
 - `scenario` _Scenario_ - T3CO scenario object
-- `v` _fastsim.Vehicle.vehicle_ - FASTSim vehicle object
+- `v` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
 - `mpgge` _dict_ - Miles per Gallon Gasoline Equivalent dictionary
   
 
@@ -1886,12 +1848,14 @@ vehicle and the operational day range computed from shifts per year and the firs
 
 - `uf` _float_ - PHEV computed utility factor
 
-<a id="..run.run_scenario.get_objective_simdrive"></a>
+<a id="t3co.run.run_scenario.get_objective_simdrive"></a>
 
 #### get\_objective\_simdrive
 
 ```python
-def get_objective_simdrive(analysis_vehicle: vehicle.Vehicle, cycle)
+def get_objective_simdrive(
+        analysis_vehicle: vehicle.Vehicle,
+        cycle: fastsim.cycle.Cycle) -> fastsim.simdrive.SimDrive
 ```
 
 This function obtains the SimDrive for accel and grade test
@@ -1906,12 +1870,14 @@ This function obtains the SimDrive for accel and grade test
 
 - `sd` _fastsim.simdrive.SimDrive_ - FASTSim SimDrive object containing vehicle inputs and simulation output attributes
 
-<a id="..run.run_scenario.run_grade_or_accel"></a>
+<a id="t3co.run.run_scenario.run_grade_or_accel"></a>
 
 #### run\_grade\_or\_accel
 
 ```python
-def run_grade_or_accel(test, analysis_vehicle, sim_drive, ess_init_soc)
+def run_grade_or_accel(test: str, analysis_vehicle: fastsim.vehicle.Vehicle,
+                       sim_drive: fastsim.simdrive.SimDrive,
+                       ess_init_soc: float) -> None
 ```
 
 This function handles initial SOC considerations for grade and accel tests
@@ -1936,12 +1902,12 @@ HEVs attempt SOC balancing but that is overrident by HEV test init SOC
 
 - `Exception` - if test not in ['accel', 'grade']
 
-<a id="..run.run_scenario.create_fastsim_vehicle"></a>
+<a id="t3co.run.run_scenario.create_fastsim_vehicle"></a>
 
 #### create\_fastsim\_vehicle
 
 ```python
-def create_fastsim_vehicle(veh_dict=None)
+def create_fastsim_vehicle(veh_dict: dict = None) -> fastsim.vehicle.Vehicle
 ```
 
 This function creates and returns an empty FASTSim vehicle object with no attributes or
@@ -1955,12 +1921,12 @@ This function creates and returns an empty FASTSim vehicle object with no attrib
 
 - `v` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
 
-<a id="..run.run_scenario.get_vehicle"></a>
+<a id="t3co.run.run_scenario.get_vehicle"></a>
 
 #### get\_vehicle
 
 ```python
-def get_vehicle(veh_no, veh_input_path)
+def get_vehicle(veh_no: int, veh_input_path: str) -> fastsim.vehicle.Vehicle
 ```
 
 This function loads vehicle object from vehicle number and input csv filepath
@@ -1975,15 +1941,16 @@ This function loads vehicle object from vehicle number and input csv filepath
 
 - `veh` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
 
-<a id="..run.run_scenario.get_scenario_and_cycle"></a>
+<a id="t3co.run.run_scenario.get_scenario_and_cycle"></a>
 
 #### get\_scenario\_and\_cycle
 
 ```python
-def get_scenario_and_cycle(veh_no,
-                           scenario_inputs_path,
-                           a_vehicle=None,
-                           config=None)
+def get_scenario_and_cycle(
+        veh_no: int,
+        scenario_inputs_path: str,
+        a_vehicle: fastsim.vehicle.Vehicle = None,
+        config: Config = None) -> Tuple[Scenario, fastsim.cycle.Cycle]
 ```
 
 This function uses helper methods load_scenario and load_design_cycle_from_scenario         to get scenario object and cycle object corresponding to selected vehicle (by veh_no)
@@ -2001,12 +1968,15 @@ This function uses helper methods load_scenario and load_design_cycle_from_scena
 - `scenario` _Scenario_ - T3CO scenario object selected
 - `cyc` _fastsim.cycle.Cycle_ - FASTSim cycle object selected
 
-<a id="..run.run_scenario.load_scenario"></a>
+<a id="t3co.run.run_scenario.load_scenario"></a>
 
 #### load\_scenario
 
 ```python
-def load_scenario(veh_no, scenario_inputs_path, a_vehicle=None, config=None)
+def load_scenario(veh_no: int,
+                  scenario_inputs_path: str,
+                  a_vehicle: fastsim.vehicle.Vehicle = None,
+                  config: Config = None) -> Scenario
 ```
 
 This function gets the Scenario object from scenario input CSV filepath, initializes some fields,          and overrides some fields based on Config object
@@ -2023,14 +1993,15 @@ This function gets the Scenario object from scenario input CSV filepath, initial
 
 - `scenario` _Scenario_ - Scenario object for given selection
 
-<a id="..run.run_scenario.load_design_cycle_from_scenario"></a>
+<a id="t3co.run.run_scenario.load_design_cycle_from_scenario"></a>
 
 #### load\_design\_cycle\_from\_scenario
 
 ```python
-def load_design_cycle_from_scenario(scenario,
-                                    cyc_file_path=gl.OPTIMIZATION_DRIVE_CYCLES
-                                    )
+def load_design_cycle_from_scenario(
+        scenario: Scenario,
+        cyc_file_path: str = gl.OPTIMIZATION_DRIVE_CYCLES
+) -> fastsim.cycle.Cycle
 ```
 
 This helper method loads the design cycle used for mpgge and range determination.
@@ -2048,12 +2019,12 @@ If the drive cycles are a list of tuples, handle accordingly with eval.
 
 - `range_cyc` _fastsim.cycle.Cycle_ - FASTSim cycle object for current Scenario object
 
-<a id="..run.run_scenario.load_design_cycle_from_path"></a>
+<a id="t3co.run.run_scenario.load_design_cycle_from_path"></a>
 
 #### load\_design\_cycle\_from\_path
 
 ```python
-def load_design_cycle_from_path(cyc_file_path)
+def load_design_cycle_from_path(cyc_file_path: str) -> fastsim.cycle.Cycle
 ```
 
 This helper method loads the Cycle object from the drivecycle filepath
@@ -2067,13 +2038,156 @@ This helper method loads the Cycle object from the drivecycle filepath
 
 - `range_cyc` _fastsim.cycle.Cycle_ - FASTSim cycle object for current Scenario object
 
-<a id="..run.run_scenario.vehicle_scenario_sweep"></a>
+<a id="t3co.run.run_scenario.set_test_weight"></a>
+
+#### set\_test\_weight
+
+```python
+def set_test_weight(vehicle: fastsim.vehicle.Vehicle,
+                    scenario: Scenario) -> None
+```
+
+assign standardized vehicle mass for accel and grade test using GVWR and GVWR Credit
+
+**Arguments**:
+
+- `vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
+- `scenario` _t3co.run_scenario.Scenario_ - T3CO scenario object
+
+<a id="t3co.run.run_scenario.reset_vehicle_weight"></a>
+
+#### reset\_vehicle\_weight
+
+```python
+def reset_vehicle_weight(vehicle: fastsim.vehicle.Vehicle) -> None
+```
+
+This function resets vehicle mass after loaded weight tests are done for accel and grade
+
+**Arguments**:
+
+- `vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
+
+<a id="t3co.run.run_scenario.limit_cargo_kg_for_moo_hev_bev"></a>
+
+#### limit\_cargo\_kg\_for\_moo\_hev\_bev
+
+```python
+def limit_cargo_kg_for_moo_hev_bev(
+        opt_scenario: Scenario,
+        mooadvancedvehicle: fastsim.vehicle.Vehicle) -> None
+```
+
+This helper method is used within T3COProblem to assign limited cargo capacity based on GVWR + GVWRCredit and optimization vehicle mass for advanced vehicles
+
+**Arguments**:
+
+- `opt_scenario` _t3co.run_scenario.Scenario_ - T3CO scenario object
+- `mooadvancedvehicle` _fastsim.vehicle.Vehicle_ - pymoo optimization vehicle
+
+<a id="t3co.run.run_scenario.set_max_motor_kw"></a>
+
+#### set\_max\_motor\_kw
+
+```python
+def set_max_motor_kw(analysis_vehicle: fastsim.vehicle.Vehicle,
+                     scenario: Scenario, max_motor_kw: float) -> None
+```
+
+This helper method is used within T3COProblem to set max_motor_kw to optimization vehicle and set kw_demand_fc_on if PHEV
+
+**Arguments**:
+
+- `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
+- `scenario` _t3co.run_scenario.Scenario_ - T3CO Scenarion object
+- `max_motor_kw` _float_ - max motor power /kW
+
+<a id="t3co.run.run_scenario.set_max_battery_kwh"></a>
+
+#### set\_max\_battery\_kwh
+
+```python
+def set_max_battery_kwh(analysis_vehicle: fastsim.vehicle.Vehicle,
+                        max_ess_kwh: float) -> None
+```
+
+This helper method is used within T3COProblem to set max_ess_kwh to optimization vehicle
+
+**Arguments**:
+
+- `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
+- `max_ess_kwh` _float_ - max energy storage system energy capacity /kWh
+
+<a id="t3co.run.run_scenario.set_max_battery_power_kw"></a>
+
+#### set\_max\_battery\_power\_kw
+
+```python
+def set_max_battery_power_kw(analysis_vehicle: fastsim.vehicle.Vehicle,
+                             max_ess_kw: float) -> None
+```
+
+This helper method is used within T3COProblem to set max_ess_kwx to optimization vehicle
+
+**Arguments**:
+
+- `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
+- `max_ess_kw` _float_ - max energy storage system power /kW
+
+<a id="t3co.run.run_scenario.set_max_fuel_converter_kw"></a>
+
+#### set\_max\_fuel\_converter\_kw
+
+```python
+def set_max_fuel_converter_kw(analysis_vehicle: fastsim.vehicle.Vehicle,
+                              fc_max_out_kw: float) -> None
+```
+
+This helper method is used within T3COProblem to set fc_max_out_kw to optimization vehicle
+
+**Arguments**:
+
+- `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
+- `fc_max_out_kw` _float_ - max fuel converter power /kW
+
+<a id="t3co.run.run_scenario.set_fuel_store_kwh"></a>
+
+#### set\_fuel\_store\_kwh
+
+```python
+def set_fuel_store_kwh(analysis_vehicle: fastsim.vehicle.Vehicle,
+                       fs_kwh: float) -> None
+```
+
+This helper method is used within T3COProblem to set fs_kwh to optimization vehicle
+
+**Arguments**:
+
+- `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
+- `fs_kwh` _float_ - fuel storage energy capacity /kWh
+
+<a id="t3co.run.run_scenario.set_cargo_kg"></a>
+
+#### set\_cargo\_kg
+
+```python
+def set_cargo_kg(analysis_vehicle: fastsim.vehicle.Vehicle, cargo_kg)
+```
+
+This helper method is used within T3COProblem to set cargo_kg to optimization vehicle
+
+**Arguments**:
+
+- `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
+- `cargo_kg` _float_ - vehicle cargo capacity /kg
+
+<a id="t3co.run.run_scenario.vehicle_scenario_sweep"></a>
 
 #### vehicle\_scenario\_sweep
 
 ```python
-def vehicle_scenario_sweep(vehicle,
-                           scenario,
+def vehicle_scenario_sweep(vehicle: fastsim.vehicle.Vehicle,
+                           scenario: Scenario,
                            range_cyc,
                            verbose=False,
                            **kwargs)
@@ -2093,15 +2207,15 @@ This function contains helper methods such as get_tco_of_vehicle, check_phev_ini
 
 - `out` _dict_ - output dictionary containing TCO elements
 
-<a id="..run.run_scenario.run"></a>
+<a id="t3co.run.run_scenario.run"></a>
 
 #### run
 
 ```python
-def run(veh_no,
-        vocation="blank",
-        vehicle_input_path=gl.FASTSIM_INPUTS,
-        scenario_inputs_path=gl.OTHER_INPUTS)
+def run(veh_no: int,
+        vocation: str = "blank",
+        vehicle_input_path: str = gl.FASTSIM_INPUTS,
+        scenario_inputs_path: str = gl.OTHER_INPUTS)
 ```
 
 This function runs vehicle_scenario_sweep based on vehicle and scenario objects read from input file paths
@@ -2118,12 +2232,12 @@ This function runs vehicle_scenario_sweep based on vehicle and scenario objects 
 
 - `out` _dict_ - output dictionary containing TCO results
 
-<a id="..run.run_scenario.rerun"></a>
+<a id="t3co.run.run_scenario.rerun"></a>
 
 #### rerun
 
 ```python
-def rerun(vehicle, vocation, scenario)
+def rerun(vehicle: fastsim.vehicle.Vehicle, vocation: str, scenario: Scenario)
 ```
 
 This function runs vehicle_scenario_sweep when given the vehicle and scenario objects
@@ -2139,23 +2253,23 @@ This function runs vehicle_scenario_sweep when given the vehicle and scenario ob
 
 - `out` _dict_ - output dictionary containing TCO outputs
 
-<a id="..demos.opp_cost_demo"></a>
+<a id="t3co.demos.opp_cost_demo"></a>
 
-# ..demos.opp\_cost\_demo
+# t3co.demos.opp\_cost\_demo
 
-<a id="..demos.hev_sweep_and_moo"></a>
+<a id="t3co.demos.hev_sweep_and_moo"></a>
 
-# ..demos.hev\_sweep\_and\_moo
+# t3co.demos.hev\_sweep\_and\_moo
 
-<a id="..demos.hev_sweep_and_moo.vnum"></a>
+<a id="t3co.demos.hev_sweep_and_moo.vnum"></a>
 
 #### vnum
 
 
 
-<a id="..demos.example_load_and_run"></a>
+<a id="t3co.demos.example_load_and_run"></a>
 
-# ..demos.example\_load\_and\_run
+# t3co.demos.example\_load\_and\_run
 
 To run this as a script that drives all the t3co files as a module:
 The working directory for this script should be at the same depth as the t3co/ module.
@@ -2228,11 +2342,11 @@ scenario_inputs_path=gl.OTHER_INPUTS,
 >>> res1 = run_scenario.run(1, 'Class8_long_haul', use_jit=use_jit)
 >>> print(f'classic time [s] {time.time()-start} | use jit? {use_jit}')
 
-<a id="..demos.t2co_opt_benchmark"></a>
+<a id="t3co.demos.t2co_opt_benchmark"></a>
 
-# ..demos.t2co\_opt\_benchmark
+# t3co.demos.t2co\_opt\_benchmark
 
-<a id="..demos.Spencer"></a>
+<a id="t3co.demos.Spencer"></a>
 
-# ..demos.Spencer
+# t3co.demos.Spencer
 

@@ -1,24 +1,25 @@
 # Table of Contents
 
-* [objectives.accel](#objectives.accel)
-  * [get\_accel](#objectives.accel.get_accel)
+* [t3co/objectives/accel](#t3co/objectives/accel)
+  * [get\_accel](#t3co/objectives/accel.get_accel)
 
-<a id="objectives.accel"></a>
+<a id="t3co/objectives/accel"></a>
 
-# objectives.accel
+# t3co/objectives/accel
 
 Module for simulating acceleration performance.
 
-<a id="objectives.accel.get_accel"></a>
+<a id="t3co/objectives/accel.get_accel"></a>
 
 #### get\_accel
 
 ```python
-def get_accel(analysis_vehicle,
-              scenario=None,
-              set_weight_to_max_kg=True,
-              verbose=False,
-              ess_init_soc=None)
+def get_accel(
+        analysis_vehicle: fastsim.vehicle.Vehicle,
+        scenario: run_scenario.Scenario = None,
+        set_weight_to_max_kg: bool = True,
+        verbose=False,
+        ess_init_soc=None) -> Tuple[float, float, fastsim.vehicle.Vehicle]
 ```
 
 This function runs a simdrive for getting 0-to-60 and 0-30 mph time with fully laden weight at GVWR (plus gvwr_credit_kg?)

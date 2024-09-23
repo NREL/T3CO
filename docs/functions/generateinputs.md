@@ -1,18 +1,18 @@
 # Table of Contents
 
-* [run.generateinputs](#run.generateinputs)
-  * [generate](#run.generateinputs.generate)
+* [t3co/run/generateinputs](#t3co/run/generateinputs)
+  * [generate](#t3co/run/generateinputs.generate)
 
-<a id="run.generateinputs"></a>
+<a id="t3co/run/generateinputs"></a>
 
-# run.generateinputs
+# t3co/run/generateinputs
 
-<a id="run.generateinputs.generate"></a>
+<a id="t3co/run/generateinputs.generate"></a>
 
 #### generate
 
 ```python
-def generate(vocation, dst=gl.OPTIMIZATION_AND_TCO_RCRS)
+def generate(vocation: str, dst: str = gl.OPTIMIZATION_AND_TCO_RCRS)
 ```
 
 This function aggregates specifications from users for powertrains, desired ranges, component costs etc. into two
