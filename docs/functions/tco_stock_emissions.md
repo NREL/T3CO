@@ -1,19 +1,19 @@
 # Table of Contents
 
-* [tco.tco\_stock\_emissions](#tco.tco_stock_emissions)
-  * [dropCols](#tco.tco_stock_emissions.dropCols)
-  * [stockModel](#tco.tco_stock_emissions.stockModel)
+* [t3co/tco/tco\_stock\_emissions](#t3co/tco/tco_stock_emissions)
+  * [dropCols](#t3co/tco/tco_stock_emissions.dropCols)
+  * [stockModel](#t3co/tco/tco_stock_emissions.stockModel)
 
-<a id="tco.tco_stock_emissions"></a>
+<a id="t3co/tco/tco_stock_emissions"></a>
 
-# tco.tco\_stock\_emissions
+# t3co/tco/tco\_stock\_emissions
 
-<a id="tco.tco_stock_emissions.dropCols"></a>
+<a id="t3co/tco/tco_stock_emissions.dropCols"></a>
 
 #### dropCols
 
 ```python
-def dropCols(df)
+def dropCols(df: pd.DataFrame) -> pd.DataFrame
 ```
 
 This helper method drops columns if any row contains ['*']
@@ -27,25 +27,27 @@ This helper method drops columns if any row contains ['*']
 
 - `df` _pd.DataFrame_ - Output dataframe with dropped dummy columns
 
-<a id="tco.tco_stock_emissions.stockModel"></a>
+<a id="t3co/tco/tco_stock_emissions.stockModel"></a>
 
 #### stockModel
 
 ```python
-def stockModel(sales,
-               marketShares,
-               survival,
-               annualTravel,
-               fuelSplit,
-               fuelEfficiency,
-               emissions,
-               vehicleCosts=None,
-               travelCosts=None,
-               fuelCosts=None,
-               insuranceCosts=None,
-               residualCosts=None,
-               downtimeCosts=None,
-               write_files=False)
+def stockModel(
+    sales: pd.DataFrame,
+    marketShares: pd.DataFrame,
+    survival: pd.DataFrame,
+    annualTravel: pd.DataFrame,
+    fuelSplit: pd.DataFrame,
+    fuelEfficiency: pd.DataFrame,
+    emissions: pd.DataFrame,
+    vehicleCosts: pd.DataFrame = None,
+    travelCosts: pd.DataFrame = None,
+    fuelCosts: pd.DataFrame = None,
+    insuranceCosts: pd.DataFrame = None,
+    residualCosts: pd.DataFrame = None,
+    downtimeCosts: pd.DataFrame = None,
+    write_files: bool = False
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]
 ```
 
 This function generates the ownershipCosts dataframe from the dataframes for each cost category

@@ -173,7 +173,7 @@ TESTSCENARIOINPUTS = TESTSDIR / "TCO_SCENARIO_TEST_INPUTS.csv"
 KG_2_LB = 2.20462
 
 
-def kg_to_lbs(kgs):
+def kg_to_lbs(kgs:float)->float:
     """
     This function converts kg to lb
 
@@ -186,7 +186,7 @@ def kg_to_lbs(kgs):
     return kgs * KG_2_LB
 
 
-def lbs_to_kgs(lbs):
+def lbs_to_kgs(lbs:float)->float:
     """
     This function converts lb to kg
 
@@ -199,7 +199,7 @@ def lbs_to_kgs(lbs):
     return lbs / KG_2_LB
 
 
-def not_falsy(var):
+def not_falsy(var:float)->bool:
     """
     This function returns True to verify that var is NOT falsy: not in [None, np.nan, 0, False]
 

@@ -1,14 +1,17 @@
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
 
 from t3co.run import Global as gl
 from t3co.run import run_scenario
 from t3co.tco import opportunity_cost
+import fastsim
 
 KG_2_LB = 2.20462
 
 
-def kg_to_lbs(kgs):
+def kg_to_lbs(kgs: float) -> float:
     return kgs * KG_2_LB
 
 
@@ -19,8 +22,8 @@ def kg_to_lbs(kgs):
 
 
 def find_residual_rates(
-    vehicle, scenario
-):  # finds residual rate at end of vehicle life
+    vehicle: fastsim.vehicle.Vehicle, scenario: run_scenario.Scenario
+) -> float:  # finds residual rate at end of vehicle life
     """
     This helper method gets the residual rates from ResidualValues.csv
 
@@ -42,7 +45,9 @@ def find_residual_rates(
     return residual_rates
 
 
-def calculate_dollar_cost(veh, scenario):
+def calculate_dollar_cost(
+    veh: fastsim.vehicle.Vehicle, scenario: run_scenario.Scenario
+) -> dict:
     """
     This helper method calculates the MSRP breakdown dictionary from
     -   Glider
@@ -101,7 +106,9 @@ def calculate_dollar_cost(veh, scenario):
         fcPrice = scenario.fc_fuelcell_cost_dol_per_kw * fc_max_kw
     # TODO, what should 9 map too??
     elif veh.fc_eff_type == 9:
-        fcPrice = (scenario.fc_cng_ice_cost_dol_per_kw * fc_max_kw) + fc_ice_base_cost_dol
+        fcPrice = (
+            scenario.fc_cng_ice_cost_dol_per_kw * fc_max_kw
+        ) + fc_ice_base_cost_dol
 
     else:
         fcPrice = (fc_ice_cost_dol_per_kw * fc_max_kw) + fc_ice_base_cost_dol
@@ -121,7 +128,9 @@ def calculate_dollar_cost(veh, scenario):
         fuelStorPrice = 0
     elif veh.veh_pt_type == gl.HEV and scenario.fuel_type[0] == "hydrogen":
         fuelStorPrice = scenario.fs_h2_cost_dol_per_kwh * veh.fs_kwh
-    elif veh.veh_pt_type in [gl.CONV, gl.HEV, gl.PHEV] and scenario.fuel_type[0] == "cng":
+    elif (
+        veh.veh_pt_type in [gl.CONV, gl.HEV, gl.PHEV] and scenario.fuel_type[0] == "cng"
+    ):
         fuelStorPrice = scenario.fs_cng_cost_dol_per_kwh * veh.fs_kwh
     elif veh.veh_pt_type in [gl.CONV, gl.HEV, gl.PHEV]:
         fuelStorPrice = scenario.fs_cost_dol_per_kwh * veh.fs_kwh
@@ -159,7 +168,14 @@ def calculate_dollar_cost(veh, scenario):
     elif veh_pt_type == gl.HEV:
         msrp = vehicle_glider_cost_dol + fuelStorPrice + fcPrice + mcPrice + essPrice
     elif veh_pt_type == gl.PHEV:
-        msrp = vehicle_glider_cost_dol + fuelStorPrice + fcPrice + mcPrice + essPrice + plugPrice
+        msrp = (
+            vehicle_glider_cost_dol
+            + fuelStorPrice
+            + fcPrice
+            + mcPrice
+            + essPrice
+            + plugPrice
+        )
     elif veh_pt_type == gl.BEV:
         msrp = vehicle_glider_cost_dol + mcPrice + essPrice + plugPrice
 
@@ -183,7 +199,9 @@ def calculate_dollar_cost(veh, scenario):
     return cost_set
 
 
-def calculate_opp_costs(vehicle, scenario, range_dict):
+def calculate_opp_costs(
+    vehicle: fastsim.vehicle.Vehicle, scenario: run_scenario.Scenario, range_dict: dict
+) -> dict:
     """
     This helper method calculates opportunity costs and generates veh_opp_cost_set from
     -   Payload Lost Capacity Cost/Multiplier
@@ -194,13 +212,16 @@ def calculate_opp_costs(vehicle, scenario, range_dict):
         vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object of analysis vehicle
         scenario (run_scenario.Scenario): Scenario object of current selection
         range_dict (dict): Dictionary containing range values from fueleconomy.get_range_mi()
+
+    Returns:
+        veh_opp_cost_set (dict): Dictionary containing opportunity cost results
     """
     oppcostobj = opportunity_cost.OpportunityCost(scenario, range_dict)
     if scenario.activate_tco_payload_cap_cost_multiplier:
         # assert optvehicle.veh_pt_type in [gl.BEV, gl.HEV], "payload cap loss factor TCO element only available for BEVs and FCEV HEVs"
         assert gl.not_falsy(scenario.plf_ref_veh_empty_mass_kg)
         assert np.isnan(scenario.plf_ref_veh_empty_mass_kg) == False
-        oppcostobj.get_payload_loss_factor(vehicle, scenario)
+        oppcostobj.set_payload_loss_factor(vehicle, scenario)
 
     if scenario.activate_tco_fueling_dwell_time_cost:
         # assert optvehicle.veh_pt_type in [gl.BEV, gl.HEV], "payload cap loss factor TCO element only available for BEVs and FCEV HEVs"
@@ -214,14 +235,14 @@ def calculate_opp_costs(vehicle, scenario, range_dict):
             and len(oppcostobj.shifts_per_year) >= scenario.vehicle_life_yr
         ), f"Provide scenario.shifts_per_year as a vector of length > scenario.vehicle_life_yr. Currently {len(oppcostobj.shifts_per_year)}"
         assert gl.not_falsy(scenario.fdt_frac_full_charge_bounds)
-        oppcostobj.get_dwell_time_cost(vehicle, scenario)
+        oppcostobj.set_dwell_time_cost(vehicle, scenario)
 
     if scenario.activate_mr_downtime_cost:
         assert gl.not_falsy(scenario.mr_planned_downtime_hr_per_yr)
         assert any(np.isnan(scenario.mr_unplanned_downtime_hr_per_mi)) == False
         assert np.isnan(scenario.mr_tire_replace_downtime_hr_per_event) == False
         assert gl.not_falsy(scenario.mr_avg_tire_life_mi)
-        oppcostobj.get_M_R_downtime_cost(vehicle, scenario)
+        oppcostobj.set_M_R_downtime_cost(vehicle, scenario)
 
     # veh_opp_cost_set = {'payload_cap_cost_multiplier' : None, 'net_dwell_time_hr' : 0., 'dwell_time_cost_Dol' : 0.}
     veh_opp_cost_set = {
@@ -237,7 +258,9 @@ def calculate_opp_costs(vehicle, scenario, range_dict):
     return veh_opp_cost_set
 
 
-def fill_fuel_eff_file(vehicle, scenario, mpgge_dict):
+def fill_fuel_eff_file(
+    vehicle: fastsim.vehicle.Vehicle, scenario: run_scenario.Scenario, mpgge_dict: dict
+) -> pd.DataFrame:
     """
     This helper method generates a dataframe of Fuel Efficiency [mi/gge]
     For PHEV, cd_grid_electric_mpgge, cd_fuel_mpgge, and cs_fuel_mpgge
@@ -313,7 +336,9 @@ def fill_fuel_eff_file(vehicle, scenario, mpgge_dict):
     return fefdata
 
 
-def fill_veh_expense_file(scenario, cost_set):
+def fill_veh_expense_file(
+    scenario: run_scenario.Scenario, cost_set: dict
+) -> pd.DataFrame:
     """
     This helper method generates a dataframe of MSRP breakdown costs as Cost [$/veh]
 
@@ -360,7 +385,9 @@ def fill_veh_expense_file(scenario, cost_set):
     return vexpdf
 
 
-def fill_trav_exp_tsv(vehicle, scenario):
+def fill_trav_exp_tsv(
+    vehicle: fastsim.vehicle.Vehicle, scenario: run_scenario.Scenario
+) -> pd.DataFrame:
     """
     This helper method generates a dataframe containing maintenance costs in Cost [$/mi]
 
@@ -400,7 +427,9 @@ def fill_trav_exp_tsv(vehicle, scenario):
     return df
 
 
-def fill_downtimelabor_cost_tsv(scenario, oppy_cost_set):
+def fill_downtimelabor_cost_tsv(
+    scenario: run_scenario.Scenario, oppy_cost_set: dict
+) -> pd.DataFrame:
     """
     This helper method generates a dataframe containing fueling downtime and M&R downtime costs in Cost [$/Yr]
 
@@ -434,7 +463,9 @@ def fill_downtimelabor_cost_tsv(scenario, oppy_cost_set):
     return df
 
 
-def fill_market_share_tsv(scenario, num_vs=1):
+def fill_market_share_tsv(
+    scenario: run_scenario.Scenario, num_vs: int = 1
+) -> pd.DataFrame:
     """
     This helper method generates a dataframe containing market share of current vehicle selection per vehicle sold
 
@@ -464,7 +495,9 @@ def fill_market_share_tsv(scenario, num_vs=1):
     return df
 
 
-def fill_fuel_expense_tsv(vehicle, scenario):
+def fill_fuel_expense_tsv(
+    vehicle: fastsim.vehicle.Vehicle, scenario: run_scenario.Scenario
+) -> pd.DataFrame:
     """
     This helper method generates a dataframe of fuel operating costs in Cost [$/gge]
 
@@ -482,7 +515,12 @@ def fill_fuel_expense_tsv(vehicle, scenario):
     fuels = scenario.fuel_type
 
     if vehicle.veh_pt_type in [gl.CONV, gl.HEV]:
-        assert scenario.fuel_type[0].lower() in ["cng", "gasoline", "diesel", "hydrogen"]
+        assert scenario.fuel_type[0].lower() in [
+            "cng",
+            "gasoline",
+            "diesel",
+            "hydrogen",
+        ]
     elif vehicle.veh_pt_type in [gl.BEV]:
         assert scenario.fuel_type[0].lower() in ["electricity"]
     elif vehicle.veh_pt_type == gl.PHEV:
@@ -539,7 +577,7 @@ def fill_fuel_expense_tsv(vehicle, scenario):
     return df
 
 
-def fill_annual_tsv(scenario):
+def fill_annual_tsv(scenario: run_scenario.Scenario) -> pd.DataFrame:
     """
     This helper method generates a dataframe of annual vehicle miles traveled (vmt) - Annual Travel [mi/yr]
 
@@ -571,7 +609,9 @@ def fill_annual_tsv(scenario):
     return df
 
 
-def fill_reg_sales_tsv(scenario, num_vs=1):
+def fill_reg_sales_tsv(
+    scenario: run_scenario.Scenario, num_vs: int = 1
+) -> pd.DataFrame:
     """
     This helper method generates a dataframe containing vehicle sales per year - Sales [veh]
 
@@ -599,7 +639,9 @@ def fill_reg_sales_tsv(scenario, num_vs=1):
     return df
 
 
-def fill_insurance_tsv(scenario, veh_cost_set):
+def fill_insurance_tsv(
+    scenario: run_scenario.Scenario, veh_cost_set: dict
+) -> pd.DataFrame:
     """
     This helper method generates a dataframe containing vehicle insurance costs as Cost [$/Yr]
 
@@ -634,7 +676,11 @@ def fill_insurance_tsv(scenario, veh_cost_set):
     return df
 
 
-def fill_residual_cost_tsc(vehicle, scenario, veh_cost_set):
+def fill_residual_cost_tsc(
+    vehicle: fastsim.vehicle.Vehicle,
+    scenario: run_scenario.Scenario,
+    veh_cost_set: dict,
+) -> pd.DataFrame:
     """
     This helper method generates a dataframe of residual costs as Cost [$/Yr]
 
@@ -671,7 +717,7 @@ def fill_residual_cost_tsc(vehicle, scenario, veh_cost_set):
     return df
 
 
-def fill_survival_tsv(scenario, num_vs=1):
+def fill_survival_tsv(scenario: run_scenario.Scenario, num_vs=1) -> pd.DataFrame:
     """
     This helper method generates a dataframe containing surviving vehicles as Surviving Vehicles [veh/veh]
 
@@ -694,7 +740,9 @@ def fill_survival_tsv(scenario, num_vs=1):
     return df
 
 
-def fill_fuel_split_tsv(vehicle, scenario, mpgge):
+def fill_fuel_split_tsv(
+    vehicle: fastsim.vehicle.Vehicle, scenario: run_scenario.Scenario, mpgge: dict
+) -> pd.DataFrame:
     """
     This helper method generates a dataframe of fraction of travel in each fuel type as Fraction of Travel [mi/mi]
 

@@ -1,6 +1,7 @@
 import copy
 import logging
 import time
+from typing import Tuple
 import warnings
 from time import gmtime, strftime
 
@@ -17,7 +18,9 @@ from pymoo.algorithms.soo.nonconvex.pattern import PatternSearch
 
 # from pymoo.algorithms.so_local_search import LocalSearch
 from pymoo.algorithms.soo.nonconvex.pso import PSO
+import pymoo.core
 from pymoo.core.problem import ElementwiseProblem
+import pymoo.core.result
 from pymoo.operators.sampling.lhs import LatinHypercubeSampling as LHS
 
 # pymoo stuff
@@ -25,7 +28,7 @@ from pymoo.optimize import minimize
 from pymoo.termination.default import DefaultMultiObjectiveTermination as MODT
 from pymoo.termination.ftol import MultiObjectiveSpaceTermination
 from pymoo.util.display.output import Output
-
+import pymoo
 from t3co.run import Global as gl
 from t3co.run import run_scenario
 
@@ -172,22 +175,22 @@ class T3COProblem(ElementwiseProblem):
 
     def __init__(
         self,
-        knobs_bounds,
-        vnum,
-        optimize_pt=gl.BEV,
-        obj_list=None,
-        constr_list=None,
-        verbose=False,
-        config=None,
+        knobs_bounds: dict,
+        vnum: float,
+        optimize_pt: str = gl.BEV,
+        obj_list: list = None,
+        constr_list: list = None,
+        verbose: bool = False,
+        config: run_scenario.Config = None,
         **kwargs,
-    ):
+    ) -> None:
         """
         This constructor initializes optimization input variables
 
         Args:
             knobs_bounds (dict): Dictionary containing knobs bounds for optimization
             vnum (float): Vehicle selection number
-            optimize_pt (vehicle.veh_pt_type, optional): Vehicle powertrain type - Conv, BEV, HEV, PHEV. Defaults to gl.BEV.
+            optimize_pt (str, optional): Vehicle powertrain type - Conv, BEV, HEV, PHEV. Defaults to gl.BEV.
             obj_list (list, optional): List of objectives. Defaults to None.
             constr_list (list, optional): List of constraints. Defaults to None.
             verbose (bool, optional): if True, prints process steps. Defaults to False.
@@ -358,7 +361,7 @@ class T3COProblem(ElementwiseProblem):
                 f"Possible unused/invalid kwargs provided:\n {list(kwargs.keys())}"
             )
 
-    def compile_reporting_vars(self):
+    def compile_reporting_vars(self) -> None:
         """
         This method creates an output dictionary containing optimization results
         """
@@ -372,7 +375,9 @@ class T3COProblem(ElementwiseProblem):
             "r_sec_to_ach_30mph_ldd": self.r_accel_30l,
             "r_sec_to_ach_60mph_ldd": self.r_accel_60l,
             "r_ach_ranges_mi": self.r_ranges,
-            "target_mph_grade_6s": [self.opt_scenario.min_speed_at_6pct_grade_in_5min_mph]
+            "target_mph_grade_6s": [
+                self.opt_scenario.min_speed_at_6pct_grade_in_5min_mph
+            ]
             * len(self.r_grade_6s),
             "target_mph_grade_125s": [
                 self.opt_scenario.min_speed_at_125pct_grade_in_5min_mph
@@ -382,7 +387,8 @@ class T3COProblem(ElementwiseProblem):
             * len(self.r_grade_6s),
             "target_sec_to_60mph_ldd": [self.opt_scenario.max_time_0_to_60mph_at_gvwr_s]
             * len(self.r_grade_6s),
-            "target_range_mi": [self.opt_scenario.target_range_mi] * len(self.r_grade_6s),
+            "target_range_mi": [self.opt_scenario.target_range_mi]
+            * len(self.r_grade_6s),
             "r_ach_fuel_efficiencies": self.r_fuel_efficiencies,
             "accel_30_constraint_vals": self.accel_30_constraint,
             "accel_60_constraint_vals": self.accel_60_constraint,
@@ -402,12 +408,12 @@ class T3COProblem(ElementwiseProblem):
         }
         self.reporting_vars = pd.DataFrame(data=d)
 
-    def instantiate_moo_vehicles_and_scenario(self, vnum, config=None):
+    def instantiate_moo_vehicles_and_scenario(self, vnum: int, config=None) -> None:
         """
         This method instantiates the multi-objective optimization problem vehicles and scenarios, starting with the baseline Conventional vehicle.
 
         Args:
-            vnum (float): vehicle selection number
+            vnum (int): vehicle selection number
             config (run_scenario.Config, optional): T3CO Config object containing analysis attributes and scenario attribute overrides. Defaults to None.
 
         Raises:
@@ -429,7 +435,9 @@ class T3COProblem(ElementwiseProblem):
             self.opt_scenario.fuel_type = "diesel"
 
         # save baseline values for optimization diffs
-        self.opt_scenario.originalGliderPrice = self.opt_scenario.vehicle_glider_cost_dol
+        self.opt_scenario.originalGliderPrice = (
+            self.opt_scenario.vehicle_glider_cost_dol
+        )
         self.opt_scenario.originalglider_kg = self.moobasevehicle.glider_kg
         self.opt_scenario.originalIceDolPerKw = self.opt_scenario.fc_ice_cost_dol_per_kw
         self.opt_scenario.origfc_eff_map = self.moobasevehicle.fc_eff_map.copy()
@@ -464,7 +472,9 @@ class T3COProblem(ElementwiseProblem):
         #     self.oppcostobj = opportunity_cost.OpportunityCost(self.opt_scenario)
 
     # --------- optimizer parameter application methods ---------
-    def cda_percent_delta_knob(self, CdA_perc_reduction, optvehicle):
+    def cda_percent_delta_knob(
+        self, CdA_perc_reduction: str, optvehicle: fastsim.vehicle.Vehicle
+    ) -> None:
         """
         This method sets the drag_coef based on aero improvement curve and glider_kg based on cda_cost_coeff_a and cda_cost_coeff_b
 
@@ -518,14 +528,18 @@ class T3COProblem(ElementwiseProblem):
         )
         # glider cost penalty due to CdA improvement
         CdA_cost = get_cost_per_CdA_delta(CdA_perc_reduction)
-        self.opt_scenario.vehicle_glider_cost_dol = self.opt_scenario.vehicle_glider_cost_dol + CdA_cost
+        self.opt_scenario.vehicle_glider_cost_dol = (
+            self.opt_scenario.vehicle_glider_cost_dol + CdA_cost
+        )
         # mass adjustments. Add CdA mass FIRST, if applicable. Then limit cargo_kg if overweight from battery.
         optvehicle.glider_kg = optvehicle.glider_kg + get_mass_per_CdA_delta(
             CdA_perc_reduction
         )
         optvehicle.set_veh_mass()
 
-    def weight_delta_percent_knob(self, wt_perc_reduction, optvehicle):
+    def weight_delta_percent_knob(
+        self, wt_perc_reduction: float, optvehicle: fastsim.vehicle.Vehicle
+    ) -> None:
         """
         This method sets the knob from the lightweighting curve
 
@@ -546,13 +560,15 @@ class T3COProblem(ElementwiseProblem):
         if wt_delta_kg not in x_new:
             x_new = np.append(x_new, wt_delta_kg)
             y_new = np.append(y_new, wt_delta_cost_per_kg)
-        self.opt_scenario.vehicle_glider_cost_dol = self.opt_scenario.vehicle_glider_cost_dol + np.trapz(
-            y_new, x_new
+        self.opt_scenario.vehicle_glider_cost_dol = (
+            self.opt_scenario.vehicle_glider_cost_dol + np.trapz(y_new, x_new)
         )
         optvehicle.glider_kg = optvehicle.glider_kg - wt_delta_kg
         optvehicle.set_veh_mass()
 
-    def fc_peak_eff_knob(self, fc_peak_eff, optvehicle):
+    def fc_peak_eff_knob(
+        self, fc_peak_eff: float, optvehicle: fastsim.vehicle.Vehicle
+    ) -> None:
         """
         This method sets the knob from the engine efficiency curve
 
@@ -568,10 +584,12 @@ class T3COProblem(ElementwiseProblem):
         )
         self.adjust_fc_peak_eff(fc_peak_eff, self.opt_scenario, optvehicle)
 
-    def get_objs(self, x, write_tsv=False):
+    def get_objs(
+        self, x: dict, write_tsv: bool = False
+    ) -> Tuple[np.array, np.array, dict]:
         """
         This method gets called when PyMoo calls _evaluate. It initializes objectives and constraints and runs vehicle_scenario_sweep
-        
+
         x optimization knobs = [max motor kw, battery kwh, drag coeff % improvement]
         Function for running FE cycles and accel tests then returning
         fuel consumption and zero-to-sixty times.
@@ -598,7 +616,9 @@ class T3COProblem(ElementwiseProblem):
         optvehicle = self.mooadvancedvehicle
 
         # reset glider price and weight for light-weighting and/or CdA percent improvement
-        self.opt_scenario.vehicle_glider_cost_dol = self.opt_scenario.originalGliderPrice
+        self.opt_scenario.vehicle_glider_cost_dol = (
+            self.opt_scenario.originalGliderPrice
+        )
         optvehicle.glider_kg = self.opt_scenario.originalglider_kg
 
         wt_delta_perc_guess = x_dict.pop(KNOB_WTDELTAPERC, None)
@@ -752,7 +772,10 @@ class T3COProblem(ElementwiseProblem):
             if GRADE125 in self.constr_list:
                 # todo, -abs() for all of these?
                 g125c = (
-                    -(g125_acvhd - self.opt_scenario.min_speed_at_125pct_grade_in_5min_mph)
+                    -(
+                        g125_acvhd
+                        - self.opt_scenario.min_speed_at_125pct_grade_in_5min_mph
+                    )
                     / self.opt_scenario.min_speed_at_125pct_grade_in_5min_mph
                 )
                 constr_perc[GRADE125] = g125c
@@ -806,7 +829,8 @@ class T3COProblem(ElementwiseProblem):
                     )  # pos return, failed
                 else:
                     range_mi_cv = range_achvd - (
-                        self.opt_scenario.target_range_mi * (1 + self.range_overshoot_tol)
+                        self.opt_scenario.target_range_mi
+                        * (1 + self.range_overshoot_tol)
                     )
 
             constraint_results_G.append(range_mi_cv)
@@ -883,7 +907,7 @@ class T3COProblem(ElementwiseProblem):
 
         return np.array(obj_arr_F), np.array(constraint_results_G), rs_sweep
 
-    def _evaluate(self, x, out, *args, **kwargs):
+    def _evaluate(self, x: dict, out: dict, *args, **kwargs) -> None:
         """
         This method runs T3COProblem.get_objs() when running Pymoo optimization
 
@@ -897,7 +921,12 @@ class T3COProblem(ElementwiseProblem):
         if len(constr_arr) > 0:
             out["G"] = constr_arr
 
-    def adjust_fc_peak_eff(self, fc_peak_eff, scenario, optvehicle):
+    def adjust_fc_peak_eff(
+        self,
+        fc_peak_eff: float,
+        scenario: run_scenario.Scenario,
+        optvehicle: fastsim.vehicle.Vehicle,
+    ) -> None:
         """
         This method augments an advanced vehicle fc_eff_array based on new fc_peak_eff using baseline fc_eff_array
 
@@ -914,7 +943,14 @@ class T3COProblem(ElementwiseProblem):
         optvehicle.set_derived()
 
     # ------------------------------------ utility functions ------------------------------------
-    def sweep_knob(self, knob, definition=100, plot=False, optres=None, **kwargs):
+    def sweep_knob(
+        self,
+        knob: list,
+        definition: int = 100,
+        plot: bool = False,
+        optres: float = None,
+        **kwargs,
+    ) -> list:
         """
         This method sweeps the optimization knob of vehicle from lbound to ubound, return TCO \
             plot optres to see if there's agreement from opt solution and your sweep
@@ -956,12 +992,18 @@ class T3COProblem(ElementwiseProblem):
                 sixty_mph_times.append([z60l, x])
             for res in sixty_mph_times:
                 z60l, x = res
-                if z60l > self.opt_scenario.max_time_0_to_60mph_at_gvwr_s and x < opt_res_kw:
+                if (
+                    z60l > self.opt_scenario.max_time_0_to_60mph_at_gvwr_s
+                    and x < opt_res_kw
+                ):
                     largest_infeasible_60s_size = x
                     failed_60_s_time = z60l
             for res in sixty_mph_times:
                 z30l, x = res
-                if z30l > self.opt_scenario.max_time_0_to_30mph_at_gvwr_s and x < opt_res_kw:
+                if (
+                    z30l > self.opt_scenario.max_time_0_to_30mph_at_gvwr_s
+                    and x < opt_res_kw
+                ):
                     largest_infeasible_30s_size = x
                     failed_30_s_time = z30l
 
@@ -1013,7 +1055,7 @@ class T3COProblem(ElementwiseProblem):
         self.obj_list = temp_obj_list
         return tcos
 
-    def get_tco_from_moo_advanced_result(self, x):
+    def get_tco_from_moo_advanced_result(self, x: dict) -> dict:
         """
         This method is a utility function to get detailed TCO information from optimized MOO result
 
@@ -1064,14 +1106,14 @@ class T3CODisplay(Output):
         Output (pymoo.util.display.output.Output): Pymoo minimize display object
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """
         This constructor initializes the pymoo.util.display.Display object
         """
         super().__init__(**kwargs)
         self.term = MultiObjectiveSpaceTermination()
 
-    def _do(self, problem, evaluator, algorithm):
+    def _do(self, problem: T3COProblem, evaluator: float, algorithm: str) -> None:
         """
         This constructor creates the output printouts
 
@@ -1121,19 +1163,19 @@ class T3CODisplay(Output):
 
 
 def run_optimization(
-    pop_size,
-    n_max_gen,
-    knobs_bounds,
-    vnum,
-    x_tol,
-    f_tol,
-    nth_gen,
-    n_last,
-    algo,
-    obj_list=None,
-    config=None,
+    pop_size: int,
+    n_max_gen: int,
+    knobs_bounds: dict,
+    vnum: int,
+    x_tol: float,
+    f_tol: float,
+    nth_gen: int,
+    n_last: int,
+    algo: str,
+    obj_list: list = None,
+    config: run_scenario.Config = None,
     **kwargs,
-):
+) -> Tuple[pymoo.core.result.Result, T3COProblem, bool]:
     """
     This method creates and runs T3COProblem minimization
 
@@ -1141,7 +1183,7 @@ def run_optimization(
         pop_size (int): Population size for optimization
         n_max_gen (int): maximum number of generations for optimization
         knobs_bounds (dict): Dictionary containing knobs and bounds
-        vnum (float): vehicle selection number
+        vnum (int): vehicle selection number
         x_tol (float): tolerance in parameter space
         f_tol (float): tolerance in objective space
         nth_gen (int): number of generations to evaluate if convergence occurs

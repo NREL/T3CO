@@ -1,23 +1,23 @@
 # Table of Contents
 
-* [objectives.fueleconomy](#objectives.fueleconomy)
-  * [get\_range\_mi](#objectives.fueleconomy.get_range_mi)
-  * [get\_sim\_drive](#objectives.fueleconomy.get_sim_drive)
-  * [get\_mpgge](#objectives.fueleconomy.get_mpgge)
+* [t3co/objectives/fueleconomy](#t3co/objectives/fueleconomy)
+  * [get\_range\_mi](#t3co/objectives/fueleconomy.get_range_mi)
+  * [get\_sim\_drive](#t3co/objectives/fueleconomy.get_sim_drive)
+  * [get\_mpgge](#t3co/objectives/fueleconomy.get_mpgge)
 
-<a id="objectives.fueleconomy"></a>
+<a id="t3co/objectives/fueleconomy"></a>
 
-# objectives.fueleconomy
+# t3co/objectives/fueleconomy
 
 Module containing functions for calculating fuel economy objectives.
 
-<a id="objectives.fueleconomy.get_range_mi"></a>
+<a id="t3co/objectives/fueleconomy.get_range_mi"></a>
 
 #### get\_range\_mi
 
 ```python
 def get_range_mi(mpgge_info: dict, vehicle: fastsim.vehicle.Vehicle,
-                 scenario) -> dict
+                 scenario: run_scenario.Scenario) -> dict
 ```
 
 This funcion computes range [miles] from mpgge using vehicle powertrain type and energy (or fuel) store size.
@@ -43,7 +43,7 @@ i.e. the CD range that PHEVs are commonly specified with
 
 - `range_dict` _dict_ - Dictionary containing different range results
 
-<a id="objectives.fueleconomy.get_sim_drive"></a>
+<a id="t3co/objectives/fueleconomy.get_sim_drive"></a>
 
 #### get\_sim\_drive
 
@@ -64,16 +64,18 @@ This helper method returns a FASTSim SimDrive object using the vehicle, drive cy
 
 - `sim_drive` _fastsim.simdrive.SimDrive_ - FASTSim SimDrive object
 
-<a id="objectives.fueleconomy.get_mpgge"></a>
+<a id="t3co/objectives/fueleconomy.get_mpgge"></a>
 
 #### get\_mpgge
 
 ```python
-def get_mpgge(eff_range_cyc: fastsim.cycle.Cycle
-              | List[Tuple[fastsim.cycle.Cycle, float]],
-              v: fastsim.vehicle.Vehicle,
-              scenario,
-              diagnostic=False)
+def get_mpgge(
+    eff_range_cyc: fastsim.cycle.Cycle
+    | List[Tuple[fastsim.cycle.Cycle, float]],
+    v: fastsim.vehicle.Vehicle,
+    scenario,
+    diagnostic=False
+) -> Tuple[dict, List[fastsim.simdrive.SimDrive], List[dict]]
 ```
 
 This helper method gets the composite mpgge fuel efficiency of vehicle for each efficiency_range Drive Cycle and weight.

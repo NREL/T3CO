@@ -1,22 +1,22 @@
 
-- [T3CO Introduction ](#t3co-introduction-)
-- [Code Flow ](#code-flow-)
+- [T3CO Introduction ](#t3co-introduction)
+- [Code Flow ](#code-flow)
   - [**Generating TCO and performance**](#generating-tco-and-performance)
-- [T3CO Input Files ](#t3co-input-files-)
-- [Optimization Flow ](#optimization-flow-)
-- [Performance Objectives ](#performance-objectives-)
+- [T3CO Input Files ](#t3co-input-files)
+- [Optimization Flow ](#optimization-flow)
+- [Performance Constraints ](#performance-constraints)
 
 
 
-## T3CO Introduction <a name="introduction"></a>
+## <a name="t3co-introduction"></a> T3CO Introduction 
 
 [NREL's Transportation Technology Total Cost of Ownership](https://www.nrel.gov/transportation/t3co.html) (T3CO) tool enables levelized assessments of the full life cycle costs of advanced technology commercial vehicles. 
 
-## Code Flow <a name="codeflow"></a>
+## Code Flow <a name="code-flow"></a>
 
 Generally speaking, T3CO can be used in two ways. The first way is generating total cost of ownership (TCO) metrics and performance metrics for a vehicle. The second way is optimizing a vehicle's specifications to achieve the lowest total cost of ownership possible. Since optimization requires gathering TCO and performance metrics during each step of optimization, it essentially is an expanded version of the first way of using T3CO. So we'll look at the first way first.
 
-### **Generating TCO and performance**
+### **Generating TCO and performance** <a name="generating-tco-and-performance"></a>
 
 When generating [TCO](https://github.com/NREL/T3CO-private/blob/65cb44929caff7b6e10959364f4f18d10f888d1e/docs/models/TCO_calculations.md), there are a few main components of a vehicle's total cost of ownership:
 - MSRP, the cost of the vehicle at time of purchase
@@ -33,19 +33,19 @@ The [Performance Constraints](#performance-constraints) determined for the vehic
 
 More on that below.
 
-## T3CO Input Files <a name="T3CO_Input_Files"></a>
+## T3CO Input Files <a name="t3co-input-files)"></a>
 
 There are three main files that form the basis of T3CO TCO calculations and T3CO optimizations. The first is the vehicle file, which is a [FASTSim input file](https://docs.rs/fastsim-core/0.1.6/fastsim_core/vehicle/struct.RustVehicle.html). The second type of file is the T3CO file, or [Scenario File](https://github.com/NREL/T3CO-private/blob/61aff5700c16ff54d69aa2c238f63553ec31f1da/docs/scenario_inputs_descriptions.md), which specifies the operating conditions that make up the TCO calculation for the vehicle. These are conditions such as $ per kilowatt for engine or motor size, operating years, operating regions, whether to optimize the vehicle or not, range, grade and acceleration performance targets, etc. The third file is the [Config File](https://github.com/NREL/T3CO-private/blob/61aff5700c16ff54d69aa2c238f63553ec31f1da/docs/config_inputs_descriptions.md), which provides an easier way to manage analyses with minimal command line inputs, containing overrides for major scenario input parameters.
 
 T3CO provides some readily available Vehicle and Scenario models to run. There are demo versions of the [Vehicle file](https://github.com/NREL/T3CO-private/blob/264a730de942671eb2345a5afca7e1afd6d67666/t3co/resources/inputs/demo/Demo_FY22_vehicle_model_assumptions.csv), [Scenario file](https://github.com/NREL/T3CO-private/blob/264a730de942671eb2345a5afca7e1afd6d67666/t3co/resources/inputs/demo/Demo_FY22_scenario_assumptions.csv), and the [Config file](https://github.com/NREL/T3CO-private/blob/264a730de942671eb2345a5afca7e1afd6d67666/t3co/resources/T3COConfig.csv) available in the  `/t3co/resources/` folder.
 
-## Optimization Flow <a name="Optimization_Flow"></a>
+## Optimization Flow <a name="optimization-flow"></a>
 
 The **TCO & Performance** metrics described above are the core of the [optimization loop](https://github.com/NREL/T3CO-private/blob/7b56eb37bf5a57e6cd0ce761fc1708ee151c956f/docs/models/optimization.md). T3CO has the capability to take vehicle specifications, such as engine size, motor size, battery size, area of drag, vehicle weight, etc. and modify them in order to find the set of specifications that yields the lowest TCO while still meeting minimum performance requirements in acceleration, grade and range.
 
 Optimization is handled in the [optimization module](https://github.com/NREL/T3CO-private/blob/74a494bc783c1d0d5794d605584e9843b3a4cb2d/t3co/moopack/moo.py#L80), inheriting from the PyMoo module.
 
-## Performance Constraints <a name="Performance_Constraints"></a>
+## Performance Constraints <a name="performance-constraints"></a>
 
 - [Gradability](https://github.com/NREL/T3CO-private/blob/7b56eb37bf5a57e6cd0ce761fc1708ee151c956f/docs/models/acceleration_and_grade_tests.mdd) is the measure of the vehicle's max speed achieved at 1.25 and 6 percent grades, while the vehicle is operating at max allowable weight (including EV weight credit kilograms)
 - [Acceleration](https://github.com/NREL/T3CO-private/blob/7b56eb37bf5a57e6cd0ce761fc1708ee151c956f/docs/models/acceleration_and_grade_tests.md) is the measure of the seconds the vehicle takes to reach 30 miles per hour and 60 miles per hour, which can be at max allowable weight or just current vehicle weight.

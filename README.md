@@ -3,12 +3,6 @@
 [![homepage](https://img.shields.io/badge/homepage-t3co-blue)](https://www.nrel.gov/transportation/t3co.html) [![github](https://img.shields.io/badge/github-t3co-blue.svg)](https://github.com/NREL/T3CO) [![PyPI version](https://badge.fury.io/py/t3co.svg)](https://badge.fury.io/py/t3co) ![GitHub License](https://img.shields.io/github/license/NREL/T3CO) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/t3co) 
 
 
-
-
-
-
-
-
 # **T3CO** : Transportation Technology Total Cost of Ownership Tool
 ## Description
 
@@ -21,6 +15,12 @@ To start, go to the [Overview](https://github.com/NREL/T3CO-private/blob/264a730
 **T3CO** is a general framework allowing a user to determine the total cost of ownership (TCO) of a FASTSim vehicle (paired with a FASTSim DriveCycle(s) for determining fuel efficiency). The user can also determine performance of gradability, acceleration, and range. In addition to straight TCO computation there is also the option to optimize a vehicle powertrain such that it meets performance optional targets while also optionally minimizing TCO.
 
 ## Installation
+**From PyPI**
+```bash
+pip install t3co
+```
+
+**From Github**
 
 First, clone the repository from **NREL** GitHub:
 
@@ -42,14 +42,14 @@ This will install t3co with minimal dependencies such that t3co files can be edi
 to be compatible with the current code in T3CO.
 
 ## Demo
-**Using the T3CO Config file**
+**Using the [T3CO Config](https://github.com/NREL/T3CO/blob/c3df6421033cef7d35b7d7cd575ab94e85fcd9a9/t3co/resources/T3COConfig.csv) file**
 
 ```bash
 cd t3co
 python sweep.py --analysis-id 0
 ```
 
-** or get some quick TCO results**
+**Or get some quick TCO results**
 
 ```bash
 cd t3co
@@ -76,18 +76,17 @@ pipx ensurepath
 Then from T3CO root directory
 ```bash
 pipx install pydoc-markdown
-pydoc-markdown -I . -p . --render-toc > ../docs/content/CodeReference.md
+pydoc-markdown -I . -p t3co --render-toc > docs/functions/CodeReference.md
 ```
 for specific modules, specify the module name after `-m`:
-`pydoc-markdown -I . -m sweep --render-toc > ../docs/content/sweep.md`
+`pydoc-markdown -I . -m t3co/sweep --render-toc > docs/functions/sweep.md`
 
 This generates CodeReference.md including a Table of Contents from all python docstrings in the T3CO package
 
 ## Generate MKDocs server for documentation website  (For Developers)
 Use the `mkdocs.yml` file to configure the documentation website on localhost. `mkdocs` and `mkdocstrings` should get installed along with other dependencies when running `pip install -e .` from the root directory. In case it throws an error, these packages can be installed separately:
 ```bash
-pip install mkdocs
-pip install mkdocstrings-python
+pip install mkdocs mkdocstrings-python
 ```
 **On Mac**
 

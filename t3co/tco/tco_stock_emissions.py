@@ -1,13 +1,14 @@
-#December 2018
-#Stock Model in Python
+# December 2018
+# Stock Model in Python
 # C. Hunter
 
+from typing import Tuple
 import pandas as pd
 
 from t3co.run import Global as gl
 
 
-def dropCols(df):
+def dropCols(df: pd.DataFrame) -> pd.DataFrame:
     """
     This helper method drops columns if any row contains ['*']
 
@@ -24,21 +25,21 @@ def dropCols(df):
 
 
 def stockModel(
-    sales,
-    marketShares,
-    survival,
-    annualTravel,
-    fuelSplit,
-    fuelEfficiency,
-    emissions,
-    vehicleCosts=None,
-    travelCosts=None,
-    fuelCosts=None,
-    insuranceCosts=None,
-    residualCosts=None,
-    downtimeCosts=None,
-    write_files=False,
-):
+    sales: pd.DataFrame,
+    marketShares: pd.DataFrame,
+    survival: pd.DataFrame,
+    annualTravel: pd.DataFrame,
+    fuelSplit: pd.DataFrame,
+    fuelEfficiency: pd.DataFrame,
+    emissions: pd.DataFrame,
+    vehicleCosts: pd.DataFrame = None,
+    travelCosts: pd.DataFrame = None,
+    fuelCosts: pd.DataFrame = None,
+    insuranceCosts: pd.DataFrame = None,
+    residualCosts: pd.DataFrame = None,
+    downtimeCosts: pd.DataFrame = None,
+    write_files: bool = False,
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     This function generates the ownershipCosts dataframe from the dataframes for each cost category
 

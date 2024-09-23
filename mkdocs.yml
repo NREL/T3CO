@@ -1,28 +1,47 @@
 site_name: T3CO 
 site_description: Transportation Technology Total Cost of Ownership
-repo_url: https://github.com/NREL/T3CO-private
+repo_url: https://github.com/NREL/T3CO
+edit_uri: https://github.com/NREL/T3CO/tree/main/docs
+site_author: Harish Panneer Selvam 
 
 plugins:
   - search
   - mkdocstrings
 
-
 markdown_extensions:
   - toc:
       permalink: true
-      
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
 theme:
-  name: readthedocs
+  name: material
+  favicon: t3co_logo.png
   highlightjs: true
   hljs_languages:
     - python
     - yaml
   features:
     - search.highlight
+    - content.action.view
+    - search.suggest
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil 
+    view: material/eye
 
 nav:
     - Home: index.md
     - Installation: installation.md
+    - Inputs: 
+      - Vehicle: vehicle_inputs_descriptions.md
+      - Scenario: scenario_inputs_descriptions.md
+      - Config: config_inputs_descriptions.md
     - Code Reference:
       - CodeFlow: CodeFlow.md      
       - T3CO Modules:

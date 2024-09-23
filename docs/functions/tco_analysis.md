@@ -1,21 +1,22 @@
 # Table of Contents
 
-* [tco.tco\_analysis](#tco.tco_analysis)
-  * [get\_operating\_costs](#tco.tco_analysis.get_operating_costs)
-  * [discounted\_costs](#tco.tco_analysis.discounted_costs)
-  * [calc\_discountedTCO](#tco.tco_analysis.calc_discountedTCO)
-  * [get\_tco\_of\_vehicle](#tco.tco_analysis.get_tco_of_vehicle)
+* [t3co/tco/tco\_analysis](#t3co/tco/tco_analysis)
+  * [get\_operating\_costs](#t3co/tco/tco_analysis.get_operating_costs)
+  * [discounted\_costs](#t3co/tco/tco_analysis.discounted_costs)
+  * [calc\_discountedTCO](#t3co/tco/tco_analysis.calc_discountedTCO)
+  * [get\_tco\_of\_vehicle](#t3co/tco/tco_analysis.get_tco_of_vehicle)
 
-<a id="tco.tco_analysis"></a>
+<a id="t3co/tco/tco_analysis"></a>
 
-# tco.tco\_analysis
+# t3co/tco/tco\_analysis
 
-<a id="tco.tco_analysis.get_operating_costs"></a>
+<a id="t3co/tco/tco_analysis.get_operating_costs"></a>
 
 #### get\_operating\_costs
 
 ```python
-def get_operating_costs(ownershipCosts, TCO_switch="DIRECT")
+def get_operating_costs(ownershipCosts,
+                        TCO_switch: str = "DIRECT") -> pd.DataFrame
 ```
 
 This function creates a dataframe of operating cost from ownershipCosts dataframe based on TCO_switch ('DIRECT' or 'EFFICIENCY')
@@ -30,12 +31,13 @@ This function creates a dataframe of operating cost from ownershipCosts datafram
 
 - `operatingCosts_df` _pd.DataFrame_ - Dataframe containing operating cost categories based on TCO_switch
 
-<a id="tco.tco_analysis.discounted_costs"></a>
+<a id="t3co/tco/tco_analysis.discounted_costs"></a>
 
 #### discounted\_costs
 
 ```python
-def discounted_costs(scenario, ownershipCosts)
+def discounted_costs(scenario: run_scenario.Scenario,
+                     ownershipCosts: pd.DataFrame) -> pd.DataFrame
 ```
 
 This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discount_rate_pct_per_yr
@@ -50,17 +52,17 @@ This function calculates the yearly discounted costs for each category of owners
 
 - `ownershipCosts` _pd.DataFrame_ - ownershipCosts dataframe with additional 'Discounted Cost [$]' column
 
-<a id="tco.tco_analysis.calc_discountedTCO"></a>
+<a id="t3co/tco/tco_analysis.calc_discountedTCO"></a>
 
 #### calc\_discountedTCO
 
 ```python
-def calc_discountedTCO(scenario,
-                       discounted_costs_df,
-                       veh_cost_set,
-                       veh_opp_cost_set,
-                       sim_drive,
-                       TCO_switch="DIRECT")
+def calc_discountedTCO(scenario: run_scenario.Scenario,
+                       discounted_costs_df: pd.DataFrame,
+                       veh_cost_set: dict,
+                       veh_opp_cost_set: dict,
+                       sim_drive: fastsim.simdrive.SimDrive,
+                       TCO_switch: str = "DIRECT") -> Tuple[float, dict, dict]
 ```
 
 This function calculates the discounted Total Cost of Ownerhip (discounted to account for time-value of money).
@@ -82,12 +84,29 @@ There are two methods to calculate discounted TCO - 'DIRECT' and 'EFFICIENCY'
 - `oppy_cost_Dol_set` _dict_ - Dictionary containing discounted opportunity costs breakdown
 - `veh_oper_cost_set` _dict_ - Dictionary containing discounted operating costs breakdown
 
-<a id="tco.tco_analysis.get_tco_of_vehicle"></a>
+<a id="t3co/tco/tco_analysis.get_tco_of_vehicle"></a>
 
 #### get\_tco\_of\_vehicle
 
 ```python
-def get_tco_of_vehicle(vehicle, range_cyc, scenario, write_tsv=False)
+def get_tco_of_vehicle(
+    vehicle: fastsim.vehicle.Vehicle,
+    range_cyc: fastsim.cycle.Cycle,
+    scenario: run_scenario.Scenario,
+    write_tsv: bool = False
+) -> Tuple[
+        float,
+        float,
+        dict,
+        pd.DataFrame,
+        pd.DataFrame,
+        dict,
+        dict,
+        fastsim.simdrive.SimDrive,
+        dict,
+        dict,
+        dict,
+]
 ```
 
 This function calculates the Total Cost of Ownership of a vehicle and scenario for a given cycle. The three main components are:

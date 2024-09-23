@@ -1,14 +1,16 @@
 """Module for loading vehicles, scenarios, running them and managing them"""
 
-
 import ast
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Tuple
 
+import fastsim
 import numpy as np
 import pandas as pd
 from fastsim import cycle, simdrive, vehicle
 import os
+
 # for debugging convenience
 from typing_extensions import Self
 
@@ -18,149 +20,6 @@ from t3co.tco import tco_analysis
 
 # import importlib
 # tco_analysis = importlib.reload(tco_analysis)
-
-# ---------------------------------- powertrain adjustment methods ---------------------------------- #
-
-
-def set_test_weight(vehicle, scenario):
-    """
-    assign standardized vehicle mass for accel and grade test using GVWR and GVWR Credit
-
-    Args:
-        vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
-        scenario (t3co.run_scenario.Scenario): T3CO scenario object
-    """
-    # June 15,16 confirming that the test weight of vehicle should be GVWRKg + gvwr_credit_kg
-    vehicle.veh_override_kg = scenario.gvwr_kg + scenario.gvwr_credit_kg
-    vehicle.set_veh_mass()
-    assert (
-        vehicle.veh_kg > 0
-    ), "vehicle weight [kg] cannot be zero, check Scenario values for gvwr_kg and gvwr_credit_kg"
-
-
-def reset_vehicle_weight(vehicle):
-    """
-    This function resets vehicle mass after loaded weight tests are done for accel and grade
-
-    Args:
-        vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
-    """
-    vehicle.veh_override_kg = 0
-    vehicle.set_veh_mass()
-
-
-def limit_cargo_kg_for_moo_hev_bev(opt_scenario, mooadvancedvehicle):
-    """
-    This helper method is used within T3COProblem to assign limited cargo capacity based on GVWR + GVWRCredit and optimization vehicle mass for advanced vehicles
-
-    Args:
-        opt_scenario (t3co.run_scenario.Scenario): T3CO scenario object
-        mooadvancedvehicle (fastsim.vehicle.Vehicle): pymoo optimization vehicle
-    """
-    # limit cargo to a value <= its original mass, decrease it if vehicle is overweight
-    max_allowable_weight_kg = opt_scenario.gvwr_kg + opt_scenario.gvwr_credit_kg
-    cargo_limited = max_allowable_weight_kg - (
-        mooadvancedvehicle.veh_kg - mooadvancedvehicle.cargo_kg
-    )
-    cargo_limited = max(cargo_limited, 0)
-    # TODO socialize the fact that this next line makes it impossible to add cargo capacity relative to baseline
-    # lightweighting and such can improve energy efficiency but not increase cargo
-    mooadvancedvehicle.cargo_kg = min(cargo_limited, opt_scenario.originalcargo_kg)
-    mooadvancedvehicle.set_veh_mass()
-
-
-# helper methods to ensure users call proper vehicle initialization methods to adjust vehicle powertrain and mass
-def set_max_motor_kw(analysis_vehicle, scenario, max_motor_kw):
-    """
-    This helper method is used within T3COProblem to set max_motor_kw to optimization vehicle and set kw_demand_fc_on if PHEV
-
-    Args:
-        analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
-        scenario (t3co.run_scenario.Scenario): T3CO Scenarion object
-        max_motor_kw (float): max motor power /kW
-    """
-    # old comments that may be needed again:
-    # Scaling motor and ESS power with ESS capacity results in more reasonable
-    # zero-to-sixty response to battery capacity and is generally consistent
-    # with how things are done.  We need to firm up the functional form of this,
-    # which came from Aaron Brooker for light duty.
-    # veh.mc_max_kw = 24.46 * (veh.ess_max_kwh ** (-.475) * veh.ess_max_kwh)
-    analysis_vehicle.mc_max_kw = max_motor_kw
-    # TODO: for HEV (at least), battery power could be significantly lower than motor power,
-    # and the following variable assignment will be pretty far off
-
-    analysis_vehicle.ess_max_kw = (
-        analysis_vehicle.mc_max_kw / analysis_vehicle.get_mcPeakEff()
-    )
-
-    # PHEV adjustment
-    if analysis_vehicle.veh_pt_type == gl.PHEV:
-        if scenario.motor_power_override_kw_fc_demand_on_pct != -1:
-            analysis_vehicle.kw_demand_fc_on = (
-                max_motor_kw * scenario.motor_power_override_kw_fc_demand_on_pct
-            )
-
-    analysis_vehicle.set_derived()
-
-
-def set_max_battery_kwh(analysis_vehicle, max_ess_kwh):
-    """
-    This helper method is used within T3COProblem to set max_ess_kwh to optimization vehicle
-
-    Args:
-        analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
-        max_ess_kwh (float): max energy storage system energy capacity /kWh
-    """
-    analysis_vehicle.ess_max_kwh = max_ess_kwh
-    analysis_vehicle.set_derived()
-
-
-def set_max_battery_power_kw(analysis_vehicle, max_ess_kw):
-    """
-    This helper method is used within T3COProblem to set max_ess_kwx to optimization vehicle
-
-    Args:
-        analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
-        max_ess_kw (float): max energy storage system power /kW
-    """
-    analysis_vehicle.ess_max_kw = max_ess_kw
-    analysis_vehicle.set_derived()
-
-
-def set_max_fuel_converter_kw(analysis_vehicle, fc_max_out_kw):
-    """
-    This helper method is used within T3COProblem to set fc_max_out_kw to optimization vehicle
-
-    Args:
-        analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
-        fc_max_out_kw (float): max fuel converter power /kW
-    """
-    analysis_vehicle.fc_max_kw = fc_max_out_kw
-    analysis_vehicle.set_derived()
-
-
-def set_fuel_store_kwh(analysis_vehicle, fs_kwh):
-    """
-    This helper method is used within T3COProblem to set fs_kwh to optimization vehicle
-
-    Args:
-        analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
-        fs_kwh (float): fuel storage energy capacity /kWh
-    """
-    analysis_vehicle.fs_kwh = fs_kwh
-    analysis_vehicle.set_derived()
-
-
-def set_cargo_kg(analysis_vehicle, cargo_kg):
-    """
-    This helper method is used within T3COProblem to set cargo_kg to optimization vehicle
-
-    Args:
-        analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
-        cargo_kg (float): vehicle cargo capacity /kg
-    """
-    analysis_vehicle.cargo_kg = cargo_kg
-    analysis_vehicle.set_veh_mass()
 
 
 # --------------------------------- \\ powertrain adjustment methods --------------------------------- #
@@ -210,7 +69,7 @@ class Config:
     fdt_frac_full_charge_bounds: list = field(default_factory=list)
     activate_mr_downtime_cost: bool = False
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     def from_file(self, filename: str, analysis_id: int) -> Self:
@@ -248,7 +107,7 @@ class Config:
             config_dict["selections"] = int(config_dict["selections"])
         self.__dict__.update(config_dict)
 
-    def validate_analysis_id(self, filename: str, analysis_id: int = 0):
+    def validate_analysis_id(self, filename: str, analysis_id: int = 0) -> Self:
         """
         This method validates that correct analysis id is input
 
@@ -425,7 +284,7 @@ class Scenario:
     mr_avg_tire_life_mi: float = 0
     mr_tire_replace_downtime_hr_per_event: float = 0
 
-    def from_config(self, config: Config = None):
+    def from_config(self, config: Config = None) -> Self:
         """
         This method overrides certain scenario fields if use_config is True and config object is not None
 
@@ -472,7 +331,7 @@ class Scenario:
 
 
 # PHEV utility methods
-def check_phev_init_socs(a_vehicle: vehicle.Vehicle, scenario: Scenario):
+def check_phev_init_socs(a_vehicle: vehicle.Vehicle, scenario: Scenario) -> None:
     """
     This function checks that soc_norm_init_for_grade_pct and soc_norm_init_for_accel_pct are present only for PHEVs
 
@@ -505,14 +364,16 @@ def check_phev_init_socs(a_vehicle: vehicle.Vehicle, scenario: Scenario):
         ), f"INPUT ERROR, user specifed ess_init_soc_accel {scenario.ess_init_soc_accel}, & soc_norm_init_for_accel_pct {scenario.soc_norm_init_for_accel_pct} for PHEV; the question of which one to use is ambiguous"
 
 
-def get_phev_util_factor(scenario, v, mpgge):
+def get_phev_util_factor(
+    scenario: Scenario, v: fastsim.vehicle.Vehicle, mpgge: dict
+) -> float:
     """
     This function gets the PHEV utility factor derived from the computed range of the
     vehicle and the operational day range computed from shifts per year and the first vmt year
 
     Args:
         scenario (Scenario): T3CO scenario object
-        v (fastsim.Vehicle.vehicle): FASTSim vehicle object
+        v (fastsim.vehicle.Vehicle): FASTSim vehicle object
         mpgge (dict): Miles per Gallon Gasoline Equivalent dictionary
 
     Returns:
@@ -535,7 +396,9 @@ def get_phev_util_factor(scenario, v, mpgge):
 
 
 # utility methods sim drives
-def get_objective_simdrive(analysis_vehicle: vehicle.Vehicle, cycle):
+def get_objective_simdrive(
+    analysis_vehicle: vehicle.Vehicle, cycle: fastsim.cycle.Cycle
+) -> fastsim.simdrive.SimDrive:
     """
     This function obtains the SimDrive for accel and grade test
 
@@ -560,7 +423,12 @@ def get_objective_simdrive(analysis_vehicle: vehicle.Vehicle, cycle):
     return sd
 
 
-def run_grade_or_accel(test, analysis_vehicle, sim_drive, ess_init_soc):
+def run_grade_or_accel(
+    test: str,
+    analysis_vehicle: fastsim.vehicle.Vehicle,
+    sim_drive: fastsim.simdrive.SimDrive,
+    ess_init_soc: float,
+) -> None:
     """
     This function handles initial SOC considerations for grade and accel tests
 
@@ -599,7 +467,7 @@ def run_grade_or_accel(test, analysis_vehicle, sim_drive, ess_init_soc):
 
 
 # utility methods to create fastsim vehicles
-def create_fastsim_vehicle(veh_dict=None):
+def create_fastsim_vehicle(veh_dict: dict = None) -> fastsim.vehicle.Vehicle:
     """
     This function creates and returns an empty FASTSim vehicle object with no attributes or
 
@@ -621,7 +489,7 @@ def create_fastsim_vehicle(veh_dict=None):
     return v
 
 
-def get_vehicle(veh_no, veh_input_path):
+def get_vehicle(veh_no: int, veh_input_path: str) -> fastsim.vehicle.Vehicle:
     """
     This function loads vehicle object from vehicle number and input csv filepath
 
@@ -642,7 +510,12 @@ def get_vehicle(veh_no, veh_input_path):
 # \\ end \\ utility methods to create fastsim vehicles
 
 
-def get_scenario_and_cycle(veh_no, scenario_inputs_path, a_vehicle=None, config=None):
+def get_scenario_and_cycle(
+    veh_no: int,
+    scenario_inputs_path: str,
+    a_vehicle: fastsim.vehicle.Vehicle = None,
+    config: Config = None,
+) -> Tuple[Scenario, fastsim.cycle.Cycle]:
     """
     This function uses helper methods load_scenario and load_design_cycle_from_scenario \
         to get scenario object and cycle object corresponding to selected vehicle (by veh_no)
@@ -663,7 +536,12 @@ def get_scenario_and_cycle(veh_no, scenario_inputs_path, a_vehicle=None, config=
     return scenario, cyc
 
 
-def load_scenario(veh_no, scenario_inputs_path, a_vehicle=None, config=None):
+def load_scenario(
+    veh_no: int,
+    scenario_inputs_path: str,
+    a_vehicle: fastsim.vehicle.Vehicle = None,
+    config: Config = None,
+) -> Scenario:
     """
     This function gets the Scenario object from scenario input CSV filepath, initializes some fields,\
           and overrides some fields based on Config object
@@ -764,8 +642,8 @@ def load_scenario(veh_no, scenario_inputs_path, a_vehicle=None, config=None):
 
 
 def load_design_cycle_from_scenario(
-    scenario, cyc_file_path=gl.OPTIMIZATION_DRIVE_CYCLES
-):
+    scenario: Scenario, cyc_file_path: str = gl.OPTIMIZATION_DRIVE_CYCLES
+) -> fastsim.cycle.Cycle:
     """
     This helper method loads the design cycle used for mpgge and range determination.
     It can also be used standalone to get cycles not in standard gl.OPTIMIZATION_DRIVE_CYCLES location,
@@ -802,7 +680,7 @@ def load_design_cycle_from_scenario(
     return range_cyc
 
 
-def load_design_cycle_from_path(cyc_file_path):
+def load_design_cycle_from_path(cyc_file_path: str) -> fastsim.cycle.Cycle:
     """
     This helper method loads the Cycle object from the drivecycle filepath
 
@@ -822,7 +700,169 @@ def load_design_cycle_from_path(cyc_file_path):
     return range_cyc
 
 
-def vehicle_scenario_sweep(vehicle, scenario, range_cyc, verbose=False, **kwargs):
+# ---------------------------------- powertrain adjustment methods ---------------------------------- #
+
+
+def set_test_weight(vehicle: fastsim.vehicle.Vehicle, scenario: Scenario) -> None:
+    """
+    assign standardized vehicle mass for accel and grade test using GVWR and GVWR Credit
+
+    Args:
+        vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
+        scenario (t3co.run_scenario.Scenario): T3CO scenario object
+    """
+    # June 15,16 confirming that the test weight of vehicle should be GVWRKg + gvwr_credit_kg
+    vehicle.veh_override_kg = scenario.gvwr_kg + scenario.gvwr_credit_kg
+    vehicle.set_veh_mass()
+    assert (
+        vehicle.veh_kg > 0
+    ), "vehicle weight [kg] cannot be zero, check Scenario values for gvwr_kg and gvwr_credit_kg"
+
+
+def reset_vehicle_weight(vehicle: fastsim.vehicle.Vehicle) -> None:
+    """
+    This function resets vehicle mass after loaded weight tests are done for accel and grade
+
+    Args:
+        vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
+    """
+    vehicle.veh_override_kg = 0
+    vehicle.set_veh_mass()
+
+
+def limit_cargo_kg_for_moo_hev_bev(
+    opt_scenario: Scenario, mooadvancedvehicle: fastsim.vehicle.Vehicle
+) -> None:
+    """
+    This helper method is used within T3COProblem to assign limited cargo capacity based on GVWR + GVWRCredit and optimization vehicle mass for advanced vehicles
+
+    Args:
+        opt_scenario (t3co.run_scenario.Scenario): T3CO scenario object
+        mooadvancedvehicle (fastsim.vehicle.Vehicle): pymoo optimization vehicle
+    """
+    # limit cargo to a value <= its original mass, decrease it if vehicle is overweight
+    max_allowable_weight_kg = opt_scenario.gvwr_kg + opt_scenario.gvwr_credit_kg
+    cargo_limited = max_allowable_weight_kg - (
+        mooadvancedvehicle.veh_kg - mooadvancedvehicle.cargo_kg
+    )
+    cargo_limited = max(cargo_limited, 0)
+    # TODO socialize the fact that this next line makes it impossible to add cargo capacity relative to baseline
+    # lightweighting and such can improve energy efficiency but not increase cargo
+    mooadvancedvehicle.cargo_kg = min(cargo_limited, opt_scenario.originalcargo_kg)
+    mooadvancedvehicle.set_veh_mass()
+
+
+# helper methods to ensure users call proper vehicle initialization methods to adjust vehicle powertrain and mass
+def set_max_motor_kw(
+    analysis_vehicle: fastsim.vehicle.Vehicle, scenario: Scenario, max_motor_kw: float
+) -> None:
+    """
+    This helper method is used within T3COProblem to set max_motor_kw to optimization vehicle and set kw_demand_fc_on if PHEV
+
+    Args:
+        analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
+        scenario (t3co.run_scenario.Scenario): T3CO Scenarion object
+        max_motor_kw (float): max motor power /kW
+    """
+    # old comments that may be needed again:
+    # Scaling motor and ESS power with ESS capacity results in more reasonable
+    # zero-to-sixty response to battery capacity and is generally consistent
+    # with how things are done.  We need to firm up the functional form of this,
+    # which came from Aaron Brooker for light duty.
+    # veh.mc_max_kw = 24.46 * (veh.ess_max_kwh ** (-.475) * veh.ess_max_kwh)
+    analysis_vehicle.mc_max_kw = max_motor_kw
+    # TODO: for HEV (at least), battery power could be significantly lower than motor power,
+    # and the following variable assignment will be pretty far off
+
+    analysis_vehicle.ess_max_kw = (
+        analysis_vehicle.mc_max_kw / analysis_vehicle.get_mcPeakEff()
+    )
+
+    # PHEV adjustment
+    if analysis_vehicle.veh_pt_type == gl.PHEV:
+        if scenario.motor_power_override_kw_fc_demand_on_pct != -1:
+            analysis_vehicle.kw_demand_fc_on = (
+                max_motor_kw * scenario.motor_power_override_kw_fc_demand_on_pct
+            )
+
+    analysis_vehicle.set_derived()
+
+
+def set_max_battery_kwh(
+    analysis_vehicle: fastsim.vehicle.Vehicle, max_ess_kwh: float
+) -> None:
+    """
+    This helper method is used within T3COProblem to set max_ess_kwh to optimization vehicle
+
+    Args:
+        analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
+        max_ess_kwh (float): max energy storage system energy capacity /kWh
+    """
+    analysis_vehicle.ess_max_kwh = max_ess_kwh
+    analysis_vehicle.set_derived()
+
+
+def set_max_battery_power_kw(
+    analysis_vehicle: fastsim.vehicle.Vehicle, max_ess_kw: float
+) -> None:
+    """
+    This helper method is used within T3COProblem to set max_ess_kwx to optimization vehicle
+
+    Args:
+        analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
+        max_ess_kw (float): max energy storage system power /kW
+    """
+    analysis_vehicle.ess_max_kw = max_ess_kw
+    analysis_vehicle.set_derived()
+
+
+def set_max_fuel_converter_kw(
+    analysis_vehicle: fastsim.vehicle.Vehicle, fc_max_out_kw: float
+) -> None:
+    """
+    This helper method is used within T3COProblem to set fc_max_out_kw to optimization vehicle
+
+    Args:
+        analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
+        fc_max_out_kw (float): max fuel converter power /kW
+    """
+    analysis_vehicle.fc_max_kw = fc_max_out_kw
+    analysis_vehicle.set_derived()
+
+
+def set_fuel_store_kwh(
+    analysis_vehicle: fastsim.vehicle.Vehicle, fs_kwh: float
+) -> None:
+    """
+    This helper method is used within T3COProblem to set fs_kwh to optimization vehicle
+
+    Args:
+        analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
+        fs_kwh (float): fuel storage energy capacity /kWh
+    """
+    analysis_vehicle.fs_kwh = fs_kwh
+    analysis_vehicle.set_derived()
+
+
+def set_cargo_kg(analysis_vehicle: fastsim.vehicle.Vehicle, cargo_kg):
+    """
+    This helper method is used within T3COProblem to set cargo_kg to optimization vehicle
+
+    Args:
+        analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
+        cargo_kg (float): vehicle cargo capacity /kg
+    """
+    analysis_vehicle.cargo_kg = cargo_kg
+    analysis_vehicle.set_veh_mass()
+
+
+def vehicle_scenario_sweep(
+    vehicle: fastsim.vehicle.Vehicle,
+    scenario: Scenario,
+    range_cyc,
+    verbose=False,
+    **kwargs,
+):
     """
     This function contains helper methods such as get_tco_of_vehicle, check_phev_init_socs, get_accel, and get_gradeability\
     and returns a dictionary of all TCO related outputs
@@ -977,10 +1017,10 @@ def vehicle_scenario_sweep(vehicle, scenario, range_cyc, verbose=False, **kwargs
 
 
 def run(
-    veh_no,
-    vocation="blank",
-    vehicle_input_path=gl.FASTSIM_INPUTS,
-    scenario_inputs_path=gl.OTHER_INPUTS,
+    veh_no: int,
+    vocation: str = "blank",
+    vehicle_input_path: str = gl.FASTSIM_INPUTS,
+    scenario_inputs_path: str = gl.OTHER_INPUTS,
 ):
     """
     This function runs vehicle_scenario_sweep based on vehicle and scenario objects read from input file paths
@@ -1009,7 +1049,7 @@ def run(
     return out
 
 
-def rerun(vehicle, vocation, scenario):
+def rerun(vehicle: fastsim.vehicle.Vehicle, vocation: str, scenario: Scenario):
     """
     This function runs vehicle_scenario_sweep when given the vehicle and scenario objects
 

@@ -1,22 +1,24 @@
 # Table of Contents
 
-* [objectives.gradeability](#objectives.gradeability)
-  * [get\_gradeability](#objectives.gradeability.get_gradeability)
+* [t3co/objectives/gradeability](#t3co/objectives/gradeability)
+  * [get\_gradeability](#t3co/objectives/gradeability.get_gradeability)
 
-<a id="objectives.gradeability"></a>
+<a id="t3co/objectives/gradeability"></a>
 
-# objectives.gradeability
+# t3co/objectives/gradeability
 
-<a id="objectives.gradeability.get_gradeability"></a>
+<a id="t3co/objectives/gradeability.get_gradeability"></a>
 
 #### get\_gradeability
 
 ```python
-def get_gradeability(analysis_vehicle,
-                     scenario=None,
-                     verbose=False,
-                     ess_init_soc=None,
-                     set_weight_to_max_kg=True)
+def get_gradeability(
+    analysis_vehicle: fastsim.vehicle.Vehicle,
+    scenario: run_scenario.Scenario = None,
+    verbose: bool = False,
+    ess_init_soc: float = None,
+    set_weight_to_max_kg: bool = True
+) -> Tuple[float, float, fastsim.simdrive.SimDrive, fastsim.simdrive.SimDrive]
 ```
 
 This function runs SimDrives to determine the gradeability at given speed and the grade vehicle is
