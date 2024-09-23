@@ -1,7 +1,7 @@
 # Contents
 - [Contents](#contents)
-  - [Overview ](#overview-)
-  - [Vehicle MSRP ](#vehicle-msrp-)
+  - [Overview ](#overview)
+  - [Vehicle MSRP ](#vehicle-msrp)
         - [MSRP Inputs](#msrp-inputs)
         - [MSRP Formula](#msrp-formula)
         - [MSRP Code](#msrp-code)
@@ -16,7 +16,7 @@
 ## Overview <a name="overview"></a>
 The Total Cost of Ownership is a core metric calculated by T3CO. It is made up of a few parts. The first is **MSRP**, or the purchase cost of the vehicle. Then there is fuel cost for each operational year. Then there are "other costs" as well as Payload Opportunity Costs.
 
-## Vehicle MSRP <a name="MSRP"></a>
+## Vehicle MSRP <a name="vehicle-msrp"></a>
 The vehicle MSRP is composed of a glider cost, powertrain costs from engine and/or motor, energy storage for liquid fuel or battery pack, the plug for PHEVs and EVs, the battery replacement cost (rarely used), & the Purchase tax. 
 
 **example**
@@ -35,7 +35,7 @@ The vehicle MSRP is composed of a glider cost, powertrain costs from engine and/
 
 The Glider and Plug costs are straight inputs from the T3CO scenario file. Battery and Fuel Storage are computed on a `$/kWh` basis. Fuel converter and Motor & power electronics are computed on a `$/kW` also from the T3CO [scenario file](ScenarioFile.md).
 
-##### MSRP Inputs
+##### MSRP Inputs <a name="msrp-inputs"></a>
 |column name|example value| bounds |
 |---|----|----|
 |`ess_cost_dol_per_kw`|`0`| `float` |
