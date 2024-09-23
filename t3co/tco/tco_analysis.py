@@ -254,7 +254,7 @@ def get_tco_of_vehicle(vehicle, range_cyc, scenario, config = None, write_tsv=Fa
         veh_cost_set,
         veh_opp_cost_set,
         sim_drives[-1],
-        TCO_switch=config.TCO_method,
+        TCO_switch=(config.TCO_method if config.TCO_method else "DIRECT"),
     )
     # print(f'New disc EFFICIENCY TCO: {discounted_TCO_Dol}')
 

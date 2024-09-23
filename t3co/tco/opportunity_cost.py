@@ -8,7 +8,7 @@ import fastsim
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from scipy.integrate import trapz
+# from scipy.integrate import trapz
 from scipy.stats import gaussian_kde
 import os
 from t3co.run import Global as gl
@@ -72,10 +72,10 @@ class OpportunityCost:
             self.time_available_charge_hr = scenario.dlf_time_available_charge_hr
             self.dwell_overhead_hr = scenario.dlf_avg_noncharge_per_dwell_hr
             self.frac_of_fullcharge_bounds = list(
-                np.float_(scenario.dlf_frac_fullcharge_bounds.strip(" ][").split(","))
+                np.float64(scenario.dlf_frac_fullcharge_bounds.strip(" ][").split(","))
             )
             scenario.shifts_per_year = list(
-                np.float_(str(scenario.shifts_per_year).strip(" ][").split(","))
+                np.float64(str(scenario.shifts_per_year).strip(" ][").split(","))
             )
             if 0 in scenario.shifts_per_year:
                 scenario.shifts_per_year = [round(scenario.VMT[i] / self.total_range_mi) for i in range(scenario.vehLifeYears)]
@@ -203,7 +203,7 @@ class OpportunityCost:
                 minidx:maxidx
             ] * (self.vehicle_weights_bins_kg[minidx:maxidx] - new_cargo_cieling_kg)
             # estimated_lost_payload_lb = sum(estimated_lost_payload_per_bin_lb)
-            estimated_lost_payload_kg = trapz(estimated_lost_payload_per_bin_kg)
+            estimated_lost_payload_kg = np.trapz(estimated_lost_payload_per_bin_kg)
             # print(f'estimated_lost_payload_kg: {estimated_lost_payload_kg}')
 
             # payload cost multiplier

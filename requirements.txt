@@ -1,7 +1,8 @@
 pymoo==0.6.1
-bleach
-docutils
-Pygments
 mkdocs
+mkdocstrings
 mkdocstrings-python
+numpy==1.24.1
+scipy==1.10.1
+pandas==2.0.3
 fastsim==2.1.1

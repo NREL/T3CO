@@ -184,7 +184,7 @@ class Config:
     driveCycle: str = ""
     # selections: list = field(default_factory=list)
     vehLifeYears: float = 0
-    TCO_method: str = ""
+    TCO_method: str = "DIRECT"
 
     # Fueling
     essMaxChargePower_kW: float = 0
@@ -745,7 +745,7 @@ def load_scenario(veh_no, scenario_inputs_path, a_vehicle=None, config=None):
 
     # convert insurance rates string into float list
     scenario.insurance_rates_pctPerYr = list(
-        np.float_(scenario.insurance_rates_pctPerYr.strip(" ][").split(","))
+        np.float64(scenario.insurance_rates_pctPerYr.strip(" ][").split(","))
     )
 
     # validate some inputs, assign as -1 if not provided by user in input file

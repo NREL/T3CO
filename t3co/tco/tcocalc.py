@@ -378,7 +378,7 @@ def fill_trav_exp_tsv(vehicle, scenario):
     vocation = scenario.vocation
     vehicle_name = scenario.segmentName
     maint = scenario.maintDolPerMi
-    maint = list(np.float_(maint.strip(" ][").split(",")))
+    maint = list(np.float64(maint.strip(" ][").split(",")))
     veh_life_years = int(scenario.vehLifeYears)
 
     assert len(maint) >= veh_life_years, (
@@ -453,7 +453,7 @@ def fill_market_share_tsv(scenario, num_vs=1):
 
     veh_life_years = int(scenario.vehLifeYears)
     model_year = int(scenario.modelYear)
-    # maint = list(np.float_(scenario.maintDolPerMi.strip('][').split(',')))
+    # maint = list(np.float64(scenario.maintDolPerMi.strip('][').split(',')))
     data = []
     columns = ["Vehicle", "Vocation", "Model Year", "Region", "Market Share [veh/veh]"]
     data.append([vehicle, vocation, model_year, reg, 1 / num_vs])
