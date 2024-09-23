@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-#%%
+# %%
+from typing import List, Tuple
+import fastsim
 import pandas as pd
 import numpy as np
 import csv
@@ -13,8 +15,10 @@ import ast
 import logging
 import re
 import os
-
-from t3co.run import Global as gl
+import pymoo
+import pymoo.core
+import pymoo.core.result
+from t3co.run import Global as gl, run_scenario
 from t3co.moopack import moo
 from t3co.run import run_scenario as rs
 from t3co.objectives import fueleconomy as fe
@@ -79,14 +83,28 @@ REPORT_COLS = {
 KNOB_MIN = 1
 
 
-def deug_traces(vehicle, cycles, scenario):
+def deug_traces(
+    vehicle: fastsim.vehicle.Vehicle,
+    cycles: List[fastsim.cycle.Cycle],
+    scenario: run_scenario.Scenario,
+) -> None:
+    """
+    This function gets a diagnostic trace of get_mpgge
+
+    Args:
+        vehicle (fastsim.vehicle.Vehicle): FASTSim Vehicle object
+        cycles (List[fastsim.cycle.Cycle]): List of FASTSim drivecycle objects
+        scenario (run_scenario.Scenario): Scenario object
+    """
     mpgge_comp, sim_drives, mpgges = fe.get_mpgge(
         cycles, vehicle, scenario, diganostic=True
     )
     # save the sim_drives to file somehow
 
 
-def save_tco_files(tco_files, resdir, scenario_name, sel, ts):
+def save_tco_files(
+    tco_files: dict, resdir: str, scenario_name: str, sel: str, ts: str
+) -> None:
     """
     This function saves the intermediary files as tsv
 
@@ -136,18 +154,23 @@ def save_tco_files(tco_files, resdir, scenario_name, sel, ts):
 
 
 def get_knobs_bounds_curves(
-    selection, vpttype, sdf, lw_imp_curves, aero_drag_imp_curves, eng_eff_curves
-):
+    selection: int,
+    vpttype: str,
+    sdf: pd.DataFrame,
+    lw_imp_curves: pd.DataFrame,
+    aero_drag_imp_curves: pd.DataFrame,
+    eng_eff_curves: pd.DataFrame,
+) -> Tuple[dict, dict]:
     """
     This function fetches the knobs and constraints for running the optimization for a given selection
 
     Args:
-        selection (float): selection number
+        selection (int): selection number
         vpttype (str): vehicle powertrain type = veh_pt_type
-        sdf (DataFrame): scenario dataframe
-        lw_imp_curves (DataFrame): light weighting curve dataframe
-        aero_drag_imp_curves (DataFrame): aero drag curve dataframe
-        eng_eff_curves (DataFrame): engine efficiency curve dataframe
+        sdf (pd.DataFrame): scenario dataframe
+        lw_imp_curves (pd.DataFrame): light weighting curve dataframe
+        aero_drag_imp_curves (pd.DataFrame): aero drag curve dataframe
+        eng_eff_curves (pd.DataFrame): engine efficiency curve dataframe
 
     Returns:
         knobs_bounds (dict): dict of knobs and bounds
@@ -271,12 +294,14 @@ def get_knobs_bounds_curves(
     return knobs_bounds, curves
 
 
-def get_objectives_constraints(selection, sdf, verbose=True):
+def get_objectives_constraints(
+    selection: int, sdf: pd.DataFrame, verbose: bool = True
+) -> Tuple[list, list]:
     """
     This function appends to list of necessary variables based on the constraints and objectives selected
 
     Args:
-        selection (float): selection number
+        selection (int): selection number
         sdf (DataFrame): scenario dataframe
         verbose (bool, optional): if selected, function will print objectives and constraints. Defaults to True.
 
@@ -314,30 +339,30 @@ def get_objectives_constraints(selection, sdf, verbose=True):
 
 
 def run_moo(
-    sel,
-    sdf,
-    optpt,
-    algo,
-    skip_opt,
-    pop_size,
-    n_max_gen,
-    n_last,
-    nth_gen,
-    x_tol,
-    verbose,
-    f_tol,
-    resdir,
-    lw_imp_curves,
-    aero_drag_imp_curves,
-    eng_eff_imp_curves,
-    config,
+    sel: int,
+    sdf: pd.DataFrame,
+    optpt: str,
+    algo: str,
+    skip_opt: bool,
+    pop_size: float,
+    n_max_gen: int,
+    n_last: int,
+    nth_gen: int,
+    x_tol: float,
+    verbose: bool,
+    f_tol: float,
+    resdir: str,
+    lw_imp_curves: pd.DataFrame,
+    aero_drag_imp_curves: pd.DataFrame,
+    eng_eff_imp_curves: pd.DataFrame,
+    config: run_scenario.Scenario,
     **kwargs,
-):
+) -> Tuple[pymoo.core.result.Result, moo.T3COProblem, bool]:
     """
     This function calls get_objectives_constraints and get_knobs_bounds_curves, and then calls run_optimization to perform the multiobjective optimization
 
     Args:
-        sel (float): selection number
+        sel (int): selection number
         sdf (DataFrame): scenario dataframe
         optpt (str): vehicle powertrain type
         algo (str): algorithm name
@@ -358,7 +383,7 @@ def run_moo(
     Returns:
         moo_results (pymoo.core.result.Result): optimization results object
         moo_problem (T3COProblem): minimization problem that calculates TCO
-        moo_code (Error): Error message
+        moo_code (bool): Error message
     """
     objectives, constraints = get_objectives_constraints(sel, sdf)
 
@@ -390,7 +415,7 @@ def run_moo(
     return moo_results, moo_problem, moo_code
 
 
-def check_input_files(df, filetype, filepath):
+def check_input_files(df: pd.DataFrame, filetype: str, filepath: str) -> None:
     """
     This function contains assert statements that make sure input vehicle and scenario dataframes do not contain numm rows
 
@@ -400,12 +425,23 @@ def check_input_files(df, filetype, filepath):
         filepath (str): filepath of the vehicle or scenario input files
     """
     blank_lines = [i for i in df.index.isnull().cumsum() if i != 0]
-    assert df.index.isnull().any() == False, f"\n\n{filetype} file selection column cannot have blank values\nlines: {blank_lines}\npath: {filepath}\n\n\n\n"  # noqa: E712
-    assert df['scenario_name'].isnull().any() == False, f"\n\n{filetype} file scenario_name column cannot have blank values\nlines: {blank_lines}\npath: {filepath}\n\n\n\n"  # noqa: E712
+    assert (
+        df.index.isnull().any() == False
+    ), f"\n\n{filetype} file selection column cannot have blank values\nlines: {blank_lines}\npath: {filepath}\n\n\n\n"  # noqa: E712
+    assert (
+        df["scenario_name"].isnull().any() == False
+    ), f"\n\n{filetype} file scenario_name column cannot have blank values\nlines: {blank_lines}\npath: {filepath}\n\n\n\n"  # noqa: E712
+
 
 def run_vehicle_scenarios(
-    vehicles, scenarios, eng_eff_imp_curves_p, lw_imp_curves_p, aero_drag_imp_curves_p, config, **kwargs
-):
+    vehicles: str,
+    scenarios: str,
+    eng_eff_imp_curves_p: str,
+    lw_imp_curves_p: str,
+    aero_drag_imp_curves_p: str,
+    config: run_scenario.Config,
+    **kwargs,
+) -> None:
     """
     This is the main function that runs T3CO for all the selections input
 
@@ -464,8 +500,8 @@ def run_vehicle_scenarios(
     f_tol = kwargs.pop("f_tol", 3.0)  # objective space tolerance
     verbose = kwargs.pop("verbose", False)
     look_for = kwargs.pop("look_for", [""])
-    assert (
-        isinstance(look_for,list)
+    assert isinstance(
+        look_for, list
     ), "look_for should have been input or cast as a list at this point"
     selections = kwargs.pop(
         "selections", -1
@@ -491,7 +527,7 @@ def run_vehicle_scenarios(
         selections = range(len(vdf))
 
     if args.dst_dir is None and config.dst_dir is None:
-        resdir = Path(os.path.abspath(__file__)).parents[1]/ f"results{dir_mark}"
+        resdir = Path(os.path.abspath(__file__)).parents[1] / f"results{dir_mark}"
     elif args.dst_dir is not None:
         resdir = Path(args.dst_dir)
     else:
@@ -521,7 +557,9 @@ def run_vehicle_scenarios(
     # list of report dataframes to write final output at each iteration
     reports = []
 
-    def input_validation(sel, optpt, algo, config):
+    def input_validation(
+        sel: float, optpt: str, algo: str, config: run_scenario.Scenario
+    ):
         """
         This function obtains the vehicle, scenario, and cycle object for a given selection and runs optimization to validate inputs
 
@@ -570,7 +608,14 @@ def run_vehicle_scenarios(
         )
         return None
 
-    def optimize(sel, scenario_name, optpt, algo, skip_opt, write_tsv=False):
+    def optimize(
+        sel: float,
+        scenario_name: str,
+        optpt: str,
+        algo: str,
+        skip_opt: bool,
+        write_tsv: bool = False,
+    ) -> None:
         """
         This function runs the optimization for a given selection if skip_opt = False
 
@@ -626,9 +671,7 @@ def run_vehicle_scenarios(
                 report_vehicle = moo_problem.mooadvancedvehicle
                 report_scenario = moo_problem.opt_scenario
             else:
-                input_vehicle = rs.get_vehicle(
-                    sel, veh_input_path=gl.FASTSIM_INPUTS
-                )
+                input_vehicle = rs.get_vehicle(sel, veh_input_path=gl.FASTSIM_INPUTS)
                 report_vehicle = None
                 report_scenario, design_cycle = rs.get_scenario_and_cycle(
                     sel, gl.OTHER_INPUTS, a_vehicle=input_vehicle, config=config
@@ -647,9 +690,7 @@ def run_vehicle_scenarios(
             # TODO, is moo_problem.moobasevehicle really the right vehicle here?
             num_results = 1
             moo_code = "NA"
-            input_vehicle = rs.get_vehicle(
-                sel, veh_input_path=gl.FASTSIM_INPUTS
-            )
+            input_vehicle = rs.get_vehicle(sel, veh_input_path=gl.FASTSIM_INPUTS)
             report_scenario, design_cycle = rs.get_scenario_and_cycle(
                 sel, gl.OTHER_INPUTS, a_vehicle=input_vehicle, config=config
             )
@@ -682,9 +723,9 @@ def run_vehicle_scenarios(
                 )
             for v_input_k in input_vehicle.__dict__.keys():
                 if "value_props" not in v_input_k:
-                    report_i[
-                        "input_vehicle_value_" + v_input_k
-                    ] = input_vehicle.__getattribute__(v_input_k)
+                    report_i["input_vehicle_value_" + v_input_k] = (
+                        input_vehicle.__getattribute__(v_input_k)
+                    )
                     # we want place-holder blank values for optimization columns even if we're not optimizing
                     report_i["optimized_vehicle_value_" + v_input_k] = None
 
@@ -715,9 +756,9 @@ def run_vehicle_scenarios(
                     moo.OPTIMIZATION_FAILED_TO_CONVERGE,
                 ]:
                     if moo_code == moo.EXCEPTION_THROWN:
-                        report_i[
-                            "n_gen"
-                        ] = "Code Exception thrown"  # TODO, get stacktrace information and add to this
+                        report_i["n_gen"] = (
+                            "Code Exception thrown"  # TODO, get stacktrace information and add to this
+                        )
                     elif moo_code == moo.OPTIMIZATION_FAILED_TO_CONVERGE:
                         report_i["n_gen"] = "Optimization Failed to converge"
                     report_i = {k: str(v) for k, v in report_i.items()}
@@ -777,9 +818,9 @@ def run_vehicle_scenarios(
                     report_i["final_fs_kwh"] = x_dixt.get(moo.KNOB_fs_kwh)
                     for v_input_k in report_vehicle.__dict__.keys():
                         if "value_props" not in v_input_k:
-                            report_i[
-                                "optimized_vehicle_value_" + v_input_k
-                            ] = report_vehicle.__getattribute__(v_input_k)
+                            report_i["optimized_vehicle_value_" + v_input_k] = (
+                                report_vehicle.__getattribute__(v_input_k)
+                            )
 
                     n_gens_used = moo_results.history[-1].n_gen
                     report_i["fvals_over_gens"] = [
@@ -840,9 +881,9 @@ def run_vehicle_scenarios(
                 )
 
                 report_i["minSpeed6PercentGradeIn5minAch"] = outdict["grade_6_mph_ach"]
-                report_i[
-                    "target_minSpeed6PercentGradeIn5min"
-                ] = report_scenario.min_speed_at_6pct_grade_in_5min_mph
+                report_i["target_minSpeed6PercentGradeIn5min"] = (
+                    report_scenario.min_speed_at_6pct_grade_in_5min_mph
+                )
                 report_i["delta_6PercentGrade"] = (
                     outdict["grade_6_mph_ach"]
                     - report_scenario.min_speed_at_6pct_grade_in_5min_mph
@@ -851,30 +892,36 @@ def run_vehicle_scenarios(
                 report_i["minSpeed1point25PercentGradeIn5minAch"] = outdict[
                     "grade_1_25_mph_ach"
                 ]
-                report_i[
-                    "target_minSpeed1point25PercentGradeIn5min"
-                ] = report_scenario.min_speed_at_125pct_grade_in_5min_mph
+                report_i["target_minSpeed1point25PercentGradeIn5min"] = (
+                    report_scenario.min_speed_at_125pct_grade_in_5min_mph
+                )
                 report_i["delta_1point25PercentGrade"] = (
                     outdict["grade_1_25_mph_ach"]
                     - report_scenario.min_speed_at_125pct_grade_in_5min_mph
                 )
 
                 report_i["max0to60secAtGVWRAch"] = outdict["zero_to_60_loaded"]
-                report_i["target_max0to60secAtGVWR"] = report_scenario.max_time_0_to_60mph_at_gvwr_s
+                report_i["target_max0to60secAtGVWR"] = (
+                    report_scenario.max_time_0_to_60mph_at_gvwr_s
+                )
                 if (
                     outdict["zero_to_60_loaded"] is not None
                 ):  # cannot calculate if it is none (but for some reason, range and grade are handled when none)
                     report_i["delta_0to60sec"] = (
-                        outdict["zero_to_60_loaded"] - report_scenario.max_time_0_to_60mph_at_gvwr_s
+                        outdict["zero_to_60_loaded"]
+                        - report_scenario.max_time_0_to_60mph_at_gvwr_s
                     )
 
                 report_i["max0to30secAtGVWRAch"] = outdict["zero_to_30_loaded"]
-                report_i["target_max0to30secAtGVWR"] = report_scenario.max_time_0_to_30mph_at_gvwr_s
+                report_i["target_max0to30secAtGVWR"] = (
+                    report_scenario.max_time_0_to_30mph_at_gvwr_s
+                )
                 if (
                     outdict["zero_to_30_loaded"] is not None
                 ):  # cannot calculate if it is none (but for some reason, range and grade are handled when none)
                     report_i["delta_0to30sec"] = (
-                        outdict["zero_to_30_loaded"] - report_scenario.max_time_0_to_30mph_at_gvwr_s
+                        outdict["zero_to_30_loaded"]
+                        - report_scenario.max_time_0_to_30mph_at_gvwr_s
                     )
 
                 report_i.update(mpgge)
@@ -978,12 +1025,12 @@ def run_vehicle_scenarios(
 
         print("writing to ", resdir / RES_FILE)
 
-    def skip_scenario(sel, scenario_name, verbose=False):
+    def skip_scenario(sel: int, scenario_name: str, verbose: bool = False) -> bool:
         """
         This function checks if given selection is present in exclude or look_for selections
 
         Args:
-            sel (float): _description_
+            sel (int): _description_
             scenario_name (str): scenario name
             verbose (bool, optional): if selected, prints out scenarios that are skipped. Defaults to False.
 
@@ -1143,11 +1190,7 @@ if __name__ == "__main__":
         default=1000,
         help="max number of optimizer iterations regardless of algorithm",
     )
-    parser.add_argument(
-        "--pop-size", 
-        default=25, 
-        help="population of each generation"
-    )
+    parser.add_argument("--pop-size", default=25, help="population of each generation")
     parser.add_argument(
         "--nth-gen",
         default=1,
@@ -1187,49 +1230,46 @@ if __name__ == "__main__":
     # input files
     parser.add_argument(
         "--vehicles",
-        default=gl.SWEEP_PATH.parents[0]/"resources/inputs/demo/Demo_FY22_vehicle_model_assumptions.csv",
+        default=gl.SWEEP_PATH.parents[0]
+        / "resources/inputs/demo/Demo_FY22_vehicle_model_assumptions.csv",
         help="input file for vehicles",
     )
     parser.add_argument(
         "--scenarios",
-        default=gl.SWEEP_PATH.parents[0]/"resources/inputs/demo/Demo_FY22_scenario_assumptions.csv",
+        default=gl.SWEEP_PATH.parents[0]
+        / "resources/inputs/demo/Demo_FY22_scenario_assumptions.csv",
         help="input file for scenarios",
     )
     parser.add_argument(
         "--eng-curves",
-        default=gl.SWEEP_PATH.parents[0]/ "resources/auxiliary/eng_imp_cost_curves_for_demo.csv",
+        default=gl.SWEEP_PATH.parents[0]
+        / "resources/auxiliary/eng_imp_cost_curves_for_demo.csv",
         help="input file for engine efficiency curves",
     )
     parser.add_argument(
         "--lw-curves",
-        default=gl.SWEEP_PATH.parents[0]/"resources/auxiliary/matlltwt_imp_cost_curves_for_demo.csv",
+        default=gl.SWEEP_PATH.parents[0]
+        / "resources/auxiliary/matlltwt_imp_cost_curves_for_demo.csv",
         help="input file for lightweighting curves",
     )
     parser.add_argument(
         "--aero-curves",
-        default=gl.SWEEP_PATH.parents[0]/"resources/auxiliary/aero_imp_cost_curves_for_demo.csv",
+        default=gl.SWEEP_PATH.parents[0]
+        / "resources/auxiliary/aero_imp_cost_curves_for_demo.csv",
         help="input file for aerodynamics improvement curves",
     )
-    parser.add_argument(
-        "--delete-me", 
-        default=True
-    )
-    parser.add_argument(
-        "--write-tsv", 
-        default=False
-    )
+    parser.add_argument("--delete-me", default=True)
+    parser.add_argument("--write-tsv", default=False)
     parser.add_argument(
         "--config",
-        default=gl.SWEEP_PATH.parents[0]/"resources/T3COConfig.csv",
+        default=gl.SWEEP_PATH.parents[0] / "resources/T3COConfig.csv",
         help="input config file",
     )
     parser.add_argument(
-        "--analysis-id", 
-        default='0', 
-        help="analysis selection from input config file"
+        "--analysis-id", default="0", help="analysis selection from input config file"
     )
 
-    print(f'gl.SWEEP_PATH: {gl.SWEEP_PATH}')
+    print(f"gl.SWEEP_PATH: {gl.SWEEP_PATH}")
 
     args = parser.parse_args()
     # selections can be an int, or list of ints, or range expression
@@ -1259,11 +1299,11 @@ if __name__ == "__main__":
             config = rs.Config()
             config.validate_analysis_id(filename=args.config)
         selections = config.selections
-        vehicles = gl.SWEEP_PATH.parents[0]/config.vehicle_file
-        scenarios = gl.SWEEP_PATH.parents[0]/config.scenario_file
-        eng_eff_imp_curves = gl.SWEEP_PATH.parents[0]/config.eng_eff_imp_curves
-        lw_imp_curves = gl.SWEEP_PATH.parents[0]/config.lw_imp_curves
-        aero_drag_imp_curves = gl.SWEEP_PATH.parents[0]/config.aero_drag_imp_curves
+        vehicles = gl.SWEEP_PATH.parents[0] / config.vehicle_file
+        scenarios = gl.SWEEP_PATH.parents[0] / config.scenario_file
+        eng_eff_imp_curves = gl.SWEEP_PATH.parents[0] / config.eng_eff_imp_curves
+        lw_imp_curves = gl.SWEEP_PATH.parents[0] / config.lw_imp_curves
+        aero_drag_imp_curves = gl.SWEEP_PATH.parents[0] / config.aero_drag_imp_curves
         write_tsv = config.write_tsv
 
     look_for = args.look_for
@@ -1318,7 +1358,13 @@ if __name__ == "__main__":
         )
 
     run_vehicle_scenarios(
-        vehicles, scenarios, eng_eff_imp_curves, lw_imp_curves, aero_drag_imp_curves, config=config, **kwargs
+        vehicles,
+        scenarios,
+        eng_eff_imp_curves,
+        lw_imp_curves,
+        aero_drag_imp_curves,
+        config=config,
+        **kwargs,
     )
 
 # %%
