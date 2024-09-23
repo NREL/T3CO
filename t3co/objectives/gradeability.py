@@ -2,8 +2,10 @@
 
 import time
 from pathlib import Path
+from typing import Tuple
 
 import numpy as np
+import fastsim
 from fastsim import cycle
 from fastsim import parameters as params
 
@@ -12,12 +14,12 @@ from t3co.run import run_scenario
 
 
 def get_gradeability(
-    analysis_vehicle,
-    scenario=None,
-    verbose=False,
-    ess_init_soc=None,
-    set_weight_to_max_kg=True,
-):
+    analysis_vehicle: fastsim.vehicle.Vehicle,
+    scenario:run_scenario.Scenario=None,
+    verbose:bool=False,
+    ess_init_soc:float=None,
+    set_weight_to_max_kg:bool=True,
+)->Tuple[float, float, fastsim.simdrive.SimDrive, fastsim.simdrive.SimDrive]:
     """
     This function runs SimDrives to determine the gradeability at given speed and the grade vehicle is
     evaluated at how much it meets or exceeds target speed at the target grade.
@@ -50,7 +52,7 @@ def get_gradeability(
         print(f"f'{Path(__file__).name}:: Vehicle load time: {time.time() - t0:.3f} s")
     # load the cycles
 
-    def get_grade_perf(target_grade):
+    def get_grade_perf(target_grade: float)-> Tuple[float,fastsim.simdrive.SimDrive]:
         """
         This function obtains the maximum speed achieved on gradeability test for target grade
 
