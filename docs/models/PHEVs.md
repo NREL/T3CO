@@ -6,11 +6,11 @@ Given that PHEVs follow along the same TCO and optimizaton path as other powertr
 
 - [Plug-in Hybrid Electric Vehicle Considerations](#plug-in-hybrid-electric-vehicle-considerations)
 	- [Contents](#contents)
-	- [PHEV Fuel Economy CD/CS ](#phev-fuel-economy-cdcs-)
-	- [PHEV Fuel Costs and Utility Factor ](#phev-fuel-costs-and-utility-factor-)
-	- [PHEV Acceleration \& Grade Tests ](#phev-acceleration--grade-tests-)
-	- [PHEV Optimization ](#phev-optimization-)
-	- [PHEV Special Inputs ](#phev-special-inputs-)
+	- [PHEV Fuel Economy CD/CS ](#phev-fuel-econ)
+	- [PHEV Fuel Costs and Utility Factor ](#phev-fuel-costs)
+	- [PHEV Acceleration \& Grade Tests ](#phev-accel-grade)
+	- [PHEV Optimization ](#phev-optimization)
+	- [PHEV Special Inputs ](#phev-special-inputs)
 	- [PHEVs Not Doing What You Want?](#phev-issues)
 
 ## PHEV Fuel Economy CD/CS <a name="phev-fuel-econ"></a>
@@ -99,11 +99,11 @@ It is worth noting that initial SOC inputs for grade and acceleration of PHEVs d
 	init soc:  0.85 max speed at 6% grade achvd 67.793
 	init soc:  0.95 max speed at 6% grade achvd 67.793
 
-## PHEV Optimization <a name="PHEVOptimization"></a>
+## PHEV Optimization <a name="phev-optimization"></a>
 
 PHEV optimization uses an optional, special input called `motor_power_override_kw_fc_demand_on_pct`. This is the percentage of motor power value set to the vehicle field `kw_fc_demand_on` to allow `kw_fc_demand_on` to increase or decrease proportionally with changes in `mc_max_kw` from the optimizer. This is described in more detail in the opimization docs.
 
-## PHEV Special Inputs <a name="special-inputs"></a>
+## PHEV Special Inputs <a name="phev-special-inputs"></a>
 
 |**PHEV** scenario file inputs| description | required/optional | default | range |
 |--|--|--|--|--|

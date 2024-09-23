@@ -60,7 +60,7 @@ def calculate_dollar_cost(
     -   Purchase tax
 
     Args:
-        vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object of analysis vehicle
+        veh (fastsim.vehicle.Vehicle): FASTSim vehicle object of analysis vehicle
         scenario (run_scenario.Scenario): Scenario object of current selection
 
     Returns:

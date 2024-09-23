@@ -26,3 +26,4 @@
 *.Rhistory
 *venv*
 *.DS_Store
+/site

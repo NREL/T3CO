@@ -60,10 +60,10 @@ Below is an example of a scenario file contents, in columnar format for readabil
 |`constraint_grade`| < > |`nan`| `True or False` Optimization setting. If True, then the constraint is applied and tests for grade must be met or exceeded Test threshold designated by value in `min_speed_at_6pct_grade_in_5min_mph and min_speed_at_125pct_grade_in_5min_mph`|
 |`objective_tco`|  < > | `nan`| `True or False` Optimization setting. If True, then the objective to minimize Total Cost of Ownership is applied. |
 |`constraint_c_rate`|  < > | `True`| `True or False` Optimization setting. If True, then the constraint for c rate is applied|
-|`shifts_per_year`|  < > | `260`| PHEVs only! See [PHEV Docs](./PHEVs.md#special-inputs)|
-|`phev_utility_factor_override`|  < > | `.6`| PHEVs only! See [PHEV Docs](./PHEVs.md#special-inputs)|
-|`soc_norm_init_for_grade_pct`|  < > | `.8`| PHEVs only! See [PHEV Docs](./PHEVs.md#special-inputs)|
-|`soc_norm_init_for_accel_pct`|  < > | `.85`| PHEVs only! See [PHEV Docs](./PHEVs.md#special-inputs)|
-|`motor_power_override_kw_fc_demand_on_pct`|  < > | `.95`| PHEV specific inputs. See [PHEV Docs](./PHEVs.md#special-inputs)|
-|`ess_init_soc_grade`|  < > | `.8`|`[0,1]` For BEV or HEV, during grade test, if initial SOC override is desired, rather than using the [FASTSim + T3CO intial SOC regime](acceleration_and_grade_tests.md#default-initial-socs-)|
-|`ess_init_soc_accel`| < > |`.85`|`[0,1]`  For BEV or HEV, during grade test, if initial SOC override is desired, rather than using the [FASTSim + T3CO intial SOC regime](acceleration_and_grade_tests.md#default-initial-socs-)|
+|`shifts_per_year`|  < > | `260`| PHEVs only! See [PHEV Docs](./PHEVs.md#phev-special-inputs)|
+|`phev_utility_factor_override`|  < > | `.6`| PHEVs only! See [PHEV Docs](./PHEVs.md#phev-special-inputs)|
+|`soc_norm_init_for_grade_pct`|  < > | `.8`| PHEVs only! See [PHEV Docs](./PHEVs.md#phev-special-inputs)|
+|`soc_norm_init_for_accel_pct`|  < > | `.85`| PHEVs only! See [PHEV Docs](./PHEVs.md#phev-special-inputs)|
+|`motor_power_override_kw_fc_demand_on_pct`|  < > | `.95`| PHEV specific inputs. See [PHEV Docs](./PHEVs.md#phev-special-inputs)|
+|`ess_init_soc_grade`|  < > | `.8`|`[0,1]` For BEV or HEV, during grade test, if initial SOC override is desired, rather than using the [FASTSim + T3CO intial SOC regime](acceleration_and_grade_tests.md#default-socs)|
+|`ess_init_soc_accel`| < > |`.85`|`[0,1]`  For BEV or HEV, during grade test, if initial SOC override is desired, rather than using the [FASTSim + T3CO intial SOC regime](acceleration_and_grade_tests.md#default-socs)|
