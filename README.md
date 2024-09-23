@@ -76,10 +76,10 @@ pipx ensurepath
 Then from T3CO root directory
 ```bash
 pipx install pydoc-markdown
-pydoc-markdown -I . -p . --render-toc > docs/content/CodeReference.md
+pydoc-markdown -I . -p t3co --render-toc > docs/functions/CodeReference.md
 ```
 for specific modules, specify the module name after `-m`:
-`pydoc-markdown -I . -m sweep --render-toc > docs/content/sweep.md`
+`pydoc-markdown -I . -m t3co/sweep --render-toc > docs/functions/sweep.md`
 
 This generates CodeReference.md including a Table of Contents from all python docstrings in the T3CO package
 
