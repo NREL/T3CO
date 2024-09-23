@@ -280,7 +280,7 @@ class Config:
         filename = str(filename)
         config_df = pd.read_csv(filename)
         try:
-            config_selection = config_df.loc[analysis_id, "analysis_id"]
+            config_selection = config_df.iloc[analysis_id]
             logging.info(
                 f"Running analysis id = {analysis_id}, {config_selection['analysis_name']}"
             )
