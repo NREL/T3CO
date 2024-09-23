@@ -245,6 +245,7 @@ def get_tco_of_vehicle(vehicle, range_cyc, scenario, config = None, write_tsv=Fa
     discounted_costs_df = discounted_costs(scenario, ownership_costs_df)
     # should only be one vocation in these files but this as good a thing to aggregate on as any
     tot_cost_Dol = discounted_costs_df["Cost [$]"].sum()
+    TCO_switch = (config.TCO_method if config else "DIRECT")
 
     # discounted_TCO_Dol, downtime_oppy_cost_Dol, veh_oper_cost_set = calc_discountedTCO(scenario, discounted_costs_df, veh_cost_set, veh_opp_cost_set, sim_drives[-1], TCO_switch = 'DIRECT')
     # print(f'New disc DIRECT TCO: {discounted_TCO_Dol}')
@@ -254,7 +255,7 @@ def get_tco_of_vehicle(vehicle, range_cyc, scenario, config = None, write_tsv=Fa
         veh_cost_set,
         veh_opp_cost_set,
         sim_drives[-1],
-        TCO_switch=(config.TCO_method if config.TCO_method else "DIRECT"),
+        TCO_switch=TCO_switch,
     )
     # print(f'New disc EFFICIENCY TCO: {discounted_TCO_Dol}')
 
