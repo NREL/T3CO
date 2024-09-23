@@ -1,5 +1,8 @@
+from typing import Tuple
+import fastsim
+import pandas as pd
 from t3co.objectives import fueleconomy
-from t3co.run import Global as gl
+from t3co.run import Global as gl, run_scenario
 from t3co.tco import tco_stock_emissions
 from t3co.tco import tcocalc as tcocalc
 
@@ -10,7 +13,7 @@ from t3co.tco import tcocalc as tcocalc
 STD_VAR_NAMES = "stdVarNames"
 
 
-def get_operating_costs(ownershipCosts, TCO_switch="DIRECT"):
+def get_operating_costs(ownershipCosts, TCO_switch: str = "DIRECT") -> pd.DataFrame:
     """
     This function creates a dataframe of operating cost from ownershipCosts dataframe based on TCO_switch ('DIRECT' or 'EFFICIENCY')
 
@@ -47,7 +50,9 @@ def get_operating_costs(ownershipCosts, TCO_switch="DIRECT"):
     return operatingCosts_df
 
 
-def discounted_costs(scenario, ownershipCosts):
+def discounted_costs(
+    scenario: run_scenario.Scenario, ownershipCosts: pd.DataFrame
+) -> pd.DataFrame:
     """
     This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discount_rate_pct_per_yr
 
@@ -68,13 +73,13 @@ def discounted_costs(scenario, ownershipCosts):
 
 
 def calc_discountedTCO(
-    scenario,
-    discounted_costs_df,
-    veh_cost_set,
-    veh_opp_cost_set,
-    sim_drive,
-    TCO_switch="DIRECT",
-):
+    scenario: run_scenario.Scenario,
+    discounted_costs_df: pd.DataFrame,
+    veh_cost_set: dict,
+    veh_opp_cost_set: dict,
+    sim_drive: fastsim.simdrive.SimDrive,
+    TCO_switch: str = "DIRECT",
+) -> Tuple[float, dict, dict]:
     """
     This function calculates the discounted Total Cost of Ownerhip (discounted to account for time-value of money).
     There are two methods to calculate discounted TCO - 'DIRECT' and 'EFFICIENCY'
@@ -172,7 +177,24 @@ def calc_discountedTCO(
     return discountedTCO, oppy_cost_Dol_set, veh_oper_cost_set
 
 
-def get_tco_of_vehicle(vehicle, range_cyc, scenario, write_tsv=False):
+def get_tco_of_vehicle(
+    vehicle: fastsim.vehicle.Vehicle,
+    range_cyc: fastsim.cycle.Cycle,
+    scenario: run_scenario.Scenario,
+    write_tsv: bool = False,
+) -> Tuple[
+    float,
+    float,
+    dict,
+    pd.DataFrame,
+    pd.DataFrame,
+    dict,
+    dict,
+    fastsim.simdrive.SimDrive,
+    dict,
+    dict,
+    dict,
+]:
     """
     This function calculates the Total Cost of Ownership of a vehicle and scenario for a given cycle. The three main components are:
     - Opportunity Costs
@@ -181,7 +203,7 @@ def get_tco_of_vehicle(vehicle, range_cyc, scenario, write_tsv=False):
 
     Args:
         vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object of selected vehicle
-        range_cyc (fastsim.cycle.Cycle): FASTSim range cycle object 
+        range_cyc (fastsim.cycle.Cycle): FASTSim range cycle object
         scenario (run_scenario.Scenario): Scenario object for current selection
         write_tsv (bool, optional): if True, save intermediate files as TSV. Defaults to False.
 
