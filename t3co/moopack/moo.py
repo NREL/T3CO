@@ -131,7 +131,7 @@ class T3COProblem(ElementwiseProblem):
     mooadvancedvehicle: fastsim.vehicle
     opt_scenario: run_scenario.Scenario
     designcycle: fastsim.cycle
-    config: run_scenario.Config
+    opt_config: run_scenario.Config
 
     def setup_opt_records(self):
         """
@@ -270,8 +270,8 @@ class T3COProblem(ElementwiseProblem):
         self.verbose = verbose
 
         self.optimize_pt = optimize_pt
-
-        self.instantiate_moo_vehicles_and_scenario(vnum, config)
+        self.opt_config = config
+        self.instantiate_moo_vehicles_and_scenario(vnum)
 
         # time dilation options, turned on for fuel efficiency cycle
         if "missed_trace_correction" in kwargs:
@@ -402,13 +402,12 @@ class T3COProblem(ElementwiseProblem):
         }
         self.reporting_vars = pd.DataFrame(data=d)
 
-    def instantiate_moo_vehicles_and_scenario(self, vnum, config=None):
+    def instantiate_moo_vehicles_and_scenario(self, vnum):
         """
         This method instantiates the multi-objective optimization problem vehicles and scenarios, starting with the baseline Conventional vehicle.
 
         Args:
             vnum (float): vehicle selection number
-            config (run_scenario.Config, optional): T3CO Config object containing analysis attributes and scenario attribute overrides. Defaults to None.
 
         Raises:
             TypeError: Invalid optimize_pt selection
@@ -419,7 +418,7 @@ class T3COProblem(ElementwiseProblem):
         )
 
         self.opt_scenario, self.designcycle = run_scenario.get_scenario_and_cycle(
-            vnum, gl.OTHER_INPUTS, config=config
+            vnum, gl.OTHER_INPUTS, config=self.opt_config
         )
 
         if (
@@ -654,6 +653,7 @@ class T3COProblem(ElementwiseProblem):
             self.opt_scenario,
             designcycle,
             verbose=self.verbose,
+            config=self.opt_config,
             get_accel=False,  # don't want non-loaded accel values, for now
             get_accel_loaded=get_accel_loaded,
             get_gradeability=get_grade,

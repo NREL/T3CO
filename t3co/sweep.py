@@ -571,7 +571,7 @@ def run_vehicle_scenarios(
         )
         return None
 
-    def optimize(sel, scenario_name, optpt, algo, skip_opt, write_tsv=False):
+    def optimize(sel, scenario_name, optpt, algo, skip_opt, config = None, write_tsv=False):
         """
         This function runs the optimization for a given selection if skip_opt = False
 
@@ -1026,7 +1026,6 @@ def run_vehicle_scenarios(
                         f"sweep:: validating input {sel}:{scenario_name}".ljust(90),
                         algopart,
                     )
-                    # print(f'config: {config}')
                     input_validation(sel, optpt, algo, config)
                 except KeyboardInterrupt:
                     raise
@@ -1065,6 +1064,7 @@ def run_vehicle_scenarios(
                     optpt,
                     algo="None",
                     skip_opt=True,
+                    config = config,
                     write_tsv=write_tsv,
                 )
             else:
@@ -1075,6 +1075,7 @@ def run_vehicle_scenarios(
                         optpt,
                         algo,
                         skip_opt=False,
+                        config=config,
                         write_tsv=write_tsv,
                     )
         except:
@@ -1313,7 +1314,6 @@ if __name__ == "__main__":
                 "missed_trace_correction": bool(args.missed_trace_correction),
             }
         )
-
     run_vehicle_scenarios(
         vehicles, scenarios, eng_curves, lw_curves, aero_curves, config=config, **kwargs
     )
