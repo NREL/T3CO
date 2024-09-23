@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling", "hatch-requirements-txt"]
+build-backend = "hatchling.build"
+
+[project]
+name = "t3co"
+version = "1.0.5"
+dynamic = ["dependencies"]
+description = """
+NREL's Transportation Technology Total Cost of Ownership tool
+"""
+readme = "README.md"
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+requires-python = ">=3.8"
+authors = [
+  {name = "Harish Panneer Selvam", email = "Harish.PanneerSelvam@nrel.gov"},
+  {name = "Alicia Birky", email = "Alicia.Birky@nrel.gov"},
+  {name = "Chad Baker", email = "Chad.Baker@nrel.gov"},
+]
+maintainers = [
+  {name = "NREL-AVCI", email = "t3co@nrel.gov"}
+]
+keywords = ["tco", "vehicle-cost", "totl-cost", "vehicle-simulation", "total-cost-of-ownership"]
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
+
+[project.urls]
+Homepage = "https://www.nrel.gov/transportation/t3co.html"
+Documentation = "https://pages.github.com/NREL/T3CO"
+Repository = "https://github.nrel.gov/AVCI/T3CO"
+"Bug Tracker" = "https://github.nrel.gov/AVCI/T3CO/issues"
+
+[project.scripts]
+t3co-cli = "t3co:sweep"
