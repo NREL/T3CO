@@ -8,7 +8,6 @@ import fastsim
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from scipy.integrate import trapz
 from scipy.stats import gaussian_kde
 import os
 from t3co.run import Global as gl
@@ -32,7 +31,9 @@ class OpportunityCost:
     - Maintenance and Repair Downtime Cost
     """
 
-    def __init__(self, scenario, range_dict=None, **kwargs):
+    def __init__(
+        self, scenario: run_scenario.Scenario, range_dict: dict = None, **kwargs
+    ) -> None:
         """
         Initializes OpportunityCost object using Scenario object, range_dict (from fueleconomy module), and other arguments
 
@@ -101,11 +102,19 @@ class OpportunityCost:
         # weight distribution file to load
         self.wt_dist_file = kwargs.pop(
             "wt_dist_file",
-            Path(os.path.abspath(__file__)).parents[1] / "resources" / "auxiliary" / "tractorweightvars.csv",
+            Path(os.path.abspath(__file__)).parents[1]
+            / "resources"
+            / "auxiliary"
+            / "tractorweightvars.csv",
         )
         self.df_veh_wt = pd.read_csv(self.wt_dist_file, index_col=0)
 
-    def set_kdes(self, scenario, bw_method=0.15, verbose=False):
+    def set_kdes(
+        self,
+        scenario: run_scenario.Scenario,
+        bw_method: float = 0.15,
+        verbose: bool = False,
+    ) -> None:
         """
         This method sets tje kde kernel. This is time-consuming, only call this once, if possible.
 
@@ -139,7 +148,9 @@ class OpportunityCost:
             [self.vehicle_weights_bins_kg, self.p_of_weights],
             index=["vehicle_weights_bins_kg", "p_of_weights"],
         ).T
-        probability_payload.to_csv(Path(self.wt_dist_file).parents[0]/"payload_pdf.csv")
+        probability_payload.to_csv(
+            Path(self.wt_dist_file).parents[0] / "payload_pdf.csv"
+        )
         normalization_factor = probability_payload[
             probability_payload["vehicle_weights_bins_kg"].between(
                 scenario.plf_ref_veh_empty_mass_kg, scenario.gvwr_kg
@@ -148,13 +159,13 @@ class OpportunityCost:
         self.p_of_weights_normalized = self.p_of_weights / normalization_factor
         # print(f'plf_ref_veh_empty_mass_kg {scenario.plf_ref_veh_empty_mass_kg}')
 
-    def get_payload_loss_factor(
+    def set_payload_loss_factor(
         self,
-        a_vehicle: fastsim.vehicle,
-        scenario,
-        plots=False,
-        plots_dir=None,
-    ):
+        a_vehicle: fastsim.vehicle.Vehicle,
+        scenario: run_scenario.Scenario,
+        plots: bool = False,
+        plots_dir: str = None,
+    ) -> None:
         """
         This method runs teh kernel density estimation function set_kdes and calculates the payload capacity loss factor (payload_cap_cost_multiplier) \
             of the new vehicle compared to a conventional vehicle's reference empty weight.
@@ -168,9 +179,7 @@ class OpportunityCost:
         self.set_kdes(scenario, verbose=False)
 
         new_empty_weight_kg = a_vehicle.veh_kg - a_vehicle.cargo_kg
-        empty_increase_kg = (
-            new_empty_weight_kg - scenario.plf_ref_veh_empty_mass_kg
-        )
+        empty_increase_kg = new_empty_weight_kg - scenario.plf_ref_veh_empty_mass_kg
         new_cargo_cieling_kg = (
             scenario.gvwr_kg - empty_increase_kg + scenario.gvwr_credit_kg
         )
@@ -201,7 +210,7 @@ class OpportunityCost:
                 minidx:maxidx
             ] * (self.vehicle_weights_bins_kg[minidx:maxidx] - new_cargo_cieling_kg)
             # estimated_lost_payload_lb = sum(estimated_lost_payload_per_bin_lb)
-            estimated_lost_payload_kg = trapz(estimated_lost_payload_per_bin_kg)
+            estimated_lost_payload_kg = np.trapz(estimated_lost_payload_per_bin_kg)
             # print(f'estimated_lost_payload_kg: {estimated_lost_payload_kg}')
 
             # payload cost multiplier
@@ -221,7 +230,7 @@ class OpportunityCost:
             scenario.gvwr_kg + scenario.gvwr_credit_kg - new_empty_weight_kg
         )
 
-        def make_plots(save_dir=None):
+        def make_plots(save_dir: str = None) -> None:
             """
             This function generates a histogram of the payload KDE weight distribution
 
@@ -290,7 +299,9 @@ class OpportunityCost:
     #     self.dwell_time_factor = max(1, (self.d_trip_mi / self.v_mean_mph + self.net_dwell_time_hr) /
     #         (self.d_trip_mi / self.v_mean_mph))
 
-    def get_dwell_time_cost(self, a_vehicle: fastsim.vehicle, scenario):
+    def set_dwell_time_cost(
+        self, a_vehicle: fastsim.vehicle.Vehicle, scenario: run_scenario.Scenario
+    ) -> None:
         """
         This function calculates the fueling dwell time cost for a vehicle based on fuel fill rate/charging power and shifts_per_year
 
@@ -371,7 +382,9 @@ class OpportunityCost:
                     self.num_of_dwells += 1 - self.remaining_dwells
             # else:
 
-            if (self.num_of_dwells < 1 and not self.num_free_trips) or (scenario.fuel_type):
+            if (self.num_of_dwells < 1 and not self.num_free_trips) or (
+                scenario.fuel_type
+            ):
                 self.net_dwell_time_hr.append(
                     scenario.vmt[i]
                     * (1 - scenario.fdt_dwpt_fraction_power_pct)
@@ -386,17 +399,23 @@ class OpportunityCost:
                 self.net_dwell_time_hr.append(
                     self.shifts_per_year[i]
                     * max(
-                        0, (self.dwell_time_hr - max(0, scenario.fdt_available_freetime_hr))
+                        0,
+                        (
+                            self.dwell_time_hr
+                            - max(0, scenario.fdt_available_freetime_hr)
+                        ),
                     )
                 )
 
-            self.dwell_time_cost_Dol.append(self.net_dwell_time_hr[i] * self.labor_rate_dol_per_hr)
+            self.dwell_time_cost_Dol.append(
+                self.net_dwell_time_hr[i] * self.labor_rate_dol_per_hr
+            )
             self.total_dwell_time_hr += self.net_dwell_time_hr[i]
 
         # self.dwell_time_factor = max(1, (self.d_trip_mi / self.v_mean_mph + self.net_dwell_time_hr[i]) /
         #     (self.d_trip_mi / self.v_mean_mph))
 
-    # def get_dwell_time_cost #Old calculation
+    # def set_dwell_time_cost #Old calculation
     #           (self,
     #         a_vehicle:fastsim.vehicle,
     #         scenario):
@@ -411,7 +430,9 @@ class OpportunityCost:
     #     print(f'Dwell time hr per year: {self.dwell_time_hr}')
     #     print(f'Dwell cost dol: {self.dwell_time_cost_Dol}')
 
-    def get_M_R_downtime_cost(self, a_vehicle: fastsim.vehicle, scenario):
+    def set_M_R_downtime_cost(
+        self, a_vehicle: fastsim.vehicle.Vehicle, scenario: run_scenario.Scenario
+    ) -> None:
         """
         This function calculates the Maintenance and Repair (M&R) downtime cost based on planned, unplanned, and tire replacement downtime inputs
 
@@ -420,7 +441,8 @@ class OpportunityCost:
             scenario (run_scenario.Scenario): Scenario object for the current selection
         """
         self.planned_downtime_hr = [
-            scenario.mr_planned_downtime_hr_per_yr for _ in range(scenario.vehicle_life_yr)
+            scenario.mr_planned_downtime_hr_per_yr
+            for _ in range(scenario.vehicle_life_yr)
         ]  # regular maintenance and inspections
         self.unplanned_downtime_hr = [
             scenario.mr_unplanned_downtime_hr_per_mi[i] * scenario.vmt[i]
@@ -478,13 +500,13 @@ def main():
     print("oc.base_vehicle_cargo_lb", gl.kg_to_lbs(oc.base_vehicle_cargo_kg))
     print("oc.original_empty_lb", gl.kg_to_lbs(oc.reference_vehicle_empty_kg))
 
-    plf = oc.get_payload_loss_factor(v, plots=True)
+    plf = oc.set_payload_loss_factor(v, plots=True)
     print(plf)
-    oc.get_dwell_time_cost(v, s)
+    oc.set_dwell_time_cost(v, s)
     print(oc.dwell_time_cost)
     print(oc.net_dwell_time_hr)
     print(oc.__dict__["payload_cap_cost_multiplier"])
-    oc.get_M_R_downtime_cost(v, s)
+    oc.set_M_R_downtime_cost(v, s)
 
 
 # %%
