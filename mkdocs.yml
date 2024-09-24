@@ -43,7 +43,7 @@ nav:
       - Scenario: scenario_inputs_descriptions.md
       - Config: config_inputs_descriptions.md
     - Results:
-      - Outputs: t3co_output_parameter_descriptions.md
+      - Outputs: t3co_outputs_descriptions.md
     - Code Reference:
       - CodeFlow: CodeFlow.md      
       - T3CO Modules:

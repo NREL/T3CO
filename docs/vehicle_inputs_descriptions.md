@@ -1,6 +1,6 @@
 # Vehicle Input Descriptions
 
-| **Input Parameter Name**                   | **Description**                                                                                                                                       | **Data Type(s) Accepted**      |
+| **Vehicle Input Parameter**                   | **Description**                                                                                                                                       | **Data Type(s) Accepted**      |
 |--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
 | scenario_name                        | Vehicle name                                                                                                                                      |  string        |
 | selection                            | Vehicle database ID                                                                                                                               |  int           |
