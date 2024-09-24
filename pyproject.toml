@@ -39,7 +39,7 @@ files = ["requirements.txt"]
 
 [project.urls]
 Homepage = "https://www.nrel.gov/transportation/t3co.html"
-Documentation = "https://pages.github.com/NREL/T3CO"
+Documentation = "https://nrel.github.io/T3CO"
 Repository = "https://github.com/NREL/T3CO"
 "Bug Tracker" = "https://github.com/NREL/T3CO/issues"
 
