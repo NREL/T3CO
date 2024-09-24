@@ -21,7 +21,7 @@ markdown_extensions:
 
 theme:
   name: material
-  favicon: t3co_logo.png
+  favicon: t3co_logo.svg
   highlightjs: true
   hljs_languages:
     - python
