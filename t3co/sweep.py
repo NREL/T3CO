@@ -63,7 +63,6 @@ REPORT_COLS = {
     "max0to30secAtGVWRAch": "",
     "target_max0to30secAtGVWR": "",
     "delta_0to30sec": "",
-    "discounted_tco": "",
     "glider_cost_Dol": "",
     "fuel_converter_cost_Dol": "",
     "fuel_storage_cost_Dol": "",
@@ -74,6 +73,8 @@ REPORT_COLS = {
     "msrp_total_Dol": "",
     "total_fuel_cost_Dol": "",
     "total_maintenance_cost_Dol": "",
+    "discounted_tco_Dol": "",
+
 }
 
 

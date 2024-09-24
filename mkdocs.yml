@@ -21,7 +21,7 @@ markdown_extensions:
 
 theme:
   name: material
-  favicon: t3co_logo.png
+  favicon: t3co_logo.svg
   highlightjs: true
   hljs_languages:
     - python
@@ -42,6 +42,8 @@ nav:
       - Vehicle: vehicle_inputs_descriptions.md
       - Scenario: scenario_inputs_descriptions.md
       - Config: config_inputs_descriptions.md
+    - Results:
+      - Outputs: t3co_output_parameter_descriptions.md
     - Code Reference:
       - CodeFlow: CodeFlow.md      
       - T3CO Modules:

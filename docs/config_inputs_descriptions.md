@@ -1,7 +1,7 @@
 # Config Input Parameters Descriptions
 
 
-| Config Input Parameters                  | Descriptions                                                                                                                                                                   | Data Formats Accepted |
+| **Config Input Parameter**               | **Description**                                                                                                                                                                   | **Data Type(s) Accepted** |
 |------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
 | analysis_id                              | Index for managing T3CO analyses or runs                                                                                                                                       | int                   |
 | analysis_name                            | Name of T3CO Analysis for user's reference                                                                                                                                     | string                |
@@ -9,7 +9,7 @@
 | scenario_file                            | Filepath to scenario file relative to /t3co/ folder                                                                                                                            | string                |
 | dst_dir                                  | Filepath to results destination directory                                                                                                                                      | string                |
 | write_tsv                                | Boolean switch to save intermediate results files                                                                                                                              | bool                  |
-| selections                               | List of selections from vehicle/scenario files to include in the analysis. Takes input as an integer or list of integers. '-1' makes T3CO run all vehicles in the vehicle file | int/list              |
+| selections                               | List of selections from vehicle/scenario files to include in the analysis. Takes input as an integer or list of integers. '-1' makes T3CO run all vehicles in the vehicle file | int/list\[int\]              |
 | vehicle_life_yr                          | Override number of TCO years for all selections.. If left blank, T3CO uses selection specific vehicle_life_yr from scenario file                                               | int                   |
 | ess_max_charging_power_kw                | Override ESS max charging power for all selections. If left blank, T3CO uses selection specific ess_max_charging_power_kw from scenario file                                   | float                 |
 | fs_fueling_rate_kg_per_min               | Override gaseous fueling fill rate for all selections. If left blank, T3CO uses selection specific fs_fueling_rate_kg_per_min from scenario file                               | float                 |
