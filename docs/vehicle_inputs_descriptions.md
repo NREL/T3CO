@@ -1,6 +1,6 @@
 # Vehicle Input Descriptions
 
-| vehicle parameter                    | description                                                                                                                                       | data type      |
+| **Input Parameter Name**                   | **Description**                                                                                                                                       | **Data Type(s) Accepted**      |
 |--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
 | scenario_name                        | Vehicle name                                                                                                                                      |  string        |
 | selection                            | Vehicle database ID                                                                                                                               |  int           |
@@ -13,15 +13,15 @@
 | drive_axle_weight_frac               | Fraction of weight on the drive axle while stopped                                                                                                |  float         |
 | wheel_base_m                         | Wheelbase, $m$                                                                                                                                    |  float         |
 | cargo_kg                             | Cargo mass including passengers, $kg$                                                                                                             |  float         |
-| veh_override_kg                      | Total vehicle mass, overrides mass calculation, $kg$                                                                                              |  Option<float> |
+| veh_override_kg                      | Total vehicle mass, overrides mass calculation, $kg$ (Optional)                                                                                             |  float |
 | comp_mass_multiplier                 | Component mass multiplier for vehicle mass calculation                                                                                            |  float         |
 | fs_max_kw                            | Fuel storage max power output, $kW$                                                                                                               |  float         |
 | fs_secs_to_peak_pwr                  | Fuel storage time to peak power, $s$                                                                                                              |  float         |
 | fs_kwh                               | Fuel storage energy capacity, $kWh$                                                                                                               |  float         |
 | fs_kwh_per_kg                        | Fuel specific energy, $\frac{kWh}{kg}$                                                                                                            |  float         |
 | fc_max_kw                            | Fuel converter peak continuous power, $kW$                                                                                                        |  float         |
-| fc_pwr_out_perc                      | Fuel converter output power percentage map, x values of fc_eff_map                                                                                |  Array1<float> |
-| fc_eff_map                           | Fuel converter efficiency map                                                                                                                     |  Array1<float> |
+| fc_pwr_out_perc                      | Fuel converter output power percentage map, x values of fc_eff_map                                                                                |  list\[float\] |
+| fc_eff_map                           | Fuel converter efficiency map                                                                                                                     |  list\[float\] |
 | fc_eff_type                          | Fuel converter efficiency type, one of [SI, ATKINSON, DIESEL, H2FC, HD_DIESEL] Used for calculating fc_eff_map, and other calculations if H2FC    |  string        |
 | fc_sec_to_peak_pwr                   | Fuel converter time to peak power, $s$                                                                                                            |  float         |
 | fc_base_kg                           | Fuel converter base mass, $kg$                                                                                                                    |  float         |
@@ -29,8 +29,8 @@
 | min_fc_time_on                       | Minimum time fuel converter must be on before shutoff (for HEV, PHEV)                                                                             |  float         |
 | idle_fc_kw                           | Fuel converter idle power, $kW$                                                                                                                   |  float         |
 | mc_max_kw                            | Peak continuous electric motor power, $kW$                                                                                                        |  float         |
-| mc_pwr_out_perc                      | Electric motor output power percentage map, x values of mc_eff_map                                                                                |  Array1<float> |
-| mc_eff_map                           | Electric motor efficiency map                                                                                                                     |  Array1<float> |
+| mc_pwr_out_perc                      | Electric motor output power percentage map, x values of mc_eff_map                                                                                |  list\[float\] |
+| mc_eff_map                           | Electric motor efficiency map                                                                                                                     |  list\[float\] |
 | mc_sec_to_peak_pwr                   | Electric motor time to peak power, $s$                                                                                                            |  float         |
 | mc_pe_kg_per_kw                      | Motor power electronics mass per power output, $\frac{kg}{kW}$                                                                                    |  float         |
 | mc_pe_base_kg                        | Motor power electronics base mass, $kg$                                                                                                           |  float         |
@@ -64,5 +64,5 @@
 | trans_kg                             | Transmission mass, $kg$                                                                                                                           |  float         |
 | trans_eff                            | Transmission efficiency                                                                                                                           |  float         |
 | ess_to_fuel_ok_error                 | Maximum acceptable ratio of change in ESS energy to expended fuel energy (used in hybrid SOC balancing), $\frac{\Delta E_{ESS}}{\Delta E_{fuel}}$ |  float         |
-| fc_peak_eff_override                 | Fuel converter efficiency peak override, scales entire curve                                                                                      |  Option<float> |
-| mc_peak_eff_override                 | Motor efficiency peak override, scales entire curve                                                                                               |  Option<float> |
+| fc_peak_eff_override                 | Fuel converter efficiency peak override, scales entire curve(Optional)                                                                                      |  float |
+| mc_peak_eff_override                 | Motor efficiency peak override, scales entire curve (Optional)                                                                                            |  float |
