@@ -131,7 +131,7 @@ The Glider and Plug costs are straight inputs from the T3CO scenario file. Batte
         "msrp": msrp
     }
 ##### MSRP Code
-Code to [generate MSRP](https://github.com/NREL/T3CO-private/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L24)
+Code to [generate MSRP](https://github.com/NREL/T3CO/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L24)
 
 
 ## Fuel Costs <a name="fuel-costs"></a>
@@ -141,7 +141,7 @@ Fuel costs make up a plurality, if not the majority, of TCO. As one would expect
 sum up all years
   fuel_cost_year_i = miles_travelled_year_i / mpgge * $/gge
 ```
-Fuel efficiency is populated ([code](https://github.com/NREL/T3CO-private/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L168)) [as per these docs.](./fuel_efficiency_and_range.md) 
+Fuel efficiency is populated ([code](https://github.com/NREL/T3CO/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L168)) [as per these docs.](./fuel_efficiency_and_range.md) 
 
 
 |Model Year|Region|Vehicle|Vocation|Fuel|Fuel Efficiency [mi/gge]|Age [yr]|
@@ -158,7 +158,7 @@ This table is eventually joined in the Stock Model Code with other tables. For e
 |2025|Diesel|Fuel| 4.29 |
 |2026|Diesel|Fuel| 4.35 |
 
-Then there is the annual travel table ([code](https://github.com/NREL/T3CO-private/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L367)), made up from `vmt` in the Scenario file 
+Then there is the annual travel table ([code](https://github.com/NREL/T3CO/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L367)), made up from `vmt` in the Scenario file 
 
 |Age [yr]|Annual Travel [mi/yr]|
 |----|----|
@@ -168,7 +168,7 @@ Then there is the annual travel table ([code](https://github.com/NREL/T3CO-priva
 |3|85,000|
 |4|80,000|
 
-Finally, these are all joined with the fuel split table ([code](https://github.com/NREL/T3CO-private/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L425)), such that each fuel used is assessed pro rata based on the proportion of usage for driven miles. This comes into play for PHEVs and their [Utility Factor](PHEVs.md#phev-fuel-costs)
+Finally, these are all joined with the fuel split table ([code](https://github.com/NREL/T3CO/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L425)), such that each fuel used is assessed pro rata based on the proportion of usage for driven miles. This comes into play for PHEVs and their [Utility Factor](PHEVs.md#phev-fuel-costs)
 
 Usual **Conventional or HEV format**:
 |Vehicle|Fuel|Vocation|Fraction of Travel [mi/mi]|
@@ -186,13 +186,13 @@ Or **BEV Format**:
 |MD PHEV BOX TRUCK|cd_electricity|BOX TRUCK| .6 |
 |MD PHEV BOX TRUCK|cs_diesel|BOX TRUCK| .4 |
 
-These joins happen in the [Stock Model Code](https://github.com/NREL/T3CO-private/blob/master/t3co/tco/tco_stock_emissions.py).
+These joins happen in the [Stock Model Code](https://github.com/NREL/T3CO/blob/master/t3co/tco/tco_stock_emissions.py).
 
 
 
 ## Other Costs <a name="other-costs"></a>
 
-There are other costs for vehicles during their TCO operational period ([code](https://github.com/NREL/T3CO-private/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L263)). These costs are, but not limited to, maintenance costs  `$/mile`, for both conventional and advanced powertrains, denoted from the Scenario input file as `maint_oper_cost_dol_per_mi` provided as a list across the vehicle life
+There are other costs for vehicles during their TCO operational period ([code](https://github.com/NREL/T3CO/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L263)). These costs are, but not limited to, maintenance costs  `$/mile`, for both conventional and advanced powertrains, denoted from the Scenario input file as `maint_oper_cost_dol_per_mi` provided as a list across the vehicle life
 
 There is also `payload opportunity cost` (under development), as well as optional `time opportunity costs` and `labor opportunity costs`. Also under development.
 
@@ -214,11 +214,11 @@ There is also `payload opportunity cost` (under development), as well as optiona
 
 ## Stock Model TCO Calculations <a name="stock-model-tco-calculations"></a>
 
-Total vehicle costs are compiled via a series elegant of table `INNER JOINS` in the stock model [code](https://github.com/NREL/T3CO-private/blob/master/t3co/tco/tco_stock_emissions.py). 
+Total vehicle costs are compiled via a series elegant of table `INNER JOINS` in the stock model [code](https://github.com/NREL/T3CO/blob/master/t3co/tco/tco_stock_emissions.py). 
 
 ## BEV considerations <a name="bev-considerations"></a>
 
-Vehicles that run on alternative fuels such as BEVs, FCEVs (treated as HEV by FASTSim), run on fuels, such as hydrogen or electricity, that need to be converted to a gallon of gasoline equivalent unit for fuel efficiency, `MPGGE`, and cost, `$/GGE`. The code where these conversions happen is [here](https://github.com/NREL/T3CO-private/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L339):
+Vehicles that run on alternative fuels such as BEVs, FCEVs (treated as HEV by FASTSim), run on fuels, such as hydrogen or electricity, that need to be converted to a gallon of gasoline equivalent unit for fuel efficiency, `MPGGE`, and cost, `$/GGE`. The code where these conversions happen is [here](https://github.com/NREL/T3CO/blob/ecad5e28523ac3e5a17c67b9ed747207f6162035/t3co/tco/tcocalc.py#L339):
 
 
 ## PHEV considerations <a name="phev-considerations"></a>

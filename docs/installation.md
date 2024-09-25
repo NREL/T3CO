@@ -1,7 +1,13 @@
 # Installation
-First, clone the repository from [Github](https://github.com/NREL/T3CO-private) :
+## From PyPI
+```bash
+pip install t3co
+```
 
-    git clone https://github.com/NREL/T3CO-private.git T3CO
+## From Github
+First, clone the repository from [Github](https://github.com/NREL/T3CO) :
+
+    git clone https://github.com/NREL/T3CO.git T3CO
     
 t3co depends on python 3.8. One way to satisfy this is to use conda:
 
@@ -9,7 +15,7 @@ t3co depends on python 3.8. One way to satisfy this is to use conda:
     conda activate t3co
 
 
-Navigate to the parent directory containing the T3CO repository e.g. `cd github/T3CO-private/` and run:
+Navigate to the parent directory containing the T3CO repository e.g. `cd github/T3CO/` and run:
 
     pip install -e .
 
@@ -40,7 +46,7 @@ cd run_scripts
 pytho sweep.py -analysis_id 0
 ```
 
-**using optimiztion in sweep module** [see](https://github.com/NREL/T3CO-private/blob/52252a06fd16cc7bae377f169b78d02c30887b96/docs/models/optimization.md)
+**using optimiztion in sweep module** [see](https://github.com/NREL/T3CO/blob/52252a06fd16cc7bae377f169b78d02c30887b96/docs/models/optimization.md)
 
 ## Generate MD Documentation from Docstrings
 **On Windows**

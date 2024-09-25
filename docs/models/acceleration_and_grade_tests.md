@@ -13,24 +13,24 @@ The vehicle is tested to determine if its powertrain is powerful enough to achie
 
 ### Acceleration Test
 
-[**Acceleration Test code**](https://github.com/NREL/T3CO-private/blob/295ee11c72d6f387f8eb5b60bc35304a0bbfb0db/t3co/objectives/accel.py#L13)
+[**Acceleration Test code**](https://github.com/NREL/T3CO/blob/295ee11c72d6f387f8eb5b60bc35304a0bbfb0db/t3co/objectives/accel.py#L13)
 
 There are two tests:
 - **seconds to achieve zero to sixty mph**
 - **seconds to achieve zero to thirty mph**
 
-The test is done with the vehicle usually at [`scenario.gvwr_kg + scenario.GvwrCreditK`](https://github.com/NREL/T3CO-private/blob/295ee11c72d6f387f8eb5b60bc35304a0bbfb0db/t3co/run_scenario.py#L23), or just at normal weight.
+The test is done with the vehicle usually at [`scenario.gvwr_kg + scenario.GvwrCreditK`](https://github.com/NREL/T3CO/blob/295ee11c72d6f387f8eb5b60bc35304a0bbfb0db/t3co/run_scenario.py#L23), or just at normal weight.
 
 The vehicle is given a synthetic drive cycle of 300 seconds of length with zero grade. The vehicle is forced to run at top speed immediately. A test is done to see if the vehicle reaches the target speeds of 30 and 60 mph. If the vehicle reaches those speeds, interpolation is performed to compute the precise second at which the vehicle reaches those target speeds. The test passes, for example, if the second that the vehicle reaches 30 mph is `<= max_time_0_to_30mph_at_gvwr_s`. The test returns the acceleration time for the two tests in seconds.
 
 
 ### Grade Test
 
-[**Grade Test code**](https://github.com/NREL/T3CO-private/blob/295ee11c72d6f387f8eb5b60bc35304a0bbfb0db/t3co/objectives/gradeability.py#L13)
+[**Grade Test code**](https://github.com/NREL/T3CO/blob/295ee11c72d6f387f8eb5b60bc35304a0bbfb0db/t3co/objectives/gradeability.py#L13)
 
 Likewise, there are two tests for Grade. The grade tests measure the max speed [MPH] reached by the vehicle at 6% grade and 1.25% grade within 5 minutes. The grade test returns the max speed achieved [MPH] for the two tests.
 
-The test is done with the vehicle usually at [`scenario.gvwr_kg + scenario.GvwrCreditK`](https://github.com/NREL/T3CO-private/blob/295ee11c72d6f387f8eb5b60bc35304a0bbfb0db/t3co/run_scenario.py#L23), or just at normal weight.
+The test is done with the vehicle usually at [`scenario.gvwr_kg + scenario.GvwrCreditK`](https://github.com/NREL/T3CO/blob/295ee11c72d6f387f8eb5b60bc35304a0bbfb0db/t3co/run_scenario.py#L23), or just at normal weight.
 
 
 

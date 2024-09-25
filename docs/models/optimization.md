@@ -51,7 +51,7 @@ FCEV: RANGE, ACCEL, GRADE, TCO ??? < verify
 
 ## Optimization from Sweep Module <a name="optsweepmodule"></a>
 
-One way to activate optimization, and the general code flow, is to use [sweep.py](https://github.com/NREL/T3CO-private/blob/master/run_scripts/sweep.py). The optimization algorithms available are enumerated in the [moo module](https://github.com/NREL/T3CO-private/blob/a27b575d71fa64adc746a20a7f6ba65d09f987da/t3co/moopack/moo.py#L76).
+One way to activate optimization, and the general code flow, is to use [sweep.py](https://github.com/NREL/T3CO/blob/master/run_scripts/sweep.py). The optimization algorithms available are enumerated in the [moo module](https://github.com/NREL/T3CO/blob/a27b575d71fa64adc746a20a7f6ba65d09f987da/t3co/moopack/moo.py#L76).
 
 An example use, employing both [**NSGA2** and **PatternSearch**](https://pymoo.org/algorithms/list.html) in an ensemble optimization approach:
 
@@ -73,7 +73,7 @@ lw_imp_curve_sel | eng_eff_imp_curve_sel | aero_drag_imp_curve_sel
 -- | -- | --
 MDHD_xyz | MDHD_large_noprogram_2025 | MDHD_abcdef
 
-See: [eng_imp_cost_curves_for_demo.csv](https://github.com/NREL/T3CO-private/blob/7b56eb37bf5a57e6cd0ce761fc1708ee151c956f/t3co/resources/auxiliary/eng_imp_cost_curves_for_demo.csv)
+See: [eng_imp_cost_curves_for_demo.csv](https://github.com/NREL/T3CO/blob/7b56eb37bf5a57e6cd0ce761fc1708ee151c956f/t3co/resources/auxiliary/eng_imp_cost_curves_for_demo.csv)
 
 where small medium large engine sizes refers to 
 6.7 L,   <250 kW
@@ -90,7 +90,7 @@ class 8 regional & multipurpose | 11 or 15 | 350 or 455 | 261 or 339
 class 7 day cabs | 11 | 350 | 261
 class 8 day and sleeper cabs | 15 | 455 | 339
 
-In the scenario file: specify the following variables with the appropriate improvement cost curve, with the available options being in: [aero_imp_cost_curves_for_demo](https://github.com/NREL/T3CO-private/blob/7b56eb37bf5a57e6cd0ce761fc1708ee151c956f/t3co/tests/tco_tests/test_cycles/accel.csv)
+In the scenario file: specify the following variables with the appropriate improvement cost curve, with the available options being in: [aero_imp_cost_curves_for_demo](https://github.com/NREL/T3CO/blob/7b56eb37bf5a57e6cd0ce761fc1708ee151c956f/t3co/tests/tco_tests/test_cycles/accel.csv)
 
 The improvement cost curve files include optimizer knob bounds specified for CdA and engine efficiency (dependent on vehicle type and scenario and year, based on the Technology Manager inputs and Alicia Birky), and lightweighting (allowed to lightweight over full curve).
 

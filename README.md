@@ -1,4 +1,4 @@
-![T3CO Logo](https://www.nrel.gov/transportation/assets/images/t3co-icon-web.jpg)
+![T3CO Logo](docs/t3co_logo.svg)
 
 [![homepage](https://img.shields.io/badge/homepage-t3co-blue)](https://www.nrel.gov/transportation/t3co.html) [![github](https://img.shields.io/badge/github-t3co-blue.svg)](https://github.com/NREL/T3CO) [![PyPI version](https://badge.fury.io/py/t3co.svg)](https://badge.fury.io/py/t3co) ![GitHub License](https://img.shields.io/github/license/NREL/T3CO) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/t3co) 
 
@@ -8,7 +8,7 @@
 
 This repo houses T3CO (Transportation Technology Total Cost of Ownership), software for modeling total cost of ownership for commercial vehicles with advanced powertrains.
 
-To start, go to the [Overview](https://github.com/NREL/T3CO-private/blob/264a730de942671eb2345a5afca7e1afd6d67666/docs/T3CO_Overview.md)
+To start, go to the [Overview](https://github.com/NREL/T3CO/blob/264a730de942671eb2345a5afca7e1afd6d67666/docs/T3CO_Overview.md)
 
 ## Usage
 
@@ -24,7 +24,7 @@ pip install t3co
 
 First, clone the repository from **NREL** GitHub:
 
-    git clone https://github.com/NREL/T3CO-private.git T3CO
+    git clone https://github.com/NREL/T3CO.git T3CO
 
 t3co depends on python 3.8. One way to satisfy this is to use conda:
 
@@ -57,7 +57,7 @@ python sweep.py --skip_all_opt --selections  [1,2,3,4,5] --dst_dir .t3co_results
 ```
 
 
-**using optimiztion in sweep module** [see](https://github.com/NREL/T3CO-private/blob/master/docs/optimization.md#optimization-from-sweep-module-)
+**using optimiztion in sweep module** [see](https://github.com/NREL/T3CO/blob/master/docs/optimization.md#optimization-from-sweep-module-)
 
 ## Generate MD Documentation from Docstrings (For Developers)
 **On Windows**

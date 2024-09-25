@@ -26,14 +26,14 @@ Fuel costs for PHEVs depend on a concept called the **Utility Factor**. The util
 
 The user can prescribe the utility factor as a constant value, using the **T3CO** input `phev_utility_factor_override`, otherwise, the UF will be computed for the user.
 
-The **Utility Factor** is computed here: https://github.com/NREL/T3CO-private/blob/661d2cb308f66041df693ad27fab050f512d6298/t3co/run_scenario.py#L238
+The **Utility Factor** is computed here: https://github.com/NREL/T3CO/blob/661d2cb308f66041df693ad27fab050f512d6298/t3co/run_scenario.py#L238
 using the concept of shift range [miles], as: 
       
         shift_range_mi = vehicle miles travelled in year one / shifts_per_year
         phev_utility_factor_computed = round(min(shift_range_mi, cd_range_mi) / shift_range_mi, 3)  
         uf = scenario.phev_utility_factor_computed
 
-`cd_range_mi` is computed here: https://github.com/NREL/T3CO-private/blob/661d2cb308f66041df693ad27fab050f512d6298/t3co/objectives/fueleconomy.py#L41
+`cd_range_mi` is computed here: https://github.com/NREL/T3CO/blob/661d2cb308f66041df693ad27fab050f512d6298/t3co/objectives/fueleconomy.py#L41
 
 as described in the docs in **fuel_efficiency_and_range.md**
 
@@ -66,7 +66,7 @@ Similarly, **PHEVs** have a special input for determining intial SOC during the 
 
 There are other inputs from the **T3CO** scenario file that can override initial SOC behavior. `ess_init_soc_grade` and `ess_init_soc_accel`. As of now, it is treated as an error for a user to provide these along with values for `soc_norm_init_for_grade_pct` and `soc_norm_init_for_accel_pct` as it is ambiguous as to which initial SOC is supposed to be used. These general initial SOC overrides should be supplied only for HEVs and BEVs. The *default* behavior, what the code does for inital SOC for tests in the absense of any input for `ess_init_soc_grade/accel`, or `ess_init_soc_for_grade/accel`, is a mix of **FASTSim's** default behaviors and some overrides that **T3CO** configures. This is described in **acceleration_and_grade_tests.md**
 
-applied at: https://github.com/NREL/T3CO-private/blob/47d92dadef3451f403275159888811e01057416d/t3co/run_scenario.py#L539
+applied at: https://github.com/NREL/T3CO/blob/47d92dadef3451f403275159888811e01057416d/t3co/run_scenario.py#L539
 
 **Note**
 It is worth noting that initial SOC inputs for grade and acceleration of PHEVs do not seem to matter much *unless* the battery is small enough in size (kWh) as to make it possible that the vehicle can naturally deplete its usable SOC range before the test is over.

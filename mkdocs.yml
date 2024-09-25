@@ -8,6 +8,7 @@ plugins:
   - search
   - mkdocstrings
 
+
 markdown_extensions:
   - toc:
       permalink: true
@@ -30,6 +31,8 @@ theme:
     - search.highlight
     - content.action.view
     - search.suggest
+    - content.code.copy
+
   icon:
     repo: fontawesome/brands/github
     edit: material/pencil 
@@ -38,6 +41,7 @@ theme:
 nav:
     - Home: index.md
     - Installation: installation.md
+    - Overview: T3CO_Overview.md
     - Inputs: 
       - Vehicle: vehicle_inputs_descriptions.md
       - Scenario: scenario_inputs_descriptions.md
