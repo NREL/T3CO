@@ -1,5 +1,5 @@
 # Installation
-## From PyPI
+## From [PyPI](https://pypi.org/project/t3co/)
 ```bash
 pip install t3co
 ```
@@ -9,7 +9,7 @@ First, clone the repository from [Github](https://github.com/NREL/T3CO) :
 
     git clone https://github.com/NREL/T3CO.git T3CO
     
-t3co depends on python 3.8. One way to satisfy this is to use conda:
+t3co depends on python>=3.8 and <=3.10. One way to satisfy this is to use conda:
 
     conda create -n t3co python=3.8
     conda activate t3co
@@ -46,7 +46,7 @@ cd run_scripts
 pytho sweep.py -analysis_id 0
 ```
 
-**using optimiztion in sweep module** [see](https://github.com/NREL/T3CO/blob/52252a06fd16cc7bae377f169b78d02c30887b96/docs/models/optimization.md)
+**using optimiztion in sweep module** [see](./models/optimization.md)
 
 ## Generate MD Documentation from Docstrings
 **On Windows**
