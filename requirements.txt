@@ -1,7 +1,4 @@
 pymoo==0.6.1
-mkdocs
-mkdocstrings
-mkdocstrings-python
 numpy==1.24.1
 scipy==1.10.1
 pandas==2.0.3

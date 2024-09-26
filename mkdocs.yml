@@ -16,9 +16,12 @@ markdown_extensions:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
+      use_pygments: true
+      auto_title: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+
 
 theme:
   name: material
@@ -32,6 +35,9 @@ theme:
     - content.action.view
     - search.suggest
     - content.code.copy
+    - navigation.path
+    - content.tooltips
+
 
   icon:
     repo: fontawesome/brands/github
