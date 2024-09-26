@@ -227,4 +227,4 @@ PHEVs have the same considerations as BEVs, but with the added twist of Utility 
 
 ## Fuel Costs Table <a name="fuel-costs-table"></a>
 The default fuel costs table is located at [`t3co/resources/auxiliary/FuelPrices.csv`](https://github.com/NREL/T3CO/blob/cda7afc644602f406f659e2c11ffad9b1da379bd/t3co/resources/auxiliary/FuelPrices.csv)
-![image](https://github.nrel.gov/storage/user/1225/files/5f088c43-2e56-4c01-9388-f99a961769d6)
+
