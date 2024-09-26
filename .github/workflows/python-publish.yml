@@ -103,5 +103,5 @@ jobs:
           pip install mkdocs mkdocstrings mkdocstrings-python
       - name: Deploy website to Github Pages
         run: |
-          cd ..
+          cd ../..
           mkdocs gh-deploy
