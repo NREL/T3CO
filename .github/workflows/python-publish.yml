@@ -87,21 +87,3 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.pypi_password }}
-
-  deploy_pages:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-    needs: build
-    steps:
-      - name: Use Python 3.12
-        uses: actions/setup-python@v1
-        with:
-          python-version: '3.12'
-      - name: Install dependencies
-        run: |
-          pip install mkdocs mkdocstrings mkdocstrings-python
-      - name: Deploy website to Github Pages
-        run: |
-          cd ../..
-          mkdocs gh-deploy
