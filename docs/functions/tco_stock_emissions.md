@@ -61,12 +61,12 @@ This function generates the ownershipCosts dataframe from the dataframes for eac
 - `fuelSplit` _pd.DataFrame_ - Dataframe of fraction of travel using each fuel [mi/mi]
 - `fuelEfficiency` _pd.DataFrame_ - Dataframe of vehicle's yearly average fuel efficiency [mi/gge]
 - `emissions` _pd.DataFrame_ - Dataframe of vehicle's yearly average emissions
-- `vehicleCosts` _pd.DataFrame, optional_ - Dataframe of vehicle components costs [Dol]. Defaults to None.
-- `travelCosts` _pd.DataFrame, optional_ - Dataframe of maintenance costs [Dol/mi]. Defaults to None.
-- `fuelCosts` _pd.DataFrame, optional_ - Dataframe of fuel operating costs [Dol/gge]. Defaults to None.
-- `insuranceCosts` _pd.DataFrame, optional_ - Dataframe of yearly insurance costs [Dol]. Defaults to None.
-- `residualCosts` _pd.DataFrame, optional_ - Dataframe of yearly residual costs [Dol]. Defaults to None.
-- `downtimeCosts` _pd.DataFrame, optional_ - Dataframe of yearly downtime costs [Dol]. Defaults to None.
+- `vehicleCosts` _pd.DataFrame, optional_ - Dataframe of vehicle components costs [dol]. Defaults to None.
+- `travelCosts` _pd.DataFrame, optional_ - Dataframe of maintenance costs [dol/mi]. Defaults to None.
+- `fuelCosts` _pd.DataFrame, optional_ - Dataframe of fuel operating costs [dol/gge]. Defaults to None.
+- `insuranceCosts` _pd.DataFrame, optional_ - Dataframe of yearly insurance costs [dol]. Defaults to None.
+- `residualCosts` _pd.DataFrame, optional_ - Dataframe of yearly residual costs [dol]. Defaults to None.
+- `downtimeCosts` _pd.DataFrame, optional_ - Dataframe of yearly downtime costs [dol]. Defaults to None.
 - `write_files` _bool, optional_ - if True, save vehicleCosts, travelCosts, fuelCosts, insuranceCosts,residualCosts, downtimeCosts . Defaults to False.
   
 

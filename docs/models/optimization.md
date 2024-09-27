@@ -61,7 +61,7 @@ An example use, employing both [**NSGA2** and **PatternSearch**](https://pymoo.o
 ## Optimization Inputs <a name="optInputs"></a>
 
 ### example means of specifying targets in **scenario** file
-target_range_mi | min_speed_at_6pct_grade_in_5min_mph | min_speed_at_125pct_grade_in_5min_mph | max_time_0_to_60mph_at_gvwr_s | max_time_0_to_30mph_at_gvwr_s
+target_range_mi | min_speed_at_6pct_grade_in_5min_mph | min_speed_at_1p25pct_grade_in_5min_mph | max_time_0_to_60mph_at_gvwr_s | max_time_0_to_30mph_at_gvwr_s
 -- | -- | -- | -- | --
 750 | 30 | 65 | 80 | 20
 750 | 30 | 65 | 80 | 20

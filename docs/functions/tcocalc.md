@@ -63,7 +63,7 @@ This helper method calculates the MSRP breakdown dictionary from
 
 **Arguments**:
 
-- `vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object of analysis vehicle
+- `veh` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object of analysis vehicle
 - `scenario` _run_scenario.Scenario_ - Scenario object of current selection
   
 
@@ -179,7 +179,7 @@ This helper method generates a dataframe containing fueling downtime and M&R dow
 **Arguments**:
 
 - `scenario` _run_scenario.Scenario_ - Scenario object of current selection
-- `oppy_cost_set` _dict_ - Dictionary containing dwell_time_cost_Dol and MR_downtime_cost_Dol
+- `oppy_cost_set` _dict_ - Dictionary containing fueling_downtime_oppy_cost_dol_per_yr,fueling_dwell_labor_cost_dol_per_yr and mr_downtime_oppy_cost_dol_per_yr
   
 
 **Returns**:

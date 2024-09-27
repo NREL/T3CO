@@ -5,7 +5,7 @@
     * [\_\_init\_\_](#t3co/tco/opportunity_cost.OpportunityCost.__init__)
     * [set\_kdes](#t3co/tco/opportunity_cost.OpportunityCost.set_kdes)
     * [set\_payload\_loss\_factor](#t3co/tco/opportunity_cost.OpportunityCost.set_payload_loss_factor)
-    * [set\_dwell\_time\_cost](#t3co/tco/opportunity_cost.OpportunityCost.set_dwell_time_cost)
+    * [set\_fueling\_dwell\_time\_cost](#t3co/tco/opportunity_cost.OpportunityCost.set_fueling_dwell_time_cost)
     * [set\_M\_R\_downtime\_cost](#t3co/tco/opportunity_cost.OpportunityCost.set_M_R_downtime_cost)
   * [main](#t3co/tco/opportunity_cost.main)
 
@@ -81,13 +81,13 @@ This method runs teh kernel density estimation function set_kdes and calculates 
 - `plots` _bool, optional_ - if True, creates histogram of KDE weight bins. Defaults to False.
 - `plots_dir` _str, optional_ - output diretory for saving plot figure. Defaults to None.
 
-<a id="t3co/tco/opportunity_cost.OpportunityCost.set_dwell_time_cost"></a>
+<a id="t3co/tco/opportunity_cost.OpportunityCost.set_fueling_dwell_time_cost"></a>
 
-#### set\_dwell\_time\_cost
+#### set\_fueling\_dwell\_time\_cost
 
 ```python
-def set_dwell_time_cost(a_vehicle: fastsim.vehicle.Vehicle,
-                        scenario: run_scenario.Scenario) -> None
+def set_fueling_dwell_time_cost(a_vehicle: fastsim.vehicle.Vehicle,
+                                scenario: run_scenario.Scenario) -> None
 ```
 
 This function calculates the fueling dwell time cost for a vehicle based on fuel fill rate/charging power and shifts_per_year

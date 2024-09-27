@@ -23,7 +23,7 @@
     * [\_\_init\_\_](#t3co.tco.opportunity_cost.OpportunityCost.__init__)
     * [set\_kdes](#t3co.tco.opportunity_cost.OpportunityCost.set_kdes)
     * [set\_payload\_loss\_factor](#t3co.tco.opportunity_cost.OpportunityCost.set_payload_loss_factor)
-    * [set\_dwell\_time\_cost](#t3co.tco.opportunity_cost.OpportunityCost.set_dwell_time_cost)
+    * [set\_fueling\_dwell\_time\_cost](#t3co.tco.opportunity_cost.OpportunityCost.set_fueling_dwell_time_cost)
     * [set\_M\_R\_downtime\_cost](#t3co.tco.opportunity_cost.OpportunityCost.set_M_R_downtime_cost)
   * [main](#t3co.tco.opportunity_cost.main)
 * [t3co.tco.tco\_stock\_emissions](#t3co.tco.tco_stock_emissions)
@@ -184,7 +184,7 @@ This helper method calculates the MSRP breakdown dictionary from
 
 **Arguments**:
 
-- `vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object of analysis vehicle
+- `veh` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object of analysis vehicle
 - `scenario` _run_scenario.Scenario_ - Scenario object of current selection
   
 
@@ -300,7 +300,7 @@ This helper method generates a dataframe containing fueling downtime and M&R dow
 **Arguments**:
 
 - `scenario` _run_scenario.Scenario_ - Scenario object of current selection
-- `oppy_cost_set` _dict_ - Dictionary containing dwell_time_cost_Dol and MR_downtime_cost_Dol
+- `oppy_cost_set` _dict_ - Dictionary containing fueling_downtime_oppy_cost_dol_per_yr,fueling_dwell_labor_cost_dol_per_yr and mr_downtime_oppy_cost_dol_per_yr
   
 
 **Returns**:
@@ -554,13 +554,13 @@ This method runs teh kernel density estimation function set_kdes and calculates 
 - `plots` _bool, optional_ - if True, creates histogram of KDE weight bins. Defaults to False.
 - `plots_dir` _str, optional_ - output diretory for saving plot figure. Defaults to None.
 
-<a id="t3co.tco.opportunity_cost.OpportunityCost.set_dwell_time_cost"></a>
+<a id="t3co.tco.opportunity_cost.OpportunityCost.set_fueling_dwell_time_cost"></a>
 
-#### set\_dwell\_time\_cost
+#### set\_fueling\_dwell\_time\_cost
 
 ```python
-def set_dwell_time_cost(a_vehicle: fastsim.vehicle.Vehicle,
-                        scenario: run_scenario.Scenario) -> None
+def set_fueling_dwell_time_cost(a_vehicle: fastsim.vehicle.Vehicle,
+                                scenario: run_scenario.Scenario) -> None
 ```
 
 This function calculates the fueling dwell time cost for a vehicle based on fuel fill rate/charging power and shifts_per_year
@@ -653,12 +653,12 @@ This function generates the ownershipCosts dataframe from the dataframes for eac
 - `fuelSplit` _pd.DataFrame_ - Dataframe of fraction of travel using each fuel [mi/mi]
 - `fuelEfficiency` _pd.DataFrame_ - Dataframe of vehicle's yearly average fuel efficiency [mi/gge]
 - `emissions` _pd.DataFrame_ - Dataframe of vehicle's yearly average emissions
-- `vehicleCosts` _pd.DataFrame, optional_ - Dataframe of vehicle components costs [Dol]. Defaults to None.
-- `travelCosts` _pd.DataFrame, optional_ - Dataframe of maintenance costs [Dol/mi]. Defaults to None.
-- `fuelCosts` _pd.DataFrame, optional_ - Dataframe of fuel operating costs [Dol/gge]. Defaults to None.
-- `insuranceCosts` _pd.DataFrame, optional_ - Dataframe of yearly insurance costs [Dol]. Defaults to None.
-- `residualCosts` _pd.DataFrame, optional_ - Dataframe of yearly residual costs [Dol]. Defaults to None.
-- `downtimeCosts` _pd.DataFrame, optional_ - Dataframe of yearly downtime costs [Dol]. Defaults to None.
+- `vehicleCosts` _pd.DataFrame, optional_ - Dataframe of vehicle components costs [dol]. Defaults to None.
+- `travelCosts` _pd.DataFrame, optional_ - Dataframe of maintenance costs [dol/mi]. Defaults to None.
+- `fuelCosts` _pd.DataFrame, optional_ - Dataframe of fuel operating costs [dol/gge]. Defaults to None.
+- `insuranceCosts` _pd.DataFrame, optional_ - Dataframe of yearly insurance costs [dol]. Defaults to None.
+- `residualCosts` _pd.DataFrame, optional_ - Dataframe of yearly residual costs [dol]. Defaults to None.
+- `downtimeCosts` _pd.DataFrame, optional_ - Dataframe of yearly downtime costs [dol]. Defaults to None.
 - `write_files` _bool, optional_ - if True, save vehicleCosts, travelCosts, fuelCosts, insuranceCosts,residualCosts, downtimeCosts . Defaults to False.
   
 
@@ -677,7 +677,7 @@ This function generates the ownershipCosts dataframe from the dataframes for eac
 #### get\_operating\_costs
 
 ```python
-def get_operating_costs(ownershipCosts,
+def get_operating_costs(ownershipCosts: pd.DataFrame,
                         TCO_switch: str = "DIRECT") -> pd.DataFrame
 ```
 
@@ -702,7 +702,7 @@ def discounted_costs(scenario: run_scenario.Scenario,
                      ownershipCosts: pd.DataFrame) -> pd.DataFrame
 ```
 
-This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discount_rate_pct_per_yr
+This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discRate
 
 **Arguments**:
 
@@ -742,8 +742,8 @@ There are two methods to calculate discounted TCO - 'DIRECT' and 'EFFICIENCY'
 
 **Returns**:
 
-- `discountedTCO` _float_ - Discounted Total Cost of Ownership value
-- `oppy_cost_Dol_set` _dict_ - Dictionary containing discounted opportunity costs breakdown
+- `discounted_tco_dol` _float_ - Discounted Total Cost of Ownership value
+- `oppy_cost_dol_set` _dict_ - Dictionary containing discounted opportunity costs breakdown
 - `veh_oper_cost_set` _dict_ - Dictionary containing discounted operating costs breakdown
 
 <a id="t3co.tco.tco_analysis.get_tco_of_vehicle"></a>
@@ -786,8 +786,8 @@ This function calculates the Total Cost of Ownership of a vehicle and scenario f
 
 **Returns**:
 
-- `tot_cost_Dol` _float_ - TCO in dollars
-- `discounted_TCO_Dol` _float_ - discounted TCO in dollars
+- `tot_cost_dol` _float_ - TCO in dollars
+- `discounted_tco_dol` _float_ - discounted TCO in dollars
 - `oppy_cost_set` _dict_ - Dictionary of opportunity cost breakdown
 - `ownership_costs_df` _pd.DataFrame_ - Ownerhip Costs dataframe containing different categories per year
 - `discounted_costs_df` _pd.DataFrame_ - discounted Ownerhip Costs dataframe containing different categories per year
@@ -1126,7 +1126,7 @@ This method is a utility function to get detailed TCO information from optimized
 ## T3CODisplay Objects
 
 ```python
-class T3CODisplay(Output)
+class T3CODisplay()
 ```
 
 This class contains the display object for Pymoo optimization printouts - pymoo.util.display.Display
@@ -1361,7 +1361,7 @@ evaluated at how much it meets or exceeds target speed at the target grade.
 - `grade_6percent_mph_ach` _float_ - Achieved speed on 6% grade test
 - `grade_1pt25percent_mph_ach` _float_ - Achieved speed on 1.25% grade test
 - `grade_6_simdrive` _fastsim.simdrive.SimDrive_ - FASTSim SimDrive for gradeability test of 6% grade
-- `grade_125_simdrive` _fastsim.simdrive.SimDrive_ - FASTSim SimDrive for gradeability test of 1.25% grade
+- `grade_1p25_simdrive` _fastsim.simdrive.SimDrive_ - FASTSim SimDrive for gradeability test of 1.25% grade
 
 <a id="t3co.objectives"></a>
 
@@ -2310,7 +2310,7 @@ selection,scenario_name,veh_pt_type,drag_coef,frontalAreaM2,glid...
 
 gl.OTHER_INPUTS content:
 # all information necessary to determine vehicle TCO as well as performance targets
-selection,drive_cycle,vmt_reduct_per_yr,vmt,constant_trip_distance_mi,vehicle_life_yr,...,region,target_range_mi,min_speed_at_6pct_grade_in_5min_mph,min_speed_at_125pct_grade_in_5min_mph,max0to60secAtGV
+selection,drive_cycle,vmt_reduct_per_yr,vmt,constant_trip_distance_mi,vehicle_life_yr,...,region,target_range_mi,min_speed_at_6pct_grade_in_5min_mph,min_speed_at_1p25pct_grade_in_5min_mph,max0to60secAtGV
 1.0,long_haul_cyc.csv,0.0,"[100000, 100000, 100000, 100000, 100000, 100000...United States,750.0,30.0,65.0,80.0,20.0
 2.0,long_haul_cyc.csv,,"[100000, 100000, 100000, 100000, 100000, 100000, 1...United States,750.0,30.0,65.0,80.0,20.0
 3.0,long_haul_cyc.csv,,"[100000, 100000, 100000, 100000, 100000, 100000, 1...United States,750.0,30.0,65.0,80.0,20.0

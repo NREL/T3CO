@@ -15,7 +15,7 @@
 #### get\_operating\_costs
 
 ```python
-def get_operating_costs(ownershipCosts,
+def get_operating_costs(ownershipCosts: pd.DataFrame,
                         TCO_switch: str = "DIRECT") -> pd.DataFrame
 ```
 
@@ -40,7 +40,7 @@ def discounted_costs(scenario: run_scenario.Scenario,
                      ownershipCosts: pd.DataFrame) -> pd.DataFrame
 ```
 
-This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discount_rate_pct_per_yr
+This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discRate
 
 **Arguments**:
 
@@ -80,8 +80,8 @@ There are two methods to calculate discounted TCO - 'DIRECT' and 'EFFICIENCY'
 
 **Returns**:
 
-- `discountedTCO` _float_ - Discounted Total Cost of Ownership value
-- `oppy_cost_Dol_set` _dict_ - Dictionary containing discounted opportunity costs breakdown
+- `discounted_tco_dol` _float_ - Discounted Total Cost of Ownership value
+- `oppy_cost_dol_set` _dict_ - Dictionary containing discounted opportunity costs breakdown
 - `veh_oper_cost_set` _dict_ - Dictionary containing discounted operating costs breakdown
 
 <a id="t3co/tco/tco_analysis.get_tco_of_vehicle"></a>
@@ -124,8 +124,8 @@ This function calculates the Total Cost of Ownership of a vehicle and scenario f
 
 **Returns**:
 
-- `tot_cost_Dol` _float_ - TCO in dollars
-- `discounted_TCO_Dol` _float_ - discounted TCO in dollars
+- `tot_cost_dol` _float_ - TCO in dollars
+- `discounted_tco_dol` _float_ - discounted TCO in dollars
 - `oppy_cost_set` _dict_ - Dictionary of opportunity cost breakdown
 - `ownership_costs_df` _pd.DataFrame_ - Ownerhip Costs dataframe containing different categories per year
 - `discounted_costs_df` _pd.DataFrame_ - discounted Ownerhip Costs dataframe containing different categories per year
