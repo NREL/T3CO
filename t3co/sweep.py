@@ -40,7 +40,7 @@ REPORT_COLS = {
     "accel_EA_err": "",
     "accel_loaded_EA_err": "",
     "grade_6_EA_err": "",
-    "grade_125_EA_err": "",
+    "grade_1p25_EA_err": "",
     "final_cda_pct": "",
     "final_eng_eff_pct": "",
     "final_ltwt_pct": "",
@@ -48,33 +48,32 @@ REPORT_COLS = {
     "final_battery_kwh": "",
     "final_max_fc_kw": "",
     "final_fs_kwh": "",
-    "RangeMiAch": "",
-    "target_TargetRangeMi": "",
-    "delta_TargetRangeMi": "",
-    "minSpeed6PercentGradeIn5minAch": "",
-    "target_minSpeed6PercentGradeIn5min": "",
-    "delta_6PercentGrade": "",
-    "minSpeed1point25PercentGradeIn5minAch": "",
-    "target_minSpeed1point25PercentGradeIn5min": "",
-    "delta_1point25PercentGrade": "",
-    "max0to60secAtGVWRAch": "",
-    "target_max0to60secAtGVWR": "",
-    "delta_0to60sec": "",
-    "max0to30secAtGVWRAch": "",
-    "target_max0to30secAtGVWR": "",
-    "delta_0to30sec": "",
-    "glider_cost_Dol": "",
-    "fuel_converter_cost_Dol": "",
-    "fuel_storage_cost_Dol": "",
-    "motor_pwr_electrics_cost_Dol": "",
-    "plug_cost_Dol": "",
-    "battery_cost_Dol": "",
-    "purchase_tax_Dol": "",
-    "msrp_total_Dol": "",
-    "total_fuel_cost_Dol": "",
-    "total_maintenance_cost_Dol": "",
-    "discounted_tco_Dol": "",
-
+    "range_ach_mi": "",
+    "target_range_mi": "",
+    "delta_range_mi": "",
+    "min_speed_at_6pct_grade_in_5min_ach_mph": "",
+    "target_min_speed_at_6pct_grade_in_5min_mph": "",
+    "delta_min_speed_at_6pct_grade_in_5min_mph": "",
+    "min_speed_at_1p25pct_grade_in_5min_ach_mph": "",
+    "target_min_speed_at_1p25pct_grade_in_5min_mph": "",
+    "delta_min_speed_at_1p25pct_grade_in_5min_mph": "",
+    "max_time_0_to_60mph_at_gvwr_ach_s": "",
+    "target_max_time_0_to_60mph_at_gvwr_s": "",
+    "delta_max_time_0_to_60mph_at_gvwr_s": "",
+    "max_time_0_to_30mph_at_gvwr_ach_s": "",
+    "target_max_time_0_to_30mph_at_gvwr_s": "",
+    "delta_max_time_0_to_30mph_at_gvwr_s": "",
+    "glider_cost_dol": "",
+    "fuel_converter_cost_dol": "",
+    "fuel_storage_cost_dol": "",
+    "motor_control_power_elecs_cost_dol": "",
+    "plug_cost_dol": "",
+    "battery_cost_dol": "",
+    "purchase_tax_dol": "",
+    "msrp_total_dol": "",
+    "total_fuel_cost_dol": "",
+    "total_maintenance_cost_dol": "",
+    "discounted_tco_dol": "",
 }
 
 
@@ -875,102 +874,116 @@ def run_vehicle_scenarios(
                 disc_cost_agg = discounted_costs_df.groupby("Category").sum(
                     numeric_only=True
                 )
-                report_i["RangeMiAch"] = outdict["primary_fuel_range_mi"]
-                report_i["target_TargetRangeMi"] = report_scenario.target_range_mi
-                report_i["delta_TargetRangeMi"] = (
+                report_i["range_ach_mi"] = outdict["primary_fuel_range_mi"]
+                report_i["target_range_mi"] = report_scenario.target_range_mi
+                report_i["delta_range_mi"] = (
                     outdict["primary_fuel_range_mi"] - report_scenario.target_range_mi
                 )
 
-                report_i["minSpeed6PercentGradeIn5minAch"] = outdict["grade_6_mph_ach"]
-                report_i["target_minSpeed6PercentGradeIn5min"] = (
+                report_i["min_speed_at_6pct_grade_in_5min_ach_mph"] = outdict[
+                    "grade_6_mph_ach"
+                ]
+                report_i["target_min_speed_at_6pct_grade_in_5min_mph"] = (
                     report_scenario.min_speed_at_6pct_grade_in_5min_mph
                 )
-                report_i["delta_6PercentGrade"] = (
+                report_i["delta_min_speed_at_6pct_grade_in_5min_mph"] = (
                     outdict["grade_6_mph_ach"]
                     - report_scenario.min_speed_at_6pct_grade_in_5min_mph
                 )
 
-                report_i["minSpeed1point25PercentGradeIn5minAch"] = outdict[
+                report_i["min_speed_at_1p25pct_grade_in_5min_ach_mph"] = outdict[
                     "grade_1_25_mph_ach"
                 ]
-                report_i["target_minSpeed1point25PercentGradeIn5min"] = (
-                    report_scenario.min_speed_at_125pct_grade_in_5min_mph
+                report_i["target_min_speed_at_1p25pct_grade_in_5min_mph"] = (
+                    report_scenario.min_speed_at_1p25pct_grade_in_5min_mph
                 )
-                report_i["delta_1point25PercentGrade"] = (
+                report_i["delta_min_speed_at_1p25pct_grade_in_5min_mph"] = (
                     outdict["grade_1_25_mph_ach"]
-                    - report_scenario.min_speed_at_125pct_grade_in_5min_mph
+                    - report_scenario.min_speed_at_1p25pct_grade_in_5min_mph
                 )
 
-                report_i["max0to60secAtGVWRAch"] = outdict["zero_to_60_loaded"]
-                report_i["target_max0to60secAtGVWR"] = (
+                report_i["max_time_0_to_60mph_at_gvwr_ach_s"] = outdict[
+                    "zero_to_60_loaded"
+                ]
+                report_i["target_max_time_0_to_60mph_at_gvwr_s"] = (
                     report_scenario.max_time_0_to_60mph_at_gvwr_s
                 )
                 if (
                     outdict["zero_to_60_loaded"] is not None
                 ):  # cannot calculate if it is none (but for some reason, range and grade are handled when none)
-                    report_i["delta_0to60sec"] = (
+                    report_i["delta_max_time_0_to_60mph_at_gvwr_s"] = (
                         outdict["zero_to_60_loaded"]
                         - report_scenario.max_time_0_to_60mph_at_gvwr_s
                     )
 
-                report_i["max0to30secAtGVWRAch"] = outdict["zero_to_30_loaded"]
-                report_i["target_max0to30secAtGVWR"] = (
+                report_i["max_time_0_to_30mph_at_gvwr_ach_s"] = outdict[
+                    "zero_to_30_loaded"
+                ]
+                report_i["target_max_time_0_to_30mph_at_gvwr_s"] = (
                     report_scenario.max_time_0_to_30mph_at_gvwr_s
                 )
                 if (
                     outdict["zero_to_30_loaded"] is not None
                 ):  # cannot calculate if it is none (but for some reason, range and grade are handled when none)
-                    report_i["delta_0to30sec"] = (
+                    report_i["delta_max_time_0_to_30mph_at_gvwr_s"] = (
                         outdict["zero_to_30_loaded"]
                         - report_scenario.max_time_0_to_30mph_at_gvwr_s
                     )
 
                 report_i.update(mpgge)
-                report_i["discounted_tco_Dol"] = disc_cost
                 # report_i["payload_capacity_loss_kg"] = outdict["payload_capacity_loss_kg"] This might be a good var to have
                 report_i["payload_cap_cost_multiplier"] = veh_opp_cost_set[
                     "payload_cap_cost_multiplier"
                 ]
-                report_i["fueling_dwell_time_hr"] = sum(
-                    veh_opp_cost_set["net_dwell_time_hr"]
+                report_i["total_fueling_dwell_time_hr"] = sum(
+                    veh_opp_cost_set["net_fueling_dwell_time_hr_per_yr"]
                 )
-                report_i["MR_downtime_hr"] = sum(veh_opp_cost_set["MR_downtime_hr"])
+                report_i["total_mr_downtime_hr"] = sum(
+                    veh_opp_cost_set["net_mr_downtime_hr_per_yr"]
+                )
                 report_i["total_downtime_hr"] = sum(
-                    veh_opp_cost_set["total_downtime_hrPerYr"]
+                    veh_opp_cost_set["total_downtime_hr_per_yr"]
                 )
-                report_i["dwell_time_cost_Dol"] = disc_cost_agg.loc[
+                report_i["fueling_dwell_labor_cost_dol"] = disc_cost_agg.loc[
+                    "fueling labor cost", "Discounted Cost [$]"
+                ]
+                report_i["fueling_downtime_oppy_cost_dol"] = disc_cost_agg.loc[
                     "fueling downtime cost", "Discounted Cost [$]"
                 ]
-                report_i["MR_downtime_cost_Dol"] = disc_cost_agg.loc[
+                report_i["mr_downtime_oppy_cost_dol"] = disc_cost_agg.loc[
                     "MR downtime cost", "Discounted Cost [$]"
                 ]
-                report_i["downtime_cost_Dol"] = oppy_cost_set["downtime_oppy_cost_Dol"]
-                report_i["payload_capacity_cost_Dol"] = oppy_cost_set[
-                    "payload_capacity_cost_Dol"
+                report_i["discounted_downtime_oppy_cost_dol"] = oppy_cost_set[
+                    "discounted_downtime_oppy_cost_dol"
                 ]
-                report_i["glider_cost_Dol"] = veh_cost_set["Glider"]
-                report_i["fuel_converter_cost_Dol"] = veh_cost_set["Fuel converter"]
-                report_i["fuel_storage_cost_Dol"] = veh_cost_set["Fuel Storage"]
-                report_i["motor_pwr_electrics_cost_Dol"] = veh_cost_set[
+
+                report_i["payload_capacity_cost_dol"] = oppy_cost_set[
+                    "payload_capacity_cost_dol"
+                ]
+                report_i["glider_cost_dol"] = veh_cost_set["Glider"]
+                report_i["fuel_converter_cost_dol"] = veh_cost_set["Fuel converter"]
+                report_i["fuel_storage_cost_dol"] = veh_cost_set["Fuel Storage"]
+                report_i["motor_control_power_elecs_cost_dol"] = veh_cost_set[
                     "Motor & power electronics"
                 ]
-                report_i["plug_cost_Dol"] = veh_cost_set["Plug"]
-                report_i["battery_cost_Dol"] = veh_cost_set["Battery"]
-                report_i["purchase_tax_Dol"] = veh_cost_set["Purchase tax"]
-                report_i["msrp_total_Dol"] = veh_cost_set["msrp"]
-                report_i["insurance_cost_Dol"] = disc_cost_agg.loc[
+                report_i["plug_cost_dol"] = veh_cost_set["Plug"]
+                report_i["battery_cost_dol"] = veh_cost_set["Battery"]
+                report_i["purchase_tax_dol"] = veh_cost_set["Purchase tax"]
+                report_i["msrp_total_dol"] = veh_cost_set["msrp"]
+                report_i["insurance_cost_dol"] = disc_cost_agg.loc[
                     "insurance", "Discounted Cost [$]"
                 ]
-                report_i["residual_cost_Dol"] = disc_cost_agg.loc[
+                report_i["residual_cost_dol"] = disc_cost_agg.loc[
                     "residual cost", "Discounted Cost [$]"
                 ]
-                report_i["total_fuel_cost_Dol"] = disc_cost_agg.loc[
+                report_i["total_fuel_cost_dol"] = disc_cost_agg.loc[
                     "Fuel", "Discounted Cost [$]"
                 ]
 
-                report_i["total_maintenance_cost_Dol"] = disc_cost_agg.loc[
+                report_i["total_maintenance_cost_dol"] = disc_cost_agg.loc[
                     "maintenance", "Discounted Cost [$]"
                 ]
+                report_i["discounted_tco_dol"] = disc_cost
 
                 if outdict["design_cycle_sim_drive_record"] is not None:
                     report_i["design_cycle_EA_err"] = {
@@ -1001,9 +1014,9 @@ def run_vehicle_scenarios(
                     report_i["grade_6_EA_err"] = outdict[
                         "grade_6_sim_drive_record"
                     ].energy_audit_error
-                if outdict["grade_125_sim_drive_record"] is not None:
-                    report_i["grade_125_EA_err"] = outdict[
-                        "grade_125_sim_drive_record"
+                if outdict["grade_1p25_sim_drive_record"] is not None:
+                    report_i["grade_1p25_EA_err"] = outdict[
+                        "grade_1p25_sim_drive_record"
                     ].energy_audit_error
 
             # for all vehicles, save their final TCO TSV files

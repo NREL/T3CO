@@ -66,7 +66,7 @@ payload_time_factor_xy = np.array([[oppcosts[i][j]['payload_time_factor']
                     for i in range(len(free_dwells))] 
                    for j in range(len(wt_xEV_diffs))])
 
-net_dwell_time_xy = np.array([[oppcosts[i][j]['net_dwell_time_hr']
+net_dwell_time_xy = np.array([[oppcosts[i][j]['net_fueling_dwell_time_hr_per_yr']
                     for i in range(len(free_dwells))] 
                    for j in range(len(wt_xEV_diffs))])
 

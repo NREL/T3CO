@@ -244,7 +244,7 @@ This method is a utility function to get detailed TCO information from optimized
 ## T3CODisplay Objects
 
 ```python
-class T3CODisplay(Output)
+class T3CODisplay()
 ```
 
 This class contains the display object for Pymoo optimization printouts - pymoo.util.display.Display

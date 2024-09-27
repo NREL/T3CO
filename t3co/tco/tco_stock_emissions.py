@@ -51,12 +51,12 @@ def stockModel(
         fuelSplit (pd.DataFrame): Dataframe of fraction of travel using each fuel [mi/mi]
         fuelEfficiency (pd.DataFrame): Dataframe of vehicle's yearly average fuel efficiency [mi/gge]
         emissions (pd.DataFrame): Dataframe of vehicle's yearly average emissions
-        vehicleCosts (pd.DataFrame, optional): Dataframe of vehicle components costs [Dol]. Defaults to None.
-        travelCosts (pd.DataFrame, optional): Dataframe of maintenance costs [Dol/mi]. Defaults to None.
-        fuelCosts (pd.DataFrame, optional): Dataframe of fuel operating costs [Dol/gge]. Defaults to None.
-        insuranceCosts (pd.DataFrame, optional): Dataframe of yearly insurance costs [Dol]. Defaults to None.
-        residualCosts (pd.DataFrame, optional): Dataframe of yearly residual costs [Dol]. Defaults to None.
-        downtimeCosts (pd.DataFrame, optional): Dataframe of yearly downtime costs [Dol]. Defaults to None.
+        vehicleCosts (pd.DataFrame, optional): Dataframe of vehicle components costs [dol]. Defaults to None.
+        travelCosts (pd.DataFrame, optional): Dataframe of maintenance costs [dol/mi]. Defaults to None.
+        fuelCosts (pd.DataFrame, optional): Dataframe of fuel operating costs [dol/gge]. Defaults to None.
+        insuranceCosts (pd.DataFrame, optional): Dataframe of yearly insurance costs [dol]. Defaults to None.
+        residualCosts (pd.DataFrame, optional): Dataframe of yearly residual costs [dol]. Defaults to None.
+        downtimeCosts (pd.DataFrame, optional): Dataframe of yearly downtime costs [dol]. Defaults to None.
         write_files (bool, optional): if True, save vehicleCosts, travelCosts, fuelCosts, insuranceCosts,residualCosts, downtimeCosts . Defaults to False.
 
     Returns:
@@ -105,7 +105,7 @@ def stockModel(
     # compute vmt
     stock = pd.merge(stock, annualTravel)
     stock["Travel [mi]"] = stock["Annual Travel [mi/yr]"] * stock["Stock [veh]"]
-    # stock['Maintenance Cost [Dol/mi]'] = stock['Maintenance Cost [Dol/mi]'] * stock['Stock [veh]']
+    # stock['Maintenance Cost [dol/mi]'] = stock['Maintenance Cost [dol/mi]'] * stock['Stock [veh]']
     stock = stock.drop(["Annual Travel [mi/yr]", "Age [yr]"], axis=1)
 
     # compute energy

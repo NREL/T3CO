@@ -43,7 +43,7 @@ Inputs from the T3CO input file:
 |Acceleration 0 to 60 |max_time_0_to_60mph_at_gvwr_s| `seconds, int > 0` |
 |Acceleration 0 to 30 |max_time_0_to_30mph_at_gvwr_s| `seconds, int > 0` |
 |Min speed at 6% grade [MPH] |min_speed_at_6pct_grade_in_5min_mph| `MPH, int > 0` |
-|Min speed at 1.25% grade [MPH]|min_speed_at_125pct_grade_in_5min_mph| `MPH, int > 0` |
+|Min speed at 1.25% grade [MPH]|min_speed_at_1p25pct_grade_in_5min_mph| `MPH, int > 0` |
 
 
 ## Default Initial SOCs <a name="default-socs"></a>

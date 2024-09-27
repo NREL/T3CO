@@ -38,5 +38,5 @@ evaluated at how much it meets or exceeds target speed at the target grade.
 - `grade_6percent_mph_ach` _float_ - Achieved speed on 6% grade test
 - `grade_1pt25percent_mph_ach` _float_ - Achieved speed on 1.25% grade test
 - `grade_6_simdrive` _fastsim.simdrive.SimDrive_ - FASTSim SimDrive for gradeability test of 6% grade
-- `grade_125_simdrive` _fastsim.simdrive.SimDrive_ - FASTSim SimDrive for gradeability test of 1.25% grade
+- `grade_1p25_simdrive` _fastsim.simdrive.SimDrive_ - FASTSim SimDrive for gradeability test of 1.25% grade
 

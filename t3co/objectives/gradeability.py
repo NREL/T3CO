@@ -36,7 +36,7 @@ def get_gradeability(
         grade_6percent_mph_ach (float): Achieved speed on 6% grade test
         grade_1pt25percent_mph_ach (float): Achieved speed on 1.25% grade test
         grade_6_simdrive (fastsim.simdrive.SimDrive): FASTSim SimDrive for gradeability test of 6% grade
-        grade_125_simdrive (fastsim.simdrive.SimDrive): FASTSim SimDrive for gradeability test of 1.25% grade
+        grade_1p25_simdrive (fastsim.simdrive.SimDrive): FASTSim SimDrive for gradeability test of 1.25% grade
     """
     SIX_GRADE = 0.06
     ONE_POINT_TWENTY_FIVE_GRADE = 0.0125
@@ -74,10 +74,10 @@ def get_gradeability(
                         f"f'{Path(__file__).name}:: scenario.min_speed_at_6pct_grade_in_5min_mph: {scenario.min_speed_at_6pct_grade_in_5min_mph}"
                     )
             if target_grade == ONE_POINT_TWENTY_FIVE_GRADE:
-                first_time_step_mph = scenario.min_speed_at_125pct_grade_in_5min_mph
+                first_time_step_mph = scenario.min_speed_at_1p25pct_grade_in_5min_mph
                 if verbose:
                     print(
-                        f"f'{Path(__file__).name}:: scenario.min_speed_at_125pct_grade_in_5min_mph: {scenario.min_speed_at_125pct_grade_in_5min_mph}"
+                        f"f'{Path(__file__).name}:: scenario.min_speed_at_1p25pct_grade_in_5min_mph: {scenario.min_speed_at_1p25pct_grade_in_5min_mph}"
                     )
         if verbose:
             print(
@@ -117,7 +117,7 @@ def get_gradeability(
         return target_grade_mph_ach, grade_simdrive
 
     grade_6percent_mph_ach, grade_6_simdrive = get_grade_perf(SIX_GRADE)
-    grade_1pt25percent_mph_ach, grade_125_simdrive = get_grade_perf(
+    grade_1pt25percent_mph_ach, grade_1p25_simdrive = get_grade_perf(
         ONE_POINT_TWENTY_FIVE_GRADE
     )
     if scenario is not None and set_weight_to_max_kg:
@@ -131,7 +131,7 @@ def get_gradeability(
         grade_6percent_mph_ach,
         grade_1pt25percent_mph_ach,
         grade_6_simdrive,
-        grade_125_simdrive,
+        grade_1p25_simdrive,
     )
 
 
@@ -154,7 +154,7 @@ if __name__ == "__main__":
         grade_6percent_mph_ach,
         grade_1pt25percent_mph_ach,
         grade_6_simdrive,
-        grade_125_simdrive,
+        grade_1p25_simdrive,
     ) = get_gradeability(
         analysis_vehicle,
         scenario=scenario,

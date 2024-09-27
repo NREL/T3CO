@@ -740,10 +740,10 @@ def generate(vocation: str, dst: str=gl.OPTIMIZATION_AND_TCO_RCRS):
                     "min_speed_at_6pct_grade_in_5min_mph",
                 ].values[0]
                 OtherInputsDf.at[
-                    v, "min_speed_at_125pct_grade_in_5min_mph"
+                    v, "min_speed_at_1p25pct_grade_in_5min_mph"
                 ] = VocationRequirements.loc[
                     VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
-                    "min_speed_at_125pct_grade_in_5min_mph",
+                    "min_speed_at_1p25pct_grade_in_5min_mph",
                 ].values[0]
                 OtherInputsDf.at[v, "max_time_0_to_60mph_at_gvwr_s"] = VocationRequirements.loc[
                     VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],

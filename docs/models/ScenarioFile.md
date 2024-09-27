@@ -40,7 +40,7 @@ Below is an example of a scenario file contents, in columnar format for readabil
 |`region`|< > |`FY21NoProgram`| `string`|
 |`target_range_mi`|< > |`500`|`float` Note: for PHEVs, T3CO will meet this requirement in CD mode |
 |`min_speed_at_6pct_grade_in_5min_mph`|< > |`30`|`float` |
-|`min_speed_at_125pct_grade_in_5min_mph`|< > |`65`|`float` |
+|`min_speed_at_1p25pct_grade_in_5min_mph`|< > |`65`|`float` |
 |`max_time_0_to_60mph_at_gvwr_s`|< > |`80`|`float` |
 |`max_time_0_to_30mph_at_gvwr_s`|< > |`20`|`float` |
 |`lw_imp_curve_sel`|< > |`MDHD_noprogram_2050`| `string` Optimization "knob" handling. For certain knobs, there are curves that apply. This value references a column in the light-weighting curves file. Example: [light weighting curves](https://github.com/NREL/T3CO/blob/master/run_scripts/external_resources/tda_example/matlltwt_imp_cost_curves_for_tda_in_t3co.csv). Referenced in `sweep.py` [here](https://github.com/NREL/T3CO/blob/934dc4718c8a3aeef296bdf39abd6952d65c88f6/run_scripts/sweep.py#L537) |
@@ -57,7 +57,7 @@ Below is an example of a scenario file contents, in columnar format for readabil
 |`knob_max_fs_kwh`| < > | `600`| `nan or float` Optimization settings If this "knob" has a min and max value input from user, it implies that this opimization parameter should be used. |
 |`constraint_range`| < > | `nan`| `True or False` Optimization setting. If True, then the constraint is applied and tests for range must be met or exceeded. Test threshold designated by value in `target_range_mi`|
 |`constraint_accel`| < > |`nan`| `True or False` Optimization setting. If True, then the constraint is applied and tests for acceleratiion. must be met or exceeded Test threshold designated by value in `max_time_0_to_60mph_at_gvwr_s and max_time_0_to_30mph_at_gvwr_s`|
-|`constraint_grade`| < > |`nan`| `True or False` Optimization setting. If True, then the constraint is applied and tests for grade must be met or exceeded Test threshold designated by value in `min_speed_at_6pct_grade_in_5min_mph and min_speed_at_125pct_grade_in_5min_mph`|
+|`constraint_grade`| < > |`nan`| `True or False` Optimization setting. If True, then the constraint is applied and tests for grade must be met or exceeded Test threshold designated by value in `min_speed_at_6pct_grade_in_5min_mph and min_speed_at_1p25pct_grade_in_5min_mph`|
 |`objective_tco`|  < > | `nan`| `True or False` Optimization setting. If True, then the objective to minimize Total Cost of Ownership is applied. |
 |`constraint_c_rate`|  < > | `True`| `True or False` Optimization setting. If True, then the constraint for c rate is applied|
 |`shifts_per_year`|  < > | `260`| PHEVs only! See [PHEV Docs](./PHEVs.md#phev-special-inputs)|
