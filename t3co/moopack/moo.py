@@ -150,7 +150,7 @@ class T3COProblem(ElementwiseProblem):
 
         self.reporting_vars = None
         self.r_grade_6s = []
-        self.r_grade_125s = []
+        self.r_grade_1p25s = []
         self.r_accel_30l = []
         self.r_accel_60l = []
         self.r_ranges = []
@@ -166,7 +166,7 @@ class T3COProblem(ElementwiseProblem):
         self.accel_30_constraint = []
         self.accel_60_constraint = []
         self.grade_6_constraint = []
-        self.grade_125_constraint = []
+        self.grade_1p25_constraint = []
         self.range_constraint = []
         self.grade_accel_overshoot_tol_constraint = []
         self.c_rate_constraint = []
@@ -371,7 +371,7 @@ class T3COProblem(ElementwiseProblem):
             "objective_fc_khw_used": self.r_cd_fc_kwh_used,
             "objective_elec_khw_used": self.r_cd_elec_kwh_used,
             "r_mph_ach_grade_6s": self.r_grade_6s,
-            "r_mph_ach_grade_125s": self.r_grade_125s,
+            "r_mph_ach_grade_1p25s": self.r_grade_1p25s,
             "r_sec_to_ach_30mph_ldd": self.r_accel_30l,
             "r_sec_to_ach_60mph_ldd": self.r_accel_60l,
             "r_ach_ranges_mi": self.r_ranges,
@@ -379,8 +379,8 @@ class T3COProblem(ElementwiseProblem):
                 self.opt_scenario.min_speed_at_6pct_grade_in_5min_mph
             ]
             * len(self.r_grade_6s),
-            "target_mph_grade_125s": [
-                self.opt_scenario.min_speed_at_125pct_grade_in_5min_mph
+            "target_mph_grade_1p25s": [
+                self.opt_scenario.min_speed_at_1p25pct_grade_in_5min_mph
             ]
             * len(self.r_grade_6s),
             "target_sec_to_30mph_ldd": [self.opt_scenario.max_time_0_to_30mph_at_gvwr_s]
@@ -393,7 +393,7 @@ class T3COProblem(ElementwiseProblem):
             "accel_30_constraint_vals": self.accel_30_constraint,
             "accel_60_constraint_vals": self.accel_60_constraint,
             "grade_6_constraint_vals": self.grade_6_constraint,
-            "grade_125_constraint_vals": self.grade_125_constraint,
+            "grade_1p25_constraint_vals": self.grade_1p25_constraint,
             "range_constraint_vals": self.range_constraint,
             "grade_accel_overshoot_tol_constraint_vals": self.grade_accel_overshoot_tol_constraint,
             "trace_miss_dist_percent_constraint_vals": self.trace_miss_distance_percent_constraint_record,
@@ -736,7 +736,7 @@ class T3COProblem(ElementwiseProblem):
         self.accel_30_constraint.append(None)
         self.accel_60_constraint.append(None)
         self.grade_6_constraint.append(None)
-        self.grade_125_constraint.append(None)
+        self.grade_1p25_constraint.append(None)
         self.range_constraint.append(None)
         self.grade_accel_overshoot_tol_constraint.append(None)
         self.c_rate_constraint.append(None)
@@ -752,7 +752,7 @@ class T3COProblem(ElementwiseProblem):
             )
         if GRADE125 in self.constr_list:
             constraint_results_G.append(
-                self.opt_scenario.min_speed_at_125pct_grade_in_5min_mph - g125_acvhd
+                self.opt_scenario.min_speed_at_1p25pct_grade_in_5min_mph - g125_acvhd
             )
         if ACCEL60 in self.constr_list:
             # zero-to-speed time should minus max allowable (target value) should
@@ -774,12 +774,12 @@ class T3COProblem(ElementwiseProblem):
                 g125c = (
                     -(
                         g125_acvhd
-                        - self.opt_scenario.min_speed_at_125pct_grade_in_5min_mph
+                        - self.opt_scenario.min_speed_at_1p25pct_grade_in_5min_mph
                     )
-                    / self.opt_scenario.min_speed_at_125pct_grade_in_5min_mph
+                    / self.opt_scenario.min_speed_at_1p25pct_grade_in_5min_mph
                 )
                 constr_perc[GRADE125] = g125c
-                self.grade_125_constraint[-1] = g125c
+                self.grade_1p25_constraint[-1] = g125c
             if GRADE6 in self.constr_list:
                 g6c = (
                     -(g6_acvhd - self.opt_scenario.min_speed_at_6pct_grade_in_5min_mph)
@@ -892,7 +892,7 @@ class T3COProblem(ElementwiseProblem):
         self.r_cd_elec_kwh_used.append(phev_cd_battery_used_kwh)
 
         self.r_grade_6s.append(g6_acvhd)
-        self.r_grade_125s.append(g125_acvhd)
+        self.r_grade_1p25s.append(g125_acvhd)
         self.r_accel_60l.append(z60l_acvhd)
         self.r_accel_30l.append(z30l_acvhd)
         self.r_fuel_efficiencies.append(mpgge)

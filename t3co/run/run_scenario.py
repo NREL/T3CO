@@ -175,7 +175,7 @@ class Scenario:
     region: str = ""
     target_range_mi: float = 0
     min_speed_at_6pct_grade_in_5min_mph: float = 0
-    min_speed_at_125pct_grade_in_5min_mph: float = 0
+    min_speed_at_1p25pct_grade_in_5min_mph: float = 0
     max_time_0_to_60mph_at_gvwr_s: float = 0
     max_time_0_to_30mph_at_gvwr_s: float = 0
     # TDA vars
@@ -255,6 +255,9 @@ class Scenario:
     #
     ### TCO Element Activations and vars
     #
+    labor_rate_dol_per_hr: float = 0
+    downtime_oppy_cost_dol_per_hr: float = 0
+
     # payload loss factor vars, PLF
     activate_tco_payload_cap_cost_multiplier: bool = True
     plf_ref_veh_empty_mass_kg: float = 0
@@ -263,12 +266,9 @@ class Scenario:
     plf_scenario_vehicle_cargo_capacity_kg: float = 0  # includes cargo credit kg
     estimated_lost_payload_kg: float = 0
 
-    # Dwell time factors, DLF
+    # Fueling Dwell time factors, FDT
     activate_tco_fueling_dwell_time_cost: bool = False
     dlf_min_charge_time_hr: float = 0
-    fdt_oppy_cost_dol_per_hr: float = 0
-    dlf_dwell_efficiency_pct: float = 0
-    dlf_time_available_charge_hr: float = 0
     fdt_dwpt_fraction_power_pct: float = 0
     fdt_avg_overhead_hr_per_dwell_hr: float = 0
     fdt_frac_full_charge_bounds: float = 0
@@ -277,7 +277,10 @@ class Scenario:
     # Insurance factors
     insurance_rates_pct_per_yr: list = field(default_factory=list)
 
-    # M&R Downtime factors
+    # Residual Rate
+    residual_rate_pct: float = 0
+
+    # Maintenance and Repair Downtime factors MR
     activate_mr_downtime_cost: bool = False
     mr_planned_downtime_hr_per_yr: float = 0
     mr_unplanned_downtime_hr_per_mi: list = field(default_factory=list)
@@ -885,8 +888,8 @@ def vehicle_scenario_sweep(
     if verbose:
         print("Running `tco_analysis.get_tco_of_vehicle`")
     (
-        tot_cost_Dol,
-        discounted_TCO_Dol,
+        tot_cost_dol,
+        discounted_tco_dol,
         oppy_cost_set,
         ownership_costs_df,
         discounted_costs_df,
@@ -1006,10 +1009,10 @@ def vehicle_scenario_sweep(
         "accel_sim_drive_record": accel_sdr,
         "accel_loaded_sim_drive_record": accel_loaded_sdr,
         "grade_6_sim_drive_record": grade_sdr_6,
-        "grade_125_sim_drive_record": grade_sdr_125,
-        "disc_cost": discounted_TCO_Dol,
+        "grade_1p25_sim_drive_record": grade_sdr_125,
+        "disc_cost": discounted_tco_dol,
         "opportunity_cost_set": oppy_cost_set,
-        "tot_cost": tot_cost_Dol,
+        "tot_cost": tot_cost_dol,
         "tco_files": tco_files,
     }
     out.update(range_dict)

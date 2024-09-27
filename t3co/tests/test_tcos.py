@@ -277,7 +277,7 @@ def remove(out):
     del out['accel_sim_drive_record']
     del out['accel_loaded_sim_drive_record']
     del out['grade_6_sim_drive_record']
-    del out['grade_125_sim_drive_record']
+    del out['grade_1p25_sim_drive_record']
     del out['vehicle']
     del out['discounted_costs_df']
     del out['scenario']

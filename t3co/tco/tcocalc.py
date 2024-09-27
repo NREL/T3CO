@@ -225,7 +225,7 @@ def calculate_opp_costs(
 
     if scenario.activate_tco_fueling_dwell_time_cost:
         # assert optvehicle.veh_pt_type in [gl.BEV, gl.HEV], "payload cap loss factor TCO element only available for BEVs and FCEV HEVs"
-        assert gl.not_falsy(scenario.fdt_oppy_cost_dol_per_hr)
+        assert gl.not_falsy(scenario.downtime_oppy_cost_dol_per_hr)
         assert not np.isnan(scenario.fdt_num_free_dwell_trips)
         assert not np.isnan(scenario.fdt_dwpt_fraction_power_pct)
         assert not np.isnan(scenario.fdt_available_freetime_hr)
@@ -235,7 +235,7 @@ def calculate_opp_costs(
             and len(oppcostobj.shifts_per_year) >= scenario.vehicle_life_yr
         ), f"Provide scenario.shifts_per_year as a vector of length > scenario.vehicle_life_yr. Currently {len(oppcostobj.shifts_per_year)}"
         assert gl.not_falsy(scenario.fdt_frac_full_charge_bounds)
-        oppcostobj.set_dwell_time_cost(vehicle, scenario)
+        oppcostobj.set_fueling_dwell_time_cost(vehicle, scenario)
 
     if scenario.activate_mr_downtime_cost:
         assert gl.not_falsy(scenario.mr_planned_downtime_hr_per_yr)
@@ -244,16 +244,16 @@ def calculate_opp_costs(
         assert gl.not_falsy(scenario.mr_avg_tire_life_mi)
         oppcostobj.set_M_R_downtime_cost(vehicle, scenario)
 
-    # veh_opp_cost_set = {'payload_cap_cost_multiplier' : None, 'net_dwell_time_hr' : 0., 'dwell_time_cost_Dol' : 0.}
+    # veh_opp_cost_set = {'payload_cap_cost_multiplier' : None, 'net_fueling_dwell_time_hr_per_yr' : 0., 'dwell_time_cost_Dol' : 0.}
     veh_opp_cost_set = {
         "payload_cap_cost_multiplier": oppcostobj.payload_cap_cost_multiplier,
-        "net_dwell_time_hr": oppcostobj.net_dwell_time_hr,
-        "dwell_time_cost_Dol": oppcostobj.dwell_time_cost_Dol,
-        "MR_downtime_hr": oppcostobj.net_MR_downtime_hrPerYr,
-        "MR_downtime_cost_Dol": oppcostobj.net_MR_downtime_oppcosts_DolPerYr,
-        "total_downtime_hrPerYr": np.array(oppcostobj.net_dwell_time_hr)
-        + np.array(oppcostobj.net_MR_downtime_hrPerYr),
-        # 'avg_speed_mph': oppcostobj.v_mean_mph,
+        "daily_trip_distance_mi": oppcostobj.d_trip_mi,
+        "net_fueling_dwell_time_hr_per_yr": oppcostobj.net_fueling_dwell_time_hr_per_yr,
+        "fueling_dwell_labor_cost_dol_per_yr": oppcostobj.fueling_dwell_labor_cost_dol_per_yr,
+        "fueling_downtime_oppy_cost_dol_per_yr": oppcostobj.fueling_downtime_oppy_cost_dol_per_yr,
+        "net_mr_downtime_hr_per_yr": oppcostobj.net_net_mr_downtime_hr_per_yr_per_yr,
+        "mr_downtime_oppy_cost_dol_per_yr": oppcostobj.mr_downtime_oppy_cost_dol_per_yr,
+        "total_downtime_hr_per_yr": np.array(oppcostobj.net_fueling_dwell_time_hr_per_yr) + np.array(oppcostobj.net_net_mr_downtime_hr_per_yr_per_yr),
     }
     return veh_opp_cost_set
 
@@ -410,7 +410,7 @@ def fill_trav_exp_tsv(
     assert len(maint) == veh_life_years, (
         f"vehicle_life_yr of {veh_life_years} & length of input maint_oper_cost_dol_per_mi {len(maint)} do not align; "
         f"vehicle_life_yr life years & number of years in vmt should match\n"
-        f"[vehicle_life_yr/[maintDolPerMi_1,...,maintDolPerMi_N]]:[{veh_life_years}/{maint}]"
+        f"[vehicle_life_yr/[maint_oper_cost_dol_per_mi_1,...,maint_oper_cost_dol_per_mi_N]]:[{veh_life_years}/{maint}]"
     )
     data = []
     for i, yr in enumerate(
@@ -435,7 +435,7 @@ def fill_downtimelabor_cost_tsv(
 
     Args:
         scenario (run_scenario.Scenario): Scenario object of current selection
-        oppy_cost_set (dict): Dictionary containing dwell_time_cost_Dol and MR_downtime_cost_Dol
+        oppy_cost_set (dict): Dictionary containing fueling_downtime_oppy_cost_dol_per_yr,fueling_dwell_labor_cost_dol_per_yr and mr_downtime_oppy_cost_dol_per_yr
 
     Returns:
         df (pd.DataFrame): Dataframe containing fueling and MR downtime costs in Cost [$/Yr]
@@ -445,17 +445,19 @@ def fill_downtimelabor_cost_tsv(
 
     veh_life_years = int(scenario.vehicle_life_yr)
 
-    dwell_time_cost_Dol = oppy_cost_set["dwell_time_cost_Dol"]
-    MR_downtime_cost_Dol = oppy_cost_set["MR_downtime_cost_Dol"]
-    # assert len(insurance_rates) >= veh_life_years, (f"vehicle_life_yr of {veh_life_years} & length of input insurance rates {len(insurance_rates)} do not align; "
-    # f"vehicle_life_yr life years & number of years in vmt should match\n"
-    # f"[vehicle_life_yr/[VMT_1,...,VMT_N]]:[{veh_life_years}/{insurance_rates}]")
+    fueling_downtime_oppy_cost_dol_per_yr = oppy_cost_set["fueling_downtime_oppy_cost_dol_per_yr"]
+    fueling_dwell_labor_cost_dol_per_yr = oppy_cost_set["fueling_dwell_labor_cost_dol_per_yr"]
+    mr_downtime_oppy_cost_dol_per_yr = oppy_cost_set["mr_downtime_oppy_cost_dol_per_yr"]
+    # assert len(insurance_rates) >= veh_life_years, (f"vehLifeYears of {veh_life_years} & length of input insurance rates {len(insurance_rates)} do not align; "
+    # f"vehLifeYears life years & number of years in vmt should match\n"
+    # f"[vehLifeYears/[VMT_1,...,VMT_N]]:[{veh_life_years}/{insurance_rates}]")
     # \
     for i in range(0, veh_life_years):
-        # downtime_costs_Dol = dwell_time_cost_Dol[i] + MR_downtime_cost_Dol[i]
-        # i is age, give it a vmt value for each entry in vmt or defer to last vmt entry
-        data.append([i, "fueling downtime cost", dwell_time_cost_Dol[i]])
-        data.append([i, "MR downtime cost", MR_downtime_cost_Dol[i]])
+        # downtime_costs_Dol = fueling_downtime_oppy_cost_dol[i] + MR_downtime_cost_Dol[i]
+        # i is age, give it a VMT value for each entry in VMT or defer to last VMT entry
+        data.append([i, "fueling downtime cost", fueling_downtime_oppy_cost_dol_per_yr[i]])
+        data.append([i, "fueling labor cost", fueling_dwell_labor_cost_dol_per_yr[i]])
+        data.append([i, "MR downtime cost", mr_downtime_oppy_cost_dol_per_yr[i]])
 
     df = pd.DataFrame(data, columns=columns)
 

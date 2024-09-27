@@ -45,7 +45,7 @@ class OpportunityCost:
 
         # maybe this should be on a profit basis (it's currently not)
         ### All params below here are experimental and not to be used for now
-        self.cost_per_lb_mi = kwargs.pop("cost_per_lb_mi", 0.0003)
+        # self.cost_per_lb_mi = kwargs.pop("cost_per_lb_mi", 0.0003)
         # trip distance[mi] for typical point A to point B trip
         # self.d_trip_mi = kwargs.pop('d_trip_mi', 500)
         # self.d_trip_mi = scenario.vmt[0]/scenario.shifts_per_year
@@ -62,17 +62,12 @@ class OpportunityCost:
         # average vehicle speed[mph] over trip, should come from FASTSim
         # self.v_mean_mph = range_dict['mean_cyc_speed_mph']
         # driver hourly labor rate[$/hr].
-        # self.labor_rate_dol_per_hr = kwargs.pop('labor_rate_dol_per_hr', 30.60) # labor cost from Alicia.  Expect a report that can be cited for this.
-        self.labor_rate_dol_per_hr = scenario.fdt_oppy_cost_dol_per_hr
         # self.free_dwell_time_hr = scenario.fdt_available_freetime_hr
         # dwell time [hr] driven by non-charging needs (e.g. required work breaks) that can be used for charging.
         # self.free_dwell_time_hr = kwargs.pop('free_dwell_time_hr', 3)
         # fraction of dwell time that can actually be used for charging
         # self.dwell_time_efficiency = kwargs.pop('dwell_time_efficiency', 1.)
         if scenario.activate_tco_fueling_dwell_time_cost:
-            self.dwell_time_efficiency = scenario.dlf_dwell_efficiency_pct
-            self.time_available_charge_hr = scenario.dlf_time_available_charge_hr
-            self.dwell_overhead_hr = scenario.fdt_avg_overhead_hr_per_dwell_hr
             self.frac_of_fullcharge_bounds = list(
                 np.float_(scenario.fdt_frac_full_charge_bounds.strip(" ][").split(","))
             )
@@ -81,21 +76,17 @@ class OpportunityCost:
             )
 
         self.payload_cap_cost_multiplier = 0
-        self.net_dwell_time_hr = np.zeros(scenario.vehicle_life_yr)
-        self.dwell_time_cost_Dol = np.zeros(scenario.vehicle_life_yr)
-        self.net_MR_downtime_hrPerYr = np.zeros(scenario.vehicle_life_yr)
-        self.net_MR_downtime_oppcosts_DolPerYr = np.zeros(scenario.vehicle_life_yr)
-
+        
         # rate[kW] at which battery is recharged
-        self.charge_rate_kW = kwargs.pop("charge_rate_kW", 200)
+        # self.charge_rate_kW = kwargs.pop("charge_rate_kW", 200)
         # battery capacity [kilowatt-hours]
-        self.battery_capacity_kWhr = kwargs.pop("batt_cap_kW_hr", 300)
+        # self.battery_capacity_kWhr = kwargs.pop("batt_cap_kW_hr", 300)
         # number of full battery trips that don't incur dwell time penalty
         # battery is allowed `num_free_trips` charging events without penalty
-        # self.num_free_trips = kwargs.pop('num_free_trips', 1.)
-        self.num_free_trips = scenario.fdt_num_free_dwell_trips
+        # scenario.fdt_num_free_dwell_trips = kwargs.pop('num_free_trips', 1.)
+        # scenario.fdt_num_free_dwell_trips = scenario.fdt_num_free_dwell_trips
         # number of weight weight bins
-        self.num_bins = kwargs.pop("num_bins", 1_000)
+        # self.num_bins = kwargs.pop("num_bins", 1_000)
 
         if len(kwargs) > 0:
             warnings.warn(f"Invalid kwargs: {list(kwargs.keys())}")
@@ -287,20 +278,20 @@ class OpportunityCost:
     #         a_vehicle:fastsim.vehicle,
     #         scenario) :
     #     self.dwell_time_hr = max(
-    #     0, self.d_trip_mi / self.total_range_mi - self.num_free_trips) * \
+    #     0, self.d_trip_mi / self.total_range_mi - scenario.fdt_num_free_dwell_trips) * \
     #     (a_vehicle.ess_max_kwh / a_vehicle.ess_max_kw)
     #     # (nominal time + additional non-driving time to charge) / nominal time
 
     #     # TODO: need to add separate labor and payload dwell penalties starting here
-    #     self.net_dwell_time_hr = max(
+    #     self.net_fueling_dwell_time_hr_per_yr = max(
     #         0, (self.dwell_time_hr - max(0, self.free_dwell_time_hr)) * self.dwell_time_efficiency)
 
     #     # number of original trip time durations after correcting for EV time penalty
     #     # (e.g. 1.8 means 80% longer trip duration)
-    #     self.dwell_time_factor = max(1, (self.d_trip_mi / self.v_mean_mph + self.net_dwell_time_hr) /
+    #     self.dwell_time_factor = max(1, (self.d_trip_mi / self.v_mean_mph + self.net_fueling_dwell_time_hr_per_yr) /
     #         (self.d_trip_mi / self.v_mean_mph))
 
-    def set_dwell_time_cost(
+    def set_fueling_dwell_time_cost(
         self, a_vehicle: fastsim.vehicle.Vehicle, scenario: run_scenario.Scenario
     ) -> None:
         """
@@ -310,15 +301,16 @@ class OpportunityCost:
             a_vehicle (fastsim.vehicle): FASTSim vehicle object of analysis vehicle
             scenario (run_scenario.Scenario): Scenario object for current selection
         """
-        self.dwell_time_cost_Dol, self.total_dwell_time_hr = 0, 0
-        self.net_dwell_time_hr = []
-        self.dwell_time_cost_Dol = []
+        self.total_fueling_dwell_time_hr = 0
+        self.net_fueling_dwell_time_hr_per_yr = []
+        self.fueling_downtime_oppy_cost_dol_per_yr = []
+        self.fueling_dwell_labor_cost_dol_per_yr = []
         dwellparams = np.array(
             [
                 scenario.fdt_dwpt_fraction_power_pct,
                 scenario.fdt_frac_full_charge_bounds,
                 scenario.fdt_avg_overhead_hr_per_dwell_hr,
-                scenario.fdt_oppy_cost_dol_per_hr,
+                scenario.downtime_oppy_cost_dol_per_hr,
             ]
         )
         assert any(
@@ -362,7 +354,7 @@ class OpportunityCost:
                     (self.d_trip_mi)
                     * (1 - scenario.fdt_dwpt_fraction_power_pct)
                     / self.total_range_mi
-                    - self.num_free_trips
+                    - scenario.fdt_num_free_dwell_trips
                 ),
             )
             # print(f'num_of_dwells: {self.num_of_dwells}\n vmt: {scenario.vmt[i]}')
@@ -383,21 +375,21 @@ class OpportunityCost:
                     self.num_of_dwells += 1 - self.remaining_dwells
             # else:
 
-            if (self.num_of_dwells < 1 and not self.num_free_trips) or (
+            if (self.num_of_dwells < 1 and not scenario.fdt_num_free_dwell_trips) or (
                 scenario.fuel_type
             ):
-                self.net_dwell_time_hr.append(
+                self.net_fueling_dwell_time_hr_per_yr.append(
                     scenario.vmt[i]
                     * (1 - scenario.fdt_dwpt_fraction_power_pct)
                     / self.total_range_mi
-                    * (self.full_dwell_hr + self.dwell_overhead_hr)
+                    * (self.full_dwell_hr + scenario.fdt_avg_overhead_hr_per_dwell_hr)
                 )
             else:
                 self.dwell_time_hr = (
                     self.num_of_dwells * self.full_dwell_hr
-                    + ceil(self.num_of_dwells) * self.dwell_overhead_hr
+                    + ceil(self.num_of_dwells) * scenario.fdt_avg_overhead_hr_per_dwell_hr
                 )
-                self.net_dwell_time_hr.append(
+                self.net_fueling_dwell_time_hr_per_yr.append(
                     self.shifts_per_year[i]
                     * max(
                         0,
@@ -408,15 +400,15 @@ class OpportunityCost:
                     )
                 )
 
-            self.dwell_time_cost_Dol.append(
-                self.net_dwell_time_hr[i] * self.labor_rate_dol_per_hr
-            )
-            self.total_dwell_time_hr += self.net_dwell_time_hr[i]
+            self.fueling_dwell_labor_cost_dol_per_yr.append(self.net_fueling_dwell_time_hr_per_yr[i] * scenario.labor_rate_dol_per_hr)
+            self.fueling_downtime_oppy_cost_dol_per_yr.append(self.net_fueling_dwell_time_hr_per_yr[i] * scenario.downtime_oppy_cost_dol_per_hr)
+            
+            self.total_fueling_dwell_time_hr += self.net_fueling_dwell_time_hr_per_yr[i]
 
-        # self.dwell_time_factor = max(1, (self.d_trip_mi / self.v_mean_mph + self.net_dwell_time_hr[i]) /
+        # self.dwell_time_factor = max(1, (self.d_trip_mi / self.v_mean_mph + self.net_fueling_dwell_time_hr_per_yr[i]) /
         #     (self.d_trip_mi / self.v_mean_mph))
 
-    # def set_dwell_time_cost #Old calculation
+    # def set_fueling_dwell_time_cost #Old calculation
     #           (self,
     #         a_vehicle:fastsim.vehicle,
     #         scenario):
@@ -455,7 +447,7 @@ class OpportunityCost:
             * scenario.mr_tire_replace_downtime_hr_per_event
             for i in range(scenario.vehicle_life_yr)
         ]
-        self.net_MR_downtime_hrPerYr = np.array(
+        self.net_net_mr_downtime_hr_per_yr_per_yr = np.array(
             [
                 self.planned_downtime_hr[i]
                 + self.unplanned_downtime_hr[i]
@@ -463,11 +455,12 @@ class OpportunityCost:
                 for i in range(scenario.vehicle_life_yr)
             ]
         )
-        self.net_MR_downtime_oppcosts_DolPerYr = (
-            self.net_MR_downtime_hrPerYr * self.labor_rate_dol_per_hr
+        self.mr_downtime_oppy_cost_dol_per_yr = (
+            self.net_net_mr_downtime_hr_per_yr_per_yr * scenario.downtime_oppy_cost_dol_per_hr
         )
-        # print(f'Total M&R downtime hr: {self.net_MR_downtime_hr}')
-        # print(f'M&R Downtime cost Dol: {self.net_MR_downtime_oppcosts_Dol}')
+        
+        # print(f'Total M&R downtime hr: {self.net_net_mr_downtime_hr_per_yr}')
+        # print(f'M&R Downtime cost dol: {self.net_MR_downtime_oppcosts_Dol}')
 
 
 # %%
@@ -503,9 +496,9 @@ def main():
 
     plf = oc.set_payload_loss_factor(v, plots=True)
     print(plf)
-    oc.set_dwell_time_cost(v, s)
-    print(oc.dwell_time_cost)
-    print(oc.net_dwell_time_hr)
+    oc.set_fueling_dwell_time_cost(v, s)
+    print(oc.dwell_time_cost_Dol)
+    print(oc.net_fueling_dwell_time_hr_per_yr)
     print(oc.__dict__["payload_cap_cost_multiplier"])
     oc.set_M_R_downtime_cost(v, s)
 
