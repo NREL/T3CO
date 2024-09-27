@@ -21,7 +21,7 @@ When generating [TCO](./models/TCO_calculations.md), there are a few main compon
 - MSRP, the cost of the vehicle at time of purchase
 - Fuel costs (based on $ per gallon of gasoline equivalent for every operational year's fuel used)
 - operating costs (maintenance `[$/mile]`, opportunity cost `[\$/mile]`, etc.)
-- [payload opportunity cost](./models/TCO_calculations.md#payload-opportunity-costs-)
+- [payload opportunity cost](./models/TCO_calculations.md#payload-opportunity-costs)
 
 The fuel costs are computed after determining the mile per gallone of gasoline equivalent (MPGGE) fuel efficiency of the vehicle and factoring that in with the miles driven and the cost per gallon of gasoline equivalent (GGE) for each year and region that the vehicle operates in.
 
