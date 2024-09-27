@@ -6,6 +6,15 @@ on:
 permissions:
   contents: write
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+      - run: |
+          pip install make
+          make generate_pydocs
   deploy:
     runs-on: ubuntu-latest
     steps:
