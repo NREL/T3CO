@@ -29,7 +29,6 @@ class Config:
     New class to read T3COConfig file containing analysis attributes like vehicle and scenario paths, and scenario attribute overrides
 
     """
-
     analysis_id: int = 0
     analysis_name: str = ""
     vehicle_file: str = ""
@@ -68,9 +67,6 @@ class Config:
     activate_tco_fueling_dwell_time_cost: bool = False
     fdt_frac_full_charge_bounds: list = field(default_factory=list)
     activate_mr_downtime_cost: bool = False
-
-    def __init__(self) -> None:
-        pass
 
     def from_file(self, filename: str, analysis_id: int) -> Self:
         """
@@ -764,7 +760,7 @@ def set_max_motor_kw(
 
     Args:
         analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
-        scenario (t3co.run_scenario.Scenario): T3CO Scenarion object
+        scenario (run_scenario.Scenario): T3CO Scenarion object
         max_motor_kw (float): max motor power /kW
     """
     # old comments that may be needed again:

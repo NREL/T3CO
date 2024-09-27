@@ -32,7 +32,7 @@ authors = [
 maintainers = [
   {name = "NREL-AVCI", email = "t3co@nrel.gov"}
 ]
-keywords = ["tco", "vehicle-cost", "totl-cost", "vehicle-simulation", "total-cost-of-ownership"]
+keywords = ["tco", "vehicle-cost", "total-cost", "vehicle-simulation", "total-cost-of-ownership"]
 
 [tool.hatch.metadata.hooks.requirements_txt]
 files = ["requirements.txt"]
