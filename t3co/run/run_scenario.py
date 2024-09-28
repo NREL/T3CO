@@ -26,9 +26,10 @@ from t3co.tco import tco_analysis
 @dataclass
 class Config:
     """
-    New class to read T3COConfig file containing analysis attributes like vehicle and scenario paths, and scenario attribute overrides
+    This class reads T3COConfig.csv file containing analysis attributes like vehicle and scenario paths, TCO_method, and scenario attribute overrides.
 
     """
+
     analysis_id: int = 0
     analysis_name: str = ""
     vehicle_file: str = ""
@@ -44,6 +45,8 @@ class Config:
     fs_fueling_rate_kg_per_min: float = 0
     fs_fueling_rate_gasoline_gpm: float = 0
     fs_fueling_rate_diesel_gpm: float = 0
+
+    TCO_method: str = "DIRECT"
 
     # Optimization
     algorithms: str = ""
