@@ -8,14 +8,10 @@ from t3co.run import Global as gl, run_scenario
 from t3co.tco import tco_stock_emissions
 from t3co.tco import tcocalc as tcocalc
 
-# for debugging
-# import importlib
-# fueleconomy = importlib.reload(fueleconomy)
 
-STD_VAR_NAMES = "stdVarNames"
-
-
-def get_operating_costs(ownershipCosts: pd.DataFrame, TCO_switch: str = "DIRECT") -> pd.DataFrame:
+def get_operating_costs(
+    ownershipCosts: pd.DataFrame, TCO_switch: str = "DIRECT"
+) -> pd.DataFrame:
     """
     This function creates a dataframe of operating cost from ownershipCosts dataframe based on TCO_switch ('DIRECT' or 'EFFICIENCY')
 

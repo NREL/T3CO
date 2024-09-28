@@ -76,7 +76,7 @@ class OpportunityCost:
             )
 
         self.payload_cap_cost_multiplier = 0
-        
+
         # rate[kW] at which battery is recharged
         # self.charge_rate_kW = kwargs.pop("charge_rate_kW", 200)
         # battery capacity [kilowatt-hours]
@@ -387,7 +387,8 @@ class OpportunityCost:
             else:
                 self.dwell_time_hr = (
                     self.num_of_dwells * self.full_dwell_hr
-                    + ceil(self.num_of_dwells) * scenario.fdt_avg_overhead_hr_per_dwell_hr
+                    + ceil(self.num_of_dwells)
+                    * scenario.fdt_avg_overhead_hr_per_dwell_hr
                 )
                 self.net_fueling_dwell_time_hr_per_yr.append(
                     self.shifts_per_year[i]
@@ -400,9 +401,15 @@ class OpportunityCost:
                     )
                 )
 
-            self.fueling_dwell_labor_cost_dol_per_yr.append(self.net_fueling_dwell_time_hr_per_yr[i] * scenario.labor_rate_dol_per_hr)
-            self.fueling_downtime_oppy_cost_dol_per_yr.append(self.net_fueling_dwell_time_hr_per_yr[i] * scenario.downtime_oppy_cost_dol_per_hr)
-            
+            self.fueling_dwell_labor_cost_dol_per_yr.append(
+                self.net_fueling_dwell_time_hr_per_yr[i]
+                * scenario.labor_rate_dol_per_hr
+            )
+            self.fueling_downtime_oppy_cost_dol_per_yr.append(
+                self.net_fueling_dwell_time_hr_per_yr[i]
+                * scenario.downtime_oppy_cost_dol_per_hr
+            )
+
             self.total_fueling_dwell_time_hr += self.net_fueling_dwell_time_hr_per_yr[i]
 
         # self.dwell_time_factor = max(1, (self.d_trip_mi / self.v_mean_mph + self.net_fueling_dwell_time_hr_per_yr[i]) /
@@ -456,9 +463,10 @@ class OpportunityCost:
             ]
         )
         self.mr_downtime_oppy_cost_dol_per_yr = (
-            self.net_net_mr_downtime_hr_per_yr_per_yr * scenario.downtime_oppy_cost_dol_per_hr
+            self.net_net_mr_downtime_hr_per_yr_per_yr
+            * scenario.downtime_oppy_cost_dol_per_hr
         )
-        
+
         # print(f'Total M&R downtime hr: {self.net_net_mr_downtime_hr_per_yr}')
         # print(f'M&R Downtime cost dol: {self.net_MR_downtime_oppcosts_Dol}')
 

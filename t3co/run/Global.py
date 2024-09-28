@@ -2,14 +2,16 @@
 Global constants
 Stores paths to directories used for input files, as well as constants referenced throughout the code base
 """
+
 from pathlib import Path
 
 from fastsim import vehicle
 import os
+
 # ./t3co
 wkdir = Path(__file__).parent.parent
 
-SWEEP_PATH = Path(os.path.abspath(__file__)).parents[1]/"sweep.py"
+SWEEP_PATH = Path(os.path.abspath(__file__)).parents[1] / "sweep.py"
 
 ### modified from 1/2/3/4: conv/hev/phev/bev to match FASTSim strings
 
@@ -33,7 +35,6 @@ FC_EFF_TYPES = {
 }
 # note that FC_EFF_TYPES comes from fastsim and this here does not seem to override. Need to make sure it matches, or perhaps read it from fastsim.vehicle
 
-STD_VAR_NAMES = "stdVarNames"
 
 maxGvwrKg = 0
 evGVWRAllowanceLbs = 0
@@ -84,6 +85,7 @@ OPTIMIZATION_DRIVE_CYCLES = OPTIMIZATION_AND_TCO_RCRS / "cycles"
 T2COBENCHMARKDATADIR = OPTIMIZATION_AND_TCO_RCRS / "benchmarkdata"
 
 T3CO_INPUTS_DIR = OPTIMIZATION_AND_TCO_RCRS / "inputs"
+
 
 def set_tco_intermediates():
     """
@@ -136,7 +138,9 @@ OTHER_INPUTS = OPTIMIZATION_RESOURCES_AUX / OTHER_INPUTS_FILE
 REGIONAL_FUEL_PRICES_BY_TYPE_BY_YEAR = OPTIMIZATION_RESOURCES_AUX / "FuelPrices.csv"
 
 RESIDUAL_VALUE_PER_YEAR = OPTIMIZATION_RESOURCES_AUX / "ResidualValues.csv"
-MOO_KNOB_SWEEP_PLOTS_DIR = Path(os.path.abspath(__file__)).parents[1]/"tco_results" / "knob_sweep_results"
+MOO_KNOB_SWEEP_PLOTS_DIR = (
+    Path(os.path.abspath(__file__)).parents[1] / "tco_results" / "knob_sweep_results"
+)
 
 # TCO input files
 write_files = False
@@ -173,7 +177,7 @@ TESTSCENARIOINPUTS = TESTSDIR / "TCO_SCENARIO_TEST_INPUTS.csv"
 KG_2_LB = 2.20462
 
 
-def kg_to_lbs(kgs:float)->float:
+def kg_to_lbs(kgs: float) -> float:
     """
     This function converts kg to lb
 
@@ -186,7 +190,7 @@ def kg_to_lbs(kgs:float)->float:
     return kgs * KG_2_LB
 
 
-def lbs_to_kgs(lbs:float)->float:
+def lbs_to_kgs(lbs: float) -> float:
     """
     This function converts lb to kg
 
@@ -199,7 +203,7 @@ def lbs_to_kgs(lbs:float)->float:
     return lbs / KG_2_LB
 
 
-def not_falsy(var:float)->bool:
+def not_falsy(var: float) -> bool:
     """
     This function returns True to verify that var is NOT falsy: not in [None, np.nan, 0, False]
 

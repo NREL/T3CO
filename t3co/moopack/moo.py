@@ -1098,7 +1098,7 @@ class T3COProblem(ElementwiseProblem):
 
 
 # TODO, needs refactor
-class T3CODisplay():
+class T3CODisplay:
     """
     This class contains the display object for Pymoo optimization printouts - pymoo.util.display.Display
 

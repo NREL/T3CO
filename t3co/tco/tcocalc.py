@@ -8,13 +8,6 @@ from t3co.run import run_scenario
 from t3co.tco import opportunity_cost
 import fastsim
 
-KG_2_LB = 2.20462
-
-
-def kg_to_lbs(kgs: float) -> float:
-    return kgs * KG_2_LB
-
-
 # keeping this for when we do Emissions work
 # with open(gl.TCO_INTERMEDIATES / gl.EMISSION_RATE_TSV, 'w', newline='') as er_file:
 #         writer = csv.writer(er_file, delimiter='\t')
@@ -253,7 +246,10 @@ def calculate_opp_costs(
         "fueling_downtime_oppy_cost_dol_per_yr": oppcostobj.fueling_downtime_oppy_cost_dol_per_yr,
         "net_mr_downtime_hr_per_yr": oppcostobj.net_net_mr_downtime_hr_per_yr_per_yr,
         "mr_downtime_oppy_cost_dol_per_yr": oppcostobj.mr_downtime_oppy_cost_dol_per_yr,
-        "total_downtime_hr_per_yr": np.array(oppcostobj.net_fueling_dwell_time_hr_per_yr) + np.array(oppcostobj.net_net_mr_downtime_hr_per_yr_per_yr),
+        "total_downtime_hr_per_yr": np.array(
+            oppcostobj.net_fueling_dwell_time_hr_per_yr
+        )
+        + np.array(oppcostobj.net_net_mr_downtime_hr_per_yr_per_yr),
     }
     return veh_opp_cost_set
 
@@ -445,8 +441,12 @@ def fill_downtimelabor_cost_tsv(
 
     veh_life_years = int(scenario.vehicle_life_yr)
 
-    fueling_downtime_oppy_cost_dol_per_yr = oppy_cost_set["fueling_downtime_oppy_cost_dol_per_yr"]
-    fueling_dwell_labor_cost_dol_per_yr = oppy_cost_set["fueling_dwell_labor_cost_dol_per_yr"]
+    fueling_downtime_oppy_cost_dol_per_yr = oppy_cost_set[
+        "fueling_downtime_oppy_cost_dol_per_yr"
+    ]
+    fueling_dwell_labor_cost_dol_per_yr = oppy_cost_set[
+        "fueling_dwell_labor_cost_dol_per_yr"
+    ]
     mr_downtime_oppy_cost_dol_per_yr = oppy_cost_set["mr_downtime_oppy_cost_dol_per_yr"]
     # assert len(insurance_rates) >= veh_life_years, (f"vehLifeYears of {veh_life_years} & length of input insurance rates {len(insurance_rates)} do not align; "
     # f"vehLifeYears life years & number of years in vmt should match\n"
@@ -455,7 +455,9 @@ def fill_downtimelabor_cost_tsv(
     for i in range(0, veh_life_years):
         # downtime_costs_Dol = fueling_downtime_oppy_cost_dol[i] + MR_downtime_cost_Dol[i]
         # i is age, give it a VMT value for each entry in VMT or defer to last VMT entry
-        data.append([i, "fueling downtime cost", fueling_downtime_oppy_cost_dol_per_yr[i]])
+        data.append(
+            [i, "fueling downtime cost", fueling_downtime_oppy_cost_dol_per_yr[i]]
+        )
         data.append([i, "fueling labor cost", fueling_dwell_labor_cost_dol_per_yr[i]])
         data.append([i, "MR downtime cost", mr_downtime_oppy_cost_dol_per_yr[i]])
 
