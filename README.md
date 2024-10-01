@@ -102,3 +102,12 @@ Once the port is cleared, run the following line from the T3CO root directory to
 ```bash
 mkdocs serve
 ```
+
+## Acknowledgements
+This tool was developed with funding support from the US Department of Energy's Vehicle Technology Office. 
+
+DOE Software Record: [SWR-21-54](https://doi.org/10.11578/dc.20240806.4)
+
+To cite T3CO in your works:
+
+*Lustbader, Jason, Panneer Selvam, Harish, Bennion, Kevin, Payne, Grant, Hunter, Chad, Penev, Michael, Brooker, Aaron, Baker, Chad, Birky, Alicia, Zhang, Chen, and Carow, Kyle. T3CO (Transportation Technology Total Cost of Ownership) Open Source [SWR-21-54]. Computer Software. https://github.com/NREL/T3CO. USDOE Office of Energy Efficiency and Renewable Energy (EERE), Office of Sustainable Transportation. Vehicle Technologies Office (VTO). 16 Sep. 2024. Web. [doi:10.11578/dc.20240806.4](https://www.osti.gov/doecode/biblio/123748).*
