@@ -70,6 +70,7 @@ theme:
 nav:
     - Home: index.md
     - Installation: installation.md
+    - Quick Start: quick_start.md
     - Overview: T3CO_Overview.md
     - Inputs: 
       - Vehicle: vehicle_inputs_descriptions.md
@@ -79,17 +80,17 @@ nav:
       - Outputs: t3co_outputs_descriptions.md
     - Code Reference:
       - CodeFlow: CodeFlow.md      
-      - T3CO Modules:
+      - T3CO Modules: 
         - Sweep: sweep.md  
-        - Run:
+        - Run Modules:
           - Run Scenario: run_scenario.md
           - Generate Inputs: generateinputs.md
           - Global Variables: Global.md        
         - TCO Modules:
           - Opportunity Costs: opportunity_cost.md
+          - TCO Calculations: tcocalc.md
           - TCO Analysis: tco_analysis.md
           - TCO Stock and Emissions: tco_stock_emissions.md
-          - TCO Calculations: tcocalc.md
         - Multi Objective Optimization Module:
           - MOO: moo.md
         - Objectives Modules: 
