@@ -1,4 +1,5 @@
-![T3CO Logo](docs/t3co_logo.svg)
+
+![t3co_logo](https://github.com/user-attachments/assets/60623b62-57de-4475-b839-d7eb39405185)
 
 [![homepage](https://img.shields.io/badge/homepage-t3co-blue)](https://www.nrel.gov/transportation/t3co.html) [![github](https://img.shields.io/badge/github-t3co-blue.svg)](https://github.com/NREL/T3CO) [![documentation](https://img.shields.io/badge/documentation-t3co-blue.svg)](https://nrel.github.io/T3CO/) [![PyPI - Version](https://img.shields.io/pypi/v/t3co)](https://pypi.org/project/t3co/) ![GitHub License](https://img.shields.io/github/license/NREL/T3CO) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/t3co) 
 
@@ -65,7 +66,7 @@ python sweep.py --skip_all_opt --selections  [1,2,3,4,5] --dst_dir .t3co_results
 ## Acknowledgements
 This tool was developed with funding support from the US Department of Energy's Office of Energy Efficiency and Renewable Energy (EERE)'s Vehicle Technology Office.
 
-DOE Software Record: [SWR-21-54](https://doi.org/10.11578/dc.20240806.4)
+DOE NREL Software Record: [SWR-21-54](https://doi.org/10.11578/dc.20240806.4)
 
 ## To cite T3CO
 
