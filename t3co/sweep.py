@@ -1141,151 +1141,195 @@ def run_vehicle_scenarios(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--selections",
-        help="""str: int, array or range, selections desired to run. Selections can be an int, or list of ints, or range expression. Ex: -selections 234 or -selections "[234,236,238]" or -selections "range(234, 150, 2)" """,
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        prog="SWEEP",
+        description="""The sweep.py module is the main script to run T3CO""",
     )
     parser.add_argument(
-        "--look-for",
-        default="",
-        help="str or list of strings: a string for string matching, example -look_for 'FCEV' or -look_for '[\"FCEV\", \"HEV\"]' ",
+        "--config",
+        default=gl.SWEEP_PATH.parents[0] / "resources/T3COConfig.csv",
+        type=str,
+        help="Input Config file",
     )
     parser.add_argument(
-        "--skip-all-opt",
-        "--skopt",
-        action="store_true",
-        help="flag, if -skip_all_opt used, all runs skip optimization",
-    )
-    parser.add_argument(
-        "--skip-input-validation",
-        "--skiv",
-        action="store_false",
-        help="flag, if -skip_input_validation used, no pre-validation of inputs is run before sweep commences",
-    )
-    parser.add_argument(
-        "--exclude",
-        default=">{-<>-}<",
-        help="str or list of strings: Overrides -look_for. a string for string matching to exclude runs, example -exclude 'FCEV' or -look_for '[\"FCEV\", \"HEV\"]'  ",
-    )
-    parser.add_argument(
-        "--algorithms",
-        "--algos",
-        "--algo",
-        default="NSGA2",
-        help=f'str or list: Enter list of algorithms, or "ensemble" to use all, to use for optimization: {moo.ALGORITHMS} ex: -algos PatternSearch | -algos \'["PatternSearch", "NSGA2"]\' | -algos "ensemble" ',
-    )
-    parser.add_argument(
-        "--dst-dir",
-        help="directory to store results - otherwise defaults to ../tco_results/TDA_results/",
-        default=None,
-    )
-    parser.add_argument(
-        "--dir-mark",
-        default="",
-        help="str: name for your results directory in addition to timestamp",
-    )
-    parser.add_argument(
-        "--file-mark", default="", help="str: name to add to your results files"
-    )
-    parser.add_argument(
-        "--skip-save-veh",
-        action="store_true",
-        help="toggle result vehicle model YAML file saving off",
-    )
-    parser.add_argument(
-        "--x-tol", default=0.001, help="parameter space tolerance"
-    )  # bigger = more lax # TODO: we need to investigate if this is too big of a default
-    parser.add_argument(
-        "--f-tol", default=0.001, help="objective space tolerance"
-    )  # bigger = more lax # TODO: we need to investigate if this is too big of a default
-    parser.add_argument(
-        "--n-max-gen",
-        default=1000,
-        help="max number of optimizer iterations regardless of algorithm",
-    )
-    parser.add_argument("--pop-size", default=25, help="population of each generation")
-    parser.add_argument(
-        "--nth-gen",
-        default=1,
-        help="period of generations in which to evaluate if convergence happens",
-    )
-    parser.add_argument(
-        "--n-last",
-        default=5,
-        help="number of generations to look back for establishing convergence",
-    )
-    parser.add_argument(
-        "--range-overshoot-tol",
-        default=None,
-        help="range overshoot tolerance, example '0.20' allows 20%% range overshoot. Default of 'None' does not constrain overshoot.",
-    )
-    # time-dilation-args passed to T3COProblem instantiation for optimization usage
-    parser.add_argument(
-        "---missed-trace-correction",
-        action="store_true",
-        help="bool, ex: 'sweep.py --missed_trace_correction'; activate FASTSim time-dilation to correct missed trace; default=False",
-    )
-    parser.add_argument(
-        "--max-time-dilation",
-        default=10,
-        help="int, maximum time dilation factor to 'catch up' with trace; default=10  ",
-    )
-    parser.add_argument(
-        "--min-time-dilation",
-        default=0.1,
-        help="float, minimum time dilation to let trace 'catch up'; default=0.1 ",
-    )
-    parser.add_argument(
-        "--time-dilation-tol",
-        default=1e-3,
-        help="float, convergence criteria for time dilation; default=1e-3",
+        "--analysis-id",
+        default=0,
+        type=int,
+        help="Analysis key from input Config file - 'config.analysis_id'",
     )
     # input files
     parser.add_argument(
         "--vehicles",
         default=gl.SWEEP_PATH.parents[0]
         / "resources/inputs/demo/Demo_FY22_vehicle_model_assumptions.csv",
-        help="input file for vehicles",
+        type=str,
+        help="Input file for Vehicle models",
     )
     parser.add_argument(
         "--scenarios",
         default=gl.SWEEP_PATH.parents[0]
         / "resources/inputs/demo/Demo_FY22_scenario_assumptions.csv",
-        help="input file for scenarios",
+        type=str,
+        help="Input file for Scenario models",
+    )
+    parser.add_argument(
+        "--selections",
+        type=str,
+        nargs="*",
+        help="""Selections desired to run. Selections can be an int, or list of ints, or range expression. Ex: --selections 234 or --selections "[234,236,238]" or --selections "range(234, 150, 2)" """,
     )
     parser.add_argument(
         "--eng-curves",
         default=gl.SWEEP_PATH.parents[0]
-        / "resources/auxiliary/eng_imp_cost_curves_for_demo.csv",
-        help="input file for engine efficiency curves",
+        / "resources/auxiliary/EngineEffImprovementCostCurve.csv",
+        type=str,
+        help="Input file for engine efficiency improvement cost curves",
     )
     parser.add_argument(
         "--lw-curves",
         default=gl.SWEEP_PATH.parents[0]
-        / "resources/auxiliary/matlltwt_imp_cost_curves_for_demo.csv",
-        help="input file for lightweighting curves",
+        / "resources/auxiliary/LightweightImprovementCostCurve.csv",
+        type=str,
+        help="Input file for lightweighting improvement cost curves",
     )
     parser.add_argument(
         "--aero-curves",
         default=gl.SWEEP_PATH.parents[0]
-        / "resources/auxiliary/aero_imp_cost_curves_for_demo.csv",
-        help="input file for aerodynamics improvement curves",
-    )
-    parser.add_argument("--delete-me", default=True)
-    parser.add_argument("--write-tsv", default=False)
-    parser.add_argument(
-        "--config",
-        default=gl.SWEEP_PATH.parents[0] / "resources/T3COConfig.csv",
-        help="input config file",
-    )
-    parser.add_argument(
-        "--analysis-id", default="0", help="analysis selection from input config file"
+        / "resources/auxiliary/AeroDragImprovementCostCurve.csv",
+        type=str,
+        help="Input file for aerodynamics improvement curves",
     )
 
-    print(f"gl.SWEEP_PATH: {gl.SWEEP_PATH}")
+    parser.add_argument(
+        "--look-for",
+        default="",
+        type=str,
+        help="A string for string matching, example --look_for 'FCEV' or -look_for '[\"FCEV\", \"HEV\"]' ",
+    )
+    parser.add_argument(
+        "--skip-all-opt",
+        "--skopt",
+        action="store_true",
+        help="If --skip_all_opt used, all runs skip optimization",
+    )
+    parser.add_argument(
+        "--skip-input-validation",
+        "--skiv",
+        action="store_false",
+        help="If --skip_input_validation used, no pre-validation of inputs is run before sweep commences",
+    )
+    parser.add_argument(
+        "--exclude",
+        default=">{-<>-}<",
+        type=str,
+        nargs="*",
+        help="Overrides -look_for. a string for string matching to exclude runs, example -exclude 'FCEV' or -look_for '[\"FCEV\", \"HEV\"]'  ",
+    )
+    parser.add_argument(
+        "--algorithms",
+        "--algos",
+        "--algo",
+        default="NSGA2",
+        type=str,
+        nargs="*",
+        help=f'Enter algorithm or list of algorithms, or "ensemble" to use all, to use for optimization: {moo.ALGORITHMS} ex: -algos PatternSearch | -algos \'["PatternSearch", "NSGA2"]\' | -algos "ensemble" ',
+    )
+    parser.add_argument(
+        "--dst-dir",
+        default=Path(os.path.abspath(__file__)).parents[1] / "results",
+        type=str,
+        help="Directory to store T3CO results",
+    )
+    parser.add_argument(
+        "--dir-mark",
+        default="",
+        type=str,
+        help="Name for results directory in addition to timestamp",
+    )
+    parser.add_argument(
+        "--file-mark",
+        default="",
+        type=str,
+        help="Prefix to add to the result file names",
+    )
+    parser.add_argument(
+        "--skip-save-veh",
+        action="store_true",
+        help="Toggle result vehicle model YAML file saving off",
+    )
+    parser.add_argument(
+        "--x-tol",
+        default=0.001,
+        type=float,
+        help="Parameter space tolerance for optimization",
+    )  # bigger = more lax # TODO: we need to investigate if this is too big of a default
+    parser.add_argument(
+        "--f-tol",
+        default=0.001,
+        type=float,
+        help="Objective space tolerance for optimzation",
+    )  # bigger = more lax # TODO: we need to investigate if this is too big of a default
+    parser.add_argument(
+        "--n-max-gen",
+        default=1000,
+        type=float,
+        help="Cax number of optimizer iterations regardless of algorithm",
+    )
+    parser.add_argument("--pop-size", default=25, help="population of each generation")
+    parser.add_argument(
+        "--nth-gen",
+        default=1,
+        type=int,
+        help="Period of generations in which to evaluate if convergence happens during optimization",
+    )
+    parser.add_argument(
+        "--n-last",
+        default=5,
+        type=int,
+        help="Number of generations to look back for establishing convergence during optimization",
+    )
+    parser.add_argument(
+        "--range-overshoot-tol",
+        default=None,
+        type=float,
+        help="Range overshoot tolerance, example '0.20' allows 20%% range overshoot. Default of 'None' does not constrain overshoot.",
+    )
+    # time-dilation-args passed to T3COProblem instantiation for optimization usage
+    parser.add_argument(
+        "---missed-trace-correction",
+        action="store_true",
+        help="Activate FASTSim time-dilation to correct missed trace",
+    )
+    parser.add_argument(
+        "--max-time-dilation",
+        default=10,
+        type=int,
+        help="Maximum time dilation factor to 'catch up' with trace  ",
+    )
+    parser.add_argument(
+        "--min-time-dilation",
+        default=0.1,
+        type=float,
+        help="Minimum time dilation to let trace 'catch up' ",
+    )
+    parser.add_argument(
+        "--time-dilation-tol",
+        default=1e-3,
+        type=float,
+        help="Convergence criteria for time dilation",
+    )
+
+    parser.add_argument(
+        "--write-tsv",
+        default=False,
+        type=bool,
+        help="Boolean toggle to save intermediary .TSV cost results files",
+    )
 
     args = parser.parse_args()
+    print(f"gl.SWEEP_PATH: {gl.SWEEP_PATH}")
+
     # selections can be an int, or list of ints, or range expression
     if args.config is None:
         if args.selections is None:
@@ -1304,7 +1348,7 @@ if __name__ == "__main__":
         write_tsv = args.write_tsv
         # config = None
     else:
-        args.analysis_id = ast.literal_eval(args.analysis_id)
+        # args.analysis_id = ast.literal_eval(args.analysis_id)
         try:
             config = rs.Config()
             config.from_file(filename=args.config, analysis_id=args.analysis_id)
