@@ -1712,7 +1712,7 @@ Module for loading vehicles, scenarios, running them and managing them
 class Config()
 ```
 
-New class to read T3COConfig file containing analysis attributes like vehicle and scenario paths, and scenario attribute overrides
+This class reads T3COConfig.csv file containing analysis attributes like vehicle and scenario paths, TCO_method, and scenario attribute overrides.
 
 <a id="t3co.run.run_scenario.Config.from_file"></a>
 
@@ -2099,7 +2099,7 @@ This helper method is used within T3COProblem to set max_motor_kw to optimizatio
 **Arguments**:
 
 - `analysis_vehicle` _fastsim.vehicle.Vehicle_ - FASTSim vehicle object
-- `scenario` _t3co.run_scenario.Scenario_ - T3CO Scenarion object
+- `scenario` _run_scenario.Scenario_ - T3CO Scenarion object
 - `max_motor_kw` _float_ - max motor power /kW
 
 <a id="t3co.run.run_scenario.set_max_battery_kwh"></a>
