@@ -9,7 +9,9 @@
 
 This repo houses T3CO (Transportation Technology Total Cost of Ownership), software for modeling total cost of ownership for commercial vehicles with advanced powertrains.
 
-To start, go to the [Overview](https://github.com/NREL/T3CO/blob/264a730de942671eb2345a5afca7e1afd6d67666/docs/T3CO_Overview.md)
+To get started, read the [Quick Start Guide](https://github.com/NREL/T3CO/blob/1eefffc251fcbd2b0c0515512f51d1b27bb978fd/docs/quick_start.md)
+
+For information on the T3CO models, go to the [Overview](https://github.com/NREL/T3CO/blob/264a730de942671eb2345a5afca7e1afd6d67666/docs/T3CO_Overview.md)
 
 ## Usage
 
@@ -34,13 +36,11 @@ t3co depends on python 3.8 to 3.10. One way to satisfy this is to use conda:
 
 After creating the environment, navigate to the parent directory containing the T3CO repository e.g. `cd github/T3CO/` and run:
 
-    pip install .
+    pip install -e .
 
 from within the t3co python environment you created.  
 
-This will install t3co with minimal dependencies such that t3co files can be editable. Developers will find the `-e` option handy since t3co will be installed in place from the installation location, and any updates will be propagated each time t3co is freshly imported.  
-
-to be compatible with the current code in T3CO.
+This will install T3CO with minimal dependencies such that t3co files can be editable. Developers will find the `-e` option handy since t3co will be installed in place from the installation location, and any updates will be propagated each time t3co is freshly imported.  
 
 ## Demo
 **Using the [T3CO Config](https://github.com/NREL/T3CO/blob/c3df6421033cef7d35b7d7cd575ab94e85fcd9a9/t3co/resources/T3COConfig.csv) file**

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "t3co"
-version = "1.0.7"
+version = "1.0.8"
 dynamic = ["dependencies"]
 description = """
 NREL's Transportation Technology Total Cost of Ownership tool
