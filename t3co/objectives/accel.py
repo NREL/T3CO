@@ -1,7 +1,11 @@
 """Module for simulating acceleration performance."""
+
 # %%
+from __future__ import annotations
+
 import time
 from pathlib import Path
+from typing import Tuple
 
 import numpy as np
 from fastsim import cycle
@@ -9,17 +13,18 @@ from fastsim import parameters as params
 
 from t3co.run import Global as gl
 from t3co.run import run_scenario
+import fastsim
 
 
 def get_accel(
-    analysis_vehicle,
-    scenario=None,
-    set_weight_to_max_kg=True,
+    analysis_vehicle: fastsim.vehicle.Vehicle,
+    scenario: run_scenario.Scenario = None,
+    set_weight_to_max_kg: bool = True,
     verbose=False,
     ess_init_soc=None,
-):
+) -> Tuple[float, float, fastsim.vehicle.Vehicle]:
     """
-    This function runs a simdrive for getting 0-to-60 and 0-30 mph time with fully laden weight at GVWR (plus GVWRCredit_kg?)
+    This function runs a simdrive for getting 0-to-60 and 0-30 mph time with fully laden weight at GVWR (plus gvwr_credit_kg?)
 
 
     Args:
@@ -43,12 +48,12 @@ def get_accel(
         run_scenario.set_test_weight(analysis_vehicle, scenario)
 
     # load the vehicle
-    t0 = time.perf_counter()
+    t0 = time.time()
 
     if verbose:
-        print(f"f'{Path(__file__).name}:: Vehicle load time: {time.perf_counter() - t0:.3f} s")
+        print(f"f'{Path(__file__).name}:: Vehicle load time: {time.time() - t0:.3f} s")
     # load the cycles
-    t0 = time.perf_counter()
+    t0 = time.time()
     accel_cyc_secs = np.arange(300)
     cyc_dict = {
         "time_s": accel_cyc_secs,
@@ -72,7 +77,7 @@ def get_accel(
         <= accel_simdrive.sim_params.trace_miss_dist_tol
     )
 
-    def test_accel(speed_mph_target):
+    def test_accel(speed_mph_target: float) -> float:
         """
         This function gets the time it takes to reach target speed
 

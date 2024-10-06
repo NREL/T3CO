@@ -3,10 +3,10 @@
 *.pyc
 *.idea
 *.tsv
-*.png
 *.docx
 *.pdf
 *.svg
+!docs/t3co_logo.svg
 *.csv
 !t3co/resources/inputs/**/*.csv
 !t3co/**/*.csv
@@ -14,6 +14,7 @@
 *.json
 *.txt
 !requirements.txt
+!requirements-dev.txt
 *.yaml
 /.idea
 /.ipynb_checkpoints
@@ -26,5 +27,6 @@
 *.Rhistory
 *venv*
 *.DS_Store
-
 t3co/resources/T3CO_Config_Local.csv
+/site
+/tco_results

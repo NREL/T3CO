@@ -2,6 +2,8 @@
 # coding: utf-8
 
 # %%
+from typing import List, Tuple
+import fastsim
 import pandas as pd
 import numpy as np
 import csv
@@ -13,8 +15,10 @@ import ast
 import logging
 import re
 import os
-
-from t3co.run import Global as gl
+import pymoo
+import pymoo.core
+import pymoo.core.result
+from t3co.run import Global as gl, run_scenario
 from t3co.moopack import moo
 from t3co.run import run_scenario as rs
 from t3co.objectives import fueleconomy as fe
@@ -36,7 +40,7 @@ REPORT_COLS = {
     "accel_EA_err": "",
     "accel_loaded_EA_err": "",
     "grade_6_EA_err": "",
-    "grade_125_EA_err": "",
+    "grade_1p25_EA_err": "",
     "final_cda_pct": "",
     "final_eng_eff_pct": "",
     "final_ltwt_pct": "",
@@ -44,22 +48,32 @@ REPORT_COLS = {
     "final_battery_kwh": "",
     "final_max_fc_kw": "",
     "final_fs_kwh": "",
-    "RangeMiAch": "",
-    "target_TargetRangeMi": "",
-    "delta_TargetRangeMi": "",
-    "minSpeed6PercentGradeIn5minAch": "",
-    "target_minSpeed6PercentGradeIn5min": "",
-    "delta_6PercentGrade": "",
-    "minSpeed1point25PercentGradeIn5minAch": "",
-    "target_minSpeed1point25PercentGradeIn5min": "",
-    "delta_1point25PercentGrade": "",
-    "max0to60secAtGVWRAch": "",
-    "target_max0to60secAtGVWR": "",
-    "delta_0to60sec": "",
-    "max0to30secAtGVWRAch": "",
-    "target_max0to30secAtGVWR": "",
-    "delta_0to30sec": "",
-    # "discounted_tco": "",
+    "range_ach_mi": "",
+    "target_range_mi": "",
+    "delta_range_mi": "",
+    "min_speed_at_6pct_grade_in_5min_ach_mph": "",
+    "target_min_speed_at_6pct_grade_in_5min_mph": "",
+    "delta_min_speed_at_6pct_grade_in_5min_mph": "",
+    "min_speed_at_1p25pct_grade_in_5min_ach_mph": "",
+    "target_min_speed_at_1p25pct_grade_in_5min_mph": "",
+    "delta_min_speed_at_1p25pct_grade_in_5min_mph": "",
+    "max_time_0_to_60mph_at_gvwr_ach_s": "",
+    "target_max_time_0_to_60mph_at_gvwr_s": "",
+    "delta_max_time_0_to_60mph_at_gvwr_s": "",
+    "max_time_0_to_30mph_at_gvwr_ach_s": "",
+    "target_max_time_0_to_30mph_at_gvwr_s": "",
+    "delta_max_time_0_to_30mph_at_gvwr_s": "",
+    "glider_cost_dol": "",
+    "fuel_converter_cost_dol": "",
+    "fuel_storage_cost_dol": "",
+    "motor_control_power_elecs_cost_dol": "",
+    "plug_cost_dol": "",
+    "battery_cost_dol": "",
+    "purchase_tax_dol": "",
+    "msrp_total_dol": "",
+    "total_fuel_cost_dol": "",
+    "total_maintenance_cost_dol": "",
+    "discounted_tco_dol": "",
 }
 
 
@@ -69,14 +83,28 @@ REPORT_COLS = {
 KNOB_MIN = 1
 
 
-def deug_traces(vehicle, cycles, scenario):
+def deug_traces(
+    vehicle: fastsim.vehicle.Vehicle,
+    cycles: List[fastsim.cycle.Cycle],
+    scenario: run_scenario.Scenario,
+) -> None:
+    """
+    This function gets a diagnostic trace of get_mpgge
+
+    Args:
+        vehicle (fastsim.vehicle.Vehicle): FASTSim Vehicle object
+        cycles (List[fastsim.cycle.Cycle]): List of FASTSim drivecycle objects
+        scenario (run_scenario.Scenario): Scenario object
+    """
     mpgge_comp, sim_drives, mpgges = fe.get_mpgge(
         cycles, vehicle, scenario, diganostic=True
     )
     # save the sim_drives to file somehow
 
 
-def save_tco_files(tco_files, resdir, scenario_name, sel, ts):
+def save_tco_files(
+    tco_files: dict, resdir: str, scenario_name: str, sel: str, ts: str
+) -> None:
     """
     This function saves the intermediary files as tsv
 
@@ -126,25 +154,30 @@ def save_tco_files(tco_files, resdir, scenario_name, sel, ts):
 
 
 def get_knobs_bounds_curves(
-    selection, vpttype, sdf, lw_curves, aero_curves, eng_eff_curves
-):
+    selection: int,
+    vpttype: str,
+    sdf: pd.DataFrame,
+    lw_imp_curves: pd.DataFrame,
+    aero_drag_imp_curves: pd.DataFrame,
+    eng_eff_curves: pd.DataFrame,
+) -> Tuple[dict, dict]:
     """
     This function fetches the knobs and constraints for running the optimization for a given selection
 
     Args:
-        selection (float): selection number
+        selection (int): selection number
         vpttype (str): vehicle powertrain type = veh_pt_type
-        sdf (DataFrame): scenario dataframe
-        lw_curves (DataFrame): light weighting curve dataframe
-        aero_curves (DataFrame): aero drag curve dataframe
-        eng_eff_curves (DataFrame): engine efficiency curve dataframe
+        sdf (pd.DataFrame): scenario dataframe
+        lw_imp_curves (pd.DataFrame): light weighting curve dataframe
+        aero_drag_imp_curves (pd.DataFrame): aero drag curve dataframe
+        eng_eff_curves (pd.DataFrame): engine efficiency curve dataframe
 
     Returns:
         knobs_bounds (dict): dict of knobs and bounds
         curves (dict): dict of lw, aero, and engine efficiency curve parameters
     """
-    lw_curves_file = lw_curves.set_index("name")
-    aero_curves_file = aero_curves.set_index("name")
+    lw_imp_curves_file = lw_imp_curves.set_index("name")
+    aero_drag_imp_curves_file = aero_drag_imp_curves.set_index("name")
     eng_eff_curves_file = eng_eff_curves.set_index("name")
     sd = dict(sdf.loc[selection, :])
     curves = {}
@@ -157,18 +190,18 @@ def get_knobs_bounds_curves(
     }
 
     if (
-        "lw_imp_curve" in sd
-        and sd["lw_imp_curve"]
-        and not pd.isnull(sd["lw_imp_curve"])
+        "lw_imp_curve_sel" in sd
+        and sd["lw_imp_curve_sel"]
+        and not pd.isnull(sd["lw_imp_curve_sel"])
     ):
-        lw_curve_selection = sd["lw_imp_curve"]
-        ltwt_cost_curve = lw_curves_file.loc["ltwt_cost", lw_curve_selection]
-        ltwt_pct_curve = lw_curves_file.loc["ltwt_pct", lw_curve_selection]
+        lw_curve_selection = sd["lw_imp_curve_sel"]
+        ltwt_cost_curve = lw_imp_curves_file.loc["ltwt_cost", lw_curve_selection]
+        ltwt_pct_curve = lw_imp_curves_file.loc["ltwt_pct", lw_curve_selection]
         wt_delta_perc_knob_max = float(
-            lw_curves_file.loc["wt_delta_perc_knob_max", lw_curve_selection]
+            lw_imp_curves_file.loc["wt_delta_perc_knob_max", lw_curve_selection]
         )
         wt_delta_perc_knob_min = float(
-            lw_curves_file.loc["wt_delta_perc_knob_min", lw_curve_selection]
+            lw_imp_curves_file.loc["wt_delta_perc_knob_min", lw_curve_selection]
         )
         assert (
             wt_delta_perc_knob_max <= 1
@@ -183,26 +216,26 @@ def get_knobs_bounds_curves(
         )
 
     if (
-        "aero_imp_curve" in sd
-        and sd["aero_imp_curve"]
-        and not pd.isnull(sd["aero_imp_curve"])
+        "aero_drag_imp_curve_sel" in sd
+        and sd["aero_drag_imp_curve_sel"]
+        and not pd.isnull(sd["aero_drag_imp_curve_sel"])
     ):
-        cda_curve_selection = sd["aero_imp_curve"]
+        cda_curve_selection = sd["aero_drag_imp_curve_sel"]
         CdA_perc_imp_at_which_wt_penalty_maxes_out = float(
-            aero_curves_file.loc[
+            aero_drag_imp_curves_file.loc[
                 "CdA_perc_imp_at_which_wt_penalty_maxes_out", cda_curve_selection
             ]
         )
         CdA_perc_imp_knob_max = float(
-            aero_curves_file.loc["CdA_perc_imp_knob_max", cda_curve_selection]
+            aero_drag_imp_curves_file.loc["CdA_perc_imp_knob_max", cda_curve_selection]
         )
         CdA_perc_imp_knob_min = float(
-            aero_curves_file.loc["CdA_perc_imp_knob_min", cda_curve_selection]
+            aero_drag_imp_curves_file.loc["CdA_perc_imp_knob_min", cda_curve_selection]
         )
-        cost_a = float(aero_curves_file.loc["cost_a", cda_curve_selection])
-        cost_b = float(aero_curves_file.loc["cost_b", cda_curve_selection])
-        mass_a = float(aero_curves_file.loc["mass_a", cda_curve_selection])
-        mass_b = float(aero_curves_file.loc["mass_b", cda_curve_selection])
+        cost_a = float(aero_drag_imp_curves_file.loc["cost_a", cda_curve_selection])
+        cost_b = float(aero_drag_imp_curves_file.loc["cost_b", cda_curve_selection])
+        mass_a = float(aero_drag_imp_curves_file.loc["mass_a", cda_curve_selection])
+        mass_b = float(aero_drag_imp_curves_file.loc["mass_b", cda_curve_selection])
         assert (
             CdA_perc_imp_knob_max <= 1
         ), f"input invalid, value for CdA_perc_imp_knob_max must decimal form, got percentage point value as {CdA_perc_imp_knob_max}"
@@ -222,13 +255,13 @@ def get_knobs_bounds_curves(
         )
 
     if (
-        "eng_imp_curve" in sd
-        and sd["eng_imp_curve"]
-        and not pd.isnull(sd["eng_imp_curve"])
+        "eng_eff_imp_curve_sel" in sd
+        and sd["eng_eff_imp_curve_sel"]
+        and not pd.isnull(sd["eng_eff_imp_curve_sel"])
         and vpttype != gl.BEV
     ):
         # TODO, FCEV should not get eng imp curve parameter
-        eng_imp_curve_selection = sd["eng_imp_curve"]
+        eng_imp_curve_selection = sd["eng_eff_imp_curve_sel"]
         fc_peak_eff_knob_min = float(
             eng_eff_curves_file.loc["fc_peak_eff_knob_min", eng_imp_curve_selection]
         )
@@ -261,12 +294,14 @@ def get_knobs_bounds_curves(
     return knobs_bounds, curves
 
 
-def get_objectives_constraints(selection, sdf, verbose=True):
+def get_objectives_constraints(
+    selection: int, sdf: pd.DataFrame, verbose: bool = True
+) -> Tuple[list, list]:
     """
     This function appends to list of necessary variables based on the constraints and objectives selected
 
     Args:
-        selection (float): selection number
+        selection (int): selection number
         sdf (DataFrame): scenario dataframe
         verbose (bool, optional): if selected, function will print objectives and constraints. Defaults to True.
 
@@ -304,30 +339,30 @@ def get_objectives_constraints(selection, sdf, verbose=True):
 
 
 def run_moo(
-    sel,
-    sdf,
-    optpt,
-    algo,
-    skip_opt,
-    pop_size,
-    n_max_gen,
-    n_last,
-    nth_gen,
-    x_tol,
-    verbose,
-    f_tol,
-    resdir,
-    lw_curves,
-    aero_curves,
-    eng_curves,
-    config,
+    sel: int,
+    sdf: pd.DataFrame,
+    optpt: str,
+    algo: str,
+    skip_opt: bool,
+    pop_size: float,
+    n_max_gen: int,
+    n_last: int,
+    nth_gen: int,
+    x_tol: float,
+    verbose: bool,
+    f_tol: float,
+    resdir: str,
+    lw_imp_curves: pd.DataFrame,
+    aero_drag_imp_curves: pd.DataFrame,
+    eng_eff_imp_curves: pd.DataFrame,
+    config: run_scenario.Scenario,
     **kwargs,
-):
+) -> Tuple[pymoo.core.result.Result, moo.T3COProblem, bool]:
     """
     This function calls get_objectives_constraints and get_knobs_bounds_curves, and then calls run_optimization to perform the multiobjective optimization
 
     Args:
-        sel (float): selection number
+        sel (int): selection number
         sdf (DataFrame): scenario dataframe
         optpt (str): vehicle powertrain type
         algo (str): algorithm name
@@ -340,20 +375,20 @@ def run_moo(
         verbose (book): if selected, function prints the optimization process
         f_tol (float): tolerance in objective space
         resdir (str): results directory
-        lw_curves (DataFrame): light weighting curves dataframe
-        aero_curves (DataFrame): aero drag curves dataframe
-        eng_curves (DataFrame): engine efficiency curve dataframe
+        lw_imp_curves (DataFrame): light weighting curves dataframe
+        aero_drag_imp_curves (DataFrame): aero drag curves dataframe
+        eng_eff_imp_curves (DataFrame): engine efficiency curve dataframe
         config (Config): Config class object
 
     Returns:
         moo_results (pymoo.core.result.Result): optimization results object
         moo_problem (T3COProblem): minimization problem that calculates TCO
-        moo_code (Error): Error message
+        moo_code (bool): Error message
     """
     objectives, constraints = get_objectives_constraints(sel, sdf)
 
     knobs_bounds, curve_settings = get_knobs_bounds_curves(
-        sel, optpt, sdf, lw_curves, aero_curves, eng_curves
+        sel, optpt, sdf, lw_imp_curves, aero_drag_imp_curves, eng_eff_imp_curves
     )
 
     # moo_reults has res.X, res.F np arrays of opt params & objective space resutls, respectively
@@ -380,7 +415,7 @@ def run_moo(
     return moo_results, moo_problem, moo_code
 
 
-def check_input_files(df, filetype, filepath):
+def check_input_files(df: pd.DataFrame, filetype: str, filepath: str) -> None:
     """
     This function contains assert statements that make sure input vehicle and scenario dataframes do not contain numm rows
 
@@ -399,17 +434,23 @@ def check_input_files(df, filetype, filepath):
 
 
 def run_vehicle_scenarios(
-    vehicles, scenarios, eng_curves_p, lw_curves_p, aero_curves_p, config, **kwargs
-):
+    vehicles: str,
+    scenarios: str,
+    eng_eff_imp_curves_p: str,
+    lw_imp_curves_p: str,
+    aero_drag_imp_curves_p: str,
+    config: run_scenario.Config,
+    **kwargs,
+) -> None:
     """
     This is the main function that runs T3CO for all the selections input
 
     Args:
         vehicles (str): path of vehicle input file
         scenarios (str): path of scenarios input file
-        eng_curves_p (str): path of engine efficiency curve file
-        lw_curves_p (str): path of light weighting curve file
-        aero_curves_p (str): path of aero drag curve file
+        eng_eff_imp_curves_p (str): path of engine efficiency curve file
+        lw_imp_curves_p (str): path of light weighting curve file
+        aero_drag_imp_curves_p (str): path of aero drag curve file
         config (Config): Config object containing analysis attributes and scenario attribute overrides
 
     Raises:
@@ -421,9 +462,9 @@ def run_vehicle_scenarios(
     sdf = pd.read_csv(scenarios, index_col="selection", skip_blank_lines=True)
     check_input_files(vdf, "vehicles", vehicles)
     check_input_files(sdf, "scenario", scenarios)
-    eng_curves = pd.read_csv(eng_curves_p)
-    lw_curves = pd.read_csv(lw_curves_p)
-    aero_curves = pd.read_csv(aero_curves_p)
+    eng_eff_imp_curves = pd.read_csv(eng_eff_imp_curves_p)
+    lw_imp_curves = pd.read_csv(lw_imp_curves_p)
+    aero_drag_imp_curves = pd.read_csv(aero_drag_imp_curves_p)
 
     # optimization scenario parameters where we get our baseline vehicle and scenario
     gl.FASTSIM_INPUTS = vehicles
@@ -478,18 +519,12 @@ def run_vehicle_scenarios(
 
     # results dir setup
     ts = strftime("%Y-%m-%d_%H-%M-%S", gmtime())
-    if config.resfile_suffix is not None:
-        RES_FILE = f"{file_mark}results_{ts}_{str(config.resfile_suffix)}.csv".strip(
-            "_"
-        )
-    else:
-        selections_string = (
-            str(selections).strip("[]").replace(" ", "").replace(",", "-")
-        )
-        RES_FILE = f"{file_mark}results_{ts}_sel_{selections_string}.csv".strip("_")
+    RES_FILE = f"{file_mark}results_{ts}_sel_{str(selections).strip('[]').replace(' ','').replace(',','-')}.csv".strip(
+        "_"
+    )
 
     if selections == -1:
-        selections = vdf.index
+        selections = range(len(vdf))
 
     if args.dst_dir is None and config.dst_dir is None:
         resdir = Path(os.path.abspath(__file__)).parents[1] / f"results{dir_mark}"
@@ -522,7 +557,9 @@ def run_vehicle_scenarios(
     # list of report dataframes to write final output at each iteration
     reports = []
 
-    def input_validation(sel, optpt, algo, config):
+    def input_validation(
+        sel: float, optpt: str, algo: str, config: run_scenario.Scenario
+    ):
         """
         This function obtains the vehicle, scenario, and cycle object for a given selection and runs optimization to validate inputs
 
@@ -546,7 +583,7 @@ def run_vehicle_scenarios(
         rs.check_phev_init_socs(v, s)
 
         knobs_bounds, curve_settings = get_knobs_bounds_curves(
-            sel, optpt, sdf, lw_curves, aero_curves, eng_curves
+            sel, optpt, sdf, lw_imp_curves, aero_drag_imp_curves, eng_eff_imp_curves
         )
         objectives, constraints = get_objectives_constraints(sel, sdf, verbose=False)
 
@@ -571,7 +608,14 @@ def run_vehicle_scenarios(
         )
         return None
 
-    def optimize(sel, scenario_name, optpt, algo, skip_opt, config = None, write_tsv=False):
+    def optimize(
+        sel: float,
+        scenario_name: str,
+        optpt: str,
+        algo: str,
+        skip_opt: bool,
+        write_tsv: bool = False,
+    ) -> None:
         """
         This function runs the optimization for a given selection if skip_opt = False
 
@@ -589,7 +633,7 @@ def run_vehicle_scenarios(
             f"Running selection {sel} for scenario {scenario_name} - skip opt = {skip_opt} -algo = {algo}"
         )
 
-        ti = time.perf_counter()
+        ti = time.time()
         sel = float(sel)
 
         gl.vocation_scenario = scenario_name
@@ -608,9 +652,9 @@ def run_vehicle_scenarios(
                 verbose,
                 f_tol,
                 resdir,
-                lw_curves,
-                aero_curves,
-                eng_curves,
+                lw_imp_curves,
+                aero_drag_imp_curves,
+                eng_eff_imp_curves,
                 config,
                 **kwargs,
             )
@@ -652,12 +696,7 @@ def run_vehicle_scenarios(
             )
 
             outdict = rs.vehicle_scenario_sweep(
-                input_vehicle,
-                report_scenario,
-                design_cycle,
-                write_tsv=write_tsv,
-                verbose=False,
-                config= config,
+                input_vehicle, report_scenario, design_cycle, write_tsv=write_tsv
             )
 
         # iterate thru all results from run, num_results can singleton [1] from analysis-only runs
@@ -684,9 +723,9 @@ def run_vehicle_scenarios(
                 )
             for v_input_k in input_vehicle.__dict__.keys():
                 if "value_props" not in v_input_k:
-                    report_i[
-                        "input_vehicle_value_" + v_input_k
-                    ] = input_vehicle.__getattribute__(v_input_k)
+                    report_i["input_vehicle_value_" + v_input_k] = (
+                        input_vehicle.__getattribute__(v_input_k)
+                    )
                     # we want place-holder blank values for optimization columns even if we're not optimizing
                     report_i["optimized_vehicle_value_" + v_input_k] = None
 
@@ -696,7 +735,7 @@ def run_vehicle_scenarios(
             if "input_vehicle_value_props" in report_i:
                 del report_i["input_vehicle_value_props"]
 
-            opt_time = round(time.perf_counter() - ti)
+            opt_time = round(time.time() - ti)
 
             report_i["selection"] = sel
 
@@ -717,9 +756,9 @@ def run_vehicle_scenarios(
                     moo.OPTIMIZATION_FAILED_TO_CONVERGE,
                 ]:
                     if moo_code == moo.EXCEPTION_THROWN:
-                        report_i[
-                            "n_gen"
-                        ] = "Code Exception thrown"  # TODO, get stacktrace information and add to this
+                        report_i["n_gen"] = (
+                            "Code Exception thrown"  # TODO, get stacktrace information and add to this
+                        )
                     elif moo_code == moo.OPTIMIZATION_FAILED_TO_CONVERGE:
                         report_i["n_gen"] = "Optimization Failed to converge"
                     report_i = {k: str(v) for k, v in report_i.items()}
@@ -779,9 +818,9 @@ def run_vehicle_scenarios(
                     report_i["final_fs_kwh"] = x_dixt.get(moo.KNOB_fs_kwh)
                     for v_input_k in report_vehicle.__dict__.keys():
                         if "value_props" not in v_input_k:
-                            report_i[
-                                "optimized_vehicle_value_" + v_input_k
-                            ] = report_vehicle.__getattribute__(v_input_k)
+                            report_i["optimized_vehicle_value_" + v_input_k] = (
+                                report_vehicle.__getattribute__(v_input_k)
+                            )
 
                     n_gens_used = moo_results.history[-1].n_gen
                     report_i["fvals_over_gens"] = [
@@ -815,8 +854,8 @@ def run_vehicle_scenarios(
                     opt_time,
                 )
                 print(
-                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} total cost using {config.TCO_method} Method: {tot_cost}"
-                    ,
+                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} total cost",
+                    tot_cost,
                 )
                 print(f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} mpgge", mpgge)
                 print(
@@ -835,97 +874,116 @@ def run_vehicle_scenarios(
                 disc_cost_agg = discounted_costs_df.groupby("Category").sum(
                     numeric_only=True
                 )
-                report_i["RangeMiAch"] = outdict["primary_fuel_range_mi"]
-                report_i["target_TargetRangeMi"] = report_scenario.TargetRangeMi
-                report_i["delta_TargetRangeMi"] = (
-                    outdict["primary_fuel_range_mi"] - report_scenario.TargetRangeMi
+                report_i["range_ach_mi"] = outdict["primary_fuel_range_mi"]
+                report_i["target_range_mi"] = report_scenario.target_range_mi
+                report_i["delta_range_mi"] = (
+                    outdict["primary_fuel_range_mi"] - report_scenario.target_range_mi
                 )
 
-                report_i["minSpeed6PercentGradeIn5minAch"] = outdict["grade_6_mph_ach"]
-                report_i[
-                    "target_minSpeed6PercentGradeIn5min"
-                ] = report_scenario.minSpeed6PercentGradeIn5min
-                report_i["delta_6PercentGrade"] = (
+                report_i["min_speed_at_6pct_grade_in_5min_ach_mph"] = outdict[
+                    "grade_6_mph_ach"
+                ]
+                report_i["target_min_speed_at_6pct_grade_in_5min_mph"] = (
+                    report_scenario.min_speed_at_6pct_grade_in_5min_mph
+                )
+                report_i["delta_min_speed_at_6pct_grade_in_5min_mph"] = (
                     outdict["grade_6_mph_ach"]
-                    - report_scenario.minSpeed6PercentGradeIn5min
+                    - report_scenario.min_speed_at_6pct_grade_in_5min_mph
                 )
 
-                report_i["minSpeed1point25PercentGradeIn5minAch"] = outdict[
+                report_i["min_speed_at_1p25pct_grade_in_5min_ach_mph"] = outdict[
                     "grade_1_25_mph_ach"
                 ]
-                report_i[
-                    "target_minSpeed1point25PercentGradeIn5min"
-                ] = report_scenario.minSpeed1point25PercentGradeIn5min
-                report_i["delta_1point25PercentGrade"] = (
+                report_i["target_min_speed_at_1p25pct_grade_in_5min_mph"] = (
+                    report_scenario.min_speed_at_1p25pct_grade_in_5min_mph
+                )
+                report_i["delta_min_speed_at_1p25pct_grade_in_5min_mph"] = (
                     outdict["grade_1_25_mph_ach"]
-                    - report_scenario.minSpeed1point25PercentGradeIn5min
+                    - report_scenario.min_speed_at_1p25pct_grade_in_5min_mph
                 )
 
-                report_i["max0to60secAtGVWRAch"] = outdict["zero_to_60_loaded"]
-                report_i["target_max0to60secAtGVWR"] = report_scenario.max0to60secAtGVWR
+                report_i["max_time_0_to_60mph_at_gvwr_ach_s"] = outdict[
+                    "zero_to_60_loaded"
+                ]
+                report_i["target_max_time_0_to_60mph_at_gvwr_s"] = (
+                    report_scenario.max_time_0_to_60mph_at_gvwr_s
+                )
                 if (
                     outdict["zero_to_60_loaded"] is not None
                 ):  # cannot calculate if it is none (but for some reason, range and grade are handled when none)
-                    report_i["delta_0to60sec"] = (
-                        outdict["zero_to_60_loaded"] - report_scenario.max0to60secAtGVWR
+                    report_i["delta_max_time_0_to_60mph_at_gvwr_s"] = (
+                        outdict["zero_to_60_loaded"]
+                        - report_scenario.max_time_0_to_60mph_at_gvwr_s
                     )
 
-                report_i["max0to30secAtGVWRAch"] = outdict["zero_to_30_loaded"]
-                report_i["target_max0to30secAtGVWR"] = report_scenario.max0to30secAtGVWR
+                report_i["max_time_0_to_30mph_at_gvwr_ach_s"] = outdict[
+                    "zero_to_30_loaded"
+                ]
+                report_i["target_max_time_0_to_30mph_at_gvwr_s"] = (
+                    report_scenario.max_time_0_to_30mph_at_gvwr_s
+                )
                 if (
                     outdict["zero_to_30_loaded"] is not None
                 ):  # cannot calculate if it is none (but for some reason, range and grade are handled when none)
-                    report_i["delta_0to30sec"] = (
-                        outdict["zero_to_30_loaded"] - report_scenario.max0to30secAtGVWR
+                    report_i["delta_max_time_0_to_30mph_at_gvwr_s"] = (
+                        outdict["zero_to_30_loaded"]
+                        - report_scenario.max_time_0_to_30mph_at_gvwr_s
                     )
 
                 report_i.update(mpgge)
                 # report_i["payload_capacity_loss_kg"] = outdict["payload_capacity_loss_kg"] This might be a good var to have
-
-                report_i["glider_cost_Dol"] = veh_cost_set["Glider"]
-                report_i["fuel_converter_cost_Dol"] = veh_cost_set["Fuel converter"]
-                report_i["fuel_storage_cost_Dol"] = veh_cost_set["Fuel Storage"]
-                report_i["motor_pwr_electrics_cost_Dol"] = veh_cost_set[
-                    "Motor & power electronics"
-                ]
-                report_i["plug_cost_Dol"] = veh_cost_set["Plug"]
-                report_i["battery_cost_Dol"] = veh_cost_set["Battery"]
-                report_i["purchase_tax_Dol"] = veh_cost_set["Purchase tax"]
-                report_i["msrp_total_Dol"] = veh_cost_set["msrp"]
-                report_i["insurance_cost_Dol"] = disc_cost_agg.loc[
-                    "insurance", "Discounted Cost [$]"
-                ]
-                report_i["residual_cost_Dol"] = disc_cost_agg.loc[
-                    "residual cost", "Discounted Cost [$]"
-                ]
-                report_i["total_fuel_cost_Dol"] = disc_cost_agg.loc[
-                    "Fuel", "Discounted Cost [$]"
-                ]
-                report_i["total_maintenance_cost_Dol"] = disc_cost_agg.loc[
-                    "maintenance", "Discounted Cost [$]"
-                ]
                 report_i["payload_cap_cost_multiplier"] = veh_opp_cost_set[
                     "payload_cap_cost_multiplier"
                 ]
-                report_i["payload_capacity_cost_Dol"] = oppy_cost_set[
-                    "payload_capacity_cost_Dol"
-                ]
-                report_i["fueling_dwell_time_hr"] = sum(
-                    veh_opp_cost_set["net_dwell_time_hr"]
+                report_i["total_fueling_dwell_time_hr"] = sum(
+                    veh_opp_cost_set["net_fueling_dwell_time_hr_per_yr"]
                 )
-                report_i["MR_downtime_hr"] = sum(veh_opp_cost_set["MR_downtime_hr"])
+                report_i["total_mr_downtime_hr"] = sum(
+                    veh_opp_cost_set["net_mr_downtime_hr_per_yr"]
+                )
                 report_i["total_downtime_hr"] = sum(
-                    veh_opp_cost_set["total_downtime_hrPerYr"]
+                    veh_opp_cost_set["total_downtime_hr_per_yr"]
                 )
-                report_i["dwell_time_cost_Dol"] = disc_cost_agg.loc[
+                report_i["fueling_dwell_labor_cost_dol"] = disc_cost_agg.loc[
+                    "fueling labor cost", "Discounted Cost [$]"
+                ]
+                report_i["fueling_downtime_oppy_cost_dol"] = disc_cost_agg.loc[
                     "fueling downtime cost", "Discounted Cost [$]"
                 ]
-                report_i["MR_downtime_cost_Dol"] = disc_cost_agg.loc[
+                report_i["mr_downtime_oppy_cost_dol"] = disc_cost_agg.loc[
                     "MR downtime cost", "Discounted Cost [$]"
                 ]
-                report_i["downtime_cost_Dol"] = oppy_cost_set["downtime_oppy_cost_Dol"]
+                report_i["discounted_downtime_oppy_cost_dol"] = oppy_cost_set[
+                    "discounted_downtime_oppy_cost_dol"
+                ]
 
-                report_i["discounted_tco_Dol"] = disc_cost
+                report_i["payload_capacity_cost_dol"] = oppy_cost_set[
+                    "payload_capacity_cost_dol"
+                ]
+                report_i["glider_cost_dol"] = veh_cost_set["Glider"]
+                report_i["fuel_converter_cost_dol"] = veh_cost_set["Fuel converter"]
+                report_i["fuel_storage_cost_dol"] = veh_cost_set["Fuel Storage"]
+                report_i["motor_control_power_elecs_cost_dol"] = veh_cost_set[
+                    "Motor & power electronics"
+                ]
+                report_i["plug_cost_dol"] = veh_cost_set["Plug"]
+                report_i["battery_cost_dol"] = veh_cost_set["Battery"]
+                report_i["purchase_tax_dol"] = veh_cost_set["Purchase tax"]
+                report_i["msrp_total_dol"] = veh_cost_set["msrp"]
+                report_i["insurance_cost_dol"] = disc_cost_agg.loc[
+                    "insurance", "Discounted Cost [$]"
+                ]
+                report_i["residual_cost_dol"] = disc_cost_agg.loc[
+                    "residual cost", "Discounted Cost [$]"
+                ]
+                report_i["total_fuel_cost_dol"] = disc_cost_agg.loc[
+                    "Fuel", "Discounted Cost [$]"
+                ]
+
+                report_i["total_maintenance_cost_dol"] = disc_cost_agg.loc[
+                    "maintenance", "Discounted Cost [$]"
+                ]
+                report_i["discounted_tco_dol"] = disc_cost
 
                 if outdict["design_cycle_sim_drive_record"] is not None:
                     report_i["design_cycle_EA_err"] = {
@@ -956,9 +1014,9 @@ def run_vehicle_scenarios(
                     report_i["grade_6_EA_err"] = outdict[
                         "grade_6_sim_drive_record"
                     ].energy_audit_error
-                if outdict["grade_125_sim_drive_record"] is not None:
-                    report_i["grade_125_EA_err"] = outdict[
-                        "grade_125_sim_drive_record"
+                if outdict["grade_1p25_sim_drive_record"] is not None:
+                    report_i["grade_1p25_EA_err"] = outdict[
+                        "grade_1p25_sim_drive_record"
                     ].energy_audit_error
 
             # for all vehicles, save their final TCO TSV files
@@ -981,12 +1039,12 @@ def run_vehicle_scenarios(
 
         print("writing to ", resdir / RES_FILE)
 
-    def skip_scenario(sel, scenario_name, verbose=False):
+    def skip_scenario(sel: int, scenario_name: str, verbose: bool = False) -> bool:
         """
         This function checks if given selection is present in exclude or look_for selections
 
         Args:
-            sel (float): _description_
+            sel (int): _description_
             scenario_name (str): scenario name
             verbose (bool, optional): if selected, prints out scenarios that are skipped. Defaults to False.
 
@@ -1010,7 +1068,7 @@ def run_vehicle_scenarios(
         return False
 
     if do_input_validation:
-        st = time.perf_counter()
+        st = time.time()
         print("sweep:: Running input validation...")
         badinputs = False
         noinputs = True
@@ -1026,6 +1084,7 @@ def run_vehicle_scenarios(
                         f"sweep:: validating input {sel}:{scenario_name}".ljust(90),
                         algopart,
                     )
+                    # print(f'config: {config}')
                     input_validation(sel, optpt, algo, config)
                 except KeyboardInterrupt:
                     raise
@@ -1037,9 +1096,7 @@ def run_vehicle_scenarios(
                         exc_info=True,
                     )
                 noinputs = False
-        print(
-            f"sweep:: Finished input validation, time [s] {round(time.perf_counter()-st)}"
-        )
+        print(f"sweep:: Finished input validation, time [s] {round(time.time()-st)}")
         if badinputs:
             raise Exception(
                 f"sweep:: input_validation failure, see log file!\n{loggingfname}"
@@ -1064,7 +1121,6 @@ def run_vehicle_scenarios(
                     optpt,
                     algo="None",
                     skip_opt=True,
-                    config = config,
                     write_tsv=write_tsv,
                 )
             else:
@@ -1075,7 +1131,6 @@ def run_vehicle_scenarios(
                         optpt,
                         algo,
                         skip_opt=False,
-                        config=config,
                         write_tsv=write_tsv,
                     )
         except:
@@ -1086,152 +1141,195 @@ def run_vehicle_scenarios(
 
 
 if __name__ == "__main__":
-    start = time.perf_counter()
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--selections",
-        help="""str: int, array or range, selections desired to run. Selections can be an int, or list of ints, or range expression. Ex: -selections 234 or -selections "[234,236,238]" or -selections "range(234, 150, 2)" """,
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        prog="SWEEP",
+        description="""The sweep.py module is the main script to run T3CO""",
     )
     parser.add_argument(
-        "--look-for",
-        default="",
-        help="str or list of strings: a string for string matching, example -look_for 'FCEV' or -look_for '[\"FCEV\", \"HEV\"]' ",
+        "--config",
+        default=gl.SWEEP_PATH.parents[0] / "resources/T3COConfig.csv",
+        type=str,
+        help="Input Config file",
     )
     parser.add_argument(
-        "--skip-all-opt",
-        "--skopt",
-        action="store_true",
-        help="flag, if -skip_all_opt used, all runs skip optimization",
-    )
-    parser.add_argument(
-        "--skip-input-validation",
-        "--skiv",
-        action="store_false",
-        help="flag, if -skip_input_validation used, no pre-validation of inputs is run before sweep commences",
-    )
-    parser.add_argument(
-        "--exclude",
-        default=">{-<>-}<",
-        help="str or list of strings: Overrides -look_for. a string for string matching to exclude runs, example -exclude 'FCEV' or -look_for '[\"FCEV\", \"HEV\"]'  ",
-    )
-    parser.add_argument(
-        "--algorithms",
-        "--algos",
-        "--algo",
-        default="NSGA2",
-        help=f'str or list: Enter list of algorithms, or "ensemble" to use all, to use for optimization: {moo.ALGORITHMS} ex: -algos PatternSearch | -algos \'["PatternSearch", "NSGA2"]\' | -algos "ensemble" ',
-    )
-    parser.add_argument(
-        "--dst-dir",
-        help="directory to store results - otherwise defaults to ../tco_results/TDA_results/",
-        default=None,
-    )
-    parser.add_argument(
-        "--dir-mark",
-        default="",
-        help="str: name for your results directory in addition to timestamp",
-    )
-    parser.add_argument(
-        "--file-mark", default="", help="str: name to add to your results files"
-    )
-    parser.add_argument(
-        "--skip-save-veh",
-        action="store_true",
-        help="toggle result vehicle model YAML file saving off",
-    )
-    parser.add_argument(
-        "--x-tol", default=0.001, help="parameter space tolerance"
-    )  # bigger = more lax # TODO: we need to investigate if this is too big of a default
-    parser.add_argument(
-        "--f-tol", default=0.001, help="objective space tolerance"
-    )  # bigger = more lax # TODO: we need to investigate if this is too big of a default
-    parser.add_argument(
-        "--n-max-gen",
-        default=1000,
-        help="max number of optimizer iterations regardless of algorithm",
-    )
-    parser.add_argument("--pop-size", default=25, help="population of each generation")
-    parser.add_argument(
-        "--nth-gen",
-        default=1,
-        help="period of generations in which to evaluate if convergence happens",
-    )
-    parser.add_argument(
-        "--n-last",
-        default=5,
-        help="number of generations to look back for establishing convergence",
-    )
-    parser.add_argument(
-        "--range-overshoot-tol",
-        default=None,
-        help="range overshoot tolerance, example '0.20' allows 20%% range overshoot. Default of 'None' does not constrain overshoot.",
-    )
-    # time-dilation-args passed to T3COProblem instantiation for optimization usage
-    parser.add_argument(
-        "---missed-trace-correction",
-        action="store_true",
-        help="bool, ex: 'sweep.py --missed_trace_correction'; activate FASTSim time-dilation to correct missed trace; default=False",
-    )
-    parser.add_argument(
-        "--max-time-dilation",
-        default=10,
-        help="int, maximum time dilation factor to 'catch up' with trace; default=10  ",
-    )
-    parser.add_argument(
-        "--min-time-dilation",
-        default=0.1,
-        help="float, minimum time dilation to let trace 'catch up'; default=0.1 ",
-    )
-    parser.add_argument(
-        "--time-dilation-tol",
-        default=1e-3,
-        help="float, convergence criteria for time dilation; default=1e-3",
+        "--analysis-id",
+        default=0,
+        type=int,
+        help="Analysis key from input Config file - 'config.analysis_id'",
     )
     # input files
     parser.add_argument(
         "--vehicles",
         default=gl.SWEEP_PATH.parents[0]
         / "resources/inputs/demo/Demo_FY22_vehicle_model_assumptions.csv",
-        help="input file for vehicles",
+        type=str,
+        help="Input file for Vehicle models",
     )
     parser.add_argument(
         "--scenarios",
         default=gl.SWEEP_PATH.parents[0]
         / "resources/inputs/demo/Demo_FY22_scenario_assumptions.csv",
-        help="input file for scenarios",
+        type=str,
+        help="Input file for Scenario models",
+    )
+    parser.add_argument(
+        "--selections",
+        type=str,
+        nargs="*",
+        help="""Selections desired to run. Selections can be an int, or list of ints, or range expression. Ex: --selections 234 or --selections "[234,236,238]" or --selections "range(234, 150, 2)" """,
     )
     parser.add_argument(
         "--eng-curves",
         default=gl.SWEEP_PATH.parents[0]
-        / "resources/aux/eng_imp_cost_curves_for_demo.csv",
-        help="input file for engine efficiency curves",
+        / "resources/auxiliary/EngineEffImprovementCostCurve.csv",
+        type=str,
+        help="Input file for engine efficiency improvement cost curves",
     )
     parser.add_argument(
         "--lw-curves",
         default=gl.SWEEP_PATH.parents[0]
-        / "resources/aux/matlltwt_imp_cost_curves_for_demo.csv",
-        help="input file for lightweighting curves",
+        / "resources/auxiliary/LightweightImprovementCostCurve.csv",
+        type=str,
+        help="Input file for lightweighting improvement cost curves",
     )
     parser.add_argument(
         "--aero-curves",
         default=gl.SWEEP_PATH.parents[0]
-        / "resources/aux/aero_imp_cost_curves_for_demo.csv",
-        help="input file for aerodynamics improvement curves",
-    )
-    parser.add_argument("--delete-me", default=True)
-    parser.add_argument("--write-tsv", default=False)
-    parser.add_argument(
-        "--config",
-        default=gl.SWEEP_PATH.parents[0] / "resources/T3CO_Config_Demo.csv",
-        help="input config file",
-    )
-    parser.add_argument(
-        "--analysis-id", default="0", help="analysis selection from input config file"
+        / "resources/auxiliary/AeroDragImprovementCostCurve.csv",
+        type=str,
+        help="Input file for aerodynamics improvement curves",
     )
 
-    print(f"gl.SWEEP_PATH: {gl.SWEEP_PATH}")
+    parser.add_argument(
+        "--look-for",
+        default="",
+        type=str,
+        help="A string for string matching, example --look_for 'FCEV' or -look_for '[\"FCEV\", \"HEV\"]' ",
+    )
+    parser.add_argument(
+        "--skip-all-opt",
+        "--skopt",
+        action="store_true",
+        help="If --skip_all_opt used, all runs skip optimization",
+    )
+    parser.add_argument(
+        "--skip-input-validation",
+        "--skiv",
+        action="store_false",
+        help="If --skip_input_validation used, no pre-validation of inputs is run before sweep commences",
+    )
+    parser.add_argument(
+        "--exclude",
+        default=">{-<>-}<",
+        type=str,
+        nargs="*",
+        help="Overrides -look_for. a string for string matching to exclude runs, example -exclude 'FCEV' or -look_for '[\"FCEV\", \"HEV\"]'  ",
+    )
+    parser.add_argument(
+        "--algorithms",
+        "--algos",
+        "--algo",
+        default="NSGA2",
+        type=str,
+        nargs="*",
+        help=f'Enter algorithm or list of algorithms, or "ensemble" to use all, to use for optimization: {moo.ALGORITHMS} ex: -algos PatternSearch | -algos \'["PatternSearch", "NSGA2"]\' | -algos "ensemble" ',
+    )
+    parser.add_argument(
+        "--dst-dir",
+        default=Path(os.path.abspath(__file__)).parents[1] / "results",
+        type=str,
+        help="Directory to store T3CO results",
+    )
+    parser.add_argument(
+        "--dir-mark",
+        default="",
+        type=str,
+        help="Name for results directory in addition to timestamp",
+    )
+    parser.add_argument(
+        "--file-mark",
+        default="",
+        type=str,
+        help="Prefix to add to the result file names",
+    )
+    parser.add_argument(
+        "--skip-save-veh",
+        action="store_true",
+        help="Toggle result vehicle model YAML file saving off",
+    )
+    parser.add_argument(
+        "--x-tol",
+        default=0.001,
+        type=float,
+        help="Parameter space tolerance for optimization",
+    )  # bigger = more lax # TODO: we need to investigate if this is too big of a default
+    parser.add_argument(
+        "--f-tol",
+        default=0.001,
+        type=float,
+        help="Objective space tolerance for optimzation",
+    )  # bigger = more lax # TODO: we need to investigate if this is too big of a default
+    parser.add_argument(
+        "--n-max-gen",
+        default=1000,
+        type=float,
+        help="Cax number of optimizer iterations regardless of algorithm",
+    )
+    parser.add_argument("--pop-size", default=25, help="population of each generation")
+    parser.add_argument(
+        "--nth-gen",
+        default=1,
+        type=int,
+        help="Period of generations in which to evaluate if convergence happens during optimization",
+    )
+    parser.add_argument(
+        "--n-last",
+        default=5,
+        type=int,
+        help="Number of generations to look back for establishing convergence during optimization",
+    )
+    parser.add_argument(
+        "--range-overshoot-tol",
+        default=None,
+        type=float,
+        help="Range overshoot tolerance, example '0.20' allows 20%% range overshoot. Default of 'None' does not constrain overshoot.",
+    )
+    # time-dilation-args passed to T3COProblem instantiation for optimization usage
+    parser.add_argument(
+        "---missed-trace-correction",
+        action="store_true",
+        help="Activate FASTSim time-dilation to correct missed trace",
+    )
+    parser.add_argument(
+        "--max-time-dilation",
+        default=10,
+        type=int,
+        help="Maximum time dilation factor to 'catch up' with trace  ",
+    )
+    parser.add_argument(
+        "--min-time-dilation",
+        default=0.1,
+        type=float,
+        help="Minimum time dilation to let trace 'catch up' ",
+    )
+    parser.add_argument(
+        "--time-dilation-tol",
+        default=1e-3,
+        type=float,
+        help="Convergence criteria for time dilation",
+    )
+
+    parser.add_argument(
+        "--write-tsv",
+        default=False,
+        type=bool,
+        help="Boolean toggle to save intermediary .TSV cost results files",
+    )
 
     args = parser.parse_args()
+    print(f"gl.SWEEP_PATH: {gl.SWEEP_PATH}")
+
     # selections can be an int, or list of ints, or range expression
     if args.config is None:
         if args.selections is None:
@@ -1244,25 +1342,26 @@ if __name__ == "__main__":
             selections = [int(args.selections)]
         vehicles = Path(args.vehicles)
         scenarios = Path(args.scenarios)
-        eng_curves = Path(args.eng_curves)
-        lw_curves = Path(args.lw_curves)
-        aero_curves = Path(args.aero_curves)
+        eng_eff_imp_curves = Path(args.eng_eff_imp_curves)
+        lw_imp_curves = Path(args.lw_imp_curves)
+        aero_drag_imp_curves = Path(args.aero_drag_imp_curves)
         write_tsv = args.write_tsv
         # config = None
     else:
-        args.analysis_id = ast.literal_eval(args.analysis_id)
+        # args.analysis_id = ast.literal_eval(args.analysis_id)
         try:
             config = rs.Config()
-            config.validate_analysis_id(filename=args.config, analysis_id=args.analysis_id)
             config.from_file(filename=args.config, analysis_id=args.analysis_id)
         except ValueError:
-            logging.exception('Config file invalid')
+            print(f"Config analysis_id not valid: {args.analysis_id}")
+            config = rs.Config()
+            config.validate_analysis_id(filename=args.config)
         selections = config.selections
         vehicles = gl.SWEEP_PATH.parents[0] / config.vehicle_file
         scenarios = gl.SWEEP_PATH.parents[0] / config.scenario_file
-        eng_curves = gl.SWEEP_PATH.parents[0] / config.eng_curves
-        lw_curves = gl.SWEEP_PATH.parents[0] / config.lw_curves
-        aero_curves = gl.SWEEP_PATH.parents[0] / config.aero_curves
+        eng_eff_imp_curves = gl.SWEEP_PATH.parents[0] / config.eng_eff_imp_curves
+        lw_imp_curves = gl.SWEEP_PATH.parents[0] / config.lw_imp_curves
+        aero_drag_imp_curves = gl.SWEEP_PATH.parents[0] / config.aero_drag_imp_curves
         write_tsv = config.write_tsv
 
     look_for = args.look_for
@@ -1282,6 +1381,7 @@ if __name__ == "__main__":
         algorithms = ast.literal_eval(args.algorithms)
     else:
         algorithms = [args.algorithms]
+
     kwargs = {
         "selections": selections,
         "look_for": look_for,
@@ -1296,9 +1396,9 @@ if __name__ == "__main__":
         "pop_size": int(args.pop_size),
         "nth_gen": int(args.nth_gen),
         "n_last": int(args.n_last),
-        "skip_all_opt": (
-            args.skip_all_opt if args.config is None else config.skip_all_opt
-        ),
+        "skip_all_opt": args.skip_all_opt
+        if args.config is None
+        else config.skip_all_opt,
         "do_input_validation": args.skip_input_validation,
         "range_overshoot_tol": float(args.range_overshoot_tol)
         if args.range_overshoot_tol is not None
@@ -1314,10 +1414,15 @@ if __name__ == "__main__":
                 "missed_trace_correction": bool(args.missed_trace_correction),
             }
         )
+
     run_vehicle_scenarios(
-        vehicles, scenarios, eng_curves, lw_curves, aero_curves, config=config, **kwargs
+        vehicles,
+        scenarios,
+        eng_eff_imp_curves,
+        lw_imp_curves,
+        aero_drag_imp_curves,
+        config=config,
+        **kwargs,
     )
-    end = time.perf_counter()
-    print(f"Total analysis time: {round((end - start),5)}s")
 
 # %%
