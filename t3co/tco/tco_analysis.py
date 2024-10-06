@@ -1,16 +1,17 @@
+from __future__ import annotations
+
+from typing import Tuple
+import fastsim
+import pandas as pd
 from t3co.objectives import fueleconomy
-from t3co.run import Global as gl
+from t3co.run import Global as gl, run_scenario
 from t3co.tco import tco_stock_emissions
 from t3co.tco import tcocalc as tcocalc
 
-# for debugging
-# import importlib
-# fueleconomy = importlib.reload(fueleconomy)
 
-STD_VAR_NAMES = "stdVarNames"
-
-
-def get_operating_costs(ownershipCosts, TCO_switch="DIRECT"):
+def get_operating_costs(
+    ownershipCosts: pd.DataFrame, TCO_switch: str = "DIRECT"
+) -> pd.DataFrame:
     """
     This function creates a dataframe of operating cost from ownershipCosts dataframe based on TCO_switch ('DIRECT' or 'EFFICIENCY')
 
@@ -26,6 +27,7 @@ def get_operating_costs(ownershipCosts, TCO_switch="DIRECT"):
             "Fuel",
             "maintenance",
             "insurance",
+            "fueling labor cost",
             "fueling downtime cost",
             "MR downtime cost",
         ]
@@ -38,7 +40,7 @@ def get_operating_costs(ownershipCosts, TCO_switch="DIRECT"):
             "Fuel",
             "maintenance",
             "insurance",
-            "fueling downtime cost",
+            "fueling labor cost",
         ]
 
         operatingCosts_df = ownershipCosts[
@@ -47,7 +49,9 @@ def get_operating_costs(ownershipCosts, TCO_switch="DIRECT"):
     return operatingCosts_df
 
 
-def discounted_costs(scenario, ownershipCosts):
+def discounted_costs(
+    scenario: run_scenario.Scenario, ownershipCosts: pd.DataFrame
+) -> pd.DataFrame:
     """
     This function calculates the yearly discounted costs for each category of ownershipCosts based on scenario.discRate
 
@@ -59,22 +63,22 @@ def discounted_costs(scenario, ownershipCosts):
         ownershipCosts (pd.DataFrame): ownershipCosts dataframe with additional 'Discounted Cost [$]' column
     """
     ownershipCosts["Discounted Cost [$]"] = ownershipCosts["Cost [$]"] / (
-        1.0 + scenario.discRate
+        1.0 + scenario.discount_rate_pct_per_yr
     ) ** (ownershipCosts["Year"] - ownershipCosts["Model Year"])
-    # veh_opp_cost_set['Discounted Cost [$]'] = veh_opp_cost_set['Cost [$]'] / (1. + scenario.discRate) ** (veh_opp_cost_set['Year'] - veh_opp_cost_set['Model Year'])
-    # veh_residual_df['Discounted Cost [$]'] = veh_residual_df['Cost [$]'] / (1. + scenario.discRate) ** (veh_residual_df['Year'] - veh_residual_df['Model Year'])
+    # veh_opp_cost_set['Discounted Cost [$]'] = veh_opp_cost_set['Cost [$]'] / (1. + scenario.discount_rate_pct_per_yr) ** (veh_opp_cost_set['Year'] - veh_opp_cost_set['Model Year'])
+    # veh_residual_df['Discounted Cost [$]'] = veh_residual_df['Cost [$]'] / (1. + scenario.discount_rate_pct_per_yr) ** (veh_residual_df['Year'] - veh_residual_df['Model Year'])
 
     return ownershipCosts
 
 
 def calc_discountedTCO(
-    scenario,
-    discounted_costs_df,
-    veh_cost_set,
-    veh_opp_cost_set,
-    sim_drive,
-    TCO_switch="DIRECT",
-):
+    scenario: run_scenario.Scenario,
+    discounted_costs_df: pd.DataFrame,
+    veh_cost_set: dict,
+    veh_opp_cost_set: dict,
+    sim_drive: fastsim.simdrive.SimDrive,
+    TCO_switch: str = "DIRECT",
+) -> Tuple[float, dict, dict]:
     """
     This function calculates the discounted Total Cost of Ownerhip (discounted to account for time-value of money).
     There are two methods to calculate discounted TCO - 'DIRECT' and 'EFFICIENCY'
@@ -88,8 +92,8 @@ def calc_discountedTCO(
         TCO_switch (str, optional): Switch between different TCO calculations - 'DIRECT' or 'EFFICIENCY'. Defaults to 'DIRECT'.
 
     Returns:
-        discountedTCO (float): Discounted Total Cost of Ownership value
-        oppy_cost_Dol_set (dict): Dictionary containing discounted opportunity costs breakdown
+        discounted_tco_dol (float): Discounted Total Cost of Ownership value
+        oppy_cost_dol_set (dict): Dictionary containing discounted opportunity costs breakdown
         veh_oper_cost_set (dict): Dictionary containing discounted operating costs breakdown
     """
     operatingCosts_df = get_operating_costs(discounted_costs_df, TCO_switch)
@@ -117,32 +121,32 @@ def calc_discountedTCO(
         )
     )
     if TCO_switch == "DIRECT":
-        discountedTCO = payloadmultiplier * (
+        discounted_tco_dol = payloadmultiplier * (
             veh_cost_set["msrp"]
             + veh_cost_set["Purchase tax"]
             + disc_operating_costs
             + disc_residual_costs
         )
         payload_capacity_cost = (
-            (payloadmultiplier - 1) / payloadmultiplier * discountedTCO
+            (payloadmultiplier - 1) / payloadmultiplier * discounted_tco_dol
         )
-        oppy_cost_Dol_set = {
-            "downtime_oppy_cost_Dol": disc_opportunity_costs,
-            "payload_capacity_cost_Dol": payload_capacity_cost,
+        oppy_cost_dol_set = {
+            "discounted_downtime_oppy_cost_dol": disc_opportunity_costs,
+            "payload_capacity_cost_dol": payload_capacity_cost,
         }
 
     elif TCO_switch == "EFFICIENCY":
         disc_VMT_sum = sum(
             [
-                scenario.VMT[i] / (1 + scenario.discRate) ** (i)
-                for i in range(scenario.vehLifeYears)
+                scenario.vmt[i] / (1 + scenario.discount_rate_pct_per_yr) ** (i)
+                for i in range(scenario.vehicle_life_yr)
             ]
         )
         disc_downtime_sum = sum(
             [
                 veh_opp_cost_set["total_downtime_hrPerYr"][i]
-                / (1 + scenario.discRate) ** (i + 1)
-                for i in range(scenario.vehLifeYears)
+                / (1 + scenario.discount_rate_pct_per_yr) ** (i + 1)
+                for i in range(scenario.vehicle_life_yr)
             ]
         )
         avg_speed_mph = (
@@ -150,29 +154,46 @@ def calc_discountedTCO(
         )
         downtime_efficiency = 1 / (1 + avg_speed_mph * disc_downtime_sum / disc_VMT_sum)
         # print(f'downtime_efficiency = {downtime_efficiency}')
-        discountedTCO = payloadmultiplier * (
+        discounted_tco_dol = payloadmultiplier * (
             (veh_cost_set["msrp"] + veh_cost_set["Purchase tax"] + disc_operating_costs)
             / downtime_efficiency
             + disc_residual_costs
         )
-        downtime_oppy_cost_Dol = (
+        discounted_downtime_oppy_cost_dol = (
             veh_cost_set["msrp"]
             + veh_cost_set["Purchase tax"]
             + disc_operating_costs
             + disc_opportunity_costs
         ) * (1 / downtime_efficiency - 1)
         payload_capacity_cost = (
-            (payloadmultiplier - 1) / payloadmultiplier * discountedTCO
+            (payloadmultiplier - 1) / payloadmultiplier * discounted_tco_dol
         )
-        oppy_cost_Dol_set = {
-            "downtime_oppy_cost_Dol": downtime_oppy_cost_Dol,
-            "payload_capacity_cost_Dol": payload_capacity_cost,
+        oppy_cost_dol_set = {
+            "discounted_downtime_oppy_cost_dol": discounted_downtime_oppy_cost_dol,
+            "payload_capacity_cost_dol": payload_capacity_cost,
         }
 
-    return discountedTCO, oppy_cost_Dol_set, veh_oper_cost_set
+    return discounted_tco_dol, oppy_cost_dol_set, veh_oper_cost_set
 
 
-def get_tco_of_vehicle(vehicle, range_cyc, scenario, config = None, write_tsv=False):
+def get_tco_of_vehicle(
+    vehicle: fastsim.vehicle.Vehicle,
+    range_cyc: fastsim.cycle.Cycle,
+    scenario: run_scenario.Scenario,
+    write_tsv: bool = False,
+) -> Tuple[
+    float,
+    float,
+    dict,
+    pd.DataFrame,
+    pd.DataFrame,
+    dict,
+    dict,
+    fastsim.simdrive.SimDrive,
+    dict,
+    dict,
+    dict,
+]:
     """
     This function calculates the Total Cost of Ownership of a vehicle and scenario for a given cycle. The three main components are:
     - Opportunity Costs
@@ -181,13 +202,13 @@ def get_tco_of_vehicle(vehicle, range_cyc, scenario, config = None, write_tsv=Fa
 
     Args:
         vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object of selected vehicle
-        range_cyc (fastsim.cycle.Cycle): FASTSim range cycle object 
+        range_cyc (fastsim.cycle.Cycle): FASTSim range cycle object
         scenario (run_scenario.Scenario): Scenario object for current selection
         write_tsv (bool, optional): if True, save intermediate files as TSV. Defaults to False.
 
     Returns:
-        tot_cost_Dol (float): TCO in dollars
-        discounted_TCO_Dol (float): discounted TCO in dollars
+        tot_cost_dol (float): TCO in dollars
+        discounted_tco_dol (float): discounted TCO in dollars
         oppy_cost_set (dict): Dictionary of opportunity cost breakdown
         ownership_costs_df (pd.DataFrame): Ownerhip Costs dataframe containing different categories per year
         discounted_costs_df (pd.DataFrame): discounted Ownerhip Costs dataframe containing different categories per year
@@ -239,25 +260,24 @@ def get_tco_of_vehicle(vehicle, range_cyc, scenario, config = None, write_tsv=Fa
         write_files=gl.write_files,
     )
 
-    # discountRate = float(scenario.discRate)
+    # discountRate = float(scenario.discount_rate_pct_per_yr)
     # discounted_costs_df = DCF(ownership_costs_df.copy(), rate=discountRate)
     # print(discounted_costs_df)
     discounted_costs_df = discounted_costs(scenario, ownership_costs_df)
     # should only be one vocation in these files but this as good a thing to aggregate on as any
-    tot_cost_Dol = discounted_costs_df["Cost [$]"].sum()
-    TCO_switch = (config.TCO_method if config else "DIRECT")
+    tot_cost_dol = discounted_costs_df["Cost [$]"].sum()
 
-    # discounted_TCO_Dol, downtime_oppy_cost_Dol, veh_oper_cost_set = calc_discountedTCO(scenario, discounted_costs_df, veh_cost_set, veh_opp_cost_set, sim_drives[-1], TCO_switch = 'DIRECT')
-    # print(f'New disc DIRECT TCO: {discounted_TCO_Dol}')
-    discounted_TCO_Dol, oppy_cost_set, veh_oper_cost_set = calc_discountedTCO(
+    # discounted_tco_dol, discounted_downtime_oppy_cost_dol, veh_oper_cost_set = calc_discountedTCO(scenario, discounted_costs_df, veh_cost_set, veh_opp_cost_set, sim_drives[-1], TCO_switch = 'DIRECT')
+    # print(f'New disc DIRECT TCO: {discounted_tco_dol}')
+    discounted_tco_dol, oppy_cost_set, veh_oper_cost_set = calc_discountedTCO(
         scenario,
         discounted_costs_df,
         veh_cost_set,
         veh_opp_cost_set,
         sim_drives[-1],
-        TCO_switch=TCO_switch,
+        TCO_switch="DIRECT",
     )
-    # print(f'New disc EFFICIENCY TCO: {discounted_TCO_Dol}')
+    # print(f'New disc EFFICIENCY TCO: {discounted_tco_dol}')
 
     # if veh_opp_cost_set['payload_cap_cost_multiplier'] is not None:
     #     discounted_costs_df["Payload Corrected Discounted Cost [$]"] = \
@@ -283,8 +303,8 @@ def get_tco_of_vehicle(vehicle, range_cyc, scenario, config = None, write_tsv=Fa
         }
 
     return (
-        tot_cost_Dol,
-        discounted_TCO_Dol,
+        tot_cost_dol,
+        discounted_tco_dol,
         oppy_cost_set,
         ownership_costs_df,
         discounted_costs_df,

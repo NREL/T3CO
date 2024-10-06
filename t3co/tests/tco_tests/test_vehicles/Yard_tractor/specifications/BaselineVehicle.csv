@@ -1,4 +1,4 @@
-﻿Index,Year,dragCoef,frontalAreaM2,gliderKg,vehCgM,driveAxleWeightFrac,wheelBaseM,wheelInertiaKgM2,numWheels,wheelRrCoef,wheelRadiusM,wheelCoefOfFric,auxKw,forceAuxOnFC,transKg,transEff,compMassMultiplier,markup,vehGliderPrice
+﻿Index,Year,dragCoef,frontalAreaM2,gliderKg,vehCgM,driveAxleWeightFrac,wheelBaseM,wheelInertiaKgM2,numWheels,wheelRrCoef,wheelRadiusM,wheelCoefOfFric,auxKw,forceAuxOnFC,transKg,transEff,compMassMultiplier,markup_pct,vehicle_glider_cost_dol
 1,2020,0.6,9.38,9002.588797,0.46,0.68,2.44,10,14,0.0054,0.506,0.7,2.5,FALSE,300,0.95,1.2,1.5,102918.9082
 2,2025,0.553333333,9.38,9002.588797,0.46,0.68,2.44,10,14,0.0048,0.506,0.7,2.5,FALSE,300,0.95,1.2,1.5,102918.9082
 3,2030,0.51875,9.38,9002.588797,0.46,0.68,2.44,10,14,0.00468,0.506,0.7,2.5,FALSE,300,0.95,1.2,1.5,102918.9082

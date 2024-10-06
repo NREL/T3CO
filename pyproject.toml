@@ -4,15 +4,15 @@ build-backend = "hatchling.build"
 
 [project]
 name = "t3co"
-version = "1.0.5"
+version = "1.0.8"
 dynamic = ["dependencies"]
 description = """
 NREL's Transportation Technology Total Cost of Ownership tool
 """
 readme = "README.md"
-
+license = {file = "LICENSE"}
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Education",
@@ -32,7 +32,7 @@ authors = [
 maintainers = [
   {name = "NREL-AVCI", email = "t3co@nrel.gov"}
 ]
-keywords = ["tco", "vehicle-cost", "totl-cost", "vehicle-simulation", "total-cost-of-ownership"]
+keywords = ["tco", "vehicle-cost", "total-cost", "vehicle-simulation", "total-cost-of-ownership"]
 
 [tool.hatch.metadata.hooks.requirements_txt]
 files = ["requirements.txt"]
@@ -42,6 +42,7 @@ Homepage = "https://www.nrel.gov/transportation/t3co.html"
 Documentation = "https://pages.github.com/NREL/T3CO"
 Repository = "https://github.nrel.gov/AVCI/T3CO"
 "Bug Tracker" = "https://github.nrel.gov/AVCI/T3CO/issues"
+
 
 [project.scripts]
 t3co-cli = "t3co:sweep"

@@ -5,7 +5,7 @@ from pathlib import Path
 from t3co.run import Global as gl
 
 
-def generate(vocation, dst=gl.OPTIMIZATION_AND_TCO_RCRS):
+def generate(vocation: str, dst: str = gl.OPTIMIZATION_AND_TCO_RCRS):
     """
     This function aggregates specifications from users for powertrains, desired ranges, component costs etc. into two
     csv files - FASTSimInputs and OtherInputs
@@ -48,9 +48,11 @@ def generate(vocation, dst=gl.OPTIMIZATION_AND_TCO_RCRS):
         / vocation
         / "specifications/VocationRequirements.csv"
     )
-    FastsimHeader_path = Path(__file__).parent / "resources" / "aux" / "FASTSimInputsHeader.csv"
+    FastsimHeader_path = (
+        Path(__file__).parent / "resources" / "auxiliary" / "FASTSimInputsHeader.csv"
+    )
     Other_Inputs_Header_path = (
-        Path(__file__).parent / "resources" / "aux" / "OtherInputsHeader.csv"
+        Path(__file__).parent / "resources" / "auxiliary" / "OtherInputsHeader.csv"
     )
 
     BaselineVehicleSpec = pd.read_csv(BaselineVehicle_path)
@@ -68,7 +70,7 @@ def generate(vocation, dst=gl.OPTIMIZATION_AND_TCO_RCRS):
     FASTSimInputsDf = pd.read_csv(FastsimHeader_path)
     OtherInputsDf = pd.read_csv(Other_Inputs_Header_path)
 
-    OtherInputsDf["VMT"] = OtherInputsDf.VMT.astype(str)
+    OtherInputsDf["vmt"] = OtherInputsDf.vmt.astype(str)
 
     v = 0
     for pt in range(0, Npowertrains):
@@ -125,16 +127,16 @@ def generate(vocation, dst=gl.OPTIMIZATION_AND_TCO_RCRS):
                     ),
                     "fs_max_kw",
                 ].values[0]
-                FASTSimInputsDf.at[
-                    v, "fuelStorSecsToPeakPwr"
-                ] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "fuelStorSecsToPeakPwr",
-                ].values[0]
+                FASTSimInputsDf.at[v, "fuelStorSecsToPeakPwr"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "fuelStorSecsToPeakPwr",
+                    ].values[0]
+                )
                 FASTSimInputsDf.at[v, "fs_kwh"] = OptimizerInitializationValues.loc[
                     (OptimizerInitializationValues["PowertrainNumber"] == (pt + 1))
                     & (
@@ -175,16 +177,16 @@ def generate(vocation, dst=gl.OPTIMIZATION_AND_TCO_RCRS):
                     ),
                     "fcAbsEffImpr",
                 ].values[0]
-                FASTSimInputsDf.at[
-                    v, "fuelConvSecsToPeakPwr"
-                ] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "fuelConvSecsToPeakPwr",
-                ].values[0]
+                FASTSimInputsDf.at[v, "fuelConvSecsToPeakPwr"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "fuelConvSecsToPeakPwr",
+                    ].values[0]
+                )
                 FASTSimInputsDf.at[v, "fuelConvBaseKg"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
@@ -242,16 +244,16 @@ def generate(vocation, dst=gl.OPTIMIZATION_AND_TCO_RCRS):
                     ),
                     "ess_max_kw",
                 ].values[0]
-                FASTSimInputsDf.at[
-                    v, "ess_max_kwh"
-                ] = OptimizerInitializationValues.loc[
-                    (OptimizerInitializationValues["PowertrainNumber"] == (pt + 1))
-                    & (
-                        OptimizerInitializationValues["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "ess_max_kwh",
-                ].values[0]
+                FASTSimInputsDf.at[v, "ess_max_kwh"] = (
+                    OptimizerInitializationValues.loc[
+                        (OptimizerInitializationValues["PowertrainNumber"] == (pt + 1))
+                        & (
+                            OptimizerInitializationValues["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "ess_max_kwh",
+                    ].values[0]
+                )
                 FASTSimInputsDf.at[v, "essKgPerKwh"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
@@ -328,26 +330,26 @@ def generate(vocation, dst=gl.OPTIMIZATION_AND_TCO_RCRS):
                     ),
                     "max_soc",
                 ].values[0]
-                FASTSimInputsDf.at[
-                    v, "essDischgToFcMaxEffPerc"
-                ] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "essDischgToFcMaxEffPerc",
-                ].values[0]
-                FASTSimInputsDf.at[
-                    v, "essChgToFcMaxEffPerc"
-                ] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "essChgToFcMaxEffPerc",
-                ].values[0]
+                FASTSimInputsDf.at[v, "essDischgToFcMaxEffPerc"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "essDischgToFcMaxEffPerc",
+                    ].values[0]
+                )
+                FASTSimInputsDf.at[v, "essChgToFcMaxEffPerc"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "essChgToFcMaxEffPerc",
+                    ].values[0]
+                )
                 FASTSimInputsDf.at[v, "maxAccelBufferMph"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
@@ -356,16 +358,16 @@ def generate(vocation, dst=gl.OPTIMIZATION_AND_TCO_RCRS):
                     ),
                     "maxAccelBufferMph",
                 ].values[0]
-                FASTSimInputsDf.at[
-                    v, "maxAccelBufferPercOfUseableSoc"
-                ] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "maxAccelBufferPercOfUseableSoc",
-                ].values[0]
+                FASTSimInputsDf.at[v, "maxAccelBufferPercOfUseableSoc"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "maxAccelBufferPercOfUseableSoc",
+                    ].values[0]
+                )
                 FASTSimInputsDf.at[v, "percHighAccBuf"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
@@ -529,230 +531,265 @@ def generate(vocation, dst=gl.OPTIMIZATION_AND_TCO_RCRS):
                 # Values to send to OtherInputs file
 
                 OtherInputsDf.at[v, "selection"] = v + 1
-                OtherInputsDf.at[v, "VMT"] = VocationRequirements.loc[
+                OtherInputsDf.at[v, "vmt"] = VocationRequirements.loc[
                     VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
-                    "VMT",
+                    "vmt",
                 ].values[0]
-                OtherInputsDf.at[v, "driveCycle"] = VocationRequirements.loc[
+                OtherInputsDf.at[v, "drive_cycle"] = VocationRequirements.loc[
                     VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
                     "rangeDriveCycleFilePath",
                 ].values[0]
-                OtherInputsDf.at[v, "segmentName"] = VocationRequirements.loc[
+                OtherInputsDf.at[v, "segment_name"] = VocationRequirements.loc[
                     VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
-                    "segmentName",
+                    "segment_name",
                 ].values[0]
-                OtherInputsDf.at[v, "GVWRkg"] = VocationRequirements.loc[
+                OtherInputsDf.at[v, "gvwr_kg"] = VocationRequirements.loc[
                     VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
-                    "GVWRkg",
+                    "gvwr_kg",
                 ].values[0]
-                OtherInputsDf.at[v, "GVWRCredit_kg"] = PowertrainTechTargets.loc[
+                OtherInputsDf.at[v, "gvwr_credit_kg"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
                         PowertrainTechTargets["Year"]
                         == BaselineVehicleSpec.at[y, "Year"]
                     ),
-                    "GVWRCredit_kg",
+                    "gvwr_credit_kg",
                 ].values[0]
-                OtherInputsDf.at[v, "fuel"] = PowertrainTechTargets.loc[
+                OtherInputsDf.at[v, "fuel_type"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
                         PowertrainTechTargets["Year"]
                         == BaselineVehicleSpec.at[y, "Year"]
                     ),
-                    "fuel",
+                    "fuel_type",
                 ].values[0]
-                OtherInputsDf.at[v, "maintDolPerMi"] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "maintDolPerMi",
-                ].values[0]
-                OtherInputsDf.at[v, "constTripDistMiles"] = VocationRequirements.loc[
+                OtherInputsDf.at[v, "maint_oper_cost_dol_per_mi"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "maint_oper_cost_dol_per_mi",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "constant_trip_distance_mi"] = (
+                    VocationRequirements.loc[
+                        VocationRequirements["Year"]
+                        == VocationRequirements.at[y, "Year"],
+                        "constant_trip_distance_mi",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "vehicle_life_yr"] = VocationRequirements.loc[
                     VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
-                    "constTripDistMiles",
+                    "vehicle_life_yr",
                 ].values[0]
-                OtherInputsDf.at[v, "vehLifeYears"] = VocationRequirements.loc[
-                    VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
-                    "vehLifeYears",
-                ].values[0]
-                OtherInputsDf.at[
-                    v, "desiredEssReplacements"
-                ] = PowertrainTechTargets.loc[
+                OtherInputsDf.at[v, "desired_ess_replacements"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "desired_ess_replacements",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "discount_rate_pct_per_yr"] = (
+                    VocationRequirements.loc[
+                        VocationRequirements["Year"]
+                        == VocationRequirements.at[y, "Year"],
+                        "discount_rate_pct_per_yr",
+                    ]
+                )
+                OtherInputsDf.at[v, "ess_cost_dol_per_kw"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
                         PowertrainTechTargets["Year"]
                         == BaselineVehicleSpec.at[y, "Year"]
                     ),
-                    "desiredEssReplacements",
+                    "ess_cost_dol_per_kw",
                 ].values[0]
-                OtherInputsDf.at[v, "discRate"] = VocationRequirements.loc[
-                    VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
-                    "discRate",
-                ]
-                OtherInputsDf.at[v, "essDolPerKw"] = PowertrainTechTargets.loc[
+                OtherInputsDf.at[v, "ess_cost_dol_per_kwh"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
                         PowertrainTechTargets["Year"]
                         == BaselineVehicleSpec.at[y, "Year"]
                     ),
-                    "essDolPerKw",
+                    "ess_cost_dol_per_kwh",
                 ].values[0]
-                OtherInputsDf.at[v, "essDolPerKwh"] = PowertrainTechTargets.loc[
+                OtherInputsDf.at[v, "ess_base_cost_dol"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
                         PowertrainTechTargets["Year"]
                         == BaselineVehicleSpec.at[y, "Year"]
                     ),
-                    "essDolPerKwh",
+                    "ess_base_cost_dol",
                 ].values[0]
-                OtherInputsDf.at[v, "essPackageCost"] = PowertrainTechTargets.loc[
+                OtherInputsDf.at[v, "ess_cost_reduction_dol_per_yr"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "ess_cost_reduction_dol_per_yr",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "ess_salvage_value_dol"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "ess_salvage_value_dol",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "pe_mc_cost_dol_per_kw"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "pe_mc_cost_dol_per_kw",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "pe_mc_base_cost_dol"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
                         PowertrainTechTargets["Year"]
                         == BaselineVehicleSpec.at[y, "Year"]
                     ),
-                    "essPackageCost",
+                    "pe_mc_base_cost_dol",
                 ].values[0]
-                OtherInputsDf.at[v, "essCostRedPerYear"] = PowertrainTechTargets.loc[
+                OtherInputsDf.at[v, "fc_ice_cost_dol_per_kw"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "fc_ice_cost_dol_per_kw",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "fc_ice_base_cost_dol"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
                         PowertrainTechTargets["Year"]
                         == BaselineVehicleSpec.at[y, "Year"]
                     ),
-                    "essCostRedPerYear",
+                    "fc_ice_base_cost_dol",
                 ].values[0]
-                OtherInputsDf.at[v, "essSalvageVal"] = PowertrainTechTargets.loc[
+                OtherInputsDf.at[v, "fc_fuelcell_cost_dol_per_kw"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "fc_fuelcell_cost_dol_per_kw",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "fs_cost_dol_per_kwh"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
                         PowertrainTechTargets["Year"]
                         == BaselineVehicleSpec.at[y, "Year"]
                     ),
-                    "essSalvageVal",
+                    "fs_cost_dol_per_kwh",
                 ].values[0]
-                OtherInputsDf.at[v, "peAndMcDolPerKw"] = PowertrainTechTargets.loc[
+                OtherInputsDf.at[v, "fs_h2_cost_dol_per_kwh"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "fs_h2_cost_dol_per_kwh",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "plug_base_cost_dol"] = PowertrainTechTargets.loc[
                     (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
                     & (
                         PowertrainTechTargets["Year"]
                         == BaselineVehicleSpec.at[y, "Year"]
                     ),
-                    "peAndMcDolPerKw",
+                    "plug_base_cost_dol",
                 ].values[0]
-                OtherInputsDf.at[v, "peAndMcBaseCost"] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "peAndMcBaseCost",
-                ].values[0]
-                OtherInputsDf.at[v, "iceDolPerKw"] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "iceDolPerKw",
-                ].values[0]
-                OtherInputsDf.at[v, "iceBaseCost"] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "iceBaseCost",
-                ].values[0]
-                OtherInputsDf.at[v, "fuelCellDolPerKw"] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "fuelCellDolPerKw",
-                ].values[0]
-                OtherInputsDf.at[v, "fuelStorDolPerKwh"] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "fuelStorDolPerKwh",
-                ].values[0]
-                OtherInputsDf.at[v, "fuelStorH2DolPerKwh"] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "fuelStorH2DolPerKwh",
-                ].values[0]
-                OtherInputsDf.at[v, "plugCost"] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "plugCost",
-                ].values[0]
-                OtherInputsDf.at[v, "markup"] = BaselineVehicleSpec.loc[
+                OtherInputsDf.at[v, "markup_pct"] = BaselineVehicleSpec.loc[
                     PowertrainTechTargets["Year"] == BaselineVehicleSpec.at[y, "Year"],
-                    "markup",
+                    "markup_pct",
                 ]
-                OtherInputsDf.at[v, "cngIceDolPerKw"] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
+                OtherInputsDf.at[v, "fc_cng_ice_cost_dol_per_kw"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "fc_cng_ice_cost_dol_per_kw",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "fs_cng_cost_dol_per_kwh"] = (
+                    PowertrainTechTargets.loc[
+                        (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
+                        & (
+                            PowertrainTechTargets["Year"]
+                            == BaselineVehicleSpec.at[y, "Year"]
+                        ),
+                        "fs_cng_cost_dol_per_kwh",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "vehicle_glider_cost_dol"] = (
+                    BaselineVehicleSpec.loc[
                         PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "cngIceDolPerKw",
-                ].values[0]
-                OtherInputsDf.at[v, "fuelStorCngDolPerKwh"] = PowertrainTechTargets.loc[
-                    (PowertrainTechTargets["PowertrainNumber"] == (pt + 1))
-                    & (
-                        PowertrainTechTargets["Year"]
-                        == BaselineVehicleSpec.at[y, "Year"]
-                    ),
-                    "fuelStorCngDolPerKwh",
-                ].values[0]
-                OtherInputsDf.at[v, "vehGliderPrice"] = BaselineVehicleSpec.loc[
-                    PowertrainTechTargets["Year"] == BaselineVehicleSpec.at[y, "Year"],
-                    "vehGliderPrice",
-                ]
-                OtherInputsDf.at[v, "tax"] = VocationRequirements.loc[
+                        == BaselineVehicleSpec.at[y, "Year"],
+                        "vehicle_glider_cost_dol",
+                    ]
+                )
+                OtherInputsDf.at[v, "tax_rate_pct"] = VocationRequirements.loc[
                     VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
-                    "tax",
+                    "tax_rate_pct",
                 ]
                 OtherInputsDf.at[v, "vocation"] = VocationRequirements.loc[
                     VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
                     "vocation",
                 ].values[0]
-                OtherInputsDf.at[v, "modelYear"] = BaselineVehicleSpec.at[y, "Year"]
+                OtherInputsDf.at[v, "model_year"] = BaselineVehicleSpec.at[y, "Year"]
                 OtherInputsDf.at[v, "region"] = VocationRequirements.loc[
                     VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
                     "region",
                 ].values[0]
-                OtherInputsDf.at[v, "TargetRangeMi"] = Ranges[r]
-                OtherInputsDf.at[
-                    v, "minSpeed6PercentGradeIn5min"
-                ] = VocationRequirements.loc[
-                    VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
-                    "minSpeed6PercentGradeIn5min",
-                ].values[0]
-                OtherInputsDf.at[
-                    v, "minSpeed1point25PercentGradeIn5min"
-                ] = VocationRequirements.loc[
-                    VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
-                    "minSpeed1point25PercentGradeIn5min",
-                ].values[0]
-                OtherInputsDf.at[v, "max0to60secAtGVWR"] = VocationRequirements.loc[
-                    VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
-                    "max0to60secAtGVWR",
-                ].values[0]
-                OtherInputsDf.at[v, "max0to30secAtGVWR"] = VocationRequirements.loc[
-                    VocationRequirements["Year"] == VocationRequirements.at[y, "Year"],
-                    "max0to30secAtGVWR",
-                ].values[0]
+                OtherInputsDf.at[v, "target_range_mi"] = Ranges[r]
+                OtherInputsDf.at[v, "min_speed_at_6pct_grade_in_5min_mph"] = (
+                    VocationRequirements.loc[
+                        VocationRequirements["Year"]
+                        == VocationRequirements.at[y, "Year"],
+                        "min_speed_at_6pct_grade_in_5min_mph",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "min_speed_at_1p25pct_grade_in_5min_mph"] = (
+                    VocationRequirements.loc[
+                        VocationRequirements["Year"]
+                        == VocationRequirements.at[y, "Year"],
+                        "min_speed_at_1p25pct_grade_in_5min_mph",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "max_time_0_to_60mph_at_gvwr_s"] = (
+                    VocationRequirements.loc[
+                        VocationRequirements["Year"]
+                        == VocationRequirements.at[y, "Year"],
+                        "max_time_0_to_60mph_at_gvwr_s",
+                    ].values[0]
+                )
+                OtherInputsDf.at[v, "max_time_0_to_30mph_at_gvwr_s"] = (
+                    VocationRequirements.loc[
+                        VocationRequirements["Year"]
+                        == VocationRequirements.at[y, "Year"],
+                        "max_time_0_to_30mph_at_gvwr_s",
+                    ].values[0]
+                )
                 # OtherInputsDf.at[v, "Powertrain"] =                  PowertrainTechTargets.loc[(PowertrainTechTargets['PowertrainNumber'] == (pt+1)) & (PowertrainTechTargets['Year'] == BaselineVehicleSpec.at[y, 'Year']), 'PowertrainName'].values[0]
 
                 v += 1
