@@ -17,7 +17,6 @@ from typing_extensions import Self
 from t3co.objectives import accel, fueleconomy, gradeability
 from t3co.run import Global as gl
 from t3co.tco import tco_analysis
-import logging
 
 # import importlib
 # tco_analysis = importlib.reload(tco_analysis)
@@ -36,13 +35,11 @@ class Config:
     vehicle_file: str = ""
     scenario_file: str = ""
     dst_dir: str = ""
-    resfile_suffix: str = ""
     write_tsv: bool = False
     selections: str = ""
-    driveCycle: str = ""
     # selections: list = field(default_factory=list)
     vehicle_life_yr: float = 0
-    TCO_method: str = "DIRECT"
+
     # Fueling
     ess_max_charging_power_kw: float = 0
     fs_fueling_rate_kg_per_min: float = 0
@@ -85,11 +82,9 @@ class Config:
         Returns:
             Self.from_dict: method that gets Config instance from config_dict
         """
-        self.filename = str(filename)
+        filename = str(filename)
 
-        config_df = pd.read_csv(self.filename, index_col="analysis_id").loc[analysis_id]
-        config_df = config_df.replace({np.nan: None})
-
+        config_df = pd.read_csv(filename, index_col="analysis_id").loc[analysis_id]
         config_dict = config_df.to_dict()
 
         return self.from_dict(config_dict=config_dict)
@@ -109,19 +104,7 @@ class Config:
             config_dict["selections"] = ast.literal_eval(config_dict["selections"])
         except:  # noqa: E722
             config_dict["selections"] = int(config_dict["selections"])
-
         self.__dict__.update(config_dict)
-        
-        assert (
-            str(config_dict["TCO_method"]).upper()
-            in ["EFFICIENCY", "DIRECT", "NONE", "","NAN"]
-        ), f"Invalid TCO_method provided:{config_dict['TCO_method']}. Defaults to 'DIRECT'. Choose between ['EFFICIENCY', 'DIRECT', None]"
-        
-        self.TCO_method = (
-            str(config_dict["TCO_method"]).upper()
-            if str(config_dict["TCO_method"]).upper() in ["EFFICIENCY", "DIRECT"]
-            else "DIRECT"
-        )
 
     def validate_analysis_id(self, filename: str, analysis_id: int = 0) -> Self:
         """
@@ -135,16 +118,13 @@ class Config:
         """
         filename = str(filename)
         config_df = pd.read_csv(filename)
-        try:
-            config_selection = config_df.iloc[analysis_id]
-            logging.info(
-                f"Running analysis id = {analysis_id}, {config_selection['analysis_name']}"
-            )
-        except:
-            logging.exception(
-                f"Given analysis_id = {analysis_id} not in config input file: {filename}"
-            )
-        
+        print(f"Try these analysis IDs instead: {list(config_df['analysis_id'])}")
+        assert (
+            analysis_id in config_df["analysis_id"]
+        ), "Given analysis_id not in config input file"
+        raise Exception
+
+
 @dataclass
 class Scenario:
     """
@@ -153,7 +133,6 @@ class Scenario:
     """
 
     selection: float = 0
-    veh_year: int = 0
     drive_cycle: str = ""
     use_config: bool = True
     vmt_reduct_per_yr: float = 0
@@ -271,7 +250,6 @@ class Scenario:
     trace_miss_dist_percent: float = 0
     constraint_phev_minimize_fuel_use_on: bool = False
     constraint_phev_minimize_fuel_use_percent: float = 0
-    residual_rate_percent: list = field(default_factory=list)
 
     #
     ### TCO Element Activations and vars
@@ -337,26 +315,20 @@ class Scenario:
             "activate_mr_downtime_cost",
         ]
         self.fields_overriden = []
-
-        try:
-            if self.use_config == True:
-                for field_select in fields_override:
-                    if config.__dict__[field_select] != None:
-                        # and (
-                        # not self.__dict__[field_select])
-                        setattr(
-                            self, field_select, config.__getattribute__(field_select)
-                        )
-                        # print(f'field: {field}, type: {type(self.__getattribute__(field))}, value: {self.__getattribute__(field)}')
-                        self.fields_overriden.append(field_select)
-                logging.info(
-                    f"Scenario Fields overridden from config: {self.fields_overriden}"
-                )
-                # print(f"Scenario Fields overridden from config: {self.fields_overriden}") if verbose else None
-        except ValueError:
-            logging.exception(f"Config file not attached {config.filename}")
+        if self.use_config == True and config != None:
+            for field_select in fields_override:
+                if (config.__dict__[field_select] is not None) and (
+                    not self.__dict__[field_select]
+                ):
+                    setattr(self, field_select, config.__getattribute__(field_select))
+                    # print(f'field: {field}, type: {type(self.__getattribute__(field))}, value: {self.__getattribute__(field)}')
+                    self.fields_overriden.append(field_select)
+            print(f"Scenario Fields overridden from config: {self.fields_overriden}")
         else:
-            logging.info(f"scenario.use_config set to False: {self.use_config}")
+            print(
+                f"Config file not attached or scenario.use_config set to False: {config}"
+            )
+
         return self
 
 
@@ -622,7 +594,7 @@ def load_scenario(
 
     # convert insurance rates string into float list
     scenario.insurance_rates_pct_per_yr = list(
-        np.float64(scenario.insurance_rates_pct_per_yr.strip(" ][").split(","))
+        np.float_(scenario.insurance_rates_pct_per_yr.strip(" ][").split(","))
     )
 
     # validate some inputs, assign as -1 if not provided by user in input file

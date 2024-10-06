@@ -71,11 +71,9 @@ class OpportunityCost:
             self.frac_of_fullcharge_bounds = list(
                 np.float_(scenario.fdt_frac_full_charge_bounds.strip(" ][").split(","))
             )
-            scenario.shifts_per_year = list(
-                np.float64(str(scenario.shifts_per_year).strip(" ][").split(","))
+            self.shifts_per_year = list(
+                np.float_(scenario.shifts_per_year.strip(" ][").split(","))
             )
-            if 0 in scenario.shifts_per_year:
-                scenario.shifts_per_year = [round(scenario.VMT[i] / self.total_range_mi) for i in range(scenario.vehLifeYears)]
 
         self.payload_cap_cost_multiplier = 0
 
@@ -349,7 +347,7 @@ class OpportunityCost:
 
         for i in range(scenario.vehicle_life_yr):
             # self.shifts_per_year = (scenario.vmt[i])/ self.cycle_distance_mi
-            self.d_trip_mi = scenario.vmt[i] / scenario.shifts_per_year[i]
+            self.d_trip_mi = scenario.vmt[i] / self.shifts_per_year[i]
             self.num_of_dwells = max(
                 0,
                 (
@@ -393,7 +391,7 @@ class OpportunityCost:
                     * scenario.fdt_avg_overhead_hr_per_dwell_hr
                 )
                 self.net_fueling_dwell_time_hr_per_yr.append(
-                    scenario.shifts_per_year[i]
+                    self.shifts_per_year[i]
                     * max(
                         0,
                         (

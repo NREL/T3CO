@@ -35,7 +35,6 @@ def find_residual_rates(
         (residual_rates_all["VehicleClass"].str.lower() == vehicle_class)
         & (residual_rates_all["PowertrainType"].str.lower() == powertrain_type)
     ][year].values[0]
-    scenario.residual_rate_percent = residual_rates
     return residual_rates
 
 
@@ -226,8 +225,8 @@ def calculate_opp_costs(
         assert not np.isnan(scenario.fdt_avg_overhead_hr_per_dwell_hr)
         assert (
             gl.not_falsy(scenario.shifts_per_year)
-            and len(scenario.shifts_per_year) >= scenario.vehicle_life_yr
-        ), f"Provide scenario.shifts_per_year as a vector of length > scenario.vehicle_life_yr. Currently {len(scenario.shifts_per_year)}"
+            and len(oppcostobj.shifts_per_year) >= scenario.vehicle_life_yr
+        ), f"Provide scenario.shifts_per_year as a vector of length > scenario.vehicle_life_yr. Currently {len(oppcostobj.shifts_per_year)}"
         assert gl.not_falsy(scenario.fdt_frac_full_charge_bounds)
         oppcostobj.set_fueling_dwell_time_cost(vehicle, scenario)
 

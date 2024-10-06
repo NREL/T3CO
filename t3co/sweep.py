@@ -519,18 +519,12 @@ def run_vehicle_scenarios(
 
     # results dir setup
     ts = strftime("%Y-%m-%d_%H-%M-%S", gmtime())
-    if config.resfile_suffix is not None:
-        RES_FILE = f"{file_mark}results_{ts}_{str(config.resfile_suffix)}.csv".strip(
-            "_"
-        )
-    else:
-        selections_string = (
-            str(selections).strip("[]").replace(" ", "").replace(",", "-")
-        )
-        RES_FILE = f"{file_mark}results_{ts}_sel_{selections_string}.csv".strip("_")
+    RES_FILE = f"{file_mark}results_{ts}_sel_{str(selections).strip('[]').replace(' ','').replace(',','-')}.csv".strip(
+        "_"
+    )
 
     if selections == -1:
-        selections = vdf.index
+        selections = range(len(vdf))
 
     if args.dst_dir is None and config.dst_dir is None:
         resdir = Path(os.path.abspath(__file__)).parents[1] / f"results{dir_mark}"
@@ -639,7 +633,7 @@ def run_vehicle_scenarios(
             f"Running selection {sel} for scenario {scenario_name} - skip opt = {skip_opt} -algo = {algo}"
         )
 
-        ti = time.perf_counter()
+        ti = time.time()
         sel = float(sel)
 
         gl.vocation_scenario = scenario_name
@@ -702,12 +696,7 @@ def run_vehicle_scenarios(
             )
 
             outdict = rs.vehicle_scenario_sweep(
-                input_vehicle,
-                report_scenario,
-                design_cycle,
-                write_tsv=write_tsv,
-                verbose=False,
-                config= config,
+                input_vehicle, report_scenario, design_cycle, write_tsv=write_tsv
             )
 
         # iterate thru all results from run, num_results can singleton [1] from analysis-only runs
@@ -746,7 +735,7 @@ def run_vehicle_scenarios(
             if "input_vehicle_value_props" in report_i:
                 del report_i["input_vehicle_value_props"]
 
-            opt_time = round(time.perf_counter() - ti)
+            opt_time = round(time.time() - ti)
 
             report_i["selection"] = sel
 
@@ -865,8 +854,8 @@ def run_vehicle_scenarios(
                     opt_time,
                 )
                 print(
-                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} total cost using {config.TCO_method} Method: {tot_cost}"
-                    ,
+                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} total cost",
+                    tot_cost,
                 )
                 print(f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} mpgge", mpgge)
                 print(
@@ -1079,7 +1068,7 @@ def run_vehicle_scenarios(
         return False
 
     if do_input_validation:
-        st = time.perf_counter()
+        st = time.time()
         print("sweep:: Running input validation...")
         badinputs = False
         noinputs = True
@@ -1095,6 +1084,7 @@ def run_vehicle_scenarios(
                         f"sweep:: validating input {sel}:{scenario_name}".ljust(90),
                         algopart,
                     )
+                    # print(f'config: {config}')
                     input_validation(sel, optpt, algo, config)
                 except KeyboardInterrupt:
                     raise
@@ -1106,9 +1096,7 @@ def run_vehicle_scenarios(
                         exc_info=True,
                     )
                 noinputs = False
-        print(
-            f"sweep:: Finished input validation, time [s] {round(time.perf_counter()-st)}"
-        )
+        print(f"sweep:: Finished input validation, time [s] {round(time.time()-st)}")
         if badinputs:
             raise Exception(
                 f"sweep:: input_validation failure, see log file!\n{loggingfname}"
@@ -1133,7 +1121,6 @@ def run_vehicle_scenarios(
                     optpt,
                     algo="None",
                     skip_opt=True,
-                    config = config,
                     write_tsv=write_tsv,
                 )
             else:
@@ -1144,7 +1131,6 @@ def run_vehicle_scenarios(
                         optpt,
                         algo,
                         skip_opt=False,
-                        config=config,
                         write_tsv=write_tsv,
                     )
         except:
@@ -1155,7 +1141,6 @@ def run_vehicle_scenarios(
 
 
 if __name__ == "__main__":
-    start = time.perf_counter()
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         prog="SWEEP",
@@ -1289,7 +1274,7 @@ if __name__ == "__main__":
         "--n-max-gen",
         default=1000,
         type=float,
-        help="Max number of optimizer iterations regardless of algorithm",
+        help="Cax number of optimizer iterations regardless of algorithm",
     )
     parser.add_argument("--pop-size", default=25, help="population of each generation")
     parser.add_argument(
@@ -1366,10 +1351,11 @@ if __name__ == "__main__":
         # args.analysis_id = ast.literal_eval(args.analysis_id)
         try:
             config = rs.Config()
-            config.validate_analysis_id(filename=args.config, analysis_id=args.analysis_id)
             config.from_file(filename=args.config, analysis_id=args.analysis_id)
         except ValueError:
-            logging.exception('Config file invalid')
+            print(f"Config analysis_id not valid: {args.analysis_id}")
+            config = rs.Config()
+            config.validate_analysis_id(filename=args.config)
         selections = config.selections
         vehicles = gl.SWEEP_PATH.parents[0] / config.vehicle_file
         scenarios = gl.SWEEP_PATH.parents[0] / config.scenario_file
@@ -1395,6 +1381,7 @@ if __name__ == "__main__":
         algorithms = ast.literal_eval(args.algorithms)
     else:
         algorithms = [args.algorithms]
+
     kwargs = {
         "selections": selections,
         "look_for": look_for,
@@ -1409,9 +1396,9 @@ if __name__ == "__main__":
         "pop_size": int(args.pop_size),
         "nth_gen": int(args.nth_gen),
         "n_last": int(args.n_last),
-        "skip_all_opt": (
-            args.skip_all_opt if args.config is None else config.skip_all_opt
-        ),
+        "skip_all_opt": args.skip_all_opt
+        if args.config is None
+        else config.skip_all_opt,
         "do_input_validation": args.skip_input_validation,
         "range_overshoot_tol": float(args.range_overshoot_tol)
         if args.range_overshoot_tol is not None
@@ -1427,6 +1414,7 @@ if __name__ == "__main__":
                 "missed_trace_correction": bool(args.missed_trace_correction),
             }
         )
+
     run_vehicle_scenarios(
         vehicles,
         scenarios,
@@ -1436,7 +1424,5 @@ if __name__ == "__main__":
         config=config,
         **kwargs,
     )
-    end = time.perf_counter()
-    print(f"Total analysis time: {round((end - start),5)}s")
 
 # %%
