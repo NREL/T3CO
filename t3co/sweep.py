@@ -1274,7 +1274,7 @@ if __name__ == "__main__":
         "--n-max-gen",
         default=1000,
         type=float,
-        help="Cax number of optimizer iterations regardless of algorithm",
+        help="Max number of optimizer iterations regardless of algorithm",
     )
     parser.add_argument("--pop-size", default=25, help="population of each generation")
     parser.add_argument(
@@ -1346,9 +1346,7 @@ if __name__ == "__main__":
         lw_imp_curves = Path(args.lw_imp_curves)
         aero_drag_imp_curves = Path(args.aero_drag_imp_curves)
         write_tsv = args.write_tsv
-        # config = None
     else:
-        # args.analysis_id = ast.literal_eval(args.analysis_id)
         try:
             config = rs.Config()
             config.from_file(filename=args.config, analysis_id=args.analysis_id)

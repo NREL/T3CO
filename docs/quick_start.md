@@ -34,8 +34,11 @@ python sweep.py --help
 
 ```
 $ python sweep.py --help
-usage: SWEEP [-h] [--config CONFIG] [--analysis-id ANALYSIS_ID] [--vehicles VEHICLES] [--scenarios SCENARIOS] [--selections [SELECTIONS ...]] [--eng-curves ENG_CURVES] [--lw-curves LW_CURVES] [--aero-curves AERO_CURVES] [--look-for LOOK_FOR] [--skip-all-opt] [--skip-input-validation] [--exclude [EXCLUDE ...]] [--algorithms [ALGORITHMS ...]] [--dst-dir DST_DIR] [--dir-mark DIR_MARK] [--file-mark FILE_MARK] [--skip-save-veh] [--x-tol X_TOL] [--f-tol F_TOL] [--n-max-gen N_MAX_GEN] [--pop-size POP_SIZE] [--nth-gen NTH_GEN] [--n-last N_LAST]
-             [--range-overshoot-tol RANGE_OVERSHOOT_TOL] [---missed-trace-correction] [--max-time-dilation MAX_TIME_DILATION] [--min-time-dilation MIN_TIME_DILATION] [--time-dilation-tol TIME_DILATION_TOL] [--write-tsv WRITE_TSV]
+usage: SWEEP [-h] [--config CONFIG] [--analysis-id ANALYSIS_ID] [--vehicles VEHICLES] [--scenarios SCENARIOS] [--selections [SELECTIONS ...]] [--eng-curves ENG_CURVES] [--lw-curves LW_CURVES]
+             [--aero-curves AERO_CURVES] [--look-for LOOK_FOR] [--skip-all-opt] [--skip-input-validation] [--exclude [EXCLUDE ...]] [--algorithms [ALGORITHMS ...]] [--dst-dir DST_DIR]
+             [--dir-mark DIR_MARK] [--file-mark FILE_MARK] [--skip-save-veh] [--x-tol X_TOL] [--f-tol F_TOL] [--n-max-gen N_MAX_GEN] [--pop-size POP_SIZE] [--nth-gen NTH_GEN] [--n-last N_LAST]
+             [--range-overshoot-tol RANGE_OVERSHOOT_TOL] [---missed-trace-correction] [--max-time-dilation MAX_TIME_DILATION] [--min-time-dilation MIN_TIME_DILATION]
+             [--time-dilation-tol TIME_DILATION_TOL] [--write-tsv WRITE_TSV]
 
 The sweep.py module is the main script to run T3CO
 
@@ -48,7 +51,8 @@ optional arguments:
   --scenarios SCENARIOS
                         Input file for Scenario models (default: ./resources/inputs/demo/Demo_FY22_scenario_assumptions.csv)
   --selections [SELECTIONS ...]
-                        Selections desired to run. Selections can be an int, or list of ints, or range expression. Ex: --selections 234 or --selections "[234,236,238]" or --selections "range(234, 150, 2)" (default: None)
+                        Selections desired to run. Selections can be an int, or list of ints, or range expression. Ex: --selections 234 or --selections "[234,236,238]" or --selections "range(234,
+                        150, 2)" (default: None)
   --eng-curves ENG_CURVES
                         Input file for engine efficiency improvement cost curves (default: ./resources/auxiliary/EngineEffImprovementCostCurve.csv)
   --lw-curves LW_CURVES
@@ -63,8 +67,9 @@ optional arguments:
   --exclude [EXCLUDE ...]
                         Overrides -look_for. a string for string matching to exclude runs, example -exclude 'FCEV' or -look_for '["FCEV", "HEV"]' (default: >{-<>-}<)
   --algorithms [ALGORITHMS ...], --algos [ALGORITHMS ...], --algo [ALGORITHMS ...]
-                        Enter algorithm or list of algorithms, or "ensemble" to use all, to use for optimization: ['NSGA2', 'NelderMead', 'PatternSearch', 'PSO'] ex: -algos PatternSearch | -algos '["PatternSearch", "NSGA2"]' | -algos "ensemble" (default: NSGA2)
-  --dst-dir DST_DIR     Directory to store T3CO results (default: ../results)
+                        Enter algorithm or list of algorithms, or "ensemble" to use all, to use for optimization: ['NSGA2', 'NelderMead', 'PatternSearch', 'PSO'] ex: -algos PatternSearch | -algos
+                        '["PatternSearch", "NSGA2"]' | -algos "ensemble" (default: NSGA2)
+  --dst-dir DST_DIR     Directory to store T3CO results (default: ./results)
   --dir-mark DIR_MARK   Name for results directory in addition to timestamp (default: )
   --file-mark FILE_MARK
                         Prefix to add to the result file names (default: )
@@ -72,7 +77,7 @@ optional arguments:
   --x-tol X_TOL         Parameter space tolerance for optimization (default: 0.001)
   --f-tol F_TOL         Objective space tolerance for optimzation (default: 0.001)
   --n-max-gen N_MAX_GEN
-                        Cax number of optimizer iterations regardless of algorithm (default: 1000)
+                        Max number of optimizer iterations regardless of algorithm (default: 1000)
   --pop-size POP_SIZE   population of each generation (default: 25)
   --nth-gen NTH_GEN     Period of generations in which to evaluate if convergence happens during optimization (default: 1)
   --n-last N_LAST       Number of generations to look back for establishing convergence during optimization (default: 5)

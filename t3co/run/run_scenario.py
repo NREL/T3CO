@@ -18,8 +18,6 @@ from t3co.objectives import accel, fueleconomy, gradeability
 from t3co.run import Global as gl
 from t3co.tco import tco_analysis
 
-# import importlib
-# tco_analysis = importlib.reload(tco_analysis)
 
 
 # --------------------------------- \\ powertrain adjustment methods --------------------------------- #
@@ -99,7 +97,6 @@ class Config:
         Returns:
             Self: Config instance containining all values from T3CO Config CSV file
         """
-        # config_dict['selections'] = np.array(ast.literal_eval(config_dict['selections']))
         try:
             config_dict["selections"] = ast.literal_eval(config_dict["selections"])
         except:  # noqa: E722
@@ -534,6 +531,11 @@ def get_scenario_and_cycle(
     """
     scenario = load_scenario(veh_no, scenario_inputs_path, a_vehicle, config)
     cyc = load_design_cycle_from_scenario(scenario, gl.OPTIMIZATION_DRIVE_CYCLES)
+
+    if isinstance(cyc, list):
+        scenario.constant_trip_distance_mi = sum([sum(cyc[i][0].mph * np.diff(np.array(cyc[i][0].time_s), append=0))*cyc[i][1]/3600 for i in range(len(cyc))])
+    else:
+        scenario.constant_trip_distance_mi = sum(cyc.mph * np.diff(np.array(cyc.time_s), append=0))/3600
 
     return scenario, cyc
 

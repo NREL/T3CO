@@ -1,7 +1,3 @@
-# December 2018
-# Stock Model in Python
-# C. Hunter
-
 from typing import Tuple
 import pandas as pd
 
@@ -181,7 +177,6 @@ def stockModel(
         residualCosts.to_csv(gl.TCO_INTERMEDIATES / "residual_costs.csv", index=False)
         downtimeCosts.to_csv(gl.TCO_INTERMEDIATES / "downtime_costs.csv", index=False)
 
-    # ownershipCosts = pd.concat([vehicleCosts, travelCosts, fuelCosts], sort=False)
     ownershipCosts = pd.concat(
         [
             vehicleCosts,
