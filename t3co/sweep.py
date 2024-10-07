@@ -1274,7 +1274,7 @@ if __name__ == "__main__":
         "--n-max-gen",
         default=1000,
         type=float,
-        help="Cax number of optimizer iterations regardless of algorithm",
+        help="Max number of optimizer iterations regardless of algorithm",
     )
     parser.add_argument("--pop-size", default=25, help="population of each generation")
     parser.add_argument(
