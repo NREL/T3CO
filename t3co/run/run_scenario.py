@@ -535,6 +535,11 @@ def get_scenario_and_cycle(
     scenario = load_scenario(veh_no, scenario_inputs_path, a_vehicle, config)
     cyc = load_design_cycle_from_scenario(scenario, gl.OPTIMIZATION_DRIVE_CYCLES)
 
+    if isinstance(cyc, list):
+        scenario.constant_trip_distance_mi = sum([sum(cyc[i][0].mph * np.diff(np.array(cyc[i][0].time_s), append=0))*cyc[i][1]/3600 for i in range(len(cyc))])
+    else:
+        scenario.constant_trip_distance_mi = sum(cyc.mph * np.diff(np.array(cyc.time_s), append=0))/3600
+
     return scenario, cyc
 
 

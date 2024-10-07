@@ -1,6 +1,7 @@
 # %%
 from __future__ import annotations
 
+import ast
 import warnings
 from math import ceil
 from pathlib import Path
@@ -71,9 +72,10 @@ class OpportunityCost:
             self.frac_of_fullcharge_bounds = list(
                 np.float_(scenario.fdt_frac_full_charge_bounds.strip(" ][").split(","))
             )
-            self.shifts_per_year = list(
-                np.float_(scenario.shifts_per_year.strip(" ][").split(","))
-            )
+            if ('0' in str(scenario.shifts_per_year) or np.isnan(scenario.shifts_per_year)) and scenario.constant_trip_distance_mi:
+                self.shifts_per_year = [round(scenario.vmt[i] / scenario.constant_trip_distance_mi) for i in range(scenario.vehicle_life_yr)]
+            else:
+                self.shifts_per_year = ast.literal_eval(scenario.shifts_per_year)
 
         self.payload_cap_cost_multiplier = 0
 
