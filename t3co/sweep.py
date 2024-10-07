@@ -1346,9 +1346,7 @@ if __name__ == "__main__":
         lw_imp_curves = Path(args.lw_imp_curves)
         aero_drag_imp_curves = Path(args.aero_drag_imp_curves)
         write_tsv = args.write_tsv
-        # config = None
     else:
-        # args.analysis_id = ast.literal_eval(args.analysis_id)
         try:
             config = rs.Config()
             config.from_file(filename=args.config, analysis_id=args.analysis_id)

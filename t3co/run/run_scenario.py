@@ -18,8 +18,6 @@ from t3co.objectives import accel, fueleconomy, gradeability
 from t3co.run import Global as gl
 from t3co.tco import tco_analysis
 
-# import importlib
-# tco_analysis = importlib.reload(tco_analysis)
 
 
 # --------------------------------- \\ powertrain adjustment methods --------------------------------- #
@@ -99,7 +97,6 @@ class Config:
         Returns:
             Self: Config instance containining all values from T3CO Config CSV file
         """
-        # config_dict['selections'] = np.array(ast.literal_eval(config_dict['selections']))
         try:
             config_dict["selections"] = ast.literal_eval(config_dict["selections"])
         except:  # noqa: E722
