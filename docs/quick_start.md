@@ -1,6 +1,6 @@
 # Quick Start Guide to T3CO
 
-A total cost analysis is only as good as its inputs. Generating T3CO results requires equal parts of investment in inputs gathering as it is in running the tool. To make things easier, we provide 500+ demo scenarios for the user to choose from to run T3CO.
+A total-cost analysis is only as good as its inputs. Generating T3CO results requires equal parts of investment in inputs gathering as it is in running the tool. To make things easier, we provide 500+ demo scenarios for the user to choose from to run T3CO.
 
 ## Inputs
 
@@ -11,8 +11,10 @@ T3CO contains three main input files and several auxiliary files that are refere
 The main input files are the [***Vehicle***](vehicle_inputs_descriptions.md), [***Scenario***](scenario_inputs_descriptions.md), and [***Config***](config_inputs_descriptions.md). T3CO provides users with demo input files to get started. One or more *Vehicle-Scenario* pair selections are necessary to run T3CO:
 
 - ***Vehicle*** contains sets of FASTSim vehicle input parameters that define the powertrain and vehicle dynamics of the selected *Vehicle-Scenario* pair. Each entry in the ***Vehicle*** file is called a "Vehicle Model" and is referenced using `vehicle.selection` as a key. [[Demo Vehicles](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/inputs/demo/Demo_FY22_vehicle_model_assumptions.csv)]
-- ***Scenario*** contains cost, infrastructure, and optimization related input parameters that define a certain scenario. Each entry in the Scenario file is called a "Scenario Model" and is referenced using `scenario.selection` as a key. `scenario.selection` and `vehicle.selection` are expected to match to be able to run a Vehicle-Scenario pair . [[Demo Scenarios](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/inputs/demo/Demo_FY22_scenario_assumptions.csv)]
+- ***Scenario*** contains cost, infrastructure, and optimization related input parameters that define a certain scenario. Each entry in the Scenario file is called a "Scenario Model" and is referenced using `scenario.selection` as a key. [[Demo Scenarios](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/inputs/demo/Demo_FY22_scenario_assumptions.csv)]
 - ***Config*** contains easy ways to manage T3CO model settings and to save the inputs needed to run a set of selections of *Vehicle-Scenario* pairs. It also contains paths to various input files and some Scenario parameter overrides to be used globally on all selections. Users can also specify a path to the output directory in which T3CO results need to be saved. Each entry in the ***Config*** file refers to an "Analysis" and is accessed using `config.analysis_id` [[Demo Analyses](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/T3COConfig.csv)]
+
+Note that `scenario.selection` and `vehicle.selection` are expected by the tool to be the same for a chosen Vehicle-Scenario pair, i.e., a row on the ***Scenario*** file has a corresponding row on the ***Vehicle*** file with the same `selection` key. The `config.selections` attribute accepts a list of "selection" (that refers to both `scenario.selection` and `vehicle.selection`) and is used to fetch the desired set of inputs to run.
 
 ### Auxiliary Inputs
 
