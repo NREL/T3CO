@@ -1,6 +1,6 @@
 # Installation
-## Setting Up a Python Environment <a name="installation"></a>
-T3CO depends on python>=3.8 and <=3.10. To create an environment containing the appropriate Python version and a built-in `pip`, there are two preferred ways:
+## Setting Up a Python Environment <a name="setting-up-env"></a>
+T3CO depends on [Python](https://www.python.org/downloads/)>=3.8 and <=3.10. To create an environment containing the appropriate Python version and a built-in `pip`, there are two preferred ways:
 
 1. First option is to use [**conda**](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html):
 
@@ -28,26 +28,25 @@ T3CO depends on python>=3.8 and <=3.10. To create an environment containing the 
     ```
 
 ## Installing From [PyPI](https://pypi.org/project/t3co/)
-T3CO can be easily installed from PyPI. This is the preferred method when using T3CO as a dependency for a project.
+T3CO can be easily installed from PyPI. This is the preferred method when using T3CO as a dependency for a project. To install the latest release:
 ```bash
 pip install t3co
 ```
 
-To install a specific version (for example T3CO v1.0.8),
+To install a specific version (for example T3CO v1.0.8):
 ```bash
 pip install t3co==1.0.8
 ```
 
 ## From GitHub
-T3CO can also be installed directly from the GitHub repository for accessing demo input files and running T3CO using the Command Line Interface. 
+T3CO can also be installed directly from the GitHub repository for accessing demo input files and running T3CO using the Command Line Interface.
 
 First, clone the repository from [GitHub](https://github.com/NREL/T3CO):
 ```bash
 git clone https://github.com/NREL/T3CO.git T3CO
 ```
 
-
-From within the [python environment](#installation) Navigate to the parent directory containing the T3CO repository e.g. `cd github/T3CO/` and run:
+From within the [Python environment](#setting-up-env) Navigate to the parent directory containing the T3CO repository e.g. `cd github/T3CO/` and run:
 ```bash
 pip install -e .
 ```

@@ -18,29 +18,31 @@ For information on the T3CO models, go to the [Overview](https://github.com/NREL
 **T3CO** is a general framework allowing a user to determine the total cost of ownership (TCO) of a FASTSim vehicle (paired with a FASTSim DriveCycle(s) for determining fuel efficiency). The user can also determine performance of gradability, acceleration, and range. In addition to straight TCO computation there is also the option to optimize a vehicle powertrain such that it meets performance optional targets while also optionally minimizing TCO.
 
 ## Installation
-**From PyPI**
+### Installing From [PyPI](https://pypi.org/project/t3co/)
+T3CO can be easily installed from PyPI. This is the preferred method when using T3CO as a dependency for a project. To install the latest release:
 ```bash
 pip install t3co
 ```
 
-**From Github**
+To install a specific version (for example T3CO v1.0.8):
+```bash
+pip install t3co==1.0.8
+```
 
-First, clone the repository from **NREL** GitHub:
+### From GitHub
+T3CO can also be installed directly from the GitHub repository for accessing demo input files and running T3CO using the Command Line Interface.
 
-    git clone https://github.com/NREL/T3CO.git T3CO
+First, clone the repository from [GitHub](https://github.com/NREL/T3CO):
+```bash
+git clone https://github.com/NREL/T3CO.git T3CO
+```
 
-t3co depends on python 3.8 to 3.10. One way to satisfy this is to use conda:
+From within the [Python environment](#setting-up-env) Navigate to the parent directory containing the T3CO repository e.g. `cd github/T3CO/` and run:
+```bash
+pip install -e .
+```
+This installs the local version of the T3CO clone along with all its [dependencies](https://github.com/NREL/T3CO/blob/29b0e848360b3b2de84b555bf52c52bf6e76134e/requirements.txt).
 
-    conda create -n t3co python=3.10
-    conda activate t3co
-
-After creating the environment, navigate to the parent directory containing the T3CO repository e.g. `cd github/T3CO/` and run:
-
-    pip install -e .
-
-from within the t3co python environment you created.  
-
-This will install T3CO with minimal dependencies such that t3co files can be editable. Developers will find the `-e` option handy since t3co will be installed in place from the installation location, and any updates will be propagated each time t3co is freshly imported.  
 
 ## Demo
 **Using the [T3CO Config](https://github.com/NREL/T3CO/blob/c3df6421033cef7d35b7d7cd575ab94e85fcd9a9/t3co/resources/T3COConfig.csv) file**
