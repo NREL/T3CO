@@ -1,73 +1,71 @@
 # Installation
-## From [PyPI](https://pypi.org/project/t3co/)
+## Setting Up a Python Environment <a name="setting-up-env"></a>
+T3CO depends on [Python](https://www.python.org/downloads/)>=3.8 and <=3.10. To create an environment containing the appropriate Python version and a built-in `pip`, there are two preferred ways:
+
+1. First option is to use [**conda**](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html):
+
+    ```bash
+    conda create -n t3co python=3.10
+    conda activate t3co
+    ```
+
+2. The other option is using [venv](https://docs.python.org/3/library/venv.html)
+
+    ```bash
+    python3.10 -m venv t3co
+    ```
+
+    On macOS/Linux, activate the environment:
+
+    ```bash
+    source t3co/bin/activate
+    ```
+
+    On Windows Powershell:
+    
+    ```bash
+    t3co\Scripts\activate
+    ```
+
+## Installing From [PyPI](https://pypi.org/project/t3co/)
+T3CO can be easily installed from PyPI. This is the preferred method when using T3CO as a dependency for a project. To install the latest release:
 ```bash
 pip install t3co
 ```
 
-## From Github
-First, clone the repository from [Github](https://github.com/NREL/T3CO) :
-
-    git clone https://github.com/NREL/T3CO.git T3CO
-    
-t3co depends on python>=3.8 and <=3.10. One way to satisfy this is to use conda:
-
-    conda create -n t3co python=3.8
-    conda activate t3co
-
-
-Navigate to the parent directory containing the T3CO repository e.g. `cd github/T3CO/` and run:
-
-    pip install -e .
-
-This installs the local version of T3CO along with all its dependencies. 
-
-FASTSim is installed along with other library dependancies. In case of `ModuleNotFoundError: No module named 'fastsim'`:
-
-    pip install fastsim
-
-
-from within the t3co python 3.8 environment you created.  
-    
-This will install t3co with minimal dependencies such that t3co files can be editable. Developers will find the `-e` option handy since t3co will be installed in place from the installation location, and any updates will be propagated each time t3co is freshly imported.  
-
-
-to be compatible with the current code in T3CO.
-
-## Demo 
-**get some quick TCO results**
+To install a specific version (for example T3CO v1.0.8):
 ```bash
-cd run_scripts
-python sweep.py -skip_all_opt -selections  [1,2,3,4,5] -dst_dir ./demodata
+pip install t3co==1.0.8
 ```
 
-**using T3CO Config file**
+## From GitHub
+T3CO can also be installed directly from the GitHub repository for accessing demo input files and running T3CO using the Command Line Interface.
+
+First, clone the repository from [GitHub](https://github.com/NREL/T3CO):
 ```bash
-cd run_scripts
-pytho sweep.py -analysis_id 0
+git clone https://github.com/NREL/T3CO.git T3CO
 ```
 
-**using optimiztion in sweep module** [see](./models/optimization.md)
-
-## Generate MD Documentation from Docstrings
-**On Windows**
-
+From within the [Python environment](#setting-up-env) Navigate to the parent directory containing the T3CO repository e.g. `cd github/T3CO/` and run:
 ```bash
-pip install --user pipx
-pipx ensurepath
+pip install -e .
+```
+This installs the local version of the T3CO clone along with all its [dependencies](https://github.com/NREL/T3CO/blob/29b0e848360b3b2de84b555bf52c52bf6e76134e/requirements.txt).
+
+FASTSim is installed along with other library dependancies. In case of `ModuleNotFoundError: No module named 'fastsim'` error:
+```bash
+pip install fastsim==2.1.1
 ```
 
-**On Mac**
+Check that the right version of T3CO is installed in your environment:
 ```bash
-brew install pipx
-pipx ensurepath
+pip show t3co
 ```
 
-Then from T3CO root directory
+If there are updates or new releases to T3CO that don't show in the local version, use a `git pull` command the latest version from the `main` branch on the repo:
 ```bash
-pipx install pydoc-markdown
-pydoc-markdown -I . -p . --render-toc > CodeReference.md
+git pull origin main
 ```
-for specific modules, specify the module name after `-m`:
-`pydoc-markdown -I . -m run_scripts.sweep --render-toc > CodeReference.md`
 
-This generates CodeReference.md including a Table of Contents from all python docstrings in the T3CO package
+## Running your first analysis
+To learn about the tool and run your first T3CO analysis, proceed to the [Quick Start Guide](./quick_start.md)
