@@ -21,7 +21,18 @@ Note that `scenario.selection` and `vehicle.selection` are expected by the tool 
 The auxiliary input files in the [`t3co/resources/auxiliary/`](https://github.com/NREL/T3CO/tree/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/auxiliary) folder include `FuelPrices.csv`, `ResidualValues.csv`, `AeroDragImprovementCostCurve.csv`, `LightweightImprovementCostCurve.csv`, and `EngineEffImprovementCostCurve.csv`. These files contain important cost and model assumptions that are necessary to run different aspects of the T3CO cost models. Users can select the default auxiliary input files and choose the relevant set of assumptions. They can also add new entries to these files, or create their own auxiliary input files and mention the new paths in the ***Config*** file.
 
 ## Running T3CO
-After checking the inputs and creating/modifying an "Analysis" on the ***Config*** file, the next step is to execute the models. The `t3co/sweep.py` module is the main script that needs to be run to perform a TCO analysis. And the easiest way to run the sweep module is to call a specific "Analysis" from the ***Config*** file using the `config.analysis_id` key. For running `config.analysis_id`=0 from the [Demo Config](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/T3COConfig.csv) file, run these commands from the parent directory:
+After checking the inputs and creating/modifying an "Analysis" on the ***Config*** file, the next step is to execute the models. The `t3co/sweep.py` module is the main script that needs to be run to perform a TCO analysis. And the most effective way to run the sweep module is to call a specific "Analysis" from the ***Config*** file using the `config.analysis_id` key.
+
+### Running Sweep Module from PyPI-installed T3CO
+The easiest way to run the `t3co.sweep` module is to use a local copy of the demo input files. If the [`install_t3co_demo_inputs`](./installation.md#copy-demo-inputs) command is used to copy `demo_inputs` to your local directory after [installing from PyPI](./installation.md#install-from-pypi), run the `t3co.sweep` module from any directory. 
+
+```bash
+python -m t3co.sweep --analysis-id=0 --config=<path/to/demo_inputs/T3COConfig.csv>
+```
+Point `--config` to the `T3COConfig.csv` file path and `--analysis-id` to the desired `config.analysis_id` (either an existing one or a newly added "Analysis" in the `demo_inputs/T3COConfig.csv` file. Default = `0`).
+
+### Running Sweep Module from a Cloned Github repo
+For running `config.analysis_id`=0 (or a user desired "Analysis") from the [Demo Config](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/T3COConfig.csv) file on a cloned GitHub repo, run these commands from the parent directory:
 
 ```bash
 cd t3co
@@ -98,4 +109,6 @@ optional arguments:
 ```
 
 ## T3CO Results
-After running the analysis, T3CO stores the results .CSV file in the directory specified by `config.dst_dir` (or the CLI argument `--dst-dir`). The results file includes a comprehensive list of [***Cost Outputs***](t3co_outputs_descriptions.md) that were calculated by the various ***T3CO Modules***. In addition to the T3CO outputs, all the *Vehicle* input parameters (denoted by a prefix: `input_vehicle_value_`),  *Scenario* input parameters(denoted by a prefix: `scenario_`), and *Config* parameters (denoted by a prefix: `config_`) are also present in the results file. When the optional optimization module is run, the optimized vehicle parameters are also listed ((denoted by a prefix: `optimized_vehicle_value_`)) instead of NaN values for non-optimization runs.
+After running the analysis, T3CO stores the results .CSV file in the directory specified by `config.dst_dir` (or the CLI argument `--dst-dir`). 
+
+The results file includes a comprehensive list of [***Cost Outputs***](t3co_outputs_descriptions.md) that were calculated by the various ***T3CO Modules***. In addition to the T3CO outputs, all the *Vehicle* input parameters (denoted by a prefix: `input_vehicle_value_`),  *Scenario* input parameters(denoted by a prefix: `scenario_`), and *Config* parameters (denoted by a prefix: `config_`) are also present in the results file. When the optional optimization module is run, the optimized vehicle parameters are also listed ((denoted by a prefix: `optimized_vehicle_value_`)) instead of NaN values for non-optimization runs.

@@ -27,8 +27,10 @@ T3CO depends on [Python](https://www.python.org/downloads/)>=3.8 and <=3.10. To 
     t3co\Scripts\activate
     ```
 
-## Installing From [PyPI](https://pypi.org/project/t3co/)
-T3CO can be easily installed from PyPI. This is the preferred method when using T3CO as a dependency for a project. To install the latest release:
+## Installing T3CO Python Package
+T3CO is available on PyPI and as a public access GitHub repository. This gives the user two ways of installing the T3CO Python Package.
+### 1. Installing From [PyPI](https://pypi.org/project/t3co/) <a name=install-from-pypi></a>
+T3CO can be easily installed from PyPI. This is the preferred method when using T3CO to run analysis using input files. To install the latest release:
 ```bash
 pip install t3co
 ```
@@ -38,15 +40,15 @@ To install a specific version (for example T3CO v1.0.8):
 pip install t3co==1.0.8
 ```
 
-## From GitHub
+### 2. From [GitHub](https://github.com/NREL/T3CO)
 T3CO can also be installed directly from the GitHub repository for accessing demo input files and running T3CO using the Command Line Interface.
 
-First, clone the repository from [GitHub](https://github.com/NREL/T3CO):
+First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](https://github.com/NREL/T3CO):
 ```bash
 git clone https://github.com/NREL/T3CO.git T3CO
 ```
 
-From within the [Python environment](#setting-up-env) Navigate to the parent directory containing the T3CO repository e.g. `cd github/T3CO/` and run:
+From within the [Python environment](#setting-up-env) Navigate to the parent directory containing the T3CO repository e.g. `cd GitHub/T3CO/` and run:
 ```bash
 pip install -e .
 ```
@@ -66,6 +68,22 @@ If there are updates or new releases to T3CO that don't show in the local versio
 ```bash
 git pull origin main
 ```
+
+
+## Copying T3CO Demo Input Files <a name=copy-demo-inputs></a>
+The `t3co.resources` folder contains all the necessary input files needed for running T3CO. However, it sometimes is difficult to navigate to these files when installing. To help with this, run this command on the Command Line Interface.
+
+```bash
+install_t3co_demo_inputs
+```
+
+The user will receive these questions on the command line:
+
+`Do you want to copy the T3CO demo input files? (y/n):`
+
+`Enter the path where you want to copy demo input files:`
+
+Choose `y` and provide the desired destination path to get a `demo_inputs` folder containing the `t3co.resources` files copied to your local directory.
 
 ## Running your first analysis
 To learn about the tool and run your first T3CO analysis, proceed to the [Quick Start Guide](./quick_start.md)
