@@ -1328,7 +1328,7 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    print(f"gl.SWEEP_PATH: {gl.SWEEP_PATH}")
+    print(f"Sweep file path: {gl.SWEEP_PATH}")
 
     # selections can be an int, or list of ints, or range expression
     if args.config is None:
@@ -1349,17 +1349,17 @@ if __name__ == "__main__":
     else:
         try:
             config = rs.Config()
-            config.from_file(filename=args.config, analysis_id=args.analysis_id)
+            config.from_file(filename=Path(args.config), analysis_id=args.analysis_id)
         except ValueError:
             print(f"Config analysis_id not valid: {args.analysis_id}")
             config = rs.Config()
-            config.validate_analysis_id(filename=args.config)
+            config.validate_analysis_id(filename=Path(args.config))
         selections = config.selections
-        vehicles = gl.SWEEP_PATH.parents[0] / config.vehicle_file
-        scenarios = gl.SWEEP_PATH.parents[0] / config.scenario_file
-        eng_eff_imp_curves = gl.SWEEP_PATH.parents[0] / config.eng_eff_imp_curves
-        lw_imp_curves = gl.SWEEP_PATH.parents[0] / config.lw_imp_curves
-        aero_drag_imp_curves = gl.SWEEP_PATH.parents[0] / config.aero_drag_imp_curves
+        vehicles = Path(args.config).parent / config.vehicle_file
+        scenarios = Path(args.config).parent / config.scenario_file
+        eng_eff_imp_curves = Path(args.config).parent / config.eng_eff_imp_curves
+        lw_imp_curves = Path(args.config).parent / config.lw_imp_curves
+        aero_drag_imp_curves = Path(args.config).parent / config.aero_drag_imp_curves
         write_tsv = config.write_tsv
 
     look_for = args.look_for
