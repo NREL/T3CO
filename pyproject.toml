@@ -44,4 +44,5 @@ Repository = "https://github.com/NREL/T3CO"
 "Bug Tracker" = "https://github.com/NREL/T3CO/issues"
 
 [project.scripts]
-t3co-cli = "t3co:sweep"
+install_t3co_demo_inputs = "t3co.utilities.demo_inputs_installer:main"
+
