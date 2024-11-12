@@ -28,65 +28,6 @@ from t3co.run import Global as gl
 from t3co.run import run_scenario
 from t3co.run import run_scenario as rs
 
-REPORT_COLS = {
-    "selection": "",
-    "scenario_name": "",
-    "veh_year": "",
-    "veh_pt_type": "",
-    "pareto_front_number": "",
-    "run_time_[s]": "",
-    "algorithm": "",
-    "n_gen": "",
-    "fvals_over_gens": "",
-    "design_cyc_trace_miss_dist_frac": "",
-    "design_cyc_trace_miss_time_frac": "",
-    "design_cyc_trace_miss_speed_mps": "",
-    "design_cycle_EA_err": "",
-    "accel_EA_err": "",
-    "accel_loaded_EA_err": "",
-    "grade_6_EA_err": "",
-    "grade_1p25_EA_err": "",
-    "final_cda_pct": "",
-    "final_eng_eff_pct": "",
-    "final_ltwt_pct": "",
-    "final_max_motor_kw": "",
-    "final_battery_kwh": "",
-    "final_max_fc_kw": "",
-    "final_fs_kwh": "",
-    "range_ach_mi": "",
-    "target_range_mi": "",
-    "delta_range_mi": "",
-    "min_speed_at_6pct_grade_in_5min_ach_mph": "",
-    "target_min_speed_at_6pct_grade_in_5min_mph": "",
-    "delta_min_speed_at_6pct_grade_in_5min_mph": "",
-    "min_speed_at_1p25pct_grade_in_5min_ach_mph": "",
-    "target_min_speed_at_1p25pct_grade_in_5min_mph": "",
-    "delta_min_speed_at_1p25pct_grade_in_5min_mph": "",
-    "max_time_0_to_60mph_at_gvwr_ach_s": "",
-    "target_max_time_0_to_60mph_at_gvwr_s": "",
-    "delta_max_time_0_to_60mph_at_gvwr_s": "",
-    "max_time_0_to_30mph_at_gvwr_ach_s": "",
-    "target_max_time_0_to_30mph_at_gvwr_s": "",
-    "delta_max_time_0_to_30mph_at_gvwr_s": "",
-    "glider_cost_dol": "",
-    "fuel_converter_cost_dol": "",
-    "fuel_storage_cost_dol": "",
-    "motor_control_power_elecs_cost_dol": "",
-    "plug_cost_dol": "",
-    "battery_cost_dol": "",
-    "purchase_tax_dol": "",
-    "msrp_total_dol": "",
-    "total_fuel_cost_dol": "",
-    "total_maintenance_cost_dol": "",
-    "discounted_tco_dol": "",
-}
-
-
-# knob mins that are too high lead to failures in optimization
-# and intelligently set knob mins don't really aid optimizer speed
-# best not to get too cute with it, will only waste time if you do it wrong
-KNOB_MIN = 1
-
 
 def deug_traces(
     vehicle: fastsim.vehicle.Vehicle,
@@ -726,28 +667,27 @@ def optimize(
                 outdict["veh_opp_cost_set"],
             )
 
-            if verbose:
-                print(
-                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} opt time [s]",
-                    opt_time,
-                )
-                print(
-                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} total cost",
-                    tot_cost,
-                )
-                print(f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} mpgge", mpgge)
-                print(
-                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} MSRP breakdown",
-                    veh_cost_set,
-                )
-                print(
-                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} Operating Costs breakdown",
-                    veh_oper_cost_set,
-                )
-                print(
-                    f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} Opportunity costs breakdown",
-                    veh_opp_cost_set,
-                )
+            print(
+                f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} opt time [s]",
+                opt_time,
+            )
+            print(
+                f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} total cost",
+                tot_cost,
+            )
+            print(f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} mpgge", mpgge)
+            print(
+                f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} MSRP breakdown",
+                veh_cost_set,
+            )
+            print(
+                f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} Operating Costs breakdown",
+                veh_oper_cost_set,
+            )
+            print(
+                f"selection {sel} {gl.PT_TYPES_NUM_TO_STR[optpt]} Opportunity costs breakdown",
+                veh_opp_cost_set,
+            )
 
             disc_cost_agg = discounted_costs_df.groupby("Category").sum(
                 numeric_only=True
@@ -1004,16 +944,22 @@ def run_vehicle_scenarios(
     ts = strftime("%Y-%m-%d_%H-%M-%S", gmtime())
     report_kwargs["ts"] = ts
     report_kwargs["skip_save_veh"] = skip_save_veh
-    print(f'config.resfile_suffix: {config.resfile_suffix}')
-    if not np.isnan(config.resfile_suffix):
+
+    if config.resfile_suffix is not None:
         RES_FILE = f"{file_mark}results_{ts}_{str(config.resfile_suffix)}.csv".strip(
             "_"
         )
     else:
         selections_string = (
-            str(selections).strip("[]").replace(" ", "").replace("'",'').replace(",", "-")
+            str(selections)
+            .strip("[]")
+            .replace(" ", "")
+            .replace("'", "")
+            .replace(",", "-")
         )
-        RES_FILE = f"{file_mark}results_{ts}_sel_{selections_string[:20]}.csv".strip("_")
+        RES_FILE = f"{file_mark}results_{ts}_sel_{selections_string[:20]}.csv".strip(
+            "_"
+        )
     report_kwargs["RES_FILE"] = RES_FILE
     if selections == -1:
         selections = vdf.index
@@ -1163,7 +1109,6 @@ def run_vehicle_scenarios(
 
 def run_optimize_analysis(
     sel,
-    selections,
     vdf,
     sdf,
     scenario_name,
@@ -1173,7 +1118,6 @@ def run_optimize_analysis(
     report_kwargs,
     REPORT_COLS,
 ):
-
     if skip_all_opt is True or skip_all_opt == "TRUE":
         report_i = optimize(
             sel=sel,
@@ -1440,9 +1384,7 @@ if __name__ == "__main__":
             config.validate_analysis_id(filename=Path(args.config))
         config.check_drivecycles_and_create_selections(args.config)
         selections = config.selections
-        print(f"selections: {selections}")
         config.vehicle_file = Path(args.config).parent / config.vehicle_file
-        print(f"vehicles: {config.vehicle_file}")
         config.scenario_file = Path(args.config).parent / config.scenario_file
         config.eng_eff_imp_curves = Path(args.config).parent / config.eng_eff_imp_curves
         config.lw_imp_curves = Path(args.config).parent / config.lw_imp_curves
@@ -1584,7 +1526,6 @@ if __name__ == "__main__":
                     run_optimize_analysis,
                     vdf=vdf,
                     sdf=sdf,
-                    selections=selections,
                     scenario_name=scenario_name,
                     optpt=optpt,
                     skip_all_opt=skip_all_opt,
@@ -1622,9 +1563,9 @@ if __name__ == "__main__":
         reports = []
         for sel in selections_list:
             report_i = run_optimize_analysis(
+                sel,
                 vdf=vdf,
                 sdf=sdf,
-                selections=selections,
                 scenario_name=scenario_name,
                 optpt=optpt,
                 skip_all_opt=skip_all_opt,
