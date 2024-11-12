@@ -309,8 +309,8 @@ def run_moo(
 
     Args:
         sel (int): selection number
-        sdf (DataFrame): scenario dataframe
-        optpt (str): vehicle powertrain type
+        sdf (DataFrame): Scenario dataframe
+        optpt (str): FASTSim vehicle powertrain type
         algo (str): algorithm name
         skip_opt (bool): skip optimization boolean
         pop_size (int): population size for optimization
@@ -420,24 +420,32 @@ def optimize(
     vdf: pd.DataFrame,
     optpt: str,
     algo: str,
-    report_kwargs,
-    REPORT_COLS,
+    report_kwargs: dict,
+    REPORT_COLS: dict,
     skip_opt: bool,
     config: run_scenario.Config,
     write_tsv: bool = False,
-) -> None:
+) -> dict:
     """
     This function runs the optimization for a given selection if skip_opt = False
 
+
     Args:
-        sel (float): selection number
-        scenario_name (str): scenario name
-        optpt (str): vehicle powertrain type
-        algo (str): algorithm name
-        skip_opt (bool): skip optimization
-        write_tsv (bool, optional): if selected, intermediary dataframes are saved as tsv files. Defaults to False.
+        sel (float): Selection number
+        scenario_name (str): Name of vehicle or scenario
+        sdf (pd.DataFrame): Dataframe of input scenario file
+        vdf (pd.DataFrame): Dataframe of input vehicle file
+        optpt (str): Vehicle powertrain type
+        algo (str): Multiobjective optimization Algorithm name
+        report_kwargs (dict): arguments related to running T3CO
+        REPORT_COLS (dict): Results columns dictionary for sorting the T3CO results
+        skip_opt (bool): skip optimization. If true, then optimizer is not run.
+        config (run_scenario.Config): Config object
+        write_tsv (bool, optional): if selected, intermediary dataframes are saved as tsv files.. Defaults to False.
+
+    Returns:
+        report_i (dict): Dictionary of T3CO results for given selection
     """
-    # optimizing is the inverse of skip_opt, just easier bool var name and value to work with
 
     print(
         f"\nRunning selection {sel} for scenario {scenario_name} - skip opt = {skip_opt} -algo = {algo}"
@@ -845,23 +853,23 @@ def run_vehicle_scenarios(
     config: run_scenario.Config,
     REPORT_COLS: dict,
     **kwargs,
-) -> None:
+) -> Tuple[List[int | str], pd.DataFrame, pd.DataFrame, bool, dict, dict]:
     """
-    This is the main function that runs T3CO for all the selections input
+    This function reads the input files, validates inputs, compiles the selections, and returns a clean set of inputs that are needed for the current analysis.
+
 
     Args:
-        vehicles (str): path of vehicle input file
-        scenarios (str): path of scenarios input file
-        eng_eff_imp_curves_p (str): path of engine efficiency curve file
-        lw_imp_curves_p (str): path of light weighting curve file
-        aero_drag_imp_curves_p (str): path of aero drag curve file
         config (Config): Config object containing analysis attributes and scenario attribute overrides
+        REPORT_COLS (dict): Dictionary of reporting columns from T3CO
 
     Raises:
         Exception: input validation error
         Exception: optimization error
 
+    Returns:
+        selections, vdf, sdf, skip_all_opt, report_kwargs, REPORT_COLS (Tuple[List[int|str], pd.DataFrame, pd.DataFrame, bool, dict, dict]): Selections list, vehicle dataframe, scenario dataframe, skip all optimization, report arguments, and report columns
     """
+
     vdf = pd.read_csv(config.vehicle_file, index_col="selection", skip_blank_lines=True)
     sdf = pd.read_csv(
         config.scenario_file, index_col="selection", skip_blank_lines=True
@@ -998,7 +1006,7 @@ def run_vehicle_scenarios(
 
     def input_validation(
         sel: float, optpt: str, algo: str, config: run_scenario.Config
-    ):
+    ) -> None:
         """
         This function obtains the vehicle, scenario, and cycle object for a given selection and runs optimization to validate inputs
 
@@ -1108,16 +1116,33 @@ def run_vehicle_scenarios(
 
 
 def run_optimize_analysis(
-    sel,
-    vdf,
-    sdf,
-    scenario_name,
-    optpt,
-    skip_all_opt,
-    config,
-    report_kwargs,
-    REPORT_COLS,
-):
+    sel: str | int,
+    vdf: pd.DataFrame,
+    sdf: pd.DataFrame,
+    scenario_name: str,
+    optpt: str,
+    skip_all_opt: bool,
+    config: run_scenario.Config,
+    report_kwargs: dict,
+    REPORT_COLS: dict,
+) -> dict:
+    """
+    This function runs the optimization function based on skip_all_opt input to return the report_i dictionary with T3CO results for each selection.
+
+    Args:
+        sel (str | int): selection number
+        vdf (pd.DataFrame): Dataframe of input vehicle file
+        sdf (pd.DataFrame): Dataframe of input scenario file
+        scenario_name (str): Name of scenario or vehicle
+        optpt (str): FASTSim vehicle powertrain type for optimization
+        skip_all_opt (bool): Skip all optimization. If true, then the optimizer is not run for any scenario
+        config (run_scenario.Config): Config object
+        report_kwargs (dict): Dictionary of args required for running T3CO
+        REPORT_COLS (dict): Dictionary of reporting columns from T3CO
+
+    Returns:
+        report_i (dict): Dictionary of T3CO results for given selection
+    """
     if skip_all_opt is True or skip_all_opt == "TRUE":
         report_i = optimize(
             sel=sel,
