@@ -77,7 +77,7 @@ CONSTRAINTS = [
 
 # optimization parameters
 # scalar powertrain modifers
-KNOB_FCMAXKW = "fcMaxOutKw"
+KNOB_FCMAXKW = "fc_max_kw"
 KNOB_ess_max_kwh = "ess_max_kwh"
 KNOB_mc_max_kw = "mc_max_kw"
 KNOB_fs_kwh = "fs_kwh"
@@ -135,6 +135,7 @@ class T3COProblem(ElementwiseProblem):
     opt_scenario: run_scenario.Scenario
     designcycle: fastsim.cycle
     config: run_scenario.Config
+    do_input_validation: bool
 
     def setup_opt_records(self):
         """
@@ -158,7 +159,7 @@ class T3COProblem(ElementwiseProblem):
         self.r_wt_delta_perc_guess = []
         self.r_CdA_reduction_perc = []
         self.r_fc_peak_eff_guess = []
-        self.r_fc_max_out_kw_guess = []
+        self.r_fc_max_kw_guess = []
         self.r_fs_kwh_guess = []
         self.r_max_ess_kwh_guess = []
         self.r_max_motor_kw_guess = []
@@ -182,6 +183,7 @@ class T3COProblem(ElementwiseProblem):
         constr_list: list = None,
         verbose: bool = False,
         config: run_scenario.Config = None,
+        do_input_validation: bool = False,
         **kwargs,
     ) -> None:
         """
@@ -274,7 +276,7 @@ class T3COProblem(ElementwiseProblem):
 
         self.optimize_pt = optimize_pt
 
-        self.instantiate_moo_vehicles_and_scenario(vnum, config)
+        self.instantiate_moo_vehicles_and_scenario(vnum, config, do_input_validation)
 
         # time dilation options, turned on for fuel efficiency cycle
         if "missed_trace_correction" in kwargs:
@@ -401,14 +403,19 @@ class T3COProblem(ElementwiseProblem):
             "r_wt_delta_perc_guess": self.r_wt_delta_perc_guess,
             "r_CdA_reduction_perc": self.r_CdA_reduction_perc,
             "r_fc_peak_eff_guess": self.r_fc_peak_eff_guess,
-            "r_fc_max_out_kw_guess": self.r_fc_max_out_kw_guess,
+            "r_fc_max_kw_guess": self.r_fc_max_kw_guess,
             "r_fs_kwh_guess": self.r_fs_kwh_guess,
             "r_max_ess_kwh_guess": self.r_max_ess_kwh_guess,
             "r_max_motor_kw_guess": self.r_max_motor_kw_guess,
         }
         self.reporting_vars = pd.DataFrame(data=d)
 
-    def instantiate_moo_vehicles_and_scenario(self, vnum: int, config=None) -> None:
+    def instantiate_moo_vehicles_and_scenario(
+        self,
+        vnum: int,
+        config: run_scenario.Config = None,
+        do_input_validation: bool = False,
+    ) -> None:
         """
         This method instantiates the multi-objective optimization problem vehicles and scenarios, starting with the baseline Conventional vehicle.
 
@@ -421,11 +428,11 @@ class T3COProblem(ElementwiseProblem):
         """
         self.moobasevehicle = run_scenario.get_vehicle(
             vnum,
-            veh_input_path=gl.FASTSIM_INPUTS,
+            veh_input_path=config.vehicle_file,
         )
 
         self.opt_scenario, self.designcycle = run_scenario.get_scenario_and_cycle(
-            vnum, gl.OTHER_INPUTS, config=config
+            vnum, config.scenario_file, config=config, do_input_validation = do_input_validation
         )
 
         if (
@@ -624,7 +631,7 @@ class T3COProblem(ElementwiseProblem):
         wt_delta_perc_guess = x_dict.pop(KNOB_WTDELTAPERC, None)
         CdA_reduction_perc = x_dict.pop(KNOB_CDA, None)
         fc_peak_eff_guess = x_dict.pop(KNOB_FCPEAKEFF, None)
-        fc_max_out_kw_guess = x_dict.pop(KNOB_FCMAXKW, None)
+        fc_max_kw_guess = x_dict.pop(KNOB_FCMAXKW, None)
         max_ess_kwh_guess = x_dict.pop(KNOB_ess_max_kwh, None)
         max_motor_kw_guess = x_dict.pop(KNOB_mc_max_kw, None)
         fs_kwh_guess = x_dict.pop(KNOB_fs_kwh, None)
@@ -636,8 +643,8 @@ class T3COProblem(ElementwiseProblem):
             self.cda_percent_delta_knob(CdA_reduction_perc, optvehicle)
         if "fc_peak_eff" in self.knobs:
             self.fc_peak_eff_knob(fc_peak_eff_guess, optvehicle)
-        if "fcMaxOutKw" in self.knobs:
-            run_scenario.set_max_fuel_converter_kw(optvehicle, fc_max_out_kw_guess)
+        if "fc_max_kw" in self.knobs:
+            run_scenario.set_max_fuel_converter_kw(optvehicle, fc_max_kw_guess)
         if KNOB_fs_kwh in self.knobs:
             run_scenario.set_fuel_store_kwh(optvehicle, fs_kwh_guess)
         if "ess_max_kwh" in self.knobs:
@@ -900,7 +907,7 @@ class T3COProblem(ElementwiseProblem):
         self.r_wt_delta_perc_guess.append(wt_delta_perc_guess)
         self.r_CdA_reduction_perc.append(CdA_reduction_perc)
         self.r_fc_peak_eff_guess.append(fc_peak_eff_guess)
-        self.r_fc_max_out_kw_guess.append(fc_max_out_kw_guess)
+        self.r_fc_max_kw_guess.append(fc_max_kw_guess)
         self.r_fs_kwh_guess.append(fs_kwh_guess)
         self.r_max_ess_kwh_guess.append(max_ess_kwh_guess)
         self.r_max_motor_kw_guess.append(max_motor_kw_guess)
@@ -1069,7 +1076,7 @@ class T3COProblem(ElementwiseProblem):
         wt_delta_perc_guess = x_dict.pop(KNOB_WTDELTAPERC, None)
         CdA_reduction_perc = x_dict.pop(KNOB_CDA, None)
         fc_peak_eff_guess = x_dict.pop(KNOB_FCPEAKEFF, None)
-        fc_max_out_kw_guess = x_dict.pop(KNOB_FCMAXKW, None)
+        fc_max_kw_guess = x_dict.pop(KNOB_FCMAXKW, None)
         max_ess_kwh_guess = x_dict.pop(KNOB_ess_max_kwh, None)
         max_motor_kw_guess = x_dict.pop(KNOB_mc_max_kw, None)
         fs_kwh_guess = x_dict.pop(KNOB_fs_kwh, None)
@@ -1081,8 +1088,8 @@ class T3COProblem(ElementwiseProblem):
             print(KNOB_CDA.rjust(20, " "), f":{round(CdA_reduction_perc, 4)}")
         if fc_peak_eff_guess is not None:
             print(KNOB_FCPEAKEFF.rjust(20, " "), f":{round(fc_peak_eff_guess, 4)}")
-        if fc_max_out_kw_guess is not None:
-            print(KNOB_FCMAXKW.rjust(20, " "), f":{round(fc_max_out_kw_guess, 4)}")
+        if fc_max_kw_guess is not None:
+            print(KNOB_FCMAXKW.rjust(20, " "), f":{round(fc_max_kw_guess, 4)}")
         if max_ess_kwh_guess is not None:
             print(KNOB_ess_max_kwh.rjust(20, " "), f":{round(max_ess_kwh_guess, 4)}")
         if max_motor_kw_guess is not None:
@@ -1174,6 +1181,7 @@ def run_optimization(
     algo: str,
     obj_list: list = None,
     config: run_scenario.Config = None,
+    do_input_validation=True,
     **kwargs,
 ) -> Tuple[pymoo.core.result.Result, T3COProblem, bool]:
     """
@@ -1217,6 +1225,7 @@ def run_optimization(
         optimize_pt=optimize_pt,
         verbose=verbose,
         config=config,
+        do_input_validation=do_input_validation,
         **kwargs,
     )
 
