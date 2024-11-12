@@ -33,11 +33,12 @@ class Config:
     vehicle_file: str = ""
     scenario_file: str = ""
     dst_dir: str = ""
+    resfile_suffix: str = None
     write_tsv: bool = False
     selections: str = ""
     # selections: list = field(default_factory=list)
     vehicle_life_yr: float = 0
-
+    drive_cycle: str = ""
     # Fueling
     ess_max_charging_power_kw: float = 0
     fs_fueling_rate_kg_per_min: float = 0
@@ -120,7 +121,36 @@ class Config:
             analysis_id in config_df["analysis_id"]
         ), "Given analysis_id not in config input file"
         raise Exception
-
+    
+    def check_drivecycles_and_create_selections(self, config_file: Path):
+        self.dc_files = None
+        try:
+            print(self.drive_cycle)
+            if Path(self.drive_cycle).is_absolute():
+                dc_folder_path = Path(self.drive_cycle)
+            else:
+                dc_folder_path = config_file /self.drive_cycle
+            if not dc_folder_path.exists():
+                try:
+                    dc_folder_path = gl.OPTIMIZATION_DRIVE_CYCLES /self.drive_cycle
+                except:
+                    print(f'Drivecycle folder does not exist: {dc_folder_path}')
+            print(f'dc_folder_path: {dc_folder_path}')
+            # print(f'check_drivecycles_and_create_selections:{dc_folder_path}')
+            if os.path.isdir(Path(dc_folder_path)):
+                # print('isdir')
+                for root, subdir, files in os.walk(dc_folder_path):
+                    self.dc_files = sorted(files, reverse=False)
+                    self.dc_files = [str(self.drive_cycle)+'/'+file for file in self.dc_files if '.csv' in str.lower(file)]
+                    # print(self.dc_files)
+                    selections_list = list(self.selections)
+                    self.selections = []
+                    for selection in selections_list:
+                        for i in range(len(self.dc_files)):
+                            self.selections.append(str(selection)+'_'+str(i).zfill(3))
+        except:
+            Exception            
+            
 
 @dataclass
 class Scenario:
@@ -283,7 +313,7 @@ class Scenario:
     mr_avg_tire_life_mi: float = 0
     mr_tire_replace_downtime_hr_per_event: float = 0
 
-    def from_config(self, config: Config = None) -> Self:
+    def from_config(self, config: Config = None, verbose:bool = False) -> None:
         """
         This method overrides certain scenario fields if use_config is True and config object is not None
 
@@ -311,23 +341,23 @@ class Scenario:
             "fdt_frac_full_charge_bounds",
             "activate_mr_downtime_cost",
         ]
+        if config.dc_files ==None:
+            fields_override.append('drive_cycle')
         self.fields_overriden = []
         if self.use_config == True and config != None:
             for field_select in fields_override:
-                if (config.__dict__[field_select] is not None) and (
-                    not self.__dict__[field_select]
-                ):
+                if (config.__dict__[field_select] != None):
+                # and (
+                    # not self.__dict__[field_select])
                     setattr(self, field_select, config.__getattribute__(field_select))
                     # print(f'field: {field}, type: {type(self.__getattribute__(field))}, value: {self.__getattribute__(field)}')
                     self.fields_overriden.append(field_select)
-            print(f"Scenario Fields overridden from config: {self.fields_overriden}")
+            print(f"Scenario Fields overridden from config: {self.fields_overriden}") if verbose else None
         else:
             print(
                 f"Config file not attached or scenario.use_config set to False: {config}"
             )
-
-        return self
-
+            
 
 # PHEV utility methods
 def check_phev_init_socs(a_vehicle: vehicle.Vehicle, scenario: Scenario) -> None:
@@ -499,7 +529,9 @@ def get_vehicle(veh_no: int, veh_input_path: str) -> fastsim.vehicle.Vehicle:
     Returns:
         veh (fastsim.vehicle.Vehicle): FASTSim vehicle object
     """
-    veh = vehicle.Vehicle.from_vehdb(veh_no, veh_input_path, to_rust=True)
+
+    scenario_sel = int(float(str(veh_no).split('_')[0]))
+    veh = vehicle.Vehicle.from_vehdb(scenario_sel, veh_input_path, to_rust=True)
     veh.set_derived()
     veh.set_veh_mass()
 
@@ -514,6 +546,7 @@ def get_scenario_and_cycle(
     scenario_inputs_path: str,
     a_vehicle: fastsim.vehicle.Vehicle = None,
     config: Config = None,
+    do_input_validation: bool = False,
 ) -> Tuple[Scenario, fastsim.cycle.Cycle]:
     """
     This function uses helper methods load_scenario and load_design_cycle_from_scenario \
@@ -530,7 +563,7 @@ def get_scenario_and_cycle(
         cyc (fastsim.cycle.Cycle): FASTSim cycle object selected
     """
     scenario = load_scenario(veh_no, scenario_inputs_path, a_vehicle, config)
-    cyc = load_design_cycle_from_scenario(scenario, gl.OPTIMIZATION_DRIVE_CYCLES)
+    cyc = load_design_cycle_from_scenario(scenario, config, gl.OPTIMIZATION_DRIVE_CYCLES, do_input_validation=do_input_validation)
 
     if isinstance(cyc, list):
         scenario.constant_trip_distance_mi = sum([sum(cyc[i][0].mph * np.diff(np.array(cyc[i][0].time_s), append=0))*cyc[i][1]/3600 for i in range(len(cyc))])
@@ -560,10 +593,11 @@ def load_scenario(
         scenario (Scenario): Scenario object for given selection
     """
     scenarios = pd.read_csv(scenario_inputs_path)
+    veh_no_split = str(veh_no).split('_')[0]
     assert (
-        len(scenarios[scenarios["selection"] == veh_no]) == 1
+        len(scenarios[scenarios["selection"] == int(float(str(veh_no).split('_')[0]))]) == 1
     ), f"conflict in {__file__}get_scenario(_): Scenario numbers in {scenario_inputs_path} are not unique "
-    scenario_dict = scenarios[scenarios["selection"] == veh_no].to_dict("list")
+    scenario_dict = scenarios[scenarios["selection"] == int(float(str(veh_no).split('_')[0]))].to_dict("list")
     scenario_dict = {k: v[0] for k, v in scenario_dict.items()}
     scenario_dict["vehicle_class"] = " "
     scenario_dict["vehicle_class"] = (
@@ -575,6 +609,12 @@ def load_scenario(
     if "scenario_name" in scenario_dict:
         del scenario_dict["scenario_name"]
 
+    if len(str(veh_no).split('_'))>1 and config.dc_files:
+        dc_id = int(str(veh_no).split('_')[1])
+        scenario_dict["drive_cycle"] = config.dc_files[dc_id]
+        scenario_dict["selection"] = veh_no
+        # print('load_scenario Path error')
+
     # handle PHEV fuels list and UF list, convert to lists
     fuels = scenario_dict["fuel_type"]
     if "[" in fuels and "]" in fuels:
@@ -585,14 +625,14 @@ def load_scenario(
         fuels = [fuels]
     scenario_dict["fuel_type"] = fuels
 
-    # handle vmt, turn into list
+    # handle VMT, turn into list
     scenario_dict["vmt"] = ast.literal_eval(scenario_dict["vmt"])
     scenario_dict["mr_unplanned_downtime_hr_per_mi"] = ast.literal_eval(
         scenario_dict["mr_unplanned_downtime_hr_per_mi"]
     )
     # if config: scenario_dict['config'] = config
     scenario = Scenario(**scenario_dict)
-    scenario = scenario.from_config(config)
+    scenario.from_config(config, verbose = False)
 
     # convert insurance rates string into float list
     scenario.insurance_rates_pct_per_yr = list(
@@ -615,13 +655,13 @@ def load_scenario(
         or scenario.phev_utility_factor_override is None
     ):
         scenario.phev_utility_factor_override = -1
-        # we need non-None vmt and shifts_per_year since there is no phev_utility_factor_override provided
+        # we need non-None VMT and shifts_per_year since there is no phev_utility_factor_override provided
         assert (
             scenario.shifts_per_year not in [False, None, np.nan]
         ), f"invalid shifts_per_year value {scenario.shifts_per_year}, need a valid shifts_per_year (positive integer) value to compute utility factor since there is no phev_utility_factor_override provided"
         assert (
             scenario.vmt[0] is not None
-        ), "we need non-None vmt since there is no phev_utility_factor_override provided"
+        ), "we need non-None VMT since there is no phev_utility_factor_override provided"
     if (
         np.isnan(scenario.motor_power_override_kw_fc_demand_on_pct)
         or scenario.motor_power_override_kw_fc_demand_on_pct is None
@@ -646,7 +686,7 @@ def load_scenario(
 
 
 def load_design_cycle_from_scenario(
-    scenario: Scenario, cyc_file_path: str = gl.OPTIMIZATION_DRIVE_CYCLES
+    scenario: Scenario, config: Config = None, cyc_file_path: str = gl.OPTIMIZATION_DRIVE_CYCLES, do_input_validation:bool = False
 ) -> fastsim.cycle.Cycle:
     """
     This helper method loads the design cycle used for mpgge and range determination.
@@ -661,13 +701,19 @@ def load_design_cycle_from_scenario(
     Returns:
         range_cyc (fastsim.cycle.Cycle): FASTSim cycle object for current Scenario object
     """
-    # determine if scenario.drive_cycle is a simple string path or a list of tuples as a string
-    sdc = scenario.drive_cycle
+
+    if config.dc_files!=None and not do_input_validation:
+        dc_id = int(float(str(scenario.selection).split('_')[1]))
+        sdc = config.dc_files[dc_id]
+    else:
+        sdc = str(scenario.drive_cycle)
     if "[" in sdc and "]" in sdc and "(" in sdc and ")" in sdc:
         scenario.drive_cycle = ast.literal_eval(sdc)
         range_cyc = []
         for dc_weight in scenario.drive_cycle:
             cycle_file_name = Path(dc_weight[0]).name
+            print(f'Drivecycle= {cycle_file_name} weight = {dc_weight[1]}')
+
             dc = load_design_cycle_from_path(
                 cyc_file_path=Path(cyc_file_path) / dc_weight[0]
             )
@@ -676,13 +722,13 @@ def load_design_cycle_from_scenario(
             range_cyc.append((dc, weight))
     else:
         cycle_file_name = Path(scenario.drive_cycle).name
+        print(f'Drivecycle= {cycle_file_name}')
         range_cyc = load_design_cycle_from_path(
             cyc_file_path=Path(cyc_file_path) / scenario.drive_cycle
         )
         range_cyc.name = cycle_file_name
 
     return range_cyc
-
 
 def load_design_cycle_from_path(cyc_file_path: str) -> fastsim.cycle.Cycle:
     """
@@ -699,6 +745,7 @@ def load_design_cycle_from_path(cyc_file_path: str) -> fastsim.cycle.Cycle:
         print(f"drive cycle not found in {cyc_file_path} trying {finalized_path}")
     else:
         finalized_path = cyc_file_path
+    print(f'Drivecycle final path: {finalized_path}')
     range_cyc = cycle.Cycle.from_file(finalized_path)
     range_cyc = range_cyc.to_rust()
     return range_cyc
@@ -821,16 +868,16 @@ def set_max_battery_power_kw(
 
 
 def set_max_fuel_converter_kw(
-    analysis_vehicle: fastsim.vehicle.Vehicle, fc_max_out_kw: float
+    analysis_vehicle: fastsim.vehicle.Vehicle, fc_max_kw: float
 ) -> None:
     """
-    This helper method is used within T3COProblem to set fc_max_out_kw to optimization vehicle
+    This helper method is used within T3COProblem to set fc_max_kw to optimization vehicle
 
     Args:
         analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
-        fc_max_out_kw (float): max fuel converter power /kW
+        fc_max_kw (float): max fuel converter power /kW
     """
-    analysis_vehicle.fc_max_kw = fc_max_out_kw
+    analysis_vehicle.fc_max_kw = fc_max_kw
     analysis_vehicle.set_derived()
 
 
@@ -1053,7 +1100,7 @@ def run(
     return out
 
 
-def rerun(vehicle: fastsim.vehicle.Vehicle, vocation: str, scenario: Scenario):
+def rerun(vehicle: fastsim.vehicle.Vehicle, vocation: str, scenario: Scenario, config: Config):
     """
     This function runs vehicle_scenario_sweep when given the vehicle and scenario objects
 
@@ -1070,7 +1117,7 @@ def rerun(vehicle: fastsim.vehicle.Vehicle, vocation: str, scenario: Scenario):
     gl.set_tco_intermediates()
     gl.set_tco_results()
 
-    range_cyc = load_design_cycle_from_scenario(scenario)
+    range_cyc = load_design_cycle_from_scenario(scenario, config)
 
     out = vehicle_scenario_sweep(vehicle, scenario, range_cyc)
 
