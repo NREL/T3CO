@@ -131,7 +131,7 @@ def get_knobs_bounds_curves(
     knobs_bounds = {
         "ess_max_kwh": [sd.get("knob_min_ess_kwh"), sd.get("knob_max_ess_kwh")],
         "mc_max_kw": [sd.get("knob_min_motor_kw"), sd.get("knob_max_motor_kw")],
-        "fc_max_kw": [sd.get("knob_min_fc_kw"), sd.get("knob_max_fc_kw")],
+        "fcMaxOutKw": [sd.get("knob_min_fc_kw"), sd.get("knob_max_fc_kw")],
         "fs_kwh": [sd.get("knob_min_fs_kwh"), sd.get("knob_max_fs_kwh")],
     }
 
@@ -298,9 +298,9 @@ def run_moo(
     verbose: bool,
     f_tol: float,
     resdir: str,
-    lw_imp_curves: pd.DataFrame,
-    aero_drag_imp_curves: pd.DataFrame,
-    eng_eff_imp_curves: pd.DataFrame,
+    lw_imp_curves_df: pd.DataFrame,
+    aero_drag_imp_curves_df: pd.DataFrame,
+    eng_eff_imp_curves_df: pd.DataFrame,
     config: run_scenario.Scenario,
     **kwargs,
 ) -> Tuple[pymoo.core.result.Result, moo.T3COProblem, bool]:
@@ -334,7 +334,7 @@ def run_moo(
     objectives, constraints = get_objectives_constraints(sel, sdf)
 
     knobs_bounds, curve_settings = get_knobs_bounds_curves(
-        sel, optpt, sdf, lw_imp_curves, aero_drag_imp_curves, eng_eff_imp_curves
+        sel, optpt, sdf, lw_imp_curves_df, aero_drag_imp_curves_df, eng_eff_imp_curves_df
     )
 
     # moo_reults has res.X, res.F np arrays of opt params & objective space resutls, respectively
@@ -415,13 +415,11 @@ def skip_scenario(sel, selections, scenario_name, report_kwargs, verbose=False):
 
 def optimize(
     sel: float,
-    scenario_name: str,
     sdf: pd.DataFrame,
     vdf: pd.DataFrame,
-    optpt: str,
     algo: str,
-    report_kwargs: dict,
-    REPORT_COLS: dict,
+    report_kwargs:dict,
+    REPORT_COLS:dict,
     skip_opt: bool,
     config: run_scenario.Config,
     write_tsv: bool = False,
@@ -432,7 +430,6 @@ def optimize(
 
     Args:
         sel (float): Selection number
-        scenario_name (str): Name of vehicle or scenario
         sdf (pd.DataFrame): Dataframe of input scenario file
         vdf (pd.DataFrame): Dataframe of input vehicle file
         optpt (str): Vehicle powertrain type
@@ -446,20 +443,23 @@ def optimize(
     Returns:
         report_i (dict): Dictionary of T3CO results for given selection
     """
-
+    print(f'sel: {sel}')
+    scenario_name = vdf.loc[int(str(sel).split("_")[0]),"scenario_name"]
     print(
         f"\nRunning selection {sel} for scenario {scenario_name} - skip opt = {skip_opt} -algo = {algo}"
     )
 
+    optpt = vdf.loc[int(str(sel).split("_")[0]),"veh_pt_type"]
     ti = time.time()
     # sel = float(sel)
+    algo = report_kwargs["algo"]
+    x_tol = report_kwargs["x_tol"]
+    f_tol = report_kwargs["f_tol"]
     pop_size = report_kwargs["pop_size"]
     n_max_gen = report_kwargs["n_max_gen"]
     n_last = report_kwargs["n_last"]
     nth_gen = report_kwargs["nth_gen"]
-    x_tol = report_kwargs["x_tol"]
     verbose = report_kwargs["verbose"]
-    f_tol = report_kwargs["f_tol"]
     resdir = report_kwargs["resdir"]
     ts = report_kwargs["ts"]
     file_mark = report_kwargs["file_mark"]
@@ -480,11 +480,10 @@ def optimize(
             verbose,
             f_tol,
             resdir,
-            config.lw_imp_curves,
-            config.aero_drag_imp_curves,
-            config.eng_eff_imp_curves,
+            config.lw_imp_curves_df,
+            config.aero_drag_imp_curves_df,
+            config.eng_eff_imp_curves_df,
             config,
-            **kwargs,
         )
         num_results = 1
         if moo_code == moo.OPTIMIZATION_SUCCEEDED:
@@ -496,11 +495,14 @@ def optimize(
                 )
         if moo_problem is not None:
             input_vehicle = moo_problem.moobasevehicle
+            print(f'optimize: {input_vehicle.veh_pt_type}')
+
             report_vehicle = moo_problem.mooadvancedvehicle
             report_scenario = moo_problem.opt_scenario
         else:
             input_vehicle = rs.get_vehicle(sel, veh_input_path=config.vehicle_file)
             report_vehicle = None
+            print(f'optimize: {input_vehicle.veh_pt_type}')
             report_scenario, design_cycle = rs.get_scenario_and_cycle(
                 sel, config.scenario_file, a_vehicle=input_vehicle, config=config
             )
@@ -543,7 +545,8 @@ def optimize(
 
         # important, record sets information: the input vehicle, the scenario, and the optimized vehicle result, if applicable
         for config_key in rs.Config.__dict__["__annotations__"].keys():
-            report_i["config_" + config_key] = config.__getattribute__(config_key)
+            if not isinstance(config.__getattribute__(config_key), pd.DataFrame):
+                report_i["config_" + config_key] = config.__getattribute__(config_key)
 
         for scen_key in rs.Scenario.__dict__["__annotations__"].keys():
             report_i["scenario_" + scen_key] = report_scenario.__getattribute__(
@@ -567,7 +570,7 @@ def optimize(
 
         report_i["selection"] = sel
         veh_selection = int(float(str(sel).split("_")[0]))
-        report_i["scenario_name"] = scenario_name
+        report_i["scenario_name"] =  vdf.loc[veh_selection, "scenario_name"]
         try:
             report_i["veh_year"] = vdf.loc[veh_selection, "veh_year"]
         except KeyError:
@@ -853,7 +856,7 @@ def run_vehicle_scenarios(
     config: run_scenario.Config,
     REPORT_COLS: dict,
     **kwargs,
-) -> Tuple[List[int | str], pd.DataFrame, pd.DataFrame, bool, dict, dict]:
+) -> Tuple[List[int|str], pd.DataFrame, pd.DataFrame, bool, dict, dict]:
     """
     This function reads the input files, validates inputs, compiles the selections, and returns a clean set of inputs that are needed for the current analysis.
 
@@ -869,16 +872,15 @@ def run_vehicle_scenarios(
     Returns:
         selections, vdf, sdf, skip_all_opt, report_kwargs, REPORT_COLS (Tuple[List[int|str], pd.DataFrame, pd.DataFrame, bool, dict, dict]): Selections list, vehicle dataframe, scenario dataframe, skip all optimization, report arguments, and report columns
     """
-
     vdf = pd.read_csv(config.vehicle_file, index_col="selection", skip_blank_lines=True)
     sdf = pd.read_csv(
         config.scenario_file, index_col="selection", skip_blank_lines=True
     )
     check_input_files(vdf, "vehicles", config.vehicle_file)
     check_input_files(sdf, "scenario", config.scenario_file)
-    eng_eff_imp_curves_df = pd.read_csv(config.eng_eff_imp_curves)
-    lw_imp_curves_df = pd.read_csv(config.lw_imp_curves)
-    aero_drag_imp_curves_df = pd.read_csv(config.aero_drag_imp_curves)
+    config.eng_eff_imp_curves_df = pd.read_csv(config.eng_eff_imp_curves)
+    config.lw_imp_curves_df = pd.read_csv(config.lw_imp_curves)
+    config.aero_drag_imp_curves_df = pd.read_csv(config.aero_drag_imp_curves)
 
     # optimization scenario parameters where we get our baseline vehicle and scenario
     global FASTSIM_INPUTS, OTHER_INPUTS
@@ -1023,7 +1025,7 @@ def run_vehicle_scenarios(
             sel,
             veh_input_path=config.vehicle_file,
         )
-        print(f"input_validation: {sel}")
+        print(f"input_validation: {sel} {v.veh_pt_type}")
         s, c = rs.get_scenario_and_cycle(
             sel,
             config.scenario_file,
@@ -1037,9 +1039,9 @@ def run_vehicle_scenarios(
             sel,
             optpt,
             sdf,
-            lw_imp_curves_df,
-            aero_drag_imp_curves_df,
-            eng_eff_imp_curves_df,
+            config.lw_imp_curves_df,
+            config.aero_drag_imp_curves_df,
+            config.eng_eff_imp_curves_df,
         )
         objectives, constraints = get_objectives_constraints(sel, sdf, verbose=False)
 
@@ -1082,6 +1084,7 @@ def run_vehicle_scenarios(
             ):
                 # print(f'input_validation skip selection: {sel}')
                 continue
+
             for algo in algorithms:
                 try:
                     algopart = f"algorithm: {algo.rjust(15)} or None if skipping"
@@ -1116,16 +1119,14 @@ def run_vehicle_scenarios(
 
 
 def run_optimize_analysis(
-    sel: str | int,
+    sel: str|int,
     vdf: pd.DataFrame,
     sdf: pd.DataFrame,
-    scenario_name: str,
-    optpt: str,
     skip_all_opt: bool,
     config: run_scenario.Config,
     report_kwargs: dict,
     REPORT_COLS: dict,
-) -> dict:
+)->dict:
     """
     This function runs the optimization function based on skip_all_opt input to return the report_i dictionary with T3CO results for each selection.
 
@@ -1133,8 +1134,6 @@ def run_optimize_analysis(
         sel (str | int): selection number
         vdf (pd.DataFrame): Dataframe of input vehicle file
         sdf (pd.DataFrame): Dataframe of input scenario file
-        scenario_name (str): Name of scenario or vehicle
-        optpt (str): FASTSim vehicle powertrain type for optimization
         skip_all_opt (bool): Skip all optimization. If true, then the optimizer is not run for any scenario
         config (run_scenario.Config): Config object
         report_kwargs (dict): Dictionary of args required for running T3CO
@@ -1146,10 +1145,8 @@ def run_optimize_analysis(
     if skip_all_opt is True or skip_all_opt == "TRUE":
         report_i = optimize(
             sel=sel,
-            scenario_name=scenario_name,
             sdf=sdf,
             vdf=vdf,
-            optpt=optpt,
             algo="None",
             report_kwargs=report_kwargs,
             REPORT_COLS=REPORT_COLS,
@@ -1159,12 +1156,11 @@ def run_optimize_analysis(
         )
     else:
         for algo in algorithms:
+            print(f'run optimize {sel}')
             report_i = optimize(
                 sel=sel,
-                scenario_name=scenario_name,
                 sdf=sdf,
                 vdf=vdf,
-                optpt=optpt,
                 algo=algo,
                 report_kwargs=report_kwargs,
                 REPORT_COLS=REPORT_COLS,
@@ -1173,7 +1169,7 @@ def run_optimize_analysis(
                 write_tsv=False,
             )
 
-    logging.info(f"done with selection {sel}: {scenario_name}")
+    logging.info(f"done with selection {sel}: {report_i['scenario_name']}")
 
     return report_i
 
@@ -1433,8 +1429,10 @@ if __name__ == "__main__":
         algorithms = moo.ALGORITHMS
     elif "[" in args.algorithms and "]" in args.algorithms:
         algorithms = ast.literal_eval(args.algorithms)
+    elif config.algorithms is not None:
+        algorithms = config.algorithms
     else:
-        algorithms = [args.algorithms]
+        algorithms = args.algorithms
 
     kwargs = {
         "selections": selections,
@@ -1534,7 +1532,7 @@ if __name__ == "__main__":
             logging.exception("Fatal Error")
             raise
 
-    print(f"selections_list final: {selections_list}")
+    print(f"Selections List final: {selections_list}")
     resdir = Path(report_kwargs["resdir"])
     RES_FILE = report_kwargs["RES_FILE"]
 
@@ -1551,8 +1549,6 @@ if __name__ == "__main__":
                     run_optimize_analysis,
                     vdf=vdf,
                     sdf=sdf,
-                    scenario_name=scenario_name,
-                    optpt=optpt,
                     skip_all_opt=skip_all_opt,
                     config=config,
                     report_kwargs=report_kwargs,
@@ -1586,13 +1582,12 @@ if __name__ == "__main__":
 
     else:
         reports = []
+        print(f'selections_list: {selections_list}')
         for sel in selections_list:
             report_i = run_optimize_analysis(
                 sel,
                 vdf=vdf,
                 sdf=sdf,
-                scenario_name=scenario_name,
-                optpt=optpt,
                 skip_all_opt=skip_all_opt,
                 config=config,
                 report_kwargs=report_kwargs,
