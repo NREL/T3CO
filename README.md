@@ -15,7 +15,7 @@ For information on the T3CO models, go to the [Overview](https://github.com/NREL
 
 ## Usage
 
-**T3CO** is a general framework allowing a user to determine the total cost of ownership (TCO) of a FASTSim vehicle (paired with a FASTSim DriveCycle(s) for determining fuel efficiency). The user can also determine performance of gradability, acceleration, and range. In addition to straight TCO computation there is also the option to optimize a vehicle powertrain such that it meets performance optional targets while also optionally minimizing TCO.
+**T3CO** is a general framework allowing a user to determine the total cost of ownership (TCO) of a FASTSim vehicle (paired with a FASTSim DriveCycle(s) for determining fuel efficiency). The user can also determine performance of gradeability, acceleration, and range. In addition to straight TCO computation there is also the option to optimize a vehicle powertrain such that it meets performance optional targets while also optionally minimizing TCO.
 
 ## Installation
 T3CO is available on PyPI and as a public access GitHub repository. This gives the user two ways of installing the T3CO Python Package.
@@ -27,19 +27,19 @@ pip install t3co
 ### 2. Cloning the [GitHub Repo](https://github.com/NREL/T3CO)
 T3CO can also be installed directly from a clone of the GitHub repository which makes it easier to access input files and run the tool using a Command Line Interface.
 
-First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](https://github.com/NREL/T3CO):
+First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](https://github.com/NREL/T3CO) from your desired directory:
 ```bash
 git clone https://github.com/NREL/T3CO.git T3CO
 ```
 
-From within the [Python environment](./docs/installation.md#setting-up-env), navigate to the parent directory containing the T3CO repository e.g. `cd GitHub/T3CO/` and run:
+From within the [Python environment](./docs/installation.md#setting-up-env), navigate to the parent directory containing the T3CO repository (e.g. `cd GitHub/T3CO/`) and run:
 ```bash
 pip install -e .
 ```
 This installs the local version of the T3CO clone along with all its [dependencies](https://github.com/NREL/T3CO/blob/main/requirements.txt).
 
 ### Copying the Demo Input Files
-The [`t3co.resources`](https://github.com/NREL/T3CO/tree/main/t3co/resources) folder contains all the necessary input files needed for running T3CO. To get an offline copy of this folder in your prefered directory, run:
+The [`t3co.resources`](https://github.com/NREL/T3CO/tree/main/t3co/resources) folder contains all the necessary input files needed for running T3CO. To get an offline copy of this folder in your preferred directory, run:
 ```bash
 install_t3co_demo_inputs
 ```
@@ -56,7 +56,7 @@ python -m t3co.sweep --analysis-id=0 --config=<path/to/T3COConfig.csv>
 
 Point the `--config` argument to the `T3COConfig.csv` file path (either the t3co/resource/T3COConfig.csv file in a repo clone or the demo_inputs/T3COConfig.csv file after copying the demo input files. This parameter defaults to the T3COConfig.csv file in the t3co.resources module) and `--analysis-id` to the desired `config.analysis_id` (either an existing row or a newly added "Analysis" row in the `T3COConfig.csv` file. Default = `0`).
 
-Additional information on the inputs, the Batch Mode feature, other CLI argumentes, and description of T3CO results are mentioned in the [Quick Start Guide](https://github.com/NREL/T3CO/blob/main/docs/quick_start.md)
+Additional information on the inputs, the Batch Mode feature, other CLI arguments, and description of T3CO results are mentioned in the [Quick Start Guide](https://github.com/NREL/T3CO/blob/main/docs/quick_start.md)
 
 ## Acknowledgements
 This tool was developed with funding support from the US Department of Energy's Office of Energy Efficiency and Renewable Energy (EERE)'s Vehicle Technology Office.
