@@ -30,7 +30,7 @@ T3CO depends on [Python](https://www.python.org/downloads/)>=3.8 and <=3.10. To 
 ## Installing T3CO Python Package
 T3CO is available on PyPI and as a public access GitHub repository. This gives the user two ways of installing the T3CO Python Package.
 ### 1. Installing From [PyPI](https://pypi.org/project/t3co/) <a name=install-from-pypi></a>
-T3CO can be easily installed from PyPI. This is the preferred method when using T3CO to run analysis using input files. To install the latest release:
+T3CO can be easily installed from PyPI. This is the preferred method for using T3CO to run analysis with input files. To install the latest release:
 ```bash
 pip install t3co
 ```
