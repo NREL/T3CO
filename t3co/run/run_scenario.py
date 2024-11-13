@@ -734,14 +734,12 @@ def load_design_cycle_from_scenario(
         sdc = str(config.dc_files[dc_id])
     else:
         sdc = str(scenario.drive_cycle)
-    print(f"sdc: {sdc}")
+    print(f"Drivecycle: {sdc}")
     if "[" in sdc and "]" in sdc and "(" in sdc and ")" in sdc:
         scenario.drive_cycle = ast.literal_eval(sdc)
         range_cyc = []
         for dc_weight in scenario.drive_cycle:
             cycle_file_name = Path(dc_weight[0]).name
-            print(f"Drivecycle= {cycle_file_name} weight = {dc_weight[1]}")
-
             dc = load_design_cycle_from_path(
                 cyc_file_path=Path(cyc_file_path) / dc_weight[0]
             )
@@ -750,7 +748,6 @@ def load_design_cycle_from_scenario(
             range_cyc.append((dc, weight))
     else:
         cycle_file_name = Path(sdc).name
-        print(f"Drivecycle= {cycle_file_name}")
         range_cyc = load_design_cycle_from_path(cyc_file_path=sdc)
         range_cyc.name = cycle_file_name
 
@@ -773,7 +770,6 @@ def load_design_cycle_from_path(cyc_file_path: str) -> fastsim.cycle.Cycle:
 
     else:
         finalized_path = cyc_file_path
-    print(f"Drivecycle final path: {finalized_path}")
     range_cyc = cycle.Cycle.from_file(finalized_path)
     range_cyc = range_cyc.to_rust()
     return range_cyc
