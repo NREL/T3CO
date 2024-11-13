@@ -14,7 +14,7 @@ The main input files are the [***Vehicle***](vehicle_inputs_descriptions.md), [*
 - ***Scenario*** contains cost, infrastructure, and optimization related input parameters that define a certain scenario. Each entry in the Scenario file is called a "Scenario Model" and is referenced using `scenario.selection` as a key. [[Demo Scenarios](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/inputs/demo/Demo_FY22_scenario_assumptions.csv)]
 - ***Config*** contains easy ways to manage T3CO model settings and to save the inputs needed to run a set of selections of *Vehicle-Scenario* pairs. It also contains paths to various input files and some Scenario parameter overrides to be used globally on all selections. Users can also specify a path to the output directory in which T3CO results need to be saved. Each entry in the ***Config*** file refers to an "Analysis" and is accessed using `config.analysis_id` [[Demo Analyses](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/T3COConfig.csv)]
 
-Note that `scenario.selection` and `vehicle.selection` are expected by the tool to be the same for a chosen Vehicle-Scenario pair, i.e., a row on the ***Scenario*** file has a corresponding row on the ***Vehicle*** file with the same `selection` key. The `config.selections` attribute accepts a list of "selection" (that refers to both `scenario.selection` and `vehicle.selection`) and is used to fetch the desired set of inputs to run.
+Note that `scenario.selection` and `vehicle.selection` are expected by the tool to be the same for a chosen *Vehicle-Scenario* pair, i.e., a row on the ***Scenario*** file has a corresponding row on the ***Vehicle*** file with the same `selection` key. The `config.selections` attribute accepts a list of "selection" (that refers to both `scenario.selection` and `vehicle.selection`) and is used to fetch the desired set of inputs to run.
 
 ### Auxiliary Inputs
 
@@ -23,7 +23,7 @@ The auxiliary input files in the [`t3co/resources/auxiliary/`](https://github.co
 ## Running T3CO
 After checking the inputs and creating/modifying an "Analysis" on the ***Config*** file, the next step is to execute the models. The `t3co/sweep.py` module is the main script that needs to be run to perform a TCO analysis. And the most effective way to run the sweep module is to call a specific "Analysis" from the ***Config*** file using the `config.analysis_id` key.
 
-### Running Sweep Module from PyPI-installed T3CO
+### Running the Sweep Module from a PyPI-installed T3CO
 The easiest way to run the `t3co.sweep` module is to use a local copy of the demo input files. If the [`install_t3co_demo_inputs`](./installation.md#copy-demo-inputs) command is used to copy `demo_inputs` to your local directory after [installing from PyPI](./installation.md#install-from-pypi), run the `t3co.sweep` module from any directory. 
 
 ```bash
@@ -35,18 +35,28 @@ Point `--config` to the `T3COConfig.csv` file path and `--analysis-id` to the de
 For running `config.analysis_id`=0 (or a user desired "Analysis") from the [Demo Config](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/T3COConfig.csv) file on a cloned GitHub repo, run these commands from the parent directory:
 
 ```bash
-cd t3co
-python sweep.py --analysis-id=0
+python -m t3co.sweep --analysis-id=0
 ```
 
-### Other Command Line Interface arguments
+## Running T3CO in Batch Mode (using multiprocessing)
+The user can run T3CO in a "Batch Mode", which may be useful when running a large number of *Vehicle-Scenario* pairs or a large number of drivecycles or both. T3CO provides a demo analysis (`config.analysis_id`=3 in the sample T3COConfig.csv file) that runs the Batch Mode for a folder of multiple input drivecycles. 
+
+```bash
+python -m t3co.sweep --analysis-id=3 --run-multi
+```
+
+The Batch Mode allows T3CO to run parallel analyses utilizing multiple processors (or CPU cores) denoted by CLI argument `--n-processors`(defaults to 9). Adjust this number accordingly. To get the fastest run time, close other processor intensive programs running on your computer and assign `--n-processors` as one or two less than the max number of cores.
+
+When a folder path is provided in the T3COConfig.csv file (`config.drive_cycle`) containing "n" number of valid drivecycles, T3CO generates "n" scenarios for each *Vehicle* selections mentioned in `config.selections` with the `scenario.drive_cycle` populated with each of the "n" drivecycles. For Vehicle selection "1" in config.selections, the generated selection numbers are denoted by "1_000" for the first drivecycle, "1_001" for the second drivecycle, and so on.
+
+## Other Command Line Interface arguments
 Use the command below to get a list of all CLI arguments:
 ```bash
-python sweep.py --help
+python -m t3co.sweep --help
 ```
 
 ```
-$ python sweep.py --help
+$ python -m t3co.sweep --help
 usage: SWEEP [-h] [--config CONFIG] [--analysis-id ANALYSIS_ID] [--vehicles VEHICLES] [--scenarios SCENARIOS] [--selections [SELECTIONS ...]] [--eng-curves ENG_CURVES] [--lw-curves LW_CURVES]
              [--aero-curves AERO_CURVES] [--look-for LOOK_FOR] [--skip-all-opt] [--skip-input-validation] [--exclude [EXCLUDE ...]] [--algorithms [ALGORITHMS ...]] [--dst-dir DST_DIR]
              [--dir-mark DIR_MARK] [--file-mark FILE_MARK] [--skip-save-veh] [--x-tol X_TOL] [--f-tol F_TOL] [--n-max-gen N_MAX_GEN] [--pop-size POP_SIZE] [--nth-gen NTH_GEN] [--n-last N_LAST]
@@ -106,6 +116,9 @@ optional arguments:
                         Convergence criteria for time dilation (default: 0.001)
   --write-tsv WRITE_TSV
                         Boolean toggle to save intermediary .TSV cost results files (default: False)
+  --run-multi           Boolean switch to select multiprocessing version (default: False)
+  --n-processors N_PROCESSORS
+                        Number of processors to use for multiprocessing (default: 9)
 ```
 
 ## T3CO Results

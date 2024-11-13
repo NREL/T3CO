@@ -130,11 +130,12 @@ class T3COProblem(ElementwiseProblem):
     Class for creating PyMoo problem.
     """
 
-    moobasevehicle: fastsim.vehicle
-    mooadvancedvehicle: fastsim.vehicle
+    moobasevehicle: fastsim.vehicle.Vehicle
+    mooadvancedvehicle: fastsim.vehicle.Vehicle
     opt_scenario: run_scenario.Scenario
-    designcycle: fastsim.cycle
+    designcycle: fastsim.cycle.Cycle
     config: run_scenario.Config
+    do_input_validation: bool
 
     def setup_opt_records(self):
         """
@@ -177,11 +178,12 @@ class T3COProblem(ElementwiseProblem):
         self,
         knobs_bounds: dict,
         vnum: float,
-        optimize_pt: str = gl.BEV,
+        optimize_pt: str,
         obj_list: list = None,
         constr_list: list = None,
         verbose: bool = False,
         config: run_scenario.Config = None,
+        do_input_validation: bool = False,
         **kwargs,
     ) -> None:
         """
@@ -274,7 +276,7 @@ class T3COProblem(ElementwiseProblem):
 
         self.optimize_pt = optimize_pt
 
-        self.instantiate_moo_vehicles_and_scenario(vnum, config)
+        self.instantiate_moo_vehicles_and_scenario(vnum, config, do_input_validation)
 
         # time dilation options, turned on for fuel efficiency cycle
         if "missed_trace_correction" in kwargs:
@@ -408,7 +410,12 @@ class T3COProblem(ElementwiseProblem):
         }
         self.reporting_vars = pd.DataFrame(data=d)
 
-    def instantiate_moo_vehicles_and_scenario(self, vnum: int, config=None) -> None:
+    def instantiate_moo_vehicles_and_scenario(
+        self,
+        vnum: int,
+        config: run_scenario.Config = None,
+        do_input_validation: bool = False,
+    ) -> None:
         """
         This method instantiates the multi-objective optimization problem vehicles and scenarios, starting with the baseline Conventional vehicle.
 
@@ -421,11 +428,11 @@ class T3COProblem(ElementwiseProblem):
         """
         self.moobasevehicle = run_scenario.get_vehicle(
             vnum,
-            veh_input_path=gl.FASTSIM_INPUTS,
+            veh_input_path=config.vehicle_file,
         )
 
         self.opt_scenario, self.designcycle = run_scenario.get_scenario_and_cycle(
-            vnum, gl.OTHER_INPUTS, config=config
+            vnum, config.scenario_file, config=config, do_input_validation = do_input_validation
         )
 
         if (
@@ -450,7 +457,7 @@ class T3COProblem(ElementwiseProblem):
             self.mooadvancedvehicle.veh_pt_type = gl.BEV
             run_scenario.set_max_fuel_converter_kw(self.mooadvancedvehicle, 0)
             # change to 0, based on Excel version direction when trying to run as EV
-            self.mooadvancedvehicle.fs_max_kw = 0
+            self.mooadvancedvehicle.fc_max_out_kw = 0
             run_scenario.set_fuel_store_kwh(self.mooadvancedvehicle, 0)
         elif self.optimize_pt == gl.CONV:
             self.mooadvancedvehicle.veh_pt_type = gl.CONV
@@ -1174,6 +1181,7 @@ def run_optimization(
     algo: str,
     obj_list: list = None,
     config: run_scenario.Config = None,
+    do_input_validation=True,
     **kwargs,
 ) -> Tuple[pymoo.core.result.Result, T3COProblem, bool]:
     """
@@ -1199,7 +1207,7 @@ def run_optimization(
     """
 
     verbose = kwargs.pop("verbose", False)
-    optimize_pt = kwargs.pop("optimize_pt", gl.BEV)
+    optimize_pt = kwargs.pop("optimize_pt")
     return_least_infeasible = kwargs.pop("optimize_pt", False)
     skip_optimization = kwargs.pop("skip_optimization", False)
 
@@ -1217,9 +1225,10 @@ def run_optimization(
         optimize_pt=optimize_pt,
         verbose=verbose,
         config=config,
+        do_input_validation=do_input_validation,
         **kwargs,
     )
-
+    
     if skip_optimization:
         return None, problem, None, None
 

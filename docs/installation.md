@@ -83,7 +83,7 @@ The user will receive these questions on the command line:
 
 `Enter the path where you want to copy demo input files:`
 
-Choose `y` and provide the desired destination path to get a `demo_inputs` folder containing the `t3co.resources` files copied to your local directory.
+Choose `y` and provide the desired destination path to get a `demo_inputs` folder containing the `t3co.resources` files copied to your local directory. To copy the folder to the current directory you are on, answer the second question with ".".
 
 ## Running your first analysis
 To learn about the tool and run your first T3CO analysis, proceed to the [Quick Start Guide](./quick_start.md)

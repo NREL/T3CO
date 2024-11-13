@@ -89,7 +89,7 @@ t2vehicle="""
     'noElecAux': False,
     'vehTypeSelection': np.array(4.),
     'maxFcEffKw': 0,
-    'fcMaxOutkW': 0,
+    'fc_max_kw': 0,
     'mcKwInArray': np.array([  0.        ,   3.4706853 ,   6.86065699,  10.1726983 ,
           13.40946594,  16.57349723,  19.66721671,  22.81831773,
           25.93479127,  29.01720499,  32.06611421,  35.19621212,
