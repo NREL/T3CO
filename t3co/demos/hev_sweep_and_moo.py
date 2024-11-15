@@ -38,7 +38,7 @@ tol = 0.01
 # light-weighting, fuel converter size, engine efficiency, CdA percent, battery and motor size
 knobs_bounds_all = {
     'CdA_perc_imp': (5.0, 25.0),
-    'fcMaxOutKw': (200, 500),  # fcMaxOutKw could be used for optimization of HEV
+    'fc_max_kw': (200, 500),  # fc_max_kw could be used for optimization of HEV
     'ess_max_kwh': (1, 300),
     'mc_max_kw': (10, 300),
     'fc_peak_eff': (46, 60),

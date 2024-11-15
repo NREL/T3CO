@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "t3co"
-version = "1.0.8"
+version = "1.0.9"
 dynamic = ["dependencies"]
 description = """
 NREL's Transportation Technology Total Cost of Ownership tool
@@ -45,4 +45,5 @@ Repository = "https://github.nrel.gov/AVCI/T3CO"
 
 
 [project.scripts]
-t3co-cli = "t3co:sweep"
+install_t3co_demo_inputs = "t3co.utilities.demo_inputs_installer:main"
+

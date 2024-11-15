@@ -174,8 +174,7 @@ def calculate_dollar_cost(
 
     pTaxCost = tax_rate_pct * msrp
 
-    # insurance_cost = calc_insurance_costs(scenario=scenario, msrp=msrp)
-    # residual_cost = calc_residual_cost(vehicle=veh, scenario=scenario, msrp=msrp)
+
     cost_set = {
         "Glider": vehicle_glider_cost_dol,
         "Fuel converter": fcPrice,
@@ -211,13 +210,11 @@ def calculate_opp_costs(
     """
     oppcostobj = opportunity_cost.OpportunityCost(scenario, range_dict)
     if scenario.activate_tco_payload_cap_cost_multiplier:
-        # assert optvehicle.veh_pt_type in [gl.BEV, gl.HEV], "payload cap loss factor TCO element only available for BEVs and FCEV HEVs"
         assert gl.not_falsy(scenario.plf_ref_veh_empty_mass_kg)
         assert np.isnan(scenario.plf_ref_veh_empty_mass_kg) == False
         oppcostobj.set_payload_loss_factor(vehicle, scenario)
 
     if scenario.activate_tco_fueling_dwell_time_cost:
-        # assert optvehicle.veh_pt_type in [gl.BEV, gl.HEV], "payload cap loss factor TCO element only available for BEVs and FCEV HEVs"
         assert gl.not_falsy(scenario.downtime_oppy_cost_dol_per_hr)
         assert not np.isnan(scenario.fdt_num_free_dwell_trips)
         assert not np.isnan(scenario.fdt_dwpt_fraction_power_pct)
@@ -237,7 +234,6 @@ def calculate_opp_costs(
         assert gl.not_falsy(scenario.mr_avg_tire_life_mi)
         oppcostobj.set_M_R_downtime_cost(vehicle, scenario)
 
-    # veh_opp_cost_set = {'payload_cap_cost_multiplier' : None, 'net_fueling_dwell_time_hr_per_yr' : 0., 'dwell_time_cost_Dol' : 0.}
     veh_opp_cost_set = {
         "payload_cap_cost_multiplier": oppcostobj.payload_cap_cost_multiplier,
         "daily_trip_distance_mi": oppcostobj.d_trip_mi,
@@ -371,8 +367,6 @@ def fill_veh_expense_file(
             "Battery replacement",
         ],
         [vehicle, vocation, model_year, cost_set["Purchase tax"], "Purchase tax"],
-        # [vehicle, vocation, model_year, cost_set["Insurance"], "Insurance"],
-        # [vehicle, vocation, model_year, cost_set["Residual Cost"], "Residual Cost"],
     ]
     vexpdf = pd.DataFrame(
         data, columns=["Vehicle", "Vocation", "Model Year", "Cost [$/veh]", "Category"]
@@ -414,9 +408,6 @@ def fill_trav_exp_tsv(
     ):
         l1 = [yr, region, vocation, vehicle_name, "maintenance", maint[i]]
         data.append(l1)
-        # data.append([yr, region, vocation, vehicle,  "payload opp cost", np.nan])
-        # data.append([yr, region, vocation, vehicle,  "time opp cost",    np.nan])
-        # data.append([yr, region, vocation, vehicle,  "labor opp cost",   np.nan])
 
     df = pd.DataFrame(data=data, columns=columns)
 
@@ -448,10 +439,7 @@ def fill_downtimelabor_cost_tsv(
         "fueling_dwell_labor_cost_dol_per_yr"
     ]
     mr_downtime_oppy_cost_dol_per_yr = oppy_cost_set["mr_downtime_oppy_cost_dol_per_yr"]
-    # assert len(insurance_rates) >= veh_life_years, (f"vehLifeYears of {veh_life_years} & length of input insurance rates {len(insurance_rates)} do not align; "
-    # f"vehLifeYears life years & number of years in vmt should match\n"
-    # f"[vehLifeYears/[VMT_1,...,VMT_N]]:[{veh_life_years}/{insurance_rates}]")
-    # \
+
     for i in range(0, veh_life_years):
         # downtime_costs_Dol = fueling_downtime_oppy_cost_dol[i] + MR_downtime_cost_Dol[i]
         # i is age, give it a VMT value for each entry in VMT or defer to last VMT entry
@@ -463,7 +451,6 @@ def fill_downtimelabor_cost_tsv(
 
     df = pd.DataFrame(data, columns=columns)
 
-    # print(f'insurance: {df}')
     return df
 
 
@@ -487,7 +474,6 @@ def fill_market_share_tsv(
 
     veh_life_years = int(scenario.vehicle_life_yr)
     model_year = int(scenario.model_year)
-    # maint = list(np.float_(scenario.maint_oper_cost_dol_per_mi.strip('][').split(',')))
     data = []
     columns = ["Vehicle", "Vocation", "Model Year", "Region", "Market Share [veh/veh]"]
     data.append([vehicle, vocation, model_year, reg, 1 / num_vs])
@@ -573,8 +559,6 @@ def fill_fuel_expense_tsv(
                     f"TCO fuel calc: fill_fuel_expense_tsv:: unknown fuel type {fuel_type}"
                 )
             data.append([yr, fuel_type, cat, cost])
-
-            # scenario.scenario_gge_regional_temporal_fuel_price += f"fuel: {fuel_type}; region: {scenario.region}; year: {yr}; $_gge: {cost}"
 
     df = pd.DataFrame(data, columns=columns)
 
@@ -676,7 +660,6 @@ def fill_insurance_tsv(
 
     df = pd.DataFrame(data, columns=columns)
 
-    # print(f'insurance: {df}')
     return df
 
 
@@ -703,10 +686,6 @@ def fill_residual_cost_tsc(
 
     residual_rate = find_residual_rates(vehicle, scenario)
 
-    # assert len(insurance_rates) >= veh_life_years, (f"vehicle_life_yr of {veh_life_years} & length of input insurance rates {len(insurance_rates)} do not align; "
-    # f"vehicle_life_yr life years & number of years in vmt should match\n"
-    # f"[vehicle_life_yr/[VMT_1,...,VMT_N]]:[{veh_life_years}/{insurance_rates}]")
-
     MSRP = veh_cost_set["msrp"]
     for i in range(0, veh_life_years):
         if i == veh_life_years - 1:
@@ -717,7 +696,6 @@ def fill_residual_cost_tsc(
 
     df = pd.DataFrame(data, columns=columns)
 
-    # print(f'residual: {df}')
     return df
 
 
