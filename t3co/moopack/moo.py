@@ -432,7 +432,10 @@ class T3COProblem(ElementwiseProblem):
         )
 
         self.opt_scenario, self.designcycle = run_scenario.get_scenario_and_cycle(
-            vnum, config.scenario_file, config=config, do_input_validation = do_input_validation
+            vnum,
+            config.scenario_file,
+            config=config,
+            do_input_validation=do_input_validation,
         )
 
         if (
@@ -1105,7 +1108,7 @@ class T3COProblem(ElementwiseProblem):
 
 
 # TODO, needs refactor
-class T3CODisplay:
+class T3CODisplay(Output):
     """
     This class contains the display object for Pymoo optimization printouts - pymoo.util.display.Display
 
@@ -1228,7 +1231,7 @@ def run_optimization(
         do_input_validation=do_input_validation,
         **kwargs,
     )
-    
+
     if skip_optimization:
         return None, problem, None, None
 

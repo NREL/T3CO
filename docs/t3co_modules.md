@@ -7,7 +7,7 @@ The T3CO submodules are categorized into:
 - Run Modules:
   - [run_scenario.py](run_scenario.md)
   - [generateinputs.py](generateinputs.md)
-  - [Global.py](global.md)
+  - [Global.py](Global.md)
 - TCO Modules:
   - [opportunity_costs.py](opportunity_cost.md)
   - [tcocalc.py](tcocalc.md)
