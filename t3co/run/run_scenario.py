@@ -154,7 +154,7 @@ class Config:
             else:
                 self.dc_files = None
         except:
-            Exception        
+            Exception
 
 
 @dataclass
@@ -765,7 +765,9 @@ def load_design_cycle_from_path(cyc_file_path: str) -> fastsim.cycle.Cycle:
         range_cyc (fastsim.cycle.Cycle): FASTSim cycle object for current Scenario object
     """
     if Path(cyc_file_path).exists() == False:
-        print(f"Drive cycle not found in {cyc_file_path}, trying {gl.OPTIMIZATION_DRIVE_CYCLES}")
+        print(
+            f"Drive cycle not found in {cyc_file_path}, trying {gl.OPTIMIZATION_DRIVE_CYCLES}"
+        )
         finalized_path = Path(gl.OPTIMIZATION_DRIVE_CYCLES) / cyc_file_path
 
     else:
@@ -899,7 +901,7 @@ def set_max_fuel_converter_kw(
 
     Args:
         analysis_vehicle (fastsim.vehicle.Vehicle): FASTSim vehicle object
-        fc_max_kw (float): max fuel converter power /kW
+        fc_max_out_kw (float): max fuel converter power /kW
     """
     analysis_vehicle.fc_max_kw = fc_max_out_kw
     analysis_vehicle.set_derived()
