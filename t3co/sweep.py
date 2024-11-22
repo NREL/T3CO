@@ -1531,7 +1531,7 @@ if __name__ == "__main__":
                 selections_list.extend(sel_list)
                 print(scenario_name)
             else:
-                selections_list = [sel]
+                selections_list.append(sel)
         except:
             logging.exception("Fatal Error")
             raise
