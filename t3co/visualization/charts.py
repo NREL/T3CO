@@ -8,24 +8,23 @@ import pandas as pd
 from scipy.interpolate import make_interp_spline
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 # import calplot
-
+from matplotlib import axes
 
 class T3COCharts:
     t3co_results: pd.DataFrame
     results_guide: pd.DataFrame
     value_cols: List[float]
 
-    def __init__(self):
-        pass
-
-    def from_file(
-        self,
-        filename: str | Path,
-        results_guide: str | Path = Path(__file__).parents[1]
+    def __init__(self, filename = None, results_df: pd.DataFrame=None, results_guide: str | Path = Path(__file__).parents[1]
         / "resources" / "visualization"
-        / "t3co_outputs_guide.csv",
-    ):
-        self.t3co_results = pd.read_csv(filename)
+        / "t3co_outputs_guide.csv"):
+        if filename is not None: 
+            print(f'using filename')
+            self.from_file(filename)
+        else: 
+            self.from_df(results_df)
+
+        print(f't3co_results: {self.t3co_results}')
         self.parse_scenario_name()
 
         self.results_guide = pd.read_csv(results_guide)
@@ -33,7 +32,7 @@ class T3COCharts:
             self.results_guide["data_type"] == "float", "t3co_output_parameter"
         ].values
 
-        self.group_columns = [ "veh_year", "veh_pt_type",  "vehicle_type", "tech_progress", "vehicle_fuel_type"]
+        self.group_columns = [ "None","vehicle_weight_class", "veh_year",  "vehicle_type", "tech_progress", "vehicle_fuel_type"]
         self.cost_cols = [
             "glider_cost_dol",
             "fuel_converter_cost_dol",
@@ -61,6 +60,17 @@ class T3COCharts:
         self.cost_col_names = self.results_guide['full_form'][self.results_guide["t3co_output_parameter"].isin(self.cost_cols)]
 
         print(self.cost_col_names)
+        
+    def from_file(
+        self,
+        filename: str | Path = None,
+    ):
+        self.t3co_results = pd.read_csv(filename)   
+        
+    def from_df(self, results_df):
+        self.t3co_results = results_df
+
+    def to_df(self):
         return self.t3co_results
     
     def parse_scenario_name(self):
@@ -79,8 +89,8 @@ class T3COCharts:
         self.t3co_results['vehicle_weight_class'] = ""
         for i in range(len(self.t3co_results)):
             for wt_class, lims in weight_class_ranges.items():
-                if self.t3co_results['scenario_gvwr_kg'][i] > lims[0] and self.t3co_results['scenario_gvwr_kg'][i] <= lims[1]:
-                    self.t3co_results['vehicle_weight_class'][i] = "Class " + wt_class
+                if float(self.t3co_results['scenario_gvwr_kg'][i]) > lims[0] and float(self.t3co_results['scenario_gvwr_kg'][i]) <= lims[1]:
+                    self.t3co_results.loc[[i], 'vehicle_weight_class'] = "Class " + wt_class
                     break
         
         print(self.t3co_results['vehicle_weight_class'])
@@ -94,9 +104,15 @@ class T3COCharts:
         print(self.t3co_results['tech_progress'])
         print(self.t3co_results['vehicle_fuel_type'])
 
-    def generate_tco_plots(self, group_col, points=300, bins=20):
+    def generate_tco_plots(self, x_group_col, y_group_col, points=300, bins=20):
+        disc_tco_label = self.results_guide['full_form'][self.results_guide["t3co_output_parameter"]=='discounted_tco_dol']
+        legend_cols = list(disc_tco_label) + list(self.cost_col_names)
+        x_groups = (self.t3co_results[x_group_col].unique() if x_group_col!="None" else [0])
+        y_groups = (self.t3co_results[y_group_col].unique() if y_group_col!="None" else [0])
         
-        if group_col != "None":
+        if x_group_col == "None" and y_group_col == "None":
+
+        
             # groups = tuple(set(self.t3co_results[group_col]))
             # print(f'groups: {groups}')
             
@@ -113,30 +129,91 @@ class T3COCharts:
             x_values = range(len(self.t3co_results))  # X-values based on the index of the DataFrame
             y_values = self.t3co_results['discounted_tco_dol']
 
-            disc_tco_label = self.results_guide['full_form'][self.results_guide["t3co_output_parameter"]=='discounted_tco_dol']
             plt.scatter(x_values, y_values, color='red', label=disc_tco_label, zorder=3, marker='D',)
-            legend_cols = list(disc_tco_label) + list(self.cost_col_names)
             print(f'legend_cols: {legend_cols}')
             ax.legend(legend_cols, bbox_to_anchor=(1, 0.8))
             # ax.legend()
             ax.set_title("Total Cost Of Ownership Breakdown")
             fig = ax.get_figure()
 
-        # else:
-        #     groups = 
+        elif len(x_groups)>1 and len(y_groups)==1:
             
-        # else:
-            # fig, ax = plt.subplots()
-            # bottom = 0
-            # width = 0.15
-            # for i in range(len(self.cost_cols)):
-            #     p = ax.bar(groups, self.t3co_results[self.cost_cols[i]], width, label=self.cost_col_names[i], bottom=bottom)
-            #     bottom += self.t3co_results[self.cost_cols[i]]
+            print(f'x_groups: {x_groups}')
             
-            # ax.set_xlabel(f"Grouped by {group_col}")
-            # ax.set_ylabel("Cost [$\$$]")
-            # ax.legend()
-            # ax.title("Total Cost Of Ownership Breakdown")
+            fontsize =  25
+            # plt.rcParams['font.size'] = 25
+
+            fig, ax = plt.subplots(1, len(x_groups),  sharey=True, figsize = (len(x_groups)*7+7, 10))
+            # print(self.t3co_results.loc[ self.t3co_results[x_group_col] == x_groups[0]])
+            
+            maxn = 4
+            print(f'maxn = {maxn}')
+            for i in range(len(x_groups)):
+                self.t3co_results.loc[self.t3co_results[x_group_col] == x_groups[i]].plot.bar(x = 'vehicle_fuel_type', y = self.cost_cols, stacked=True, ax=ax[i], legend = False, width=0.4, )
+                ax[i].set_xlim(-0.5,maxn-0.5)
+
+                ax[i].set_xlabel(f"{x_groups[i]}", fontsize = fontsize,labelpad=10)
+                ax[i].set_ylabel("Cost [$\$$]", fontsize = fontsize)
+                ax[i].tick_params(labelsize=fontsize)
+                x_values = range(len(self.t3co_results.loc[self.t3co_results[x_group_col] == x_groups[i]]))  # X-values based on the index of the DataFrame
+                y_values = self.t3co_results.loc[self.t3co_results[x_group_col] == x_groups[i],'discounted_tco_dol']
+                ax[i].scatter(x_values, y_values, color='red', label=disc_tco_label, zorder=3, marker='D',)
+
+                # if i==len(x_groups)-1: 
+                #     ax[i].legend(legend_cols, bbox_to_anchor=(1, 0.8))
+
+            handles, labels = [], []
+            for ax1 in ax:
+                for h, l in zip(*ax1.get_legend_handles_labels()):
+                    handles.append(h)
+                    labels.append(l)
+
+
+            fig.suptitle("Total Cost Of Ownership Breakdown")
+            fig.legend(handles, legend_cols, loc='center right', bbox_to_anchor=(1.25, 0.5), ncol=1, fontsize =fontsize)
+
+                # ax[i].set_figure(fig)
+            # print(ax[0].ArtistList)
+
+        elif len(y_groups)>1 and len(x_groups)==1:
+            
+            print(f'y_groups: {y_groups}')
+            
+            fontsize =  25
+            # plt.rcParams['font.size'] = 25
+
+            fig, ax = plt.subplots(len(y_groups),1,  sharex=True, figsize = (10, len(y_groups)*7+7))
+            # print(self.t3co_results.loc[ self.t3co_results[x_group_col] == x_groups[0]])
+            
+            maxn = 4
+            print(f'maxn = {maxn}')
+            for i in range(len(y_groups)):
+                self.t3co_results.loc[self.t3co_results[y_groups] == y_groups[i]].plot.bar(x = 'vehicle_fuel_type', y = self.cost_cols, stacked=True, ax=ax[0][i], legend = False, width=0.4, )
+                ax[0][i].set_xlim(-0.5,maxn-0.5)
+
+                ax[0][i].set_xlabel(f"{y_group_col[i]}", fontsize = fontsize,labelpad=10)
+                ax[0][i].set_ylabel("Cost [$\$$]", fontsize = fontsize)
+                ax[0][i].tick_params(labelsize=fontsize)
+                x_values = range(len(self.t3co_results.loc[self.t3co_results[y_groups] == y_groups[i]]))  # X-values based on the index of the DataFrame
+                y_values = self.t3co_results.loc[self.t3co_results[y_group_col] == y_groups[i],'discounted_tco_dol']
+                ax[0][i].scatter(x_values, y_values, color='red', label=disc_tco_label, zorder=3, marker='D',)
+
+                # if i==len(x_groups)-1: 
+                #     ax[i].legend(legend_cols, bbox_to_anchor=(1, 0.8))
+
+            handles, labels = [], []
+            for ax1 in ax:
+                for h, l in zip(*ax1.get_legend_handles_labels()):
+                    handles.append(h)
+                    labels.append(l)
+
+
+            fig.suptitle("Total Cost Of Ownership Breakdown")
+            fig.legend(handles, legend_cols, loc='center right', bbox_to_anchor=(1.25, 0.5), ncol=1, fontsize =fontsize)
+
+                # ax[i].set_figure(fig)
+            # print(ax[0].ArtistList)
+
         return fig
 
     
