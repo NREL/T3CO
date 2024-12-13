@@ -440,3 +440,15 @@ class T3COCharts:
             )
 
         return fig
+    
+    def generate_histogram(self, hist_col, bins):
+        fig, ax = plt.subplots()
+        ax.hist(x=self.t3co_results[hist_col], bins=bins)
+        ax.set_ylabel("Percent of Trips [%]")
+        ax.set_xlabel(
+            self.results_guide.loc[
+                self.results_guide["t3co_output_parameter"] == hist_col, "full_form"
+            ].values[0]
+        )
+        return fig
+
