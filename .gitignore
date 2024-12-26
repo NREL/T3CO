@@ -29,3 +29,4 @@
 *.DS_Store
 /site
 /t3co/resources/auxiliary/payload_pdf.csv
+/t3co/tco_results

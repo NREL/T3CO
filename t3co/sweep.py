@@ -978,10 +978,10 @@ def run_vehicle_scenarios(
     if selections == -1:
         selections = vdf.index
 
-    if args.dst_dir is None and config.dst_dir is None:
+    if report_kwargs["dst_dir"] is None and config.dst_dir is None:
         resdir = Path(os.path.abspath(__file__)).parents[1] / f"results{dir_mark}"
-    elif args.dst_dir is not None:
-        resdir = Path(args.dst_dir)
+    elif report_kwargs["dst_dir"] is not None:
+        resdir = Path(report_kwargs["dst_dir"])
     else:
         resdir = Path(config.dst_dir)
 
@@ -1444,6 +1444,7 @@ if __name__ == "__main__":
         "exclude": exclude,
         "algo": algorithms,
         "dir_mark": args.dir_mark,
+        "dst_dir": args.dst_dir,
         "file_mark": args.file_mark.replace(".csv", ""),
         "skip_save_veh": args.skip_save_veh,
         "x_tol": float(args.x_tol),
