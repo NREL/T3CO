@@ -303,7 +303,7 @@ class T3COCharts:
                 len(x_groups),
                 sharey=True,
                 sharex=True,
-                figsize=(min(len(x_groups) * fig_x_size + 8, 50), min(4 + fig_y_size)),
+                figsize=(min(len(x_groups) * fig_x_size + 8, 50), min(4 + fig_y_size,50)),
             )
             # print(self.t3co_results.loc[ self.t3co_results[x_group_col] == x_groups[0]])
 
@@ -589,7 +589,7 @@ class T3COCharts:
         return fig
 
     def generate_violin_plot(
-        self, x_group_col: str, y_group_col: str = "discounted_tco_dol"
+        self, x_group_col: str, y_group_col: str = "discounted_tco_dol", fig_width:float =8, fig_height:float = 5,
     ) -> matplotlib.figure.Figure:
         """
         This method generates a violin plot based on x-axis group column and y-axis column name.
@@ -603,8 +603,8 @@ class T3COCharts:
         """
         print("Running Violin plots")
         fontsize = 10
-        fig, ax = plt.subplots(1, 1)
-       
+        fig, ax = plt.subplots(1,1,figsize = (fig_width,fig_height))
+        self.t3co_results[y_group_col] = self.t3co_results[y_group_col].astype(float).round(5)
         sns.violinplot(
             x=x_group_col,
             y=y_group_col,
@@ -629,7 +629,7 @@ class T3COCharts:
         return fig
 
     def generate_histogram(
-        self, hist_col: str, n_bins: int, show_pct: bool = False
+        self, hist_col: str, n_bins: int, fig_width:float =8, fig_height:float = 5, show_pct: bool = False
     ) -> matplotlib.figure.Figure:
         """
         This method generates a histogram plot based on inputs hist_col and n_bins
@@ -637,14 +637,17 @@ class T3COCharts:
         Args:
             hist_col (str): T3CO column name to plot histogram
             n_bins (int): Number of bins in histogram
+            fig_width (float): Figure total width
+            fig_height (float):  Figure total height
             show_pct (bool, optional): If True, plots percentage on y-axis instead of number of items. Defaults to False.
 
         Returns:
             matplotlib.figure.Figure: Histogram figure object
         """
         print("Running Histogram")
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(1,1,figsize = (fig_width,fig_height))
         fontsize = 10
+        self.t3co_results[hist_col] = self.t3co_results[hist_col].astype(float).round(4)
         if len(self.t3co_results[hist_col]) > 0:
             if show_pct:
                 hist, bins = np.histogram(
