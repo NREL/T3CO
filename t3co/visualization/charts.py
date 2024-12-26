@@ -1,16 +1,16 @@
 from pathlib import Path
+from textwrap import wrap
 from typing import List
 
-from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
-
-# from t3co.run import QuickStats
-from scipy.interpolate import make_interp_spline
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+import seaborn as sns
 
 # import calplot
-from matplotlib import axes
+from matplotlib import pyplot as plt
+from matplotlib.ticker import FuncFormatter
+
+# from t3co.run import QuickStats
 
 
 class T3COCharts:
@@ -20,20 +20,19 @@ class T3COCharts:
 
     def __init__(
         self,
-        filename=None,
+        filename: str = None,
         results_df: pd.DataFrame = None,
         results_guide: str | Path = Path(__file__).parents[1]
         / "resources"
         / "visualization"
         / "t3co_outputs_guide.csv",
     ):
+        print("Initializing T3COCharts")
         if filename is not None:
-            # print(f'using filename')
             self.from_file(filename)
         else:
             self.from_df(results_df)
 
-        # print(f't3co_results: {self.t3co_results}')
         self.parse_scenario_name()
 
         self.results_guide = pd.read_csv(results_guide)
@@ -49,39 +48,44 @@ class T3COCharts:
             "tech_progress",
             "vehicle_fuel_type",
         ]
-        self.cost_cols = [
-            "glider_cost_dol",
-            "fuel_converter_cost_dol",
-            "fuel_storage_cost_dol",
-            "motor_control_power_elecs_cost_dol",
-            "plug_cost_dol",
-            "battery_cost_dol",
-            "purchase_tax_dol",
-            # "msrp_total_dol",
-            "total_fuel_cost_dol",
-            "total_maintenance_cost_dol",
-            "insurance_cost_dol",
-            "residual_cost_dol",
-            "fueling_dwell_labor_cost_dol",
-            "fueling_downtime_oppy_cost_dol",
-            "mr_downtime_oppy_cost_dol",
-            # "discounted_downtime_oppy_cost_dol",
-            "payload_capacity_cost_dol",
-            # "discounted_tco_dol",
-        ]
+        self.cost_cols = {
+            "residual_cost_dol": "#6C7B8B",
+            "glider_cost_dol": "#8b7355",
+            "fuel_converter_cost_dol": "#228B22",
+            "fuel_storage_cost_dol": "#8B4513",
+            "motor_control_power_elecs_cost_dol": "#1874CD",
+            "plug_cost_dol": "#6A5ACD",
+            "battery_cost_dol": "#7EC0EE",
+            "purchase_tax_dol": "#CD5B45",
+            "insurance_cost_dol": "#CDC673",
+            "total_maintenance_cost_dol": "#DAA520",
+            "total_fuel_cost_dol": "#4682B4",
+            "fueling_dwell_labor_cost_dol": "#CD2626",
+            "discounted_downtime_oppy_cost_dol": "#8B0000",
+            "payload_capacity_cost_dol": "#CD8C95",
+        }
         self.t3co_results = self.t3co_results.convert_dtypes()
-        for costcol in self.cost_cols:
+        for costcol in self.cost_cols.keys():
             self.t3co_results[costcol] = self.t3co_results[costcol].astype(float)
-            # print(self.t3co_results[costcol].dtype)
         self.t3co_results["discounted_tco_dol"] = self.t3co_results[
             "discounted_tco_dol"
         ].astype(float)
-        # for cost_col in self.cost_cols:
+        self.full_form_dict = dict(
+            zip(
+                self.results_guide["t3co_output_parameter"],
+                self.results_guide["full_form"],
+            )
+        )
         self.cost_col_names = self.results_guide["full_form"][
-            self.results_guide["t3co_output_parameter"].isin(self.cost_cols)
+            self.results_guide["t3co_output_parameter"].isin(self.cost_cols.keys())
         ]
 
-        # print(self.cost_col_names)
+        self.edgecolors = [
+            "none",
+            "black",
+            "gray",
+            "white",
+        ]
 
     def from_file(
         self,
@@ -120,14 +124,11 @@ class T3COCharts:
                     )
                     break
 
-        # print(self.t3co_results['vehicle_weight_class'])
-
         self.t3co_results["vehicle_type"] = (
             self.t3co_results["scenario_name"]
             .str.split("(")
             .apply(lambda x: " ".join(x[0].split(" ")[2:]))
         )
-        # print( self.t3co_results['vehicle_type'] )
 
         self.t3co_results["tech_progress"] = (
             self.t3co_results["scenario_name"]
@@ -139,18 +140,19 @@ class T3COCharts:
             .str.split("(")
             .apply(lambda x: x[1].split(",")[0])
         )
-        # self.t3co_results['vehicle_weight_class'] =  self.t3co_results['scenario_name'].str.split[" "]
-        # print(self.t3co_results['tech_progress'])
-        # print(self.t3co_results['vehicle_fuel_type'])
 
     def generate_tco_plots(
         self,
         x_group_col,
         y_group_col,
         subplot_group_col="vehicle_fuel_type",
-        points=300,
-        bins=20,
+        fig_x_size=8,
+        fig_y_size=8,
+        bar_width=0.8,
+        legend_pos=0.25,
+        edgecolor="none",
     ):
+        print("running generate_tco_plots")
         disc_tco_label = self.results_guide["full_form"][
             self.results_guide["t3co_output_parameter"] == "discounted_tco_dol"
         ]
@@ -158,75 +160,107 @@ class T3COCharts:
         x_groups = (
             self.t3co_results[x_group_col].unique() if x_group_col != "None" else [0]
         )
-        print(f"x_groups: {x_groups}")
         y_groups = (
             self.t3co_results[y_group_col].unique() if y_group_col != "None" else [0]
         )
-        print(f"y_groups: {y_groups}")
         fontsize = 25
+
         if (x_group_col == "None" and y_group_col == "None") or (
             len(x_groups) == 1 and len(y_groups) == 1
         ):
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(
+                1,
+                1,
+                figsize=(
+                    min(len(self.t3co_results) * fig_x_size + 4, 50),
+                    min(4 + fig_y_size, 50),
+                ),
+                sharex=True,
+            )
             # bottom = np.zeros(len(groups))
             # width = 0.15
-            self.t3co_results.plot.bar(
-                y=self.cost_cols, stacked=True, figsize=(8, 8), ax=ax
-            )
-            # self.t3co_results.plot.line(x = ['scenario_name'], y= ['discounted_tco_dol'], ax= ax)
-            ax.set_xlabel("Scenarios")
-            ax.set_xticklabels(self.t3co_results["scenario_name"])
-            ax.set_ylabel("Cost [$\$$]")
-            ax.minorticks_on()
-
             x_values = range(
                 len(self.t3co_results)
             )  # X-values based on the index of the DataFrame
             y_values = self.t3co_results["discounted_tco_dol"]
 
-            plt.scatter(
+            ax.scatter(
                 x_values,
                 y_values,
                 color="red",
                 label=disc_tco_label,
                 zorder=3,
                 marker="D",
+                s=100,
             )
-            # print(f'legend_cols: {legend_cols}')
-            ax.legend(legend_cols, bbox_to_anchor=(1, 0.8))
-            # ax.legend()
-            ax.set_title("Total Cost Of Ownership Breakdown")
+            self.t3co_results.plot.bar(
+                y=self.cost_cols.keys(),
+                stacked=True,
+                figsize=(min(len(self.t3co_results) * fig_x_size, 50), 6 + fig_y_size),
+                width=bar_width,
+                ax=ax,
+                legend=False,
+                color=self.cost_cols,
+                edgecolor=(edgecolor if edgecolor in self.edgecolors else "none"),
+                alpha=0.8,
+            )
+
+            xlabels = [
+                "\n".join(wrap(x, 25)) for x in self.t3co_results["scenario_name"]
+            ]
+
+            # bars = ax.patches
+            # hatches = [p for p in patterns for i in range(len(self.t3co_results[self.cost_cols.keys()]))]
+            # for bar, hatch in zip(bars, hatches):
+            #     bar.set_hatch(hatch)
+            # self.t3co_results.plot.line(x = ['scenario_name'], y= ['discounted_tco_dol'], ax= ax)
+            ax.set_xlabel("Scenarios", fontsize=fontsize, labelpad=10)
+            ax.get_yaxis().set_major_formatter(
+                FuncFormatter(lambda x, p: "$" + format(int(x), ","))
+            )
+            ax.set_xticklabels(self.t3co_results["scenario_name"])
+            ax.set_ylabel("Cost [$\$$]", fontsize=fontsize, labelpad=10)
+            ax.minorticks_on()
+            ax.set_xlim(-0.5, len(self.t3co_results) - 0.5)
+
+            ax.set_xlim(-0.5, len(x_values) - 0.5)
+
+            # plt.tight_layout()
+            ax.set_xticks(range(len(self.t3co_results)), xlabels)
+            ax.tick_params(labelsize=fontsize)
+            handles, labels = [], []
+            for h, l in zip(*ax.get_legend_handles_labels()):
+                handles.append(h)
+                labels.append(l)
+
+            fig.legend(
+                handles,
+                legend_cols,
+                loc="center right",
+                bbox_to_anchor=(1 + legend_pos, 0.5),
+                fontsize=fontsize,
+            )
+
+            fig.suptitle(
+                "Total Cost Of Ownership Breakdown",
+                fontsize=fontsize * 1.5,
+                fontweight="bold",
+            )
             fig = ax.get_figure()
-
+        # %%
         elif len(x_groups) > 1 and len(y_groups) == 1:
-            # print(f'x_groups: {x_groups}')
-
-            fontsize = 25
-            # plt.rcParams['font.size'] = 25
-
             fig, ax = plt.subplots(
-                1, len(x_groups), sharey=True, figsize=(len(x_groups) * 7 + 7, 10)
+                1,
+                len(x_groups),
+                sharey=True,
+                sharex=True,
+                figsize=(min(len(x_groups) * fig_x_size + 8, 50), min(4 + fig_y_size)),
             )
             # print(self.t3co_results.loc[ self.t3co_results[x_group_col] == x_groups[0]])
 
-            maxn = 4
+            max_x = 1
             # print(f'maxn = {maxn}')
             for i in range(len(x_groups)):
-                self.t3co_results.loc[
-                    self.t3co_results[x_group_col] == x_groups[i]
-                ].plot.bar(
-                    x=subplot_group_col,
-                    y=self.cost_cols,
-                    stacked=True,
-                    ax=ax[i],
-                    legend=False,
-                    width=0.4,
-                )
-                ax[i].set_xlim(-0.5, maxn - 0.5)
-
-                ax[i].set_xlabel(f"{x_groups[i]}", fontsize=fontsize, labelpad=10)
-                # ax[i].set_ylabel("Cost [$\$$]", fontsize = fontsize)
-                ax[i].tick_params(labelsize=fontsize)
                 x_values = range(
                     len(
                         self.t3co_results.loc[
@@ -246,63 +280,89 @@ class T3COCharts:
                     marker="D",
                 )
 
-                # if i==len(x_groups)-1:
-                #     ax[i].legend(legend_cols, bbox_to_anchor=(1, 0.8))
+                self.t3co_results.loc[
+                    self.t3co_results[x_group_col] == x_groups[i]
+                ].plot.bar(
+                    x=subplot_group_col,
+                    y=self.cost_cols.keys(),
+                    stacked=True,
+                    ax=ax[i],
+                    figsize=(
+                        min(len(self.t3co_results) * fig_x_size, 50),
+                        min(len(y_groups) * fig_y_size + 4, 50),
+                    ),
+                    legend=False,
+                    width=bar_width,
+                    color=self.cost_cols,
+                    edgecolor=edgecolor,
+                    alpha=0.7,
+                )
+                ax[i].minorticks_on()
 
-            handles, labels = [], []
-            for ax1 in ax:
-                for h, l in zip(*ax1.get_legend_handles_labels()):
-                    handles.append(h)
-                    labels.append(l)
+                # ax[i].set_ylabel("Cost [$\$$]", fontsize = fontsize)
+
+                max_x = max(len(x_values), max_x)
+
+                ax[i].set_xticks(
+                    x_values,
+                    self.t3co_results.loc[
+                        self.t3co_results[x_group_col] == x_groups[i], subplot_group_col
+                    ],
+                )
+
+                ax[i].set_xlabel(f"{x_groups[i]}", fontsize=fontsize, labelpad=10)
+                ax[i].tick_params(axis="x", labelsize=fontsize, labelrotation=90)
+                ax[i].tick_params(axis="y", labelsize=fontsize, labelrotation=0)
+
+                ax[i].get_yaxis().set_major_formatter(
+                    FuncFormatter(lambda x, p: "$" + format(int(x), ","))
+                )
+
+            for i in range(len(x_groups)):
+                ax[i].set_xlim(-0.5, max_x - 0.5)
 
             fig.supylabel("Cost [$\$$]", fontsize=fontsize)
-            fig.supxlabel(
-                self.results_guide.loc[
-                    self.results_guide["t3co_output_parameter"] == subplot_group_col,
-                    "full_form",
-                ].values[0],
-                fontsize=fontsize,
+
+            fig.suptitle(
+                "Total Cost Of Ownership Breakdown",
+                fontsize=fontsize * 1.5,
+                fontweight="bold",
             )
-            fig.suptitle("Total Cost Of Ownership Breakdown", fontsize=fontsize * 1.25)
+
+            handles, labels = [], []
+            for h, l in zip(*ax[-1].get_legend_handles_labels()):
+                handles.append(h)
+                labels.append(l)
+
             fig.legend(
                 handles,
                 legend_cols,
                 loc="center right",
-                bbox_to_anchor=(1.25, 0.5),
-                ncol=1,
+                bbox_to_anchor=(1 + legend_pos, 0.5),
                 fontsize=fontsize,
             )
 
-            # ax[i].set_figure(fig)
-            # print(ax[0].ArtistList)
+            fig.supxlabel(
+                self.full_form_dict[x_group_col],
+                fontsize=fontsize,
+            )
+            plt.subplots_adjust(bottom=0.21)
 
+        # %%
         elif len(y_groups) > 1 and len(x_groups) == 1:
-            # print(f'y_groups: {y_groups}')
-
             fontsize = 25
-
+            max_x = 1
             fig, ax = plt.subplots(
-                len(y_groups), sharex=True, figsize=(len(y_groups) * 7 + 4, 17)
+                len(y_groups),
+                sharex=True,
+                sharey=True,
+                figsize=(
+                    min(10 + fig_x_size, 50),
+                    min(len(y_groups) * fig_y_size + 4, 50),
+                ),
             )
 
-            maxn = 4
-            # print(f'maxn = {maxn}')
             for i in range(len(y_groups)):
-                self.t3co_results.loc[
-                    self.t3co_results[y_group_col] == y_groups[i]
-                ].plot.bar(
-                    x=subplot_group_col,
-                    y=self.cost_cols,
-                    stacked=True,
-                    ax=ax[i],
-                    legend=False,
-                    width=0.25,
-                )
-                ax[i].set_xlim(-0.5, maxn - 0.5)
-
-                ax[i].set_xlabel(f"{y_groups[i]}", fontsize=fontsize, labelpad=10)
-                # ax[i].set_ylabel("Cost [$\$$]", fontsize = fontsize)
-                ax[i].tick_params(labelsize=fontsize)
                 x_values = range(
                     len(
                         self.t3co_results.loc[
@@ -322,77 +382,88 @@ class T3COCharts:
                     marker="D",
                 )
 
-            handles, labels = [], []
-            for ax1 in ax:
-                for h, l in zip(*ax1.get_legend_handles_labels()):
-                    handles.append(h)
-                    labels.append(l)
+                self.t3co_results.loc[
+                    self.t3co_results[y_group_col] == y_groups[i]
+                ].plot.bar(
+                    x=subplot_group_col,
+                    y=self.cost_cols.keys(),
+                    stacked=True,
+                    figsize=(
+                        min(len(self.t3co_results) * fig_x_size, 50),
+                        min(len(y_groups) * fig_y_size, 50),
+                    ),
+                    ax=ax[i],
+                    legend=False,
+                    width=bar_width,
+                    color=self.cost_cols,
+                    edgecolor=edgecolor,
+                    alpha=0.7,
+                )
 
-            fig.supylabel("Cost [$\$$]", fontsize=fontsize)
-            fig.supxlabel(
-                self.results_guide.loc[
-                    self.results_guide["t3co_output_parameter"] == subplot_group_col,
-                    "full_form",
-                ].values[0],
-                fontsize=fontsize,
-            )
-            fig.suptitle("Total Cost Of Ownership Breakdown", fontsize=fontsize * 1.25)
+                ax[i].get_yaxis().set_major_formatter(
+                    FuncFormatter(lambda x, p: "$" + format(int(x), ","))
+                )
+
+                ax[i].minorticks_on()
+
+                ax2 = ax[i].twinx()
+                ax2.set_ylabel(y_groups[i], fontsize=fontsize, labelpad=10)
+                ax2.set_yticks([])
+                max_x = max(len(x_values), max_x)
+
+                ax[i].tick_params(axis="x", labelsize=fontsize, labelrotation=90)
+                ax[i].tick_params(axis="y", labelsize=fontsize, labelrotation=0)
+
+            for i in range(len(y_groups)):
+                ax[i].set_xlim(-0.5, max_x - 0.5)
+                ax[i].set_xlabel("")
+
+                # if i==max_x:
+                #     ax[i].set_xticks(x_values, self.t3co_results.loc[
+                #         self.t3co_results[y_group_col] == y_groups[i], subplot_group_col
+                #     ])
+
+            handles, labels = [], []
+            for h, l in zip(*ax[-1].get_legend_handles_labels()):
+                handles.append(h)
+                labels.append(l)
+
             fig.legend(
                 handles,
                 legend_cols,
                 loc="center right",
-                bbox_to_anchor=(1.25, 0.5),
-                ncol=1,
+                bbox_to_anchor=(1 + legend_pos, 0.5),
                 fontsize=fontsize,
             )
 
-            # ax[i].set_figure(fig)
-            # print(ax[0].ArtistList)
+            fig.supylabel("Cost [$\$$]", fontsize=fontsize)
+            fig.supxlabel(
+                self.full_form_dict[subplot_group_col],
+                fontsize=fontsize,
+            )
+            fig.suptitle(
+                "Total Cost Of Ownership Breakdown",
+                fontsize=fontsize * 1.5,
+                fontweight="bold",
+            )
 
+        # %%
         else:
+            fontsize = 25
+            max_x = 1
             fig, ax = plt.subplots(
                 len(y_groups),
                 len(x_groups),
                 sharey=True,
                 sharex=True,
-                figsize=(len(y_groups) * 9 + 3, len(x_groups) * 7 + 7),
+                figsize=(
+                    min(len(y_groups) * fig_x_size + 3, 50),
+                    min(len(x_groups) * fig_y_size + 7, 50),
+                ),
             )
-            maxn = 4
-            # print(f'maxn = {maxn}')
-            plt.ticklabel_format(style="plain")
 
             for i in range(len(y_groups)):
                 for j in range(len(x_groups)):
-                    print(f"i = {i} j={j}")
-                    ax[i][j].set_xlim(-0.5, maxn - 0.5)
-                    if i == len(y_groups) - 1:
-                        ax[i][j].set_xlabel(
-                            f"{x_groups[j]}", fontsize=fontsize, labelpad=10
-                        )
-                    if j == len(x_groups) - 1:
-                        ax2 = ax[i][j].twinx()
-                        # ax2.get_yaxis().set_ticks([])
-                        ax2.set_ylabel(f"{y_groups[i]}", fontsize=fontsize, labelpad=10)
-                    ax[i][j].tick_params(axis="x", labelsize=fontsize, labelrotation=90)
-                    ax[i][j].tick_params(axis="y", labelsize=fontsize, labelrotation=0)
-
-                    if self.t3co_results.loc[
-                        (self.t3co_results[y_group_col] == y_groups[i])
-                        & (self.t3co_results[x_group_col] == x_groups[j])
-                    ].empty:
-                        continue
-
-                    self.t3co_results.loc[
-                        (self.t3co_results[y_group_col] == y_groups[i])
-                        & (self.t3co_results[x_group_col] == x_groups[j])
-                    ].plot.bar(
-                        x=subplot_group_col,
-                        y=self.cost_cols,
-                        stacked=True,
-                        ax=ax[i][j],
-                        legend=False,
-                        width=0.25,
-                    )
                     x_values = range(
                         len(
                             self.t3co_results.loc[
@@ -401,6 +472,7 @@ class T3COCharts:
                             ]
                         )
                     )  # X-values based on the index of the DataFrame
+
                     y_values = self.t3co_results.loc[
                         (self.t3co_results[y_group_col] == y_groups[i])
                         & (self.t3co_results[x_group_col] == x_groups[j]),
@@ -415,40 +487,104 @@ class T3COCharts:
                         marker="D",
                     )
 
-            handles, labels = [], []
-            for ax1 in ax[0]:
-                for h, l in zip(*ax1.get_legend_handles_labels()):
-                    handles.append(h)
-                    labels.append(l)
+                    ax[i][j].set_xlabel(
+                        f"{x_groups[j]}", fontsize=fontsize, labelpad=10
+                    )
+                    ax2 = ax[i][j].twinx()
+                    ax2.set_ylabel(f"{y_groups[i]}", fontsize=fontsize, labelpad=10)
+                    ax2.set_yticks([])
 
-            fig.supylabel("Cost [$\$$]", fontsize=fontsize)
-            fig.supxlabel(
-                self.results_guide.loc[
-                    self.results_guide["t3co_output_parameter"] == subplot_group_col,
-                    "full_form",
-                ].values[0],
-                fontsize=fontsize,
-            )
-            fig.suptitle("Total Cost Of Ownership Breakdown", fontsize=fontsize * 1.25)
+                    ax[i][j].tick_params(axis="x", labelsize=fontsize, labelrotation=90)
+                    ax[i][j].tick_params(axis="y", labelsize=fontsize, labelrotation=0)
+
+                    if self.t3co_results.loc[
+                        (self.t3co_results[y_group_col] == y_groups[i])
+                        & (self.t3co_results[x_group_col] == x_groups[j])
+                    ].empty:
+                        continue
+
+                    self.t3co_results.loc[
+                        (self.t3co_results[y_group_col] == y_groups[i])
+                        & (self.t3co_results[x_group_col] == x_groups[j])
+                    ].plot.bar(
+                        x=subplot_group_col,
+                        y=self.cost_cols.keys(),
+                        stacked=True,
+                        ax=ax[i][j],
+                        legend=False,
+                        width=bar_width,
+                        color=self.cost_cols,
+                    )
+
+                    max_x = max(len(x_values), max_x)
+
+            for i in range(len(y_groups)):
+                for j in range(len(x_groups)):
+                    ax[i][j].set_xlim(-0.5, max_x - 0.5)
+
+            handles, labels = [], []
+            for h, l in zip(*ax[-1][-1].get_legend_handles_labels()):
+                handles.append(h)
+                labels.append(l)
+
             fig.legend(
                 handles,
                 legend_cols,
                 loc="center right",
-                bbox_to_anchor=(1.25, 0.5),
-                ncol=1,
+                bbox_to_anchor=(1 + legend_pos, 0.5),
                 fontsize=fontsize,
             )
 
-        return fig
-    
-    def generate_histogram(self, hist_col, bins):
-        fig, ax = plt.subplots()
-        ax.hist(x=self.t3co_results[hist_col], bins=bins)
-        ax.set_ylabel("Percent of Trips [%]")
-        ax.set_xlabel(
-            self.results_guide.loc[
-                self.results_guide["t3co_output_parameter"] == hist_col, "full_form"
-            ].values[0]
-        )
+            fig.supylabel("Cost [$\$$]", fontsize=fontsize)
+            fig.supxlabel(
+                self.full_form_dict[subplot_group_col],
+                fontsize=fontsize,
+            )
+            fig.suptitle(
+                "Total Cost Of Ownership Breakdown",
+                fontsize=fontsize * 1.25,
+                fontweight="bold",
+            )
+
         return fig
 
+    def generate_violin_plot(self, x_group_col, y_group_col="discounted_tco_dol"):
+        print("Running Violin plots")
+        fig, ax = plt.subplots(1, 1)
+        if "dol" in y_group_col:
+            ax.get_yaxis().set_major_formatter(
+                FuncFormatter(lambda x, p: "$" + format(int(x), ","))
+            )
+        sns.violinplot(
+            x=x_group_col,
+            y=y_group_col,
+            data=self.t3co_results,
+            ax=ax,
+            palette="colorblind",
+            cut=0,
+            density_norm="count",
+            inner="quart",
+            hue=x_group_col,
+            legend=False,
+        )
+        ax.set_ylabel(self.full_form_dict[y_group_col])
+        ax.set_xlabel(self.full_form_dict[x_group_col])
+        return fig
+
+    def generate_histogram(self, hist_col, n_bins, show_pct: bool = False):
+        print("Running Histogram")
+        fig, ax = plt.subplots()
+        if len(self.t3co_results[hist_col]) > 0:
+            if show_pct:
+                hist, bins = np.histogram(np.array(self.t3co_results[hist_col]), bins = n_bins)
+                ax.bar(
+                    bins[:-1],
+                    hist.astype(np.float32) / hist.sum()*100,
+                    width=(bins[1] - bins[0]),
+                )
+                ax.set_ylabel("Percentage of Scenarios [%]")
+            else:
+                ax.hist(x=self.t3co_results[hist_col], bins=n_bins)
+                ax.set_ylabel("Number of Scenarios")
+            ax.set_xlabel(self.full_form_dict[hist_col])
+        return fig
