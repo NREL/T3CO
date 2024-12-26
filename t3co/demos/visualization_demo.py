@@ -245,9 +245,9 @@ def run_t3co(analysis_id, config_filename, run_multi=False, save_results=False):
 
 reports_df = run_t3co(analysis_id=0, config_filename=Path(__file__).parents[1]/"resources"/"T3COConfig.csv")
 tc = T3COCharts(results_df=reports_df)  
-tc.generate_tco_plots(x_group_col='vehicle_fuel_type', y_group_col='None').show()
+tc.generate_tco_plots(x_group_col='vehicle_fuel_type', y_group_col='None', legend_pos=0.20, bar_width=0.6).show()
 
 tc.generate_histogram(hist_col='discounted_tco_dol', n_bins=4).show()
-tc.generate_violin_plot(x_group_col='vehicle_fuel_type', y_group_col='discounted_tco_dol').show()
+tc.generate_violin_plot(x_group_col='vehicle_fuel_type', y_group_col='mpgge').show()
 
 # %%
