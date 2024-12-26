@@ -268,7 +268,7 @@ class T3COCharts:
                 FuncFormatter(lambda x, p: "$" + format(int(x), ","))
             )
             ax.set_xticklabels(self.t3co_results["scenario_name"])
-            ax.set_ylabel("Cost [$\$$]", fontsize=fontsize, labelpad=10)
+            ax.set_ylabel(r"Cost [$]", fontsize=fontsize, labelpad=10)
             ax.minorticks_on()
             ax.set_xlim(-0.5, len(self.t3co_results) - 0.5)
 
@@ -368,7 +368,7 @@ class T3COCharts:
             for i in range(len(x_groups)):
                 ax[i].set_xlim(-0.5, max_x - 0.5)
 
-            fig.supylabel("Cost [$\$$]", fontsize=fontsize)
+            fig.supylabel(r"Cost [$]", fontsize=fontsize)
 
             fig.suptitle(
                 "Total Cost Of Ownership Breakdown",
@@ -477,7 +477,7 @@ class T3COCharts:
                 fontsize=fontsize,
             )
 
-            fig.supylabel("Cost [$\$$]", fontsize=fontsize)
+            fig.supylabel(r"Cost [$]", fontsize=fontsize)
             fig.supxlabel(
                 self.full_form_dict[subplot_group_col],
                 fontsize=fontsize,
@@ -575,7 +575,7 @@ class T3COCharts:
                 fontsize=fontsize,
             )
 
-            fig.supylabel("Cost [$\$$]", fontsize=fontsize)
+            fig.supylabel(r"Cost [$]", fontsize=fontsize)
             fig.supxlabel(
                 self.full_form_dict[subplot_group_col],
                 fontsize=fontsize,

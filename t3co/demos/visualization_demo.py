@@ -248,6 +248,6 @@ tc = T3COCharts(results_df=reports_df)
 tc.generate_tco_plots(x_group_col='vehicle_fuel_type', y_group_col='None').show()
 
 tc.generate_histogram(hist_col='discounted_tco_dol', n_bins=4).show()
-tc.generate_violin_plot(x_group_col='vehicle_fuel_type', y_group_col='mpgge').show()
+tc.generate_violin_plot(x_group_col='vehicle_fuel_type', y_group_col='discounted_tco_dol').show()
 
 # %%
