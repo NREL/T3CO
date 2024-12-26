@@ -25,13 +25,6 @@ plugins:
             show_signature_annotations: true
             unwrap_annotated: true
 
-
-
-
-
-
-
-
 markdown_extensions:
   - toc:
       permalink: true
@@ -60,7 +53,6 @@ theme:
     - content.code.copy
     - navigation.path
     - content.tooltips
-
 
   icon:
     repo: fontawesome/brands/github
@@ -97,3 +89,5 @@ nav:
           - Acceleration Test: accel.md
           - Gradeability Test: gradeability.md
           - Fuel Economy: fueleconomy.md
+        - Visualization Module:
+          - Charts: charts.md

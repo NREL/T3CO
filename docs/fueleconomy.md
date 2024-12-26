@@ -1,2 +1,2 @@
-# Fuel Economy module
+# Fuel Economy Sub-Module
 ::: t3co.objectives.fueleconomy

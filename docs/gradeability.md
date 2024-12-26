@@ -1,2 +1,2 @@
-# Gradeability Test module
+# Gradeability Test Sub-Module
 ::: t3co.objectives.gradeability
