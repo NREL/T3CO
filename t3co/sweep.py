@@ -1444,6 +1444,7 @@ if __name__ == "__main__":
         "exclude": exclude,
         "algo": algorithms,
         "dir_mark": args.dir_mark,
+        "dst_dir": args.dst_dir,
         "file_mark": args.file_mark.replace(".csv", ""),
         "skip_save_veh": args.skip_save_veh,
         "x_tol": float(args.x_tol),

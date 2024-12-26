@@ -2,18 +2,22 @@ from pathlib import Path
 from textwrap import wrap
 from typing import List
 
+import matplotlib
+import matplotlib.figure
 import numpy as np
 import pandas as pd
 import seaborn as sns
 
-# import calplot
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
-# from t3co.run import QuickStats
-
 
 class T3COCharts:
+    """
+    This class takes T3CO output CSV file as input and generates different plots to gain insights from T3CO Results
+
+    """
+
     t3co_results: pd.DataFrame
     results_guide: pd.DataFrame
     value_cols: List[float]
@@ -26,7 +30,15 @@ class T3COCharts:
         / "resources"
         / "visualization"
         / "t3co_outputs_guide.csv",
-    ):
+    ) -> None:
+        """
+        This constructor initializes the T3COCharts object either from a dataframe or a CSV file path.
+
+        Args:
+            filename (str, optional): Filepath to T3CO Results CSV File. Defaults to None.
+            results_df (pd.DataFrame, optional): Input pandas dataframe containing T3CO Results. Defaults to None.
+            results_guide (str | Path, optional): File path to t3co_outputs_guide.csv file that contains useful parameter descriptions and axis labels. Defaults to Path(__file__).parents[1]/"resources"/"visualization"/"t3co_outputs_guide.csv".
+        """
         print("Initializing T3COCharts")
         if filename is not None:
             self.from_file(filename)
@@ -90,17 +102,37 @@ class T3COCharts:
     def from_file(
         self,
         filename: str | Path = None,
-    ):
+    ) -> None:
+        """
+        This method reads a T3CO Results CSV file into a dataframe
+
+        Args:
+            filename (str | Path, optional): Path to T3CO Results CSV File. Defaults to None.
+        """
         self.t3co_results = pd.read_csv(filename)
 
-    def from_df(self, results_df):
+    def from_df(self, results_df: pd.DataFrame) -> None:
+        """
+        This method reads t3co_results from a dataframe
+
+        Args:
+            results_df (pd.DataFrame): Input T3CO Results dataframe
+        """
         self.t3co_results = results_df
 
-    def to_df(self):
+    def to_df(self) -> pd.DataFrame:
+        """
+        This returns the self.t3co_results member
+
+        Returns:
+            pd.DataFrame: T3CO Results dataframe
+        """
         return self.t3co_results
 
-    def parse_scenario_name(self):
-        # Class 8 Sleeper cab low roof (Diesel, 2035, no program)
+    def parse_scenario_name(self) -> None:
+        """
+        This method parses 'scenario_name' into 'vehicle_type', 'tech_progress', and 'vehicle_fuel_type' and uses 'scenario_gvwr_kg' to create 'vehicle_weight_class'
+        """
         weight_class_ranges = {
             "1": [0, 2722],
             "2a": [2722, 3856],
@@ -143,15 +175,32 @@ class T3COCharts:
 
     def generate_tco_plots(
         self,
-        x_group_col,
-        y_group_col,
-        subplot_group_col="vehicle_fuel_type",
-        fig_x_size=8,
-        fig_y_size=8,
-        bar_width=0.8,
-        legend_pos=0.25,
-        edgecolor="none",
-    ):
+        x_group_col: str,
+        y_group_col: str,
+        subplot_group_col: str = "vehicle_fuel_type",
+        fig_x_size: int = 8,
+        fig_y_size: int = 8,
+        bar_width: float = 0.8,
+        legend_pos: float = 0.25,
+        edgecolor: str = "none",
+    ) -> matplotlib.figure.Figure:
+        """
+        This method generates a TCO Breakdown plot based on input arguments.
+        If x_group_col and/or y_group_col are provided, then a matrix/grid of subplots are generated within the same figure based on row- and column-wise groupings
+
+        Args:
+            x_group_col (str): T3CO Results parameter name to group on x-axis, i.e., grouping criteria for columns in subplots grid
+            y_group_col (str): T3CO Results parameter name to group on y-axis, i.e., grouping criteria for rows in subplots grid
+            subplot_group_col (str, optional): T3CO Results parameter to display within each subplots cell. Defaults to "vehicle_fuel_type".
+            fig_x_size (int, optional): Figure width relative to each bar on x-axis within subplot. Defaults to 8.
+            fig_y_size (int, optional): Figure height relative to each subplot cell. Defaults to 8.
+            bar_width (float, optional): Relative width of bars based on available width. Takes values between 0.0 and 1.0. Defaults to 0.8.
+            legend_pos (float, optional): Relative position of legend on the right side of plots. Takes values between 0.0 and 1.0. Defaults to 0.25.
+            edgecolor (str, optional): Edge color to distinguish cost elements in the stacked bars. Defaults to "none".
+
+        Returns:
+            matplotlib.figure.Figure: TCO Breakdown Figure object
+        """
         print("running generate_tco_plots")
         disc_tco_label = self.results_guide["full_form"][
             self.results_guide["t3co_output_parameter"] == "discounted_tco_dol"
@@ -247,7 +296,7 @@ class T3COCharts:
                 fontweight="bold",
             )
             fig = ax.get_figure()
-        # %%
+
         elif len(x_groups) > 1 and len(y_groups) == 1:
             fig, ax = plt.subplots(
                 1,
@@ -299,8 +348,6 @@ class T3COCharts:
                 )
                 ax[i].minorticks_on()
 
-                # ax[i].set_ylabel("Cost [$\$$]", fontsize = fontsize)
-
                 max_x = max(len(x_values), max_x)
 
                 ax[i].set_xticks(
@@ -348,7 +395,6 @@ class T3COCharts:
             )
             plt.subplots_adjust(bottom=0.21)
 
-        # %%
         elif len(y_groups) > 1 and len(x_groups) == 1:
             fontsize = 25
             max_x = 1
@@ -418,11 +464,6 @@ class T3COCharts:
                 ax[i].set_xlim(-0.5, max_x - 0.5)
                 ax[i].set_xlabel("")
 
-                # if i==max_x:
-                #     ax[i].set_xticks(x_values, self.t3co_results.loc[
-                #         self.t3co_results[y_group_col] == y_groups[i], subplot_group_col
-                #     ])
-
             handles, labels = [], []
             for h, l in zip(*ax[-1].get_legend_handles_labels()):
                 handles.append(h)
@@ -447,7 +488,6 @@ class T3COCharts:
                 fontweight="bold",
             )
 
-        # %%
         else:
             fontsize = 25
             max_x = 1
@@ -548,7 +588,19 @@ class T3COCharts:
 
         return fig
 
-    def generate_violin_plot(self, x_group_col, y_group_col="discounted_tco_dol"):
+    def generate_violin_plot(
+        self, x_group_col: str, y_group_col: str = "discounted_tco_dol"
+    ) -> matplotlib.figure.Figure:
+        """
+        This method generates a violin plot based on x-axis group column and y-axis column name.
+
+        Args:
+            x_group_col (str): T3CO Results parameter to group by on x-axis inside violinplot
+            y_group_col (str, optional): T3CO Results parameter to plot on y-axis. Defaults to "discounted_tco_dol".
+
+        Returns:
+            matplotlib.figure.Figure: Violin Plot Figure object
+        """
         print("Running Violin plots")
         fig, ax = plt.subplots(1, 1)
         if "dol" in y_group_col:
@@ -571,15 +623,30 @@ class T3COCharts:
         ax.set_xlabel(self.full_form_dict[x_group_col])
         return fig
 
-    def generate_histogram(self, hist_col, n_bins, show_pct: bool = False):
+    def generate_histogram(
+        self, hist_col: str, n_bins: int, show_pct: bool = False
+    ) -> matplotlib.figure.Figure:
+        """
+        This method generates a histogram plot based on inputs hist_col and n_bins
+
+        Args:
+            hist_col (str): T3CO column name to plot histogram
+            n_bins (int): Number of bins in histogram
+            show_pct (bool, optional): If True, plots percentage on y-axis instead of number of items. Defaults to False.
+
+        Returns:
+            matplotlib.figure.Figure: Histogram figure object
+        """
         print("Running Histogram")
         fig, ax = plt.subplots()
         if len(self.t3co_results[hist_col]) > 0:
             if show_pct:
-                hist, bins = np.histogram(np.array(self.t3co_results[hist_col]), bins = n_bins)
+                hist, bins = np.histogram(
+                    np.array(self.t3co_results[hist_col]), bins=n_bins
+                )
                 ax.bar(
                     bins[:-1],
-                    hist.astype(np.float32) / hist.sum()*100,
+                    hist.astype(np.float32) / hist.sum() * 100,
                     width=(bins[1] - bins[0]),
                 )
                 ax.set_ylabel("Percentage of Scenarios [%]")
