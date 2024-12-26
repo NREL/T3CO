@@ -1,4 +1,4 @@
-#%%
+# %%
 import pandas as pd
 import os
 
@@ -12,6 +12,7 @@ import time
 from t3co.run import run_scenario as rs
 from t3co.moopack import moo
 from t3co import sweep
+
 
 def run_t3co(analysis_id, config_filename, run_multi=False, save_results=False):
     start = time.time()
@@ -60,7 +61,11 @@ def run_t3co(analysis_id, config_filename, run_multi=False, save_results=False):
         "exclude": exclude,
         "algo": algorithms,
         "dir_mark": "",
-        "dst_dir":  (Path(os.path.abspath(__file__)).parents[1] / "results" if config.dst_dir is None else  config.dst_dir),
+        "dst_dir": (
+            Path(os.path.abspath(__file__)).parents[1] / "results"
+            if config.dst_dir is None
+            else config.dst_dir
+        ),
         "file_mark": "".replace(".csv", ""),
         "skip_save_veh": True,
         "x_tol": float(0.001),
@@ -179,7 +184,9 @@ def run_t3co(analysis_id, config_filename, run_multi=False, save_results=False):
                 reports.append(report_i)
                 k = len(reports)
                 if save_results:
-                    if (k % 20 == 0 or k == 4) and (len(selections_list) != 1 and k != 0):
+                    if (k % 20 == 0 or k == 4) and (
+                        len(selections_list) != 1 and k != 0
+                    ):
                         reports_df = pd.DataFrame(reports)
                         reports_df.sort_values(by=["selection"], inplace=True)
                         reports_df.to_csv(resdir / RES_FILE, index=False, header=True)
@@ -191,7 +198,6 @@ def run_t3co(analysis_id, config_filename, run_multi=False, save_results=False):
             pool.close()
             pool.join()
 
-            
             if save_results:
                 reports_df = pd.DataFrame(reports)
                 reports_df.sort_values(by=["selection"], inplace=True)
@@ -243,11 +249,30 @@ def run_t3co(analysis_id, config_filename, run_multi=False, save_results=False):
 
     return reports_df
 
-reports_df = run_t3co(analysis_id=0, config_filename=Path(__file__).parents[1]/"resources"/"T3COConfig.csv")
-tc = T3COCharts(results_df=reports_df)  
-tc.generate_tco_plots(x_group_col='vehicle_fuel_type', y_group_col='None', legend_pos=0.20, bar_width=0.6).show()
 
-tc.generate_histogram(hist_col='discounted_tco_dol', n_bins=4).show()
-tc.generate_violin_plot(x_group_col='vehicle_fuel_type', y_group_col='mpgge').show()
+reports_df = run_t3co(
+    analysis_id=0,
+    config_filename=Path(__file__).parents[1] / "resources" / "T3COConfig.csv",
+)
+
+#%%
+tc = T3COCharts(results_df=reports_df)
+tc.generate_tco_plots(
+    x_group_col="vehicle_type",
+    subplot_group_col="veh_year",
+    y_group_col="None",
+    legend_pos=0.33,
+    bar_width=0.6,
+    fig_x_size=2.5,
+).show()
+
+#%%
+tc.generate_histogram(
+    hist_col="discounted_tco_dol", n_bins=5, fig_height=5, fig_width=7, show_pct=True
+).show()
+#%%
+tc.generate_violin_plot(
+    x_group_col="vehicle_type", y_group_col="mpgge", fig_height=5, fig_width=7
+).show()
 
 # %%

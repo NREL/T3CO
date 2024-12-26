@@ -130,10 +130,17 @@ The results file includes a comprehensive list of [***Cost Outputs***](t3co_outp
 The [`t3co.visualization.charts`](https://github.com/NREL/T3CO/tree/main/t3co/visualization/charts.py) submodule is used to visualize the results CSV file that is generated after running T3CO. T3CO provides a demo file ([`t3co.demos.visualization_demo`](https://github.com/NREL/T3CO/tree/main/t3co/demos/visualization_demo.py)) to try out the visualization module for a sample analysis. The run_t3co function in the demo exports T3CO results as a pandas dataframe and generates the following visualization plots:
 
 - TCO Breakdown Chart
-  ![alt text](tco_breakdown_sample.png)
-- Histogram
-  ![alt text](histogram_sample.png)
+
+<img src="https://raw.githubusercontent.com/NREL/T3CO/refs/heads/main/docs/tco_breakdown_sample.png" alt="tcobreakdown" width="650"/>
+
+
+- Histogram Plot
+
+<img src="https://raw.githubusercontent.com/NREL/T3CO/refs/heads/main/docs/histogram_sample.png" alt="histogram" width="400"/>
+
 - Violin Plot
-  ![alt text](violinplot_sample.png)
+
+<img src="https://raw.githubusercontent.com/NREL/T3CO/refs/heads/main/docs/violinplot_sample.png" alt="violinplot" width="400"/>
+
 
 The user can provide other input parameters specific to each visualization method to further customize the plots.
