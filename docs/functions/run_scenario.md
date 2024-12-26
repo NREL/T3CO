@@ -5,6 +5,7 @@
     * [from\_file](#t3co/run/run_scenario.Config.from_file)
     * [from\_dict](#t3co/run/run_scenario.Config.from_dict)
     * [validate\_analysis\_id](#t3co/run/run_scenario.Config.validate_analysis_id)
+    * [check\_drivecycles\_and\_create\_selections](#t3co/run/run_scenario.Config.check_drivecycles_and_create_selections)
   * [Scenario](#t3co/run/run_scenario.Scenario)
     * [originalcargo\_kg](#t3co/run/run_scenario.Scenario.originalcargo_kg)
     * [plf\_scenario\_vehicle\_cargo\_capacity\_kg](#t3co/run/run_scenario.Scenario.plf_scenario_vehicle_cargo_capacity_kg)
@@ -107,6 +108,20 @@ This method validates that correct analysis id is input
 
 - `Exception` - Error if analysis_id not found
 
+<a id="t3co/run/run_scenario.Config.check_drivecycles_and_create_selections"></a>
+
+#### check\_drivecycles\_and\_create\_selections
+
+```python
+def check_drivecycles_and_create_selections(config_file: str | Path)
+```
+
+This method checks if the config.drive_cycle input is a file or a folder. If a folder is provided, then it creates a list of all selections for each drivecycle in the folders as config.dc_files
+
+**Arguments**:
+
+- `config_file` _str|Path_ - File path of config file
+
 <a id="t3co/run/run_scenario.Scenario"></a>
 
 ## Scenario Objects
@@ -135,7 +150,7 @@ includes cargo credit kg
 #### from\_config
 
 ```python
-def from_config(config: Config = None) -> Self
+def from_config(config: Config = None, verbose: bool = False) -> None
 ```
 
 This method overrides certain scenario fields if use_config is True and config object is not None
@@ -285,7 +300,9 @@ def get_scenario_and_cycle(
         veh_no: int,
         scenario_inputs_path: str,
         a_vehicle: fastsim.vehicle.Vehicle = None,
-        config: Config = None) -> Tuple[Scenario, fastsim.cycle.Cycle]
+        config: Config = None,
+        do_input_validation: bool = False
+) -> Tuple[Scenario, fastsim.cycle.Cycle]
 ```
 
 This function uses helper methods load_scenario and load_design_cycle_from_scenario         to get scenario object and cycle object corresponding to selected vehicle (by veh_no)
@@ -335,8 +352,9 @@ This function gets the Scenario object from scenario input CSV filepath, initial
 ```python
 def load_design_cycle_from_scenario(
         scenario: Scenario,
-        cyc_file_path: str = gl.OPTIMIZATION_DRIVE_CYCLES
-) -> fastsim.cycle.Cycle
+        config: Config = None,
+        cyc_file_path: str = gl.OPTIMIZATION_DRIVE_CYCLES,
+        do_input_validation: bool = False) -> fastsim.cycle.Cycle
 ```
 
 This helper method loads the design cycle used for mpgge and range determination.
@@ -572,7 +590,8 @@ This function runs vehicle_scenario_sweep based on vehicle and scenario objects 
 #### rerun
 
 ```python
-def rerun(vehicle: fastsim.vehicle.Vehicle, vocation: str, scenario: Scenario)
+def rerun(vehicle: fastsim.vehicle.Vehicle, vocation: str, scenario: Scenario,
+          config: Config)
 ```
 
 This function runs vehicle_scenario_sweep when given the vehicle and scenario objects

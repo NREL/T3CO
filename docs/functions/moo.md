@@ -48,11 +48,12 @@ This method sets up the empty optimization record arrays
 ```python
 def __init__(knobs_bounds: dict,
              vnum: float,
-             optimize_pt: str = gl.BEV,
+             optimize_pt: str,
              obj_list: list = None,
              constr_list: list = None,
              verbose: bool = False,
              config: run_scenario.Config = None,
+             do_input_validation: bool = False,
              **kwargs) -> None
 ```
 
@@ -83,7 +84,10 @@ This method creates an output dictionary containing optimization results
 #### instantiate\_moo\_vehicles\_and\_scenario
 
 ```python
-def instantiate_moo_vehicles_and_scenario(vnum: int, config=None) -> None
+def instantiate_moo_vehicles_and_scenario(
+        vnum: int,
+        config: run_scenario.Config = None,
+        do_input_validation: bool = False) -> None
 ```
 
 This method instantiates the multi-objective optimization problem vehicles and scenarios, starting with the baseline Conventional vehicle.
@@ -244,7 +248,7 @@ This method is a utility function to get detailed TCO information from optimized
 ## T3CODisplay Objects
 
 ```python
-class T3CODisplay()
+class T3CODisplay(Output)
 ```
 
 This class contains the display object for Pymoo optimization printouts - pymoo.util.display.Display
@@ -280,6 +284,7 @@ def run_optimization(
         algo: str,
         obj_list: list = None,
         config: run_scenario.Config = None,
+        do_input_validation=True,
         **kwargs) -> Tuple[pymoo.core.result.Result, T3COProblem, bool]
 ```
 
