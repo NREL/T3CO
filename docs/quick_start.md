@@ -125,3 +125,15 @@ optional arguments:
 After running the analysis, T3CO stores the results .CSV file in the directory specified by `config.dst_dir` (or the CLI argument `--dst-dir`). 
 
 The results file includes a comprehensive list of [***Cost Outputs***](t3co_outputs_descriptions.md) that were calculated by the various ***T3CO Modules***. In addition to the T3CO outputs, all the *Vehicle* input parameters (denoted by a prefix: `input_vehicle_value_`),  *Scenario* input parameters(denoted by a prefix: `scenario_`), and *Config* parameters (denoted by a prefix: `config_`) are also present in the results file. When the optional optimization module is run, the optimized vehicle parameters are also listed ((denoted by a prefix: `optimized_vehicle_value_`)) instead of NaN values for non-optimization runs.
+
+## T3CO Visualization
+The [`t3co.visualization.charts`](https://github.com/NREL/T3CO/tree/main/t3co/visualization/charts.py) submodule is used to visualize the results CSV file that is generated after running T3CO. T3CO provides a demo file ([`t3co.demos.visualization_demo`](https://github.com/NREL/T3CO/tree/main/t3co/demos/visualization_demo.py)) to try out the visualization module for a sample analysis. The run_t3co function in the demo exports T3CO results as a pandas dataframe and generates the following visualization plots:
+
+- TCO Breakdown Chart
+  ![alt text](tco_breakdown_sample.png)
+- Histogram
+  ![alt text](histogram_sample.png)
+- Violin Plot
+  ![alt text](violinplot_sample.png)
+
+The user can provide other input parameters specific to each visualization method to further customize the plots.

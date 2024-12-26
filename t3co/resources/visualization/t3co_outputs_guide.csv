@@ -2,6 +2,10 @@
 selection,Selection Number,Selection number of vehicle/scenario,int
 scenario_name,Scenario Name,Name of the selected scenario/vehicle,string
 veh_year,Vehicle Year,Current year,int
+vehicle_weight_class,Vehicle Weight Class,Vehicle Weight Class,string
+tech_progress,Technology Progress,Technology Progress - Low or High,string
+vehicle_fuel_type,Vehicle Fuel Type,"Vehicle Fuel Type - Gasoline, Diesel, BEV, HEV, FCEV, PHEV",string
+vehicle_type,Vehicle Type,"Vehicle/Vocation Type like Sleeper Cab Low Roof, Box Truck, etc.,",string
 veh_pt_type,Vehicle Powertrain Type,Vehicle powertrain type,string
 pareto_front_number,Pareto Front Solution Number,Optimization solution number from pareto front ,int
 run_time_[s],Run Time [$s$],T3CO run time for selected vehicle/scenario,float
@@ -38,16 +42,6 @@ delta_max_time_0_to_60mph_at_gvwr_s,Error in Time Achieved for 0-60MPH at GVWR M
 max_time_0_to_30mph_at_gvwr_ach_s,Time Achieved for 0-30MPH at GVWR Mass - Acceleration Test [$s$],Time taken achieved by fully laden design vehicle during acceleration for 0 to 30mph,float
 target_max_time_0_to_30mph_at_gvwr_s,Target Time for 0-30MPH at GVWR Mass - Acceleration Test [$s$],Target time taken for fully laden design vehicle during acceleration for 0 to 30mph,float
 delta_max_time_0_to_30mph_at_gvwr_s,Error in Time Achieved for 0-30MPH at GVWR Mass - Acceleration Test [$s$],Difference between time taken by simulated vehicle and target time for fully laden acceleration test from 0 to 30mph,float
-glider_cost_dol,Glider Cost [$\$$],Estimated glider component cost in dollars - contributes to MSRP,float
-fuel_converter_cost_dol,Fuel Converter Cost  [$\$$],Estimated fuel converter component cost in dollars - contributes to MSRP,float
-fuel_storage_cost_dol,Fuel Storage Cost  [$\$$],Estimated fuel storage component cost in dollars - contributes to MSRP,float
-motor_control_power_elecs_cost_dol,Motor Controller & Power Electronics Cost  [$\$$],Estimated motor and power electronics component cost in dollars - contributes to MSRP,float
-plug_cost_dol,Plugin Charger Cost  [$\$$],Estimated plugin charger component cost in dollars - contributes to MSRP,float
-battery_cost_dol,Battery Cost  [$\$$],Estimated battery/ESS component cost in dollars - contributes to MSRP,float
-purchase_tax_dol,Purchase Tax  [$\$$],Estimated purchased/excise tax  in dollars - calculated from MSRP,float
-msrp_total_dol,MSRP [$\$$],Estimated manufacturer's suggested retail price in dollars - calculated from vehicle component costs,float
-total_fuel_cost_dol,Fuel Operating Cost  [$\$$],Estimated fuel operating cost in dollars - calculated from energy consumption and fuel prices,float
-total_maintenance_cost_dol,Maintenance Operating Cost  [$\$$],Estimated maintenance operating cost in dollars - calculated from VMT and scenario.maint_oper_cost_dol_per_mi,float
 mpgge,Miles Per Gallon Gasoline Equivalent [$MPGGE$],Miles per Gallon of Gasoline Equivalent - from drivecycle simulation,float
 grid_mpgge,Grid Impact Fuel Economy  [$MPGGE$],Miles per Gallon of Gasoline Equivalent effect to grid - mpgge times charger efficiency,float
 mpgde,Miles Per Gallon Diesel Equivalent [$MPDGE$],Miles per Gallon of Diesel Equivalent - from drivecycle simulation,float
@@ -56,11 +50,21 @@ payload_cap_cost_multiplier,Lost Payload Capacity Multiplier,Lost payload capaci
 total_fueling_dwell_time_hr,Fueling/Charging Dwell Time [$hr$],Total dwell time of vehicle due to fueling/charging - used to estimate downtime opportunity cost,float
 total_mr_downtime_hr,Maintenance Downtime [$hr$],"Total dwell time of vehicle due to maintenance & repair (planned, unplanned, and tire replacement) - used to estimate downtime opportunity cost",float
 total_downtime_hr,Total Downtime [$hr$],Total downtime due to fueling/charging and maintenance events,float
-fueling_dwell_labor_cost_dol,Fueling/Charging Dwell Labor Cost [$\$$],Estimated labor cost incurred during fueling/charging dwell time,float
-fueling_downtime_oppy_cost_dol,Fueling/Charging Dwell Opportunity Cost [$\$$],Estimated opportunity cost associated with fueling/charging dwell time,float
-mr_downtime_oppy_cost_dol,Maintenance Downtime Opportunity Cost [$\$$],Estimated labor cost incurred during maintenance & repair downtime,float
-discounted_downtime_oppy_cost_dol,Discounted Total Downtime Opportunity Cost [$\$$],Estimated discounted opportunity cost for both fueling dwell time and M&R downtime in dollars - estimation is based on config.TCO_method,float
-payload_capacity_cost_dol,Lost Payload Capacity Opportunity Cost [$\$$],Lost payload capacity opportunity cost in dollars - estimated from payload_cap_cost_multiplier and estimated tco,float
-insurance_cost_dol,Insurance Cost [$\$$],Estimated insurance cost of vehicle in dollars - estimated from MSRP and scenario.insurance_rates_pct_per_yr,float
-residual_cost_dol,Residual Cost [$\$$],Estimated residual cost of vehicle in dollars (residual value is the negative of residual cost),float
-discounted_tco_dol,Discounted Total Cost of Ownership [$\$$],"Estimated discounted Total Cost of Ownership in dollars - Calculated using one of DIRECT or EFFICIENCY method from different cost components, discounted year over year at a rate of scenario.discount_rate_pct_per_yr, and calculated for scenario.vehicle_life_yr",float
+msrp_total_dol,MSRP [\$],Estimated manufacturer's suggested retail price in dollars - calculated from vehicle component costs,float
+fueling_downtime_oppy_cost_dol,Fueling/Charging Dwell Opportunity Cost [\$],Estimated opportunity cost associated with fueling/charging dwell time,float
+mr_downtime_oppy_cost_dol,Maintenance Downtime Opportunity Cost [\$],Estimated labor cost incurred during maintenance & repair downtime,float
+residual_cost_dol,Residual Cost [\$],Estimated residual cost of vehicle in dollars (residual value is the negative of residual cost),float
+glider_cost_dol,Glider Cost [\$],Estimated glider component cost in dollars - contributes to MSRP,float
+fuel_converter_cost_dol,Fuel Converter Cost  [\$],Estimated fuel converter component cost in dollars - contributes to MSRP,float
+fuel_storage_cost_dol,Fuel Storage Cost  [\$],Estimated fuel storage component cost in dollars - contributes to MSRP,float
+motor_control_power_elecs_cost_dol,Motor Controller & Power Electronics Cost  [\$],Estimated motor and power electronics component cost in dollars - contributes to MSRP,float
+plug_cost_dol,Plugin Charger Cost  [\$],Estimated plugin charger component cost in dollars - contributes to MSRP,float
+battery_cost_dol,Battery Cost  [\$],Estimated battery/ESS component cost in dollars - contributes to MSRP,float
+purchase_tax_dol,Purchase Tax  [\$],Estimated purchased/excise tax  in dollars - calculated from MSRP,float
+insurance_cost_dol,Insurance Cost [\$],Estimated insurance cost of vehicle in dollars - estimated from MSRP and scenario.insurance_rates_pct_per_yr,float
+total_maintenance_cost_dol,Maintenance Operating Cost  [\$],Estimated maintenance operating cost in dollars - calculated from VMT and scenario.maint_oper_cost_dol_per_mi,float
+total_fuel_cost_dol,Fuel Operating Cost  [\$],Estimated fuel operating cost in dollars - calculated from energy consumption and fuel prices,float
+fueling_dwell_labor_cost_dol,Fueling/Charging Dwell Labor Cost [\$],Estimated labor cost incurred during fueling/charging dwell time,float
+discounted_downtime_oppy_cost_dol,Discounted Total Downtime Opportunity Cost [\$],Estimated discounted opportunity cost for both fueling dwell time and M&R downtime in dollars - estimation is based on config.TCO_method,float
+payload_capacity_cost_dol,Lost Payload Capacity Opportunity Cost [\$],Lost payload capacity opportunity cost in dollars - estimated from payload_cap_cost_multiplier and estimated tco,float
+discounted_tco_dol,Discounted Total Cost of Ownership [\$],"Estimated discounted Total Cost of Ownership in dollars - Calculated using one of DIRECT or EFFICIENCY method from different cost components, discounted year over year at a rate of scenario.discount_rate_pct_per_yr, and calculated for scenario.vehicle_life_yr",float

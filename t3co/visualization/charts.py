@@ -9,7 +9,7 @@ import pandas as pd
 import seaborn as sns
 
 from matplotlib import pyplot as plt
-from matplotlib.ticker import FuncFormatter
+from matplotlib.ticker import FuncFormatter, FormatStrFormatter
 
 
 class T3COCharts:
@@ -78,7 +78,7 @@ class T3COCharts:
         }
         self.t3co_results = self.t3co_results.convert_dtypes()
         for costcol in self.cost_cols.keys():
-            self.t3co_results[costcol] = self.t3co_results[costcol].astype(float)
+            self.t3co_results[costcol] = self.t3co_results[costcol].astype(float).round(2)
         self.t3co_results["discounted_tco_dol"] = self.t3co_results[
             "discounted_tco_dol"
         ].astype(float)
@@ -268,7 +268,7 @@ class T3COCharts:
                 FuncFormatter(lambda x, p: "$" + format(int(x), ","))
             )
             ax.set_xticklabels(self.t3co_results["scenario_name"])
-            ax.set_ylabel("Cost [$\$$]", fontsize=fontsize, labelpad=10)
+            ax.set_ylabel(r"Cost [$]", fontsize=fontsize, labelpad=10)
             ax.minorticks_on()
             ax.set_xlim(-0.5, len(self.t3co_results) - 0.5)
 
@@ -368,7 +368,7 @@ class T3COCharts:
             for i in range(len(x_groups)):
                 ax[i].set_xlim(-0.5, max_x - 0.5)
 
-            fig.supylabel("Cost [$\$$]", fontsize=fontsize)
+            fig.supylabel(r"Cost [$]", fontsize=fontsize)
 
             fig.suptitle(
                 "Total Cost Of Ownership Breakdown",
@@ -477,7 +477,7 @@ class T3COCharts:
                 fontsize=fontsize,
             )
 
-            fig.supylabel("Cost [$\$$]", fontsize=fontsize)
+            fig.supylabel(r"Cost [$]", fontsize=fontsize)
             fig.supxlabel(
                 self.full_form_dict[subplot_group_col],
                 fontsize=fontsize,
@@ -575,7 +575,7 @@ class T3COCharts:
                 fontsize=fontsize,
             )
 
-            fig.supylabel("Cost [$\$$]", fontsize=fontsize)
+            fig.supylabel(r"Cost [$]", fontsize=fontsize)
             fig.supxlabel(
                 self.full_form_dict[subplot_group_col],
                 fontsize=fontsize,
@@ -602,11 +602,9 @@ class T3COCharts:
             matplotlib.figure.Figure: Violin Plot Figure object
         """
         print("Running Violin plots")
+        fontsize = 10
         fig, ax = plt.subplots(1, 1)
-        if "dol" in y_group_col:
-            ax.get_yaxis().set_major_formatter(
-                FuncFormatter(lambda x, p: "$" + format(int(x), ","))
-            )
+       
         sns.violinplot(
             x=x_group_col,
             y=y_group_col,
@@ -619,6 +617,13 @@ class T3COCharts:
             hue=x_group_col,
             legend=False,
         )
+        if "dol" in y_group_col:
+            ax.get_yaxis().set_major_formatter(
+                FuncFormatter(lambda x, p: "$" + format(int(x), ","))
+            )
+        
+        ax.set_title("Violin Plot",fontsize=fontsize * 1.5,
+                fontweight="bold",)
         ax.set_ylabel(self.full_form_dict[y_group_col])
         ax.set_xlabel(self.full_form_dict[x_group_col])
         return fig
@@ -639,6 +644,7 @@ class T3COCharts:
         """
         print("Running Histogram")
         fig, ax = plt.subplots()
+        fontsize = 10
         if len(self.t3co_results[hist_col]) > 0:
             if show_pct:
                 hist, bins = np.histogram(
@@ -653,5 +659,7 @@ class T3COCharts:
             else:
                 ax.hist(x=self.t3co_results[hist_col], bins=n_bins)
                 ax.set_ylabel("Number of Scenarios")
+            ax.set_title("Histogram Plot", fontsize=fontsize * 1.25,
+                fontweight="bold",)
             ax.set_xlabel(self.full_form_dict[hist_col])
         return fig

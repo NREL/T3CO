@@ -1,6 +1,17 @@
 # Table of Contents
 
 * [t3co](#t3co)
+* [t3co.visualization.charts](#t3co.visualization.charts)
+  * [T3COCharts](#t3co.visualization.charts.T3COCharts)
+    * [\_\_init\_\_](#t3co.visualization.charts.T3COCharts.__init__)
+    * [from\_file](#t3co.visualization.charts.T3COCharts.from_file)
+    * [from\_df](#t3co.visualization.charts.T3COCharts.from_df)
+    * [to\_df](#t3co.visualization.charts.T3COCharts.to_df)
+    * [parse\_scenario\_name](#t3co.visualization.charts.T3COCharts.parse_scenario_name)
+    * [generate\_tco\_plots](#t3co.visualization.charts.T3COCharts.generate_tco_plots)
+    * [generate\_violin\_plot](#t3co.visualization.charts.T3COCharts.generate_violin_plot)
+    * [generate\_histogram](#t3co.visualization.charts.T3COCharts.generate_histogram)
+* [t3co.visualization](#t3co.visualization)
 * [t3co.tco](#t3co.tco)
 * [t3co.tco.tcocalc](#t3co.tco.tcocalc)
   * [find\_residual\_rates](#t3co.tco.tcocalc.find_residual_rates)
@@ -70,6 +81,9 @@
 * [t3co.objectives.gradeability](#t3co.objectives.gradeability)
   * [get\_gradeability](#t3co.objectives.gradeability.get_gradeability)
 * [t3co.objectives](#t3co.objectives)
+* [t3co.utilities.demo\_inputs\_installer](#t3co.utilities.demo_inputs_installer)
+  * [main](#t3co.utilities.demo_inputs_installer.main)
+  * [copy\_demo\_input\_files](#t3co.utilities.demo_inputs_installer.copy_demo_input_files)
 * [t3co.sweep](#t3co.sweep)
   * [deug\_traces](#t3co.sweep.deug_traces)
   * [save\_tco\_files](#t3co.sweep.save_tco_files)
@@ -77,7 +91,10 @@
   * [get\_objectives\_constraints](#t3co.sweep.get_objectives_constraints)
   * [run\_moo](#t3co.sweep.run_moo)
   * [check\_input\_files](#t3co.sweep.check_input_files)
+  * [skip\_scenario](#t3co.sweep.skip_scenario)
+  * [optimize](#t3co.sweep.optimize)
   * [run\_vehicle\_scenarios](#t3co.sweep.run_vehicle_scenarios)
+  * [run\_optimize\_analysis](#t3co.sweep.run_optimize_analysis)
 * [t3co.run.Global](#t3co.run.Global)
   * [DieselGalPerGasGal](#t3co.run.Global.DieselGalPerGasGal)
   * [kgH2\_per\_gge](#t3co.run.Global.kgH2_per_gge)
@@ -97,6 +114,7 @@
     * [from\_file](#t3co.run.run_scenario.Config.from_file)
     * [from\_dict](#t3co.run.run_scenario.Config.from_dict)
     * [validate\_analysis\_id](#t3co.run.run_scenario.Config.validate_analysis_id)
+    * [check\_drivecycles\_and\_create\_selections](#t3co.run.run_scenario.Config.check_drivecycles_and_create_selections)
   * [Scenario](#t3co.run.run_scenario.Scenario)
     * [originalcargo\_kg](#t3co.run.run_scenario.Scenario.originalcargo_kg)
     * [plf\_scenario\_vehicle\_cargo\_capacity\_kg](#t3co.run.run_scenario.Scenario.plf_scenario_vehicle_cargo_capacity_kg)
@@ -128,11 +146,182 @@
   * [vnum](#t3co.demos.hev_sweep_and_moo.vnum)
 * [t3co.demos.example\_load\_and\_run](#t3co.demos.example_load_and_run)
 * [t3co.demos.t2co\_opt\_benchmark](#t3co.demos.t2co_opt_benchmark)
+* [t3co.demos.visualization\_demo](#t3co.demos.visualization_demo)
 * [t3co.demos.Spencer](#t3co.demos.Spencer)
 
 <a id="t3co"></a>
 
 # t3co
+
+<a id="t3co.visualization.charts"></a>
+
+# t3co.visualization.charts
+
+<a id="t3co.visualization.charts.T3COCharts"></a>
+
+## T3COCharts Objects
+
+```python
+class T3COCharts()
+```
+
+This class takes T3CO output CSV file as input and generates different plots to gain insights from T3CO Results
+
+<a id="t3co.visualization.charts.T3COCharts.__init__"></a>
+
+#### \_\_init\_\_
+
+```python
+def __init__(
+    filename: str = None,
+    results_df: pd.DataFrame = None,
+    results_guide: str | Path = Path(__file__).parents[1] / "resources" /
+    "visualization" / "t3co_outputs_guide.csv"
+) -> None
+```
+
+This constructor initializes the T3COCharts object either from a dataframe or a CSV file path.
+
+**Arguments**:
+
+- `filename` _str, optional_ - Filepath to T3CO Results CSV File. Defaults to None.
+- `results_df` _pd.DataFrame, optional_ - Input pandas dataframe containing T3CO Results. Defaults to None.
+- `results_guide` _str | Path, optional_ - File path to t3co_outputs_guide.csv file that contains useful parameter descriptions and axis labels. Defaults to Path(__file__).parents[1]/"resources"/"visualization"/"t3co_outputs_guide.csv".
+
+<a id="t3co.visualization.charts.T3COCharts.from_file"></a>
+
+#### from\_file
+
+```python
+def from_file(filename: str | Path = None) -> None
+```
+
+This method reads a T3CO Results CSV file into a dataframe
+
+**Arguments**:
+
+- `filename` _str | Path, optional_ - Path to T3CO Results CSV File. Defaults to None.
+
+<a id="t3co.visualization.charts.T3COCharts.from_df"></a>
+
+#### from\_df
+
+```python
+def from_df(results_df: pd.DataFrame) -> None
+```
+
+This method reads t3co_results from a dataframe
+
+**Arguments**:
+
+- `results_df` _pd.DataFrame_ - Input T3CO Results dataframe
+
+<a id="t3co.visualization.charts.T3COCharts.to_df"></a>
+
+#### to\_df
+
+```python
+def to_df() -> pd.DataFrame
+```
+
+This returns the self.t3co_results member
+
+**Returns**:
+
+- `pd.DataFrame` - T3CO Results dataframe
+
+<a id="t3co.visualization.charts.T3COCharts.parse_scenario_name"></a>
+
+#### parse\_scenario\_name
+
+```python
+def parse_scenario_name() -> None
+```
+
+This method parses 'scenario_name' into 'vehicle_type', 'tech_progress', and 'vehicle_fuel_type' and uses 'scenario_gvwr_kg' to create 'vehicle_weight_class'
+
+<a id="t3co.visualization.charts.T3COCharts.generate_tco_plots"></a>
+
+#### generate\_tco\_plots
+
+```python
+def generate_tco_plots(x_group_col: str,
+                       y_group_col: str,
+                       subplot_group_col: str = "vehicle_fuel_type",
+                       fig_x_size: int = 8,
+                       fig_y_size: int = 8,
+                       bar_width: float = 0.8,
+                       legend_pos: float = 0.25,
+                       edgecolor: str = "none") -> matplotlib.figure.Figure
+```
+
+This method generates a TCO Breakdown plot based on input arguments.
+If x_group_col and/or y_group_col are provided, then a matrix/grid of subplots are generated within the same figure based on row- and column-wise groupings
+
+**Arguments**:
+
+- `x_group_col` _str_ - T3CO Results parameter name to group on x-axis, i.e., grouping criteria for columns in subplots grid
+- `y_group_col` _str_ - T3CO Results parameter name to group on y-axis, i.e., grouping criteria for rows in subplots grid
+- `subplot_group_col` _str, optional_ - T3CO Results parameter to display within each subplots cell. Defaults to "vehicle_fuel_type".
+- `fig_x_size` _int, optional_ - Figure width relative to each bar on x-axis within subplot. Defaults to 8.
+- `fig_y_size` _int, optional_ - Figure height relative to each subplot cell. Defaults to 8.
+- `bar_width` _float, optional_ - Relative width of bars based on available width. Takes values between 0.0 and 1.0. Defaults to 0.8.
+- `legend_pos` _float, optional_ - Relative position of legend on the right side of plots. Takes values between 0.0 and 1.0. Defaults to 0.25.
+- `edgecolor` _str, optional_ - Edge color to distinguish cost elements in the stacked bars. Defaults to "none".
+  
+
+**Returns**:
+
+- `matplotlib.figure.Figure` - TCO Breakdown Figure object
+
+<a id="t3co.visualization.charts.T3COCharts.generate_violin_plot"></a>
+
+#### generate\_violin\_plot
+
+```python
+def generate_violin_plot(
+        x_group_col: str,
+        y_group_col: str = "discounted_tco_dol") -> matplotlib.figure.Figure
+```
+
+This method generates a violin plot based on x-axis group column and y-axis column name.
+
+**Arguments**:
+
+- `x_group_col` _str_ - T3CO Results parameter to group by on x-axis inside violinplot
+- `y_group_col` _str, optional_ - T3CO Results parameter to plot on y-axis. Defaults to "discounted_tco_dol".
+  
+
+**Returns**:
+
+- `matplotlib.figure.Figure` - Violin Plot Figure object
+
+<a id="t3co.visualization.charts.T3COCharts.generate_histogram"></a>
+
+#### generate\_histogram
+
+```python
+def generate_histogram(hist_col: str,
+                       n_bins: int,
+                       show_pct: bool = False) -> matplotlib.figure.Figure
+```
+
+This method generates a histogram plot based on inputs hist_col and n_bins
+
+**Arguments**:
+
+- `hist_col` _str_ - T3CO column name to plot histogram
+- `n_bins` _int_ - Number of bins in histogram
+- `show_pct` _bool, optional_ - If True, plots percentage on y-axis instead of number of items. Defaults to False.
+  
+
+**Returns**:
+
+- `matplotlib.figure.Figure` - Histogram figure object
+
+<a id="t3co.visualization"></a>
+
+# t3co.visualization
 
 <a id="t3co.tco"></a>
 
@@ -930,11 +1119,12 @@ This method sets up the empty optimization record arrays
 ```python
 def __init__(knobs_bounds: dict,
              vnum: float,
-             optimize_pt: str = gl.BEV,
+             optimize_pt: str,
              obj_list: list = None,
              constr_list: list = None,
              verbose: bool = False,
              config: run_scenario.Config = None,
+             do_input_validation: bool = False,
              **kwargs) -> None
 ```
 
@@ -965,7 +1155,10 @@ This method creates an output dictionary containing optimization results
 #### instantiate\_moo\_vehicles\_and\_scenario
 
 ```python
-def instantiate_moo_vehicles_and_scenario(vnum: int, config=None) -> None
+def instantiate_moo_vehicles_and_scenario(
+        vnum: int,
+        config: run_scenario.Config = None,
+        do_input_validation: bool = False) -> None
 ```
 
 This method instantiates the multi-objective optimization problem vehicles and scenarios, starting with the baseline Conventional vehicle.
@@ -1126,7 +1319,7 @@ This method is a utility function to get detailed TCO information from optimized
 ## T3CODisplay Objects
 
 ```python
-class T3CODisplay()
+class T3CODisplay(Output)
 ```
 
 This class contains the display object for Pymoo optimization printouts - pymoo.util.display.Display
@@ -1162,6 +1355,7 @@ def run_optimization(
         algo: str,
         obj_list: list = None,
         config: run_scenario.Config = None,
+        do_input_validation=True,
         **kwargs) -> Tuple[pymoo.core.result.Result, T3COProblem, bool]
 ```
 
@@ -1369,6 +1563,34 @@ evaluated at how much it meets or exceeds target speed at the target grade.
 
 Sub-package contaning modules that calculate optimization objectives.
 
+<a id="t3co.utilities.demo_inputs_installer"></a>
+
+# t3co.utilities.demo\_inputs\_installer
+
+<a id="t3co.utilities.demo_inputs_installer.main"></a>
+
+#### main
+
+```python
+def main()
+```
+
+This function requests user inputs for whether and where to copy T3CO demo input files from the t3co.resources folder. It then calls the copy_demo_input_files function.
+
+<a id="t3co.utilities.demo_inputs_installer.copy_demo_input_files"></a>
+
+#### copy\_demo\_input\_files
+
+```python
+def copy_demo_input_files(destination_path: str)
+```
+
+This function copies the t3co.resources folder that includes demo input files to a user input destination_path.
+
+**Arguments**:
+
+- `destination_path` _str | Path_ - Path of destination directory for copying t3co.resources folder
+
 <a id="t3co.sweep"></a>
 
 # t3co.sweep
@@ -1471,8 +1693,8 @@ def run_moo(
         sel: int, sdf: pd.DataFrame, optpt: str, algo: str, skip_opt: bool,
         pop_size: float, n_max_gen: int, n_last: int, nth_gen: int,
         x_tol: float, verbose: bool, f_tol: float, resdir: str,
-        lw_imp_curves: pd.DataFrame, aero_drag_imp_curves: pd.DataFrame,
-        eng_eff_imp_curves: pd.DataFrame, config: run_scenario.Scenario,
+        lw_imp_curves_df: pd.DataFrame, aero_drag_imp_curves_df: pd.DataFrame,
+        eng_eff_imp_curves_df: pd.DataFrame, config: run_scenario.Scenario,
         **kwargs) -> Tuple[pymoo.core.result.Result, moo.T3COProblem, bool]
 ```
 
@@ -1481,8 +1703,8 @@ This function calls get_objectives_constraints and get_knobs_bounds_curves, and 
 **Arguments**:
 
 - `sel` _int_ - selection number
-- `sdf` _DataFrame_ - scenario dataframe
-- `optpt` _str_ - vehicle powertrain type
+- `sdf` _DataFrame_ - Scenario dataframe
+- `optpt` _str_ - FASTSim vehicle powertrain type
 - `algo` _str_ - algorithm name
 - `skip_opt` _bool_ - skip optimization boolean
 - `pop_size` _int_ - population size for optimization
@@ -1493,9 +1715,9 @@ This function calls get_objectives_constraints and get_knobs_bounds_curves, and 
 - `verbose` _book_ - if selected, function prints the optimization process
 - `f_tol` _float_ - tolerance in objective space
 - `resdir` _str_ - results directory
-- `lw_imp_curves` _DataFrame_ - light weighting curves dataframe
-- `aero_drag_imp_curves` _DataFrame_ - aero drag curves dataframe
-- `eng_eff_imp_curves` _DataFrame_ - engine efficiency curve dataframe
+- `lw_imp_curves_df` _DataFrame_ - light weighting curves dataframe
+- `aero_drag_imp_curves_df` _DataFrame_ - aero drag curves dataframe
+- `eng_eff_imp_curves_df` _DataFrame_ - engine efficiency curve dataframe
 - `config` _Config_ - Config class object
   
 
@@ -1521,33 +1743,122 @@ This function contains assert statements that make sure input vehicle and scenar
 - `filetype` _str_ - 'vehicle' or 'scenario'
 - `filepath` _str_ - filepath of the vehicle or scenario input files
 
+<a id="t3co.sweep.skip_scenario"></a>
+
+#### skip\_scenario
+
+```python
+def skip_scenario(sel,
+                  selections,
+                  scenario_name,
+                  report_kwargs,
+                  verbose=False) -> bool
+```
+
+This function checks if given selection is present in exclude or look_for selections
+
+**Arguments**:
+
+- `sel` _float_ - _description_
+- `scenario_name` _str_ - scenario name
+- `verbose` _bool, optional_ - if selected, prints out scenarios that are skipped. Defaults to False.
+  
+
+**Returns**:
+
+- `bool` - if not present, returns True; Else False
+
+<a id="t3co.sweep.optimize"></a>
+
+#### optimize
+
+```python
+def optimize(sel: float,
+             sdf: pd.DataFrame,
+             vdf: pd.DataFrame,
+             algo: str,
+             report_kwargs: dict,
+             REPORT_COLS: dict,
+             skip_opt: bool,
+             config: run_scenario.Config,
+             write_tsv: bool = False) -> dict
+```
+
+This function runs the optimization for a given selection if skip_opt = False
+
+
+**Arguments**:
+
+- `sel` _float_ - Selection number
+- `sdf` _pd.DataFrame_ - Dataframe of input scenario file
+- `vdf` _pd.DataFrame_ - Dataframe of input vehicle file
+- `algo` _str_ - Multiobjective optimization Algorithm name
+- `report_kwargs` _dict_ - arguments related to running T3CO
+- `REPORT_COLS` _dict_ - Results columns dictionary for sorting the T3CO results
+- `skip_opt` _bool_ - skip optimization. If true, then optimizer is not run.
+- `config` _run_scenario.Config_ - Config object
+- `write_tsv` _bool, optional_ - if selected, intermediary dataframes are saved as tsv files.. Defaults to False.
+  
+
+**Returns**:
+
+- `report_i` _dict_ - Dictionary of T3CO results for given selection
+
 <a id="t3co.sweep.run_vehicle_scenarios"></a>
 
 #### run\_vehicle\_scenarios
 
 ```python
-def run_vehicle_scenarios(vehicles: str, scenarios: str,
-                          eng_eff_imp_curves_p: str, lw_imp_curves_p: str,
-                          aero_drag_imp_curves_p: str,
-                          config: run_scenario.Config, **kwargs) -> None
+def run_vehicle_scenarios(
+    config: run_scenario.Config, REPORT_COLS: dict, **kwargs
+) -> Tuple[List[int | str], pd.DataFrame, pd.DataFrame, bool, dict, dict]
 ```
 
-This is the main function that runs T3CO for all the selections input
+This function reads the input files, validates inputs, compiles the selections, and returns a clean set of inputs that are needed for the current analysis.
+
 
 **Arguments**:
 
-- `vehicles` _str_ - path of vehicle input file
-- `scenarios` _str_ - path of scenarios input file
-- `eng_eff_imp_curves_p` _str_ - path of engine efficiency curve file
-- `lw_imp_curves_p` _str_ - path of light weighting curve file
-- `aero_drag_imp_curves_p` _str_ - path of aero drag curve file
 - `config` _Config_ - Config object containing analysis attributes and scenario attribute overrides
+- `REPORT_COLS` _dict_ - Dictionary of reporting columns from T3CO
   
 
 **Raises**:
 
 - `Exception` - input validation error
 - `Exception` - optimization error
+  
+
+**Returns**:
+
+  selections, vdf, sdf, skip_all_opt, report_kwargs, REPORT_COLS (Tuple[List[int|str], pd.DataFrame, pd.DataFrame, bool, dict, dict]): Selections list, vehicle dataframe, scenario dataframe, skip all optimization, report arguments, and report columns
+
+<a id="t3co.sweep.run_optimize_analysis"></a>
+
+#### run\_optimize\_analysis
+
+```python
+def run_optimize_analysis(sel: str | int, vdf: pd.DataFrame, sdf: pd.DataFrame,
+                          skip_all_opt: bool, config: run_scenario.Config,
+                          report_kwargs: dict, REPORT_COLS: dict) -> dict
+```
+
+This function runs the optimization function based on skip_all_opt input to return the report_i dictionary with T3CO results for each selection.
+
+**Arguments**:
+
+- `sel` _str | int_ - selection number
+- `vdf` _pd.DataFrame_ - Dataframe of input vehicle file
+- `sdf` _pd.DataFrame_ - Dataframe of input scenario file
+- `skip_all_opt` _bool_ - Skip all optimization. If true, then the optimizer is not run for any scenario
+- `config` _run_scenario.Config_ - Config object
+- `report_kwargs` _dict_ - Dictionary of args required for running T3CO
+- `REPORT_COLS` _dict_ - Dictionary of reporting columns from T3CO
+  
+
+**Returns**:
+
+- `report_i` _dict_ - Dictionary of T3CO results for given selection
 
 <a id="t3co.run.Global"></a>
 
@@ -1772,6 +2083,20 @@ This method validates that correct analysis id is input
 
 - `Exception` - Error if analysis_id not found
 
+<a id="t3co.run.run_scenario.Config.check_drivecycles_and_create_selections"></a>
+
+#### check\_drivecycles\_and\_create\_selections
+
+```python
+def check_drivecycles_and_create_selections(config_file: str | Path)
+```
+
+This method checks if the config.drive_cycle input is a file or a folder. If a folder is provided, then it creates a list of all selections for each drivecycle in the folders as config.dc_files
+
+**Arguments**:
+
+- `config_file` _str|Path_ - File path of config file
+
 <a id="t3co.run.run_scenario.Scenario"></a>
 
 ## Scenario Objects
@@ -1800,7 +2125,7 @@ includes cargo credit kg
 #### from\_config
 
 ```python
-def from_config(config: Config = None) -> Self
+def from_config(config: Config = None, verbose: bool = False) -> None
 ```
 
 This method overrides certain scenario fields if use_config is True and config object is not None
@@ -1950,7 +2275,9 @@ def get_scenario_and_cycle(
         veh_no: int,
         scenario_inputs_path: str,
         a_vehicle: fastsim.vehicle.Vehicle = None,
-        config: Config = None) -> Tuple[Scenario, fastsim.cycle.Cycle]
+        config: Config = None,
+        do_input_validation: bool = False
+) -> Tuple[Scenario, fastsim.cycle.Cycle]
 ```
 
 This function uses helper methods load_scenario and load_design_cycle_from_scenario         to get scenario object and cycle object corresponding to selected vehicle (by veh_no)
@@ -2000,8 +2327,9 @@ This function gets the Scenario object from scenario input CSV filepath, initial
 ```python
 def load_design_cycle_from_scenario(
         scenario: Scenario,
-        cyc_file_path: str = gl.OPTIMIZATION_DRIVE_CYCLES
-) -> fastsim.cycle.Cycle
+        config: Config = None,
+        cyc_file_path: str = gl.OPTIMIZATION_DRIVE_CYCLES,
+        do_input_validation: bool = False) -> fastsim.cycle.Cycle
 ```
 
 This helper method loads the design cycle used for mpgge and range determination.
@@ -2237,7 +2565,8 @@ This function runs vehicle_scenario_sweep based on vehicle and scenario objects 
 #### rerun
 
 ```python
-def rerun(vehicle: fastsim.vehicle.Vehicle, vocation: str, scenario: Scenario)
+def rerun(vehicle: fastsim.vehicle.Vehicle, vocation: str, scenario: Scenario,
+          config: Config)
 ```
 
 This function runs vehicle_scenario_sweep when given the vehicle and scenario objects
@@ -2345,6 +2674,10 @@ scenario_inputs_path=gl.OTHER_INPUTS,
 <a id="t3co.demos.t2co_opt_benchmark"></a>
 
 # t3co.demos.t2co\_opt\_benchmark
+
+<a id="t3co.demos.visualization_demo"></a>
+
+# t3co.demos.visualization\_demo
 
 <a id="t3co.demos.Spencer"></a>
 
