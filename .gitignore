@@ -8,8 +8,8 @@
 *.svg
 !docs/t3co_logo.svg
 *.csv
-!t3co/resources/inputs/**/*.csv
-!t3co/**/*.csv
+!src/t3co/resources/*.csv
+!src/t3co/**/*.csv
 *.xlsx
 *.json
 *.txt
