@@ -20,7 +20,7 @@ from t3co.run import run_scenario
 class OpportunityCost:
     payload_cap_cost_multiplier: float = 0
     
-
+    
     def __init__(self):
         pass
 
