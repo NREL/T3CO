@@ -415,6 +415,8 @@ def get_phev_util_factor(
     Returns:
         uf (float): PHEV computed utility factor
     """
+    scenario.shifts_per_year = ast.literal_eval(scenario.shifts_per_year)
+
     uf = scenario.phev_utility_factor_override
     assert type(scenario.phev_utility_factor_override) in [
         int,
@@ -423,7 +425,7 @@ def get_phev_util_factor(
     cd_range_mi = fueleconomy.get_range_mi(mpgge, v, scenario)["cd_aer_phev_range_mi"]
 
     if uf == -1:
-        shift_range_mi = scenario.vmt[0] / scenario.shifts_per_year
+        shift_range_mi = scenario.vmt[0] / scenario.shifts_per_year[0]
         scenario.phev_utility_factor_computed = round(
             min(shift_range_mi, cd_range_mi) / shift_range_mi, 3
         )

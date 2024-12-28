@@ -13,4 +13,5 @@ generate_pydocs:
 	pydoc-markdown -I . -m t3co/objectives/fueleconomy --render-toc > docs/functions/fueleconomy.md
 	pydoc-markdown -I . -m t3co/objectives/gradeability --render-toc > docs/functions/gradeability.md
 	pydoc-markdown -I . -m t3co/moopack/moo --render-toc > docs/functions/moo.md
+	pydoc-markdown -I . -m t3co/visualization/charts --render-toc > docs/functions/charts.md
 	
