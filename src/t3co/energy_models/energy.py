@@ -28,7 +28,7 @@ class Energy():
             # mpgge = mpgge_info["mpgge"]  # use fuel efficiency from battery
             range_mi = (
                 vehicle.ess_max_kwh
-                * (vehicle.max_soc - vehicle.min_soc)
+                * (fastsim_run.simdrive.veh.max_soc - fastsim_run.simdrive.veh.min_soc)
                 * self.mpgge
                 / gl.kwh_per_gge
             )
