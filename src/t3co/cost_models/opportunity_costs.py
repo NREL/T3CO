@@ -29,6 +29,7 @@ class OpportunityCosts:
     shifts_per_year: float = None
     trip_distance_mi: float = None
     net_downtime_oppy_cost_dol: float = None
+    disc_downtime_oppy_cost_dol: float = None
 
     def __init__(
         self, year_number: int, vehicle: Vehicle, scenario: Scenario, energy: Energy
@@ -55,17 +56,22 @@ class OpportunityCosts:
             year_number=year_number, vehicle=vehicle, scenario=scenario
         )
 
+        self.set_net_downtime_oppy_cost()
+        self.set_disc_downtime_oppy_cost(year_number=year_number, scenario=scenario)
+
     def set_payload_cap_cost_multiplier(
         self, year_number: int, vehicle: Vehicle, scenario: Scenario
     ):
         if scenario.activate_tco_fueling_dwell_time_cost:
             df_veh_wt = pd.read_csv(
                 (
-                Path(scenario.plf_weight_distribution_file)
-                if Path(scenario.plf_weight_distribution_file).is_absolute()
-                else Path(__file__).parents[1] / "resources" / scenario.plf_weight_distribution_file
-            )
-            , index_col=0
+                    Path(scenario.plf_weight_distribution_file)
+                    if Path(scenario.plf_weight_distribution_file).is_absolute()
+                    else Path(__file__).parents[1]
+                    / "resources"
+                    / scenario.plf_weight_distribution_file
+                ),
+                index_col=0,
             )
 
             def set_kdes(
@@ -89,11 +95,9 @@ class OpportunityCosts:
                 df_veh_wt = df_veh_wt[~df_veh_wt["WEIGHTEMPTY"].isnull()]
                 df_veh_wt = df_veh_wt[df_veh_wt["WEIGHTAVG"] < 120000]
 
-                weights = df_veh_wt["TAB_MILES"] / np.nansum(
-                    df_veh_wt["TAB_MILES"]
-                )
+                weights = df_veh_wt["TAB_MILES"] / np.nansum(df_veh_wt["TAB_MILES"])
                 kernel = gaussian_kde(
-                    df_veh_wt["WEIGHTAVG"], weights=weights, bw_method = bw_method
+                    df_veh_wt["WEIGHTAVG"], weights=weights, bw_method=bw_method
                 )
                 vehicle_weights_bins_lb = np.linspace(
                     df_veh_wt["WEIGHTAVG"].min(),
@@ -114,7 +118,9 @@ class OpportunityCosts:
                         (
                             Path(scenario.plf_weight_distribution_file)
                             if Path(scenario.plf_weight_distribution_file).is_absolute()
-                            else Path(__file__).parents[1] / "resources" / scenario.plf_weight_distribution_file
+                            else Path(__file__).parents[1]
+                            / "resources"
+                            / scenario.plf_weight_distribution_file
                         ).parents[0]
                         / "payload_pdf.csv"
                     )
@@ -128,8 +134,7 @@ class OpportunityCosts:
                 return p_of_weights_normalized, vehicle_weights_bins_kg
 
             p_of_weights_normalized, vehicle_weights_bins_kg = set_kdes(
-                df_veh_wt = df_veh_wt,
-                verbose=False
+                df_veh_wt=df_veh_wt, verbose=False
             )
 
             new_empty_weight_kg = vehicle.veh_kg - vehicle.cargo_kg
@@ -267,7 +272,8 @@ class OpportunityCosts:
         else:
             dwell_time_hr = (
                 self.fdt_num_of_dwells * self.fdt_full_dwell_hr
-                + ceil(self.fdt_num_of_dwells) * scenario.fdt_avg_overhead_hr_per_dwell_hr
+                + ceil(self.fdt_num_of_dwells)
+                * scenario.fdt_avg_overhead_hr_per_dwell_hr
             )
             self.fueling_dwell_time_hr_per_yr = self.shifts_per_year * max(
                 0,
@@ -275,8 +281,7 @@ class OpportunityCosts:
             )
 
         self.fueling_downtime_oppy_cost_dol_per_yr = (
-            self.fueling_dwell_time_hr_per_yr
-            * scenario.downtime_oppy_cost_dol_per_hr
+            self.fueling_dwell_time_hr_per_yr * scenario.downtime_oppy_cost_dol_per_hr
         )
 
     def set_mr_downtime_cost(
@@ -313,7 +318,10 @@ class OpportunityCosts:
         )
 
     def set_net_downtime_oppy_cost(self):
-        self.net_downtime_oppy_cost_dol = (
+        self.net_downtime_oppy_cost_dol = self.fueling_downtime_oppy_cost_dol_per_yr
+
+    def set_disc_downtime_oppy_cost(self, year_number: int, scenario: Scenario):
+        self.disc_downtime_oppy_cost_dol = (
             self.fueling_downtime_oppy_cost_dol_per_yr
+            / (1.0 + scenario.discount_rate_pct_per_yr) ** (year_number)
         )
-        

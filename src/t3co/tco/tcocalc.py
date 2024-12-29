@@ -25,7 +25,7 @@ class TCOCalc():
             self.calculate_capital_costs(vehicle=vehicle, scenario=scenario)
         self.calculate_opportunity_costs(year_number=year_index, vehicle=vehicle, scenario=scenario, energy=energy)
         self.calculate_operating_costs(year_number=year_index, vehicle=vehicle, scenario=scenario,energy=energy)
-    
+        self.set_disc_total_cost(year_number=year_index, scenario=scenario)
     
     def calculate_capital_costs(self, vehicle: Vehicle, scenario: Scenario):
         self.cap_costs_dol = CapitalCosts(vehicle=vehicle, scenario=scenario)
@@ -44,7 +44,38 @@ class TCOCalc():
             + (self.cap_costs_dol.residual_cost_dol if year_number==scenario.vehicle_life_yr-1 else 0)
         )
     
-    
+    def set_disc_total_cost(self, year_number:int, scenario: Scenario, TCO_switch = "DIRECT"):
+        if TCO_switch == "DIRECT":
+            self.disc_total_cost_dol_per_yr = self.oppy_costs_dol.payload_cap_cost_multiplier * (
+                self.cap_costs_dol.net_capital_cost_dol
+                + self.oper_costs_dol.disc_oper_cost_dol_per_yr
+                + self.oppy_costs_dol.disc_downtime_oppy_cost_dol
+            )
+            self.oppy_costs_dol.payload_capacity_cost_dol = (
+                (self.oppy_costs_dol.payload_cap_cost_multiplier - 1) / self.oppy_costs_dol.payload_cap_cost_multiplier * self.disc_total_cost_dol_per_yr
+            )
+
+        elif TCO_switch == "EFFICIENCY":
+            disc_VMT_sum = (
+                    scenario.vmt[year_number] / (1 + scenario.discount_rate_pct_per_yr) ** (year_number)
+
+            )
+
+            downtime_efficiency = 1 / (1 + scenario.avg_speed_mph * self.oppy_costs_dol.disc_downtime_oppy_cost_dol / disc_VMT_sum)
+            self.disc_total_cost_dol_per_yr = self.oppy_costs_dol.payload_cap_cost_multiplier * (
+                (self.cap_costs_dol.net_capital_cost_dol + self.oper_costs_dol.disc_oper_cost_dol_per_yr)
+                / downtime_efficiency
+                + self.cap_costs_dol.residual_cost_dol
+            )
+            self.oppy_costs_dol.disc_downtime_oppy_cost_dol = (
+                self.cap_costs_dol.net_capital_cost_dol
+                + self.oper_costs_dol.disc_oper_cost_dol_per_yr
+                + self.oppy_costs_dol.disc_downtime_oppy_cost_dol
+            ) * (1 / downtime_efficiency - 1)
+
+            self.oppy_costs_dol.payload_capacity_cost_dol = (
+                (self.oppy_costs_dol.payload_cap_cost_multiplier - 1) / self.oppy_costs_dol.payload_cap_cost_multiplier * self.disc_total_cost_dol_per_yr 
+            )
         
     def __str__(self):
         return obj_to_string(self)

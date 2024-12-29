@@ -20,6 +20,7 @@ class OperatingCosts:
     distance_traveled_mi_per_yr: float = None
     fueling_dwell_labor_cost_dol_per_yr: float = None
     net_oper_cost_dol_per_yr: float = None
+    disc_oper_cost_dol_per_yr: float = None
 
     def __init__(
         self,
@@ -28,7 +29,7 @@ class OperatingCosts:
         vehicle: Vehicle,
         scenario: Scenario,
         energy: Energy,
-        oppy_costs: OpportunityCosts
+        oppy_costs: OpportunityCosts,
     ):
         self.mpgge = energy.mpgge
         self.distance_traveled_mi_per_yr = scenario.vmt[year_number]
@@ -36,9 +37,11 @@ class OperatingCosts:
         self.set_fuel_cost(year_number, vehicle, scenario)
         self.set_maintenance_oper_cost(year_number, vehicle, scenario)
         self.set_insurance_cost(year_number, cap_costs, vehicle, scenario)
-        if scenario.activate_tco_fueling_dwell_time_cost and oppy_costs: 
-            self.set_fueling_dwell_labor_cost(scenario=scenario, oppy_costs = oppy_costs)
+        if scenario.activate_tco_fueling_dwell_time_cost and oppy_costs:
+            self.set_fueling_dwell_labor_cost(scenario=scenario, oppy_costs=oppy_costs)
 
+        self.set_net_oper_cost()
+        self.set_disc_oper_cost(year_number=year_number, scenario=scenario)
 
     def set_fuel_cost(self, year_number: int, vehicle: Vehicle, scenario: Scenario):
         fuel_prices_df = pd.read_csv(
@@ -113,13 +116,21 @@ class OperatingCosts:
             cap_cost.msrp_total_dol * self.insurance_rate_per_yr
         )
 
-    def set_fueling_dwell_labor_cost(self, scenario: Scenario, oppy_costs: OpportunityCosts):
+    def set_fueling_dwell_labor_cost(
+        self, scenario: Scenario, oppy_costs: OpportunityCosts
+    ):
         self.fueling_dwell_labor_cost_dol_per_yr = (
             oppy_costs.fueling_dwell_time_hr_per_yr * scenario.labor_rate_dol_per_hr
         )
+
     def set_net_oper_cost(self):
         self.net_oper_cost_dol_per_yr = (
             self.fuel_cost_dol_per_yr
             + self.maintenance_cost_dol_per_yr
             + self.insurance_cost_dol_per_yr
         )
+
+    def set_disc_oper_cost(self, year_number: int, scenario: Scenario):
+        self.disc_oper_cost_dol_per_yr = self.net_oper_cost_dol_per_yr / (
+            1.0 + scenario.discount_rate_pct_per_yr
+        ) ** (year_number)
