@@ -4,9 +4,9 @@ from pathlib import Path
 
 def main():
     """
-    This function requests user inputs for whether and where to copy nrel_package demo input files from the nrel_package.resources folder. It then calls the copy_demo_input_files function.
+    This function requests user inputs for whether and where to copy t3co demo input files from the t3co.resources folder. It then calls the copy_demo_input_files function.
     """
-    choice = input("Do you want to copy the nrel_package demo input files? (y/n): ").strip().lower()
+    choice = input("Do you want to copy the t3co demo input files? (y/n): ").strip().lower()
     if choice == "y":
         destination_path = input("Enter the path where you want to copy demo input files: ").strip()
         copy_demo_input_files(destination_path)
@@ -15,10 +15,10 @@ def main():
 
 def copy_demo_input_files(destination_path:str):
     """
-    This function copies the nrel_package.resources folder that includes demo input files to a user input destination_path.
+    This function copies the t3co.resources folder that includes demo input files to a user input destination_path.
 
     Args:
-        destination_path (str | Path): Path of destination directory for copying nrel_package.resources folder
+        destination_path (str | Path): Path of destination directory for copying t3co.resources folder
     """
     source_path = Path(__file__).parents[1] / 'resources'
     destination_path = Path(destination_path)/'demo_inputs'
@@ -31,4 +31,4 @@ def copy_demo_input_files(destination_path:str):
             shutil.copy(item, destination_path / item.name)
         else:
             shutil.copytree(item, destination_path / item.name)
-    print(f"nrel_package demo input files copied to {destination_path.resolve()}")
+    print(f"t3co demo input files copied to {destination_path.resolve()}")
