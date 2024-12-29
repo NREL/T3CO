@@ -1,7 +1,7 @@
 import ast
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Self
+from typing_extensions import Self
 import numpy as np
 import pandas as pd
 import t3co.constants.Global as gl
