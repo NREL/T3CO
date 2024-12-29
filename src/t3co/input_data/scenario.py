@@ -157,27 +157,39 @@ class Scenario:
 
     fuel_prices_file: str = ""
     plf_weight_distribution_file: str = ""
+
+    avg_speed_mph: float = None
+
     @classmethod
-    def from_db(cls, selection: int, scenario_file: str|Path):
-        scenario_df = pd.read_csv(scenario_file, usecols=lambda x: x in cls.__annotations__.keys())
-        scenario_dict = scenario_df.loc[scenario_df['selection']==selection].to_dict('records')[0]
+    def from_db(cls, selection: int, scenario_file: str | Path):
+        scenario_df = pd.read_csv(
+            scenario_file, usecols=lambda x: x in cls.__annotations__.keys()
+        )
+        scenario_dict = scenario_df.loc[scenario_df["selection"] == selection].to_dict(
+            "records"
+        )[0]
         scenario_dict["vehicle_class"] = " "
         scenario_dict["vehicle_class"] = (
             scenario_dict["vehicle_class"]
             .join(scenario_dict["scenario_name"].split()[:3])
             .lower()
         )
-        scenario_dict['vmt'] = ast.literal_eval(scenario_dict['vmt'])
-        scenario_dict['shifts_per_year'] = ast.literal_eval(scenario_dict['shifts_per_year'])
-        scenario_dict['mr_unplanned_downtime_hr_per_mi'] = (
-            ast.literal_eval(scenario_dict['mr_unplanned_downtime_hr_per_mi'])
-            if scenario_dict['mr_unplanned_downtime_hr_per_mi'] else 0)
-        scenario_dict['maint_oper_cost_dol_per_mi'] = (
-            ast.literal_eval(scenario_dict['maint_oper_cost_dol_per_mi'])
-            if scenario_dict['maint_oper_cost_dol_per_mi'] else -1)
+        scenario_dict["vmt"] = ast.literal_eval(scenario_dict["vmt"])[:scenario_dict['vehicle_life_yr']]
+        scenario_dict["shifts_per_year"] = ast.literal_eval(
+            scenario_dict["shifts_per_year"]
+        )[:scenario_dict['vehicle_life_yr']]
+        scenario_dict["mr_unplanned_downtime_hr_per_mi"] = (
+            ast.literal_eval(scenario_dict["mr_unplanned_downtime_hr_per_mi"])[:scenario_dict['vehicle_life_yr']]
+            if scenario_dict["mr_unplanned_downtime_hr_per_mi"]
+            else 0
+        )
+        scenario_dict["maint_oper_cost_dol_per_mi"] = (
+            ast.literal_eval(scenario_dict["maint_oper_cost_dol_per_mi"])[:scenario_dict['vehicle_life_yr']]
+            if scenario_dict["maint_oper_cost_dol_per_mi"]
+            else -1
+        )
         return cls(**scenario_dict)
-    
-    
+
     def from_config(self, config: Config = None, verbose: bool = False) -> None:
         """
         This method overrides certain scenario fields if use_config is True and config object is not None
@@ -224,11 +236,10 @@ class Scenario:
             print(
                 f"Config file not attached or scenario.use_config set to False: {config}"
             )
-        
+
         self.residual_rates_file = config.residual_rates_file
         self.insurance_rates_file = config.insurance_rates_file
         self.fuel_prices_file = config.fuel_prices_file
 
         if self.activate_tco_payload_cap_cost_multiplier and config:
             self.plf_weight_distribution_file = config.plf_weight_dist_file
-        

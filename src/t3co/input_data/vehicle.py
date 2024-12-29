@@ -35,7 +35,7 @@ class Vehicle:
     
     @classmethod
     def from_db(cls, selection: int, vehicle_db_file: str|Path)->Self:
-        vehicle_db_df = pd.read_csv(vehicle_db_file, usecols = cls.__annotations__.keys())
+        vehicle_db_df = pd.read_csv(vehicle_db_file, usecols = lambda x: x in cls.__annotations__.keys())
         vehicle_dict = vehicle_db_df.loc[vehicle_db_df['selection']==selection].to_dict('records')[0]
         return cls(**vehicle_dict)
     
