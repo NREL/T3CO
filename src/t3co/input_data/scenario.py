@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 
+import pandas as pd
+
 from t3co.input_data.config import Config
 
 
@@ -155,6 +157,7 @@ class Scenario:
     insurance_rates_pct_per_yr: list = field(default_factory=list)
 
     # Residual Rate
+    residual_rates_file: str = ""
     residual_rate_pct: float = 0
 
     # Maintenance and Repair Downtime factors MR
@@ -210,3 +213,5 @@ class Scenario:
             print(
                 f"Config file not attached or scenario.use_config set to False: {config}"
             )
+        
+        self.residual_rates_file = config.residual_rates_file

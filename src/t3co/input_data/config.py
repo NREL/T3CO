@@ -30,6 +30,9 @@ class Config:
     fs_fueling_rate_gasoline_gpm: float = 0
     fs_fueling_rate_diesel_gpm: float = 0
 
+    insurance_rates_file: str = ""
+    residual_rates_file: str = ""
+
     TCO_method: str = "DIRECT"
 
     # Optimization
