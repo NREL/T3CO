@@ -1,3 +1,6 @@
+import ast
+from pathlib import Path
+
 import pandas as pd
 
 from t3co.constants import Global as gl
@@ -31,43 +34,52 @@ class OperatingCosts:
         self.set_insurance_cost(year_number, cap_costs, vehicle, scenario)
 
     def set_fuel_cost(self, year_number: int, vehicle: Vehicle, scenario: Scenario):
-        fuel_prices_df = pd.read_csv(scenario.fuel_prices_file)
+        fuel_prices_df = pd.read_csv(
+            (
+                Path(scenario.fuel_prices_file)
+                if Path(scenario.fuel_prices_file).is_absolute()
+                else Path(__file__).parents[1] / "resources" / scenario.fuel_prices_file
+            )
+        )
         fuel_prices_df.set_index("Fuel", inplace=True)
         fuel_prices_df = fuel_prices_df[fuel_prices_df["Region"] == scenario.region]
         # all costs are converted to $ per gallon gasoline equivalent
         # TODO, may want to be more explicit than just finding substrings
         if (
-            "diesel" in vehicle.fuel_type.lower()
-            and "bio" not in vehicle.fuel_type.lower()
+            "diesel" in scenario.fuel_type.lower()
+            and "bio" not in scenario.fuel_type.lower()
         ):
             dieselDolPerGal = fuel_prices_df.loc[
                 "dieselDolPerGal", str(scenario.model_year + year_number)
             ]
             self.fuel_cost_dol_per_gge = dieselDolPerGal * gl.diesel_to_gge
-        elif "gasoline" in vehicle.fuel_type.lower():
+        elif "gasoline" in scenario.fuel_type.lower():
             gasolineDolPerGal = fuel_prices_df.loc[
                 "gasolineDolPerGal", str(scenario.model_year + year_number)
             ]
             self.fuel_cost_dol_per_gge = gasolineDolPerGal
-        elif "electricity" in vehicle.fuel_type.lower():
+        elif "electricity" in scenario.fuel_type.lower():
             dolPerKwh = fuel_prices_df.loc[
                 "dolPerKwh", str(scenario.model_year + year_number)
             ]
             self.fuel_cost_dol_per_gge = (
                 dolPerKwh * 33.7
             )  # 33.41 kwh per gallon of gasoline
-        elif vehicle.fuel_type.lower() == "cng":
+        elif scenario.fuel_type.lower() == "cng":
             CNGDolPerGge = fuel_prices_df.loc[
                 "CNGDolPerGge", str(scenario.model_year + year_number)
             ]
             self.fuel_cost_dol_per_gge = CNGDolPerGge
-        elif vehicle.fuel_type.lower() == "hydrogen":
+        elif scenario.fuel_type.lower() == "hydrogen":
             hydrogenDolPerGGE = fuel_prices_df.loc[
                 "hydrogenDolPerGGE", str(scenario.model_year + year_number)
             ]
             self.fuel_cost_dol_per_gge = hydrogenDolPerGGE
         else:
-            raise Exception(f"TCO fuel calc:: unknown fuel type {vehicle.fuel_type}")
+            raise Exception(f"TCO fuel calc:: unknown fuel type {scenario.fuel_type}")
+        print(f" self.mpgge: { self.mpgge}")
+        print(f" self.fuel_cost_dol_per_gge: { self.fuel_cost_dol_per_gge}")
+        print(f" self.distance_traveled_mi_per_yr: { self.distance_traveled_mi_per_yr}")
         self.fuel_cost_dol_per_yr = (
             self.fuel_cost_dol_per_gge * self.distance_traveled_mi_per_yr / self.mpgge
         )
@@ -89,7 +101,9 @@ class OperatingCosts:
         vehicle: Vehicle,
         scenario: Scenario,
     ):
-        self.insurance_rate_per_yr = scenario.insurance_rates_pct_per_yr[year_number]
-        self.maintenance_cost_dol_per_yr = (
+        self.insurance_rate_per_yr = ast.literal_eval(
+            scenario.insurance_rates_pct_per_yr
+        )[year_number]
+        self.insurance_cost_dol_per_yr = (
             cap_cost.msrp_total_dol * self.insurance_rate_per_yr
         )

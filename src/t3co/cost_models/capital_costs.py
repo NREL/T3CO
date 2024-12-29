@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
@@ -27,7 +29,6 @@ class CapitalCosts:
         self.set_msrp(vehicle, scenario)
         self.set_purchase_tax(vehicle, scenario)
         self.set_residual_cost(vehicle, scenario)
-        
 
     def set_glider_cost(self, vehicle: Vehicle, scenario: Scenario):
         self.glider_cost_dol = scenario.vehicle_glider_cost_dol
@@ -116,10 +117,19 @@ class CapitalCosts:
         self.purchase_tax_dol = self.msrp_total_dol * scenario.tax_rate_pct
 
     def set_residual_cost(self, vehicle: Vehicle, scenario: Scenario):
-        residual_rates_all = pd.read_csv(scenario.residual_rates_file)
+        residual_rates_all = pd.read_csv(
+            (
+                Path(scenario.residual_rates_file)
+                if Path(scenario.residual_rates_file).is_absolute()
+                else Path(__file__).parents[1]
+                / "resources"
+                / scenario.residual_rates_file
+            )
+        )
         vehicle_class = scenario.vehicle_class
         powertrain_type = vehicle.veh_pt_type.lower()
         year = str(scenario.vehicle_life_yr)
+
         scenario.residual_rate_pct = residual_rates_all.loc[
             (residual_rates_all["VehicleClass"].str.lower() == vehicle_class)
             & (residual_rates_all["PowertrainType"].str.lower() == powertrain_type)
