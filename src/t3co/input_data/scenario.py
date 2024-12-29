@@ -134,7 +134,7 @@ class Scenario:
     estimated_lost_payload_kg: float = 0
 
     # Fueling Dwell time factors, FDT
-    activate_tco_fueling_dwell_time_cost: bool = False
+    activate_tco_fueling_dwell_time_cost: bool = True
     dlf_min_charge_time_hr: float = 0
     fdt_dwpt_fraction_power_pct: float = 0
     fdt_avg_overhead_hr_per_dwell_hr: float = 0
@@ -149,13 +149,14 @@ class Scenario:
     residual_rate_pct: float = 0
 
     # Maintenance and Repair Downtime factors MR
-    activate_mr_downtime_cost: bool = False
+    activate_mr_downtime_cost: bool = True
     mr_planned_downtime_hr_per_yr: float = 0
     mr_unplanned_downtime_hr_per_mi: list = field(default_factory=list)
     mr_avg_tire_life_mi: float = 0
     mr_tire_replace_downtime_hr_per_event: float = 0
 
     fuel_prices_file: str = ""
+    plf_weight_distribution_file: str = ""
     @classmethod
     def from_db(cls, selection: int, scenario_file: str|Path):
         scenario_df = pd.read_csv(scenario_file, usecols=lambda x: x in cls.__annotations__.keys())
@@ -174,7 +175,6 @@ class Scenario:
         scenario_dict['maint_oper_cost_dol_per_mi'] = (
             ast.literal_eval(scenario_dict['maint_oper_cost_dol_per_mi'])
             if scenario_dict['maint_oper_cost_dol_per_mi'] else -1)
-        
         return cls(**scenario_dict)
     
     
@@ -229,6 +229,6 @@ class Scenario:
         self.insurance_rates_file = config.insurance_rates_file
         self.fuel_prices_file = config.fuel_prices_file
 
-        if self.activate_tco_payload_cap_cost_multiplier:
+        if self.activate_tco_payload_cap_cost_multiplier and config:
             self.plf_weight_distribution_file = config.plf_weight_dist_file
         
