@@ -15,7 +15,11 @@ input_scenario = scenario.Scenario().from_db(selection=1, scenario_file=Path(__f
 input_energy = energy.Energy('exogenous', mpgge=4.0, primary_fuel_range_mi=200.0)
 
 tco_0 = TCOCalc(1, input_vehicle, input_scenario, input_energy)
-print(tco_0)
+# print(tco_0)
+
+#%%
+output_ledger =  ledger.Ledger(vehicle=input_vehicle, scenario=input_scenario, energy=input_energy)
+print(output_ledger)
 # %%
 if __name__=='__main__':
     pass

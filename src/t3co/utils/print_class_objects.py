@@ -4,7 +4,6 @@ from typing import List
 
 def obj_to_string(obj, extra='    '):
     if isinstance(obj, list) or isinstance(obj, List):  # Check if the object is a list
-        print(obj)
         return '[\n' + ',\n'.join(
             extra + obj_to_string(item, extra + '    ') if hasattr(item, '__dict__') else extra + str(item)
             for item in obj
