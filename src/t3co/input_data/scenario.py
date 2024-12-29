@@ -215,3 +215,6 @@ class Scenario:
             )
         
         self.residual_rates_file = config.residual_rates_file
+        self.insurance_rates_file = config.insurance_rates_file
+        self.fuel_prices_file = config.fuel_prices_file
+        

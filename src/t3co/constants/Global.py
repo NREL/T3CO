@@ -54,6 +54,7 @@ kgH2_per_gge = 1.019  # https://epact.energy.gov/fuel-conversion-factors for Hyd
 mps_to_mph = 2.23694  # 1 mps = 2.23694 mph
 m_to_mi = 0.000621371  # 1 m = 0.000621371 mi
 
+diesel_to_gge = 1 * (33.7 / 37.95)
 
 def get_kwh_per_gge():
     """

@@ -103,7 +103,7 @@ class CapitalCosts:
         self.battery_cost_dol *= scenario.markup_pct if scenario.markup_pct else 1
 
     def set_msrp(self, vehicle: Vehicle, scenario: Scenario):
-        self.msrp = (
+        self.msrp_total_dol = (
             self.glider_cost_dol
             + self.fuel_storage_cost_dol
             + self.fuel_converter_cost_dol
@@ -113,7 +113,7 @@ class CapitalCosts:
         )
 
     def set_purchase_tax(self, vehicle: Vehicle, scenario: Scenario):
-        self.purchase_tax_dol = self.msrp * scenario.tax_rate_pct
+        self.purchase_tax_dol = self.msrp_total_dol * scenario.tax_rate_pct
 
     def set_residual_cost(self, vehicle: Vehicle, scenario: Scenario):
         residual_rates_all = pd.read_csv(scenario.residual_rates_file)
@@ -125,4 +125,4 @@ class CapitalCosts:
             & (residual_rates_all["PowertrainType"].str.lower() == powertrain_type)
         ][year].values[0]
 
-        self.residual_cost_dol = -self.msrp * scenario.residual_rate_pct
+        self.residual_cost_dol = -self.msrp_total_dol * scenario.residual_rate_pct

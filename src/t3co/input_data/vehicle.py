@@ -7,6 +7,7 @@ from t3co.input_data.config import Config
 class Vehicle:
     selection: int|str = None
     veh_pt_type: str = ""
+    fuel_type: str = ""
     fc_max_kw: float = None
     fs_kwh: float = None
     mc_max_kw: float = None
