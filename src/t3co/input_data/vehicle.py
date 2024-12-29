@@ -24,6 +24,7 @@ class Vehicle:
     ess_kg_per_kwh: float = None
     ess_base_kg: float = None
     veh_override_kg: float = None
-
+    veh_kg: float = None
+    
     def from_df(cls):
         pass

@@ -150,7 +150,7 @@ class Scenario:
     dlf_min_charge_time_hr: float = 0
     fdt_dwpt_fraction_power_pct: float = 0
     fdt_avg_overhead_hr_per_dwell_hr: float = 0
-    fdt_frac_full_charge_bounds: float = 0
+    fdt_frac_full_charge_bounds: str = 0
     fdt_num_free_dwell_trips: float = 0
     fdt_available_freetime_hr: float = 0
     # Insurance factors
@@ -217,4 +217,7 @@ class Scenario:
         self.residual_rates_file = config.residual_rates_file
         self.insurance_rates_file = config.insurance_rates_file
         self.fuel_prices_file = config.fuel_prices_file
+
+        if self.activate_tco_payload_cap_cost_multiplier:
+            self.plf_weight_distribution_file = config.plf_weight_dist_file
         

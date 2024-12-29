@@ -33,6 +33,7 @@ class Config:
     insurance_rates_file: str = ""
     residual_rates_file: str = ""
     fuel_prices_file: str = ""
+    plf_weight_dist_file: str = ""
 
     TCO_method: str = "DIRECT"
 
