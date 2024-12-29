@@ -1,4 +1,7 @@
+import ast
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import List
 
 import pandas as pd
 
@@ -13,10 +16,11 @@ class Scenario:
     """
 
     selection: float = 0
+    scenario_name: str = ""
     drive_cycle: str = ""
     use_config: bool = True
     vmt_reduct_per_yr: float = 0
-    vmt: list = field(default_factory=list)
+    vmt: list = field(default_factory=str)
     constant_trip_distance_mi: float = 0
     vehicle_life_yr: float = 0
     desired_ess_replacements: float = 0
@@ -46,8 +50,8 @@ class Scenario:
     gvwr_kg: float = 0
     gvwr_credit_kg: float = 0
     # a list of fuels, basecase fuel is singleton list
-    fuel_type: list = field(default_factory=list)
-    maint_oper_cost_dol_per_mi: list = field(default_factory=list)
+    fuel_type: List = field(default_factory=str)
+    maint_oper_cost_dol_per_mi: List = field(default_factory=float)
     vocation: str = ""
     vehicle_class: str = ""
     model_year: float = 0
@@ -61,22 +65,6 @@ class Scenario:
     lw_imp_curve_sel: str = ""
     eng_eff_imp_curve_sel: str = ""
     aero_drag_imp_curve_sel: str = ""
-    # computed vars
-    # scenario_gge_regional_temporal_fuel_price: str = ""
-    originalcargo_kg: float = (
-        -1.0
-    )  # if needed, should be assigned immediately after vehicle read in
-    # For adding mass from CdA during optimization. veh_kg = glider_kg + powertrainKg, where
-    # glider_kg is assigned the value of originalglider_kg + CdAKg
-    originalglider_kg: float = -1.0
-    # for adding incremental cost to glider from different CdA guesses in moo loop
-    originalGliderPrice: float = -1.0
-    # for adding percent improvemnt cost to engine efficiency when optimizing CONV
-    originalIceDolPerKw: float = -1.0
-    # for adjusting fuel converter efficiency based on new peak eff
-    origfc_eff_map: list = field(default_factory=list)
-    # for adjusting drag coefficient of vehicle
-    originaldrag_coef: float = -1
 
     ess_init_soc_grade: float = -1.0
     ess_init_soc_accel: float = -1.0
@@ -154,7 +142,7 @@ class Scenario:
     fdt_num_free_dwell_trips: float = 0
     fdt_available_freetime_hr: float = 0
     # Insurance factors
-    insurance_rates_pct_per_yr: list = field(default_factory=list)
+    insurance_rates_pct_per_yr: list = field(default_factory=float)
 
     # Residual Rate
     residual_rates_file: str = ""
@@ -167,6 +155,29 @@ class Scenario:
     mr_avg_tire_life_mi: float = 0
     mr_tire_replace_downtime_hr_per_event: float = 0
 
+    fuel_prices_file: str = ""
+    @classmethod
+    def from_db(cls, selection: int, scenario_file: str|Path):
+        scenario_df = pd.read_csv(scenario_file, usecols=lambda x: x in cls.__annotations__.keys())
+        scenario_dict = scenario_df.loc[scenario_df['selection']==selection].to_dict('records')[0]
+        scenario_dict["vehicle_class"] = " "
+        scenario_dict["vehicle_class"] = (
+            scenario_dict["vehicle_class"]
+            .join(scenario_dict["scenario_name"].split()[:3])
+            .lower()
+        )
+        scenario_dict['vmt'] = ast.literal_eval(scenario_dict['vmt'])
+        scenario_dict['shifts_per_year'] = ast.literal_eval(scenario_dict['shifts_per_year'])
+        scenario_dict['mr_unplanned_downtime_hr_per_mi'] = (
+            ast.literal_eval(scenario_dict['mr_unplanned_downtime_hr_per_mi'])
+            if scenario_dict['mr_unplanned_downtime_hr_per_mi'] else 0)
+        scenario_dict['maint_oper_cost_dol_per_mi'] = (
+            ast.literal_eval(scenario_dict['maint_oper_cost_dol_per_mi'])
+            if scenario_dict['maint_oper_cost_dol_per_mi'] else -1)
+        
+        return cls(**scenario_dict)
+    
+    
     def from_config(self, config: Config = None, verbose: bool = False) -> None:
         """
         This method overrides certain scenario fields if use_config is True and config object is not None
