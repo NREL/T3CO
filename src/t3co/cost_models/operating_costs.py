@@ -77,9 +77,7 @@ class OperatingCosts:
             self.fuel_cost_dol_per_gge = hydrogenDolPerGGE
         else:
             raise Exception(f"TCO fuel calc:: unknown fuel type {scenario.fuel_type}")
-        print(f" self.mpgge: { self.mpgge}")
-        print(f" self.fuel_cost_dol_per_gge: { self.fuel_cost_dol_per_gge}")
-        print(f" self.distance_traveled_mi_per_yr: { self.distance_traveled_mi_per_yr}")
+
         self.fuel_cost_dol_per_yr = (
             self.fuel_cost_dol_per_gge * self.distance_traveled_mi_per_yr / self.mpgge
         )

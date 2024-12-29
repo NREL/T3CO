@@ -9,12 +9,21 @@ from t3co.utils.print_class_objects import obj_to_string
 
 class TCOCalc():
     year_index: int = None
+    total_cost_dol_per_yr: float = None
+    disc_tco_dol_per_year: float = None
     cap_costs_dol: CapitalCosts = None
     oper_costs_dol: OperatingCosts = None
     oppy_costs_dol: CapitalCosts = None
 
-    def __init__(self, year_index: int, vehicle:Vehicle, scenario: Scenario, energy: Energy):
-        self.calculate_capital_costs(vehicle=vehicle, scenario=scenario)
+    def __init__(self, year_index: int, vehicle:Vehicle, scenario: Scenario, energy: Energy, cap_costs: CapitalCosts = None):
+        if year_index==0:
+            self.calculate_capital_costs(vehicle=vehicle, scenario=scenario)
+        
+        if cap_costs:
+            self.cap_costs_dol = cap_costs
+        else:
+            self.calculate_capital_costs(vehicle=vehicle, scenario=scenario)
+
         self.calculate_operating_costs(year_number=year_index, vehicle=vehicle, scenario=scenario,energy=energy)
         self.calculate_opportunity_costs(year_number=year_index, vehicle=vehicle, scenario=scenario, energy=energy)
     
