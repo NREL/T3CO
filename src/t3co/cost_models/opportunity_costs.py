@@ -28,6 +28,7 @@ class OpportunityCosts:
     payload_capacity_cost_dol: float = None
     shifts_per_year: float = None
     trip_distance_mi: float = None
+    net_downtime_oppy_cost_dol: float = None
 
     def __init__(
         self, year_number: int, vehicle: Vehicle, scenario: Scenario, energy: Energy
@@ -58,11 +59,17 @@ class OpportunityCosts:
         self, year_number: int, vehicle: Vehicle, scenario: Scenario
     ):
         if scenario.activate_tco_fueling_dwell_time_cost:
-            self.df_veh_wt = pd.read_csv(
-                scenario.plf_weight_distribution_file, index_col=0
+            df_veh_wt = pd.read_csv(
+                (
+                Path(scenario.plf_weight_distribution_file)
+                if Path(scenario.plf_weight_distribution_file).is_absolute()
+                else Path(__file__).parents[1] / "resources" / scenario.plf_weight_distribution_file
+            )
+            , index_col=0
             )
 
             def set_kdes(
+                df_veh_wt: pd.DataFrame,
                 bw_method: float = 0.15,
                 verbose: bool = False,
             ) -> None:
@@ -78,19 +85,19 @@ class OpportunityCosts:
                 if verbose:
                     print("Initializing kernels.")
 
-                self.df_veh_wt = self.df_veh_wt[~self.df_veh_wt["WEIGHTAVG"].isnull()]
-                self.df_veh_wt = self.df_veh_wt[~self.df_veh_wt["WEIGHTEMPTY"].isnull()]
-                self.df_veh_wt = self.df_veh_wt[self.df_veh_wt["WEIGHTAVG"] < 120000]
+                df_veh_wt = df_veh_wt[~df_veh_wt["WEIGHTAVG"].isnull()]
+                df_veh_wt = df_veh_wt[~df_veh_wt["WEIGHTEMPTY"].isnull()]
+                df_veh_wt = df_veh_wt[df_veh_wt["WEIGHTAVG"] < 120000]
 
-                weights = self.df_veh_wt["TAB_MILES"] / np.nansum(
-                    self.df_veh_wt["TAB_MILES"]
+                weights = df_veh_wt["TAB_MILES"] / np.nansum(
+                    df_veh_wt["TAB_MILES"]
                 )
                 kernel = gaussian_kde(
-                    self.df_veh_wt["WEIGHTAVG"], weights=weights, bw_method=bw_method
+                    df_veh_wt["WEIGHTAVG"], weights=weights, bw_method = bw_method
                 )
                 vehicle_weights_bins_lb = np.linspace(
-                    self.df_veh_wt["WEIGHTAVG"].min(),
-                    self.df_veh_wt["WEIGHTAVG"].max(),
+                    df_veh_wt["WEIGHTAVG"].min(),
+                    df_veh_wt["WEIGHTAVG"].max(),
                     1000,
                 )
                 vehicle_weights_bins_kg = gl.lbs_to_kgs(vehicle_weights_bins_lb)
@@ -102,10 +109,15 @@ class OpportunityCosts:
                     [vehicle_weights_bins_kg, p_of_weights],
                     index=["vehicle_weights_bins_kg", "p_of_weights"],
                 ).T
-                probability_payload.to_csv(
-                    Path(scenario.plf_weight_distribution_file).parents[0]
-                    / "payload_pdf.csv"
-                )
+                if verbose:
+                    probability_payload.to_csv(
+                        (
+                            Path(scenario.plf_weight_distribution_file)
+                            if Path(scenario.plf_weight_distribution_file).is_absolute()
+                            else Path(__file__).parents[1] / "resources" / scenario.plf_weight_distribution_file
+                        ).parents[0]
+                        / "payload_pdf.csv"
+                    )
                 normalization_factor = probability_payload[
                     probability_payload["vehicle_weights_bins_kg"].between(
                         scenario.plf_ref_veh_empty_mass_kg, scenario.gvwr_kg
@@ -116,7 +128,8 @@ class OpportunityCosts:
                 return p_of_weights_normalized, vehicle_weights_bins_kg
 
             p_of_weights_normalized, vehicle_weights_bins_kg = set_kdes(
-                scenario, verbose=False
+                df_veh_wt = df_veh_wt,
+                verbose=False
             )
 
             new_empty_weight_kg = vehicle.veh_kg - vehicle.cargo_kg
@@ -261,9 +274,6 @@ class OpportunityCosts:
                 (dwell_time_hr - max(0, scenario.fdt_available_freetime_hr)),
             )
 
-        self.fueling_dwell_labor_cost_dol_per_yr = (
-            self.fueling_dwell_time_hr_per_yr * scenario.labor_rate_dol_per_hr
-        )
         self.fueling_downtime_oppy_cost_dol_per_yr = (
             self.fueling_dwell_time_hr_per_yr
             * scenario.downtime_oppy_cost_dol_per_hr
@@ -301,3 +311,9 @@ class OpportunityCosts:
         self.mr_downtime_oppy_cost_dol_per_yr = (
             self.mr_downtime_hr_per_yr * scenario.downtime_oppy_cost_dol_per_hr
         )
+
+    def set_net_downtime_oppy_cost(self):
+        self.net_downtime_oppy_cost_dol = (
+            self.fueling_downtime_oppy_cost_dol_per_yr
+        )
+        

@@ -18,6 +18,7 @@ class CapitalCosts:
     purchase_tax_dol: float = np.nan
     msrp_total_dol: float = np.nan
     residual_cost_dol: float = np.nan
+    net_capital_cost_dol: float = None
 
     def __init__(self, vehicle: Vehicle, scenario: Scenario):
         self.set_glider_cost(vehicle, scenario)
@@ -136,3 +137,9 @@ class CapitalCosts:
         ][year].values[0]
 
         self.residual_cost_dol = -self.msrp_total_dol * scenario.residual_rate_pct
+
+    def set_total_cap_cost(self):
+        self.net_capital_cost_dol = (
+            self.msrp_total_dol
+            + self.purchase_tax_dol
+        )

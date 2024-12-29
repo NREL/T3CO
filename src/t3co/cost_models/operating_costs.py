@@ -5,6 +5,7 @@ import pandas as pd
 
 from t3co.constants import Global as gl
 from t3co.cost_models.capital_costs import CapitalCosts
+from t3co.cost_models.opportunity_costs import OpportunityCosts
 from t3co.energy_models.energy import Energy
 from t3co.input_data.scenario import Scenario
 from t3co.input_data.vehicle import Vehicle
@@ -17,6 +18,8 @@ class OperatingCosts:
     maintenance_cost_dol_per_mi: float = None
     insurance_cost_dol_per_yr: float = None
     distance_traveled_mi_per_yr: float = None
+    fueling_dwell_labor_cost_dol_per_yr: float = None
+    net_oper_cost_dol_per_yr: float = None
 
     def __init__(
         self,
@@ -25,6 +28,7 @@ class OperatingCosts:
         vehicle: Vehicle,
         scenario: Scenario,
         energy: Energy,
+        oppy_costs: OpportunityCosts
     ):
         self.mpgge = energy.mpgge
         self.distance_traveled_mi_per_yr = scenario.vmt[year_number]
@@ -32,6 +36,9 @@ class OperatingCosts:
         self.set_fuel_cost(year_number, vehicle, scenario)
         self.set_maintenance_oper_cost(year_number, vehicle, scenario)
         self.set_insurance_cost(year_number, cap_costs, vehicle, scenario)
+        if scenario.activate_tco_fueling_dwell_time_cost and oppy_costs: 
+            self.set_fueling_dwell_labor_cost(scenario=scenario, oppy_costs = oppy_costs)
+
 
     def set_fuel_cost(self, year_number: int, vehicle: Vehicle, scenario: Scenario):
         fuel_prices_df = pd.read_csv(
@@ -104,4 +111,15 @@ class OperatingCosts:
         )[year_number]
         self.insurance_cost_dol_per_yr = (
             cap_cost.msrp_total_dol * self.insurance_rate_per_yr
+        )
+
+    def set_fueling_dwell_labor_cost(self, scenario: Scenario, oppy_costs: OpportunityCosts):
+        self.fueling_dwell_labor_cost_dol_per_yr = (
+            oppy_costs.fueling_dwell_time_hr_per_yr * scenario.labor_rate_dol_per_hr
+        )
+    def set_net_oper_cost(self):
+        self.net_oper_cost_dol_per_yr = (
+            self.fuel_cost_dol_per_yr
+            + self.maintenance_cost_dol_per_yr
+            + self.insurance_cost_dol_per_yr
         )
