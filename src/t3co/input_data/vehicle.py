@@ -28,6 +28,7 @@ class Vehicle:
     ess_kg_per_kwh: float = None
     ess_base_kg: float = None
     veh_override_kg: float = None
+    chg_eff: float = None
 
     @classmethod
     def from_config(cls, config:Config):
