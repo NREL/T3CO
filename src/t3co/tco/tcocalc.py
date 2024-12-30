@@ -15,7 +15,7 @@ class TCOCalc():
     oper_costs_dol: OperatingCosts = None
     oppy_costs_dol: OpportunityCosts = None
 
-    def __init__(self, year_index: int, vehicle:Vehicle, scenario: Scenario, energy: Energy, cap_costs: CapitalCosts = None):
+    def __init__(self, year_index: int, vehicle:Vehicle, scenario: Scenario, energy: Energy, payload_cap_cost_multiplier:float = None, cap_costs: CapitalCosts = None ):
         if year_index==0:
             self.calculate_capital_costs(vehicle=vehicle, scenario=scenario)
         
@@ -25,7 +25,7 @@ class TCOCalc():
             self.calculate_capital_costs(vehicle=vehicle, scenario=scenario)
         self.calculate_opportunity_costs(year_number=year_index, vehicle=vehicle, scenario=scenario, energy=energy)
         self.calculate_operating_costs(year_number=year_index, vehicle=vehicle, scenario=scenario,energy=energy)
-        self.set_disc_total_cost(year_number=year_index, scenario=scenario)
+        self.set_disc_total_cost(year_number=year_index, vehicle=vehicle, scenario=scenario, payload_cap_cost_multiplier=payload_cap_cost_multiplier)
     
     def calculate_capital_costs(self, vehicle: Vehicle, scenario: Scenario):
         self.cap_costs_dol = CapitalCosts(vehicle=vehicle, scenario=scenario)
@@ -44,7 +44,14 @@ class TCOCalc():
             + (self.cap_costs_dol.residual_cost_dol if year_number==scenario.vehicle_life_yr-1 else 0)
         )
     
-    def set_disc_total_cost(self, year_number:int, scenario: Scenario, TCO_switch = "DIRECT"):
+    def set_disc_total_cost(self, year_number:int, vehicle: Vehicle, scenario: Scenario, payload_cap_cost_multiplier:float=None, TCO_switch = "DIRECT"):
+        if payload_cap_cost_multiplier is not None and not self.oppy_costs_dol.payload_cap_cost_multiplier: 
+            self.oppy_costs_dol.payload_cap_cost_multiplier = payload_cap_cost_multiplier
+        elif self.oppy_costs_dol.payload_cap_cost_multiplier:
+            pass
+        else:
+            self.oppy_costs_dol.set_payload_cap_cost_multiplier(vehicle=vehicle, scenario=scenario)
+
         if TCO_switch == "DIRECT":
             self.disc_total_cost_dol_per_yr = self.oppy_costs_dol.payload_cap_cost_multiplier * (
                 self.cap_costs_dol.net_capital_cost_dol

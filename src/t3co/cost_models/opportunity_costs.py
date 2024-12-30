@@ -34,21 +34,8 @@ class OpportunityCosts:
     def __init__(
         self, year_number: int, vehicle: Vehicle, scenario: Scenario, energy: Energy
     ):
-        self.fdt_frac_of_fullcharge_bounds = list(
-            np.float_(scenario.fdt_frac_full_charge_bounds.strip(" ][").split(","))
-        )
-        if (
-            "0" in str(scenario.shifts_per_year) or np.isnan(scenario.shifts_per_year)
-        ) and scenario.constant_trip_distance_mi:
-            self.shifts_per_year = round(
-                scenario.vmt[year_number] / scenario.constant_trip_distance_mi
-            )
-        else:
-            self.shifts_per_year = scenario.shifts_per_year[year_number]
-
-        self.set_payload_cap_cost_multiplier(
-            year_number=year_number, vehicle=vehicle, scenario=scenario
-        )
+        if year_number == 0:
+            self.set_payload_cap_cost_multiplier(vehicle=vehicle, scenario=scenario)
         self.set_fueling_dwell_time_cost(
             year_number=year_number, vehicle=vehicle, scenario=scenario, energy=energy
         )
@@ -59,9 +46,7 @@ class OpportunityCosts:
         self.set_net_downtime_oppy_cost()
         self.set_disc_downtime_oppy_cost(year_number=year_number, scenario=scenario)
 
-    def set_payload_cap_cost_multiplier(
-        self, year_number: int, vehicle: Vehicle, scenario: Scenario
-    ):
+    def set_payload_cap_cost_multiplier(self, vehicle: Vehicle, scenario: Scenario):
         if scenario.activate_tco_fueling_dwell_time_cost:
             df_veh_wt = pd.read_csv(
                 (
@@ -193,6 +178,19 @@ class OpportunityCosts:
             vehicle (fastsim.vehicle): FASTSim vehicle object of analysis vehicle
             scenario (run_scenario.Scenario): Scenario object for current selection
         """
+        self.fdt_frac_of_fullcharge_bounds = list(
+            np.float_(scenario.fdt_frac_full_charge_bounds.strip(" ][").split(","))
+        )
+
+        if (
+            "0" in str(scenario.shifts_per_year) or np.isnan(scenario.shifts_per_year)
+        ) and scenario.constant_trip_distance_mi:
+            self.shifts_per_year = round(
+                scenario.vmt[year_number] / scenario.constant_trip_distance_mi
+            )
+        else:
+            self.shifts_per_year = scenario.shifts_per_year[year_number]
+
         dwellparams = np.array(
             [
                 scenario.fdt_dwpt_fraction_power_pct,
