@@ -316,7 +316,8 @@ class OpportunityCosts:
         )
 
     def set_net_downtime_oppy_cost(self):
-        self.net_downtime_oppy_cost_dol = self.fueling_downtime_oppy_cost_dol_per_yr
+        self.net_downtime_oppy_cost_dol = self.fueling_downtime_oppy_cost_dol_per_yr + self.mr_downtime_oppy_cost_dol_per_yr
+        self.net_downtime_hr_per_yr = self.fueling_dwell_time_hr_per_yr + self.mr_downtime_hr_per_yr
 
     def set_disc_downtime_oppy_cost(self, year_number: int, scenario: Scenario):
         self.disc_downtime_oppy_cost_dol = (
