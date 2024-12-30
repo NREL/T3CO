@@ -1,10 +1,18 @@
+import json
+from pathlib import Path
+import numpy as np
 from t3co.constants import Global as gl
 from t3co.energy_models.energy import Energy
 from t3co.input_data.config import Config
 from t3co.input_data.scenario import Scenario
 from t3co.input_data.vehicle import Vehicle
 from t3co.tco.tcocalc import TCOCalc
-from t3co.utils.print_class_objects import obj_to_string
+from t3co.utils.print_class_objects import (
+    custom_default,
+    handle_nan,
+    obj_to_string,
+    to_flat_dict,
+)
 
 
 class Ledger:
@@ -103,6 +111,8 @@ class Ledger:
         self.set_discounted_tco()
 
     def set_discounted_costs(self):
+        self.cumu_tco_dol_per_yr, self.cumu_tco_dol_per_mi = [], []
+
         self.payload_cap_cost_multiplier = self.tco_per_year[
             0
         ].oppy_costs_dol.payload_cap_cost_multiplier
@@ -119,7 +129,8 @@ class Ledger:
             ].oppy_costs_dol.disc_downtime_oppy_cost_dol
             self.total_vmt += self.scenario.vmt[year_index]
             self.cumu_tco_dol_per_yr.append(
-                (self.discounted_total_cap_cost_dol if year_index == 0 else 0)
+                (self.cumu_tco_dol_per_yr[year_index - 1] if year_index else 0)
+                + (self.discounted_total_cap_cost_dol if year_index == 0 else 0)
                 + self.discounted_total_oper_cost_dol
                 + self.discounted_downtime_oppy_cost_dol
                 + (
@@ -243,6 +254,32 @@ class Ledger:
         self.residual_cost_dol = self.tco_per_year[
             0
         ].cap_costs_dol.disc_residual_cost_dol
+
+    def to_dict(
+        self, filepath: str | Path = None, include_prefix: bool = True, flatten=True
+    ):
+        """
+        This method exports T3CO Ledger to a dictionary
+
+        Args:
+            filepath (str|Path, optional): File path of desired JSON output file. If provided, t3co_dict gets saved to filepath. Defaults to None.
+            include_prefix (bool, optional): If True, exported column names contain the T3CO submodule names as prefix.
+                                            Example: 'scenario_selection'. If False, it would be 'selection'. Defaults to True.
+            flatten (bool, optional): If True, the nested dict output flattens to single dictionary. Defaults to True.
+        """
+        if flatten:
+            t3co_dict = to_flat_dict(self, include_predix=include_prefix, delimiter="_")
+        else:
+            t3co_dict = json.loads(json.dumps(self, default=custom_default))
+
+        if filepath:
+            filepath = Path(filepath)
+            if not filepath.parent.exists():
+                filepath.parent.mkdir()
+            with open(Path(filepath), "w") as f:
+                json.dump(handle_nan(t3co_dict), f, indent=4)
+        else:
+            return t3co_dict
 
     def __str__(self):
         return obj_to_string(self)

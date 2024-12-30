@@ -1,6 +1,9 @@
 # %%
+import json
 import time
 from pathlib import Path
+
+import yaml
 import t3co
 import pandas as pd
 import os
@@ -17,13 +20,20 @@ input_scenario = scenario.Scenario().from_db(selection=1, scenario_file=Path(__f
 input_energy = energy.Energy('exogenous', mpgge=4.0, primary_fuel_range_mi=200.0)
 
 tco_0 = TCOCalc(1, input_vehicle, input_scenario, input_energy)
-print(tco_0)
+# print(tco_0)
 
 #%%
 output_ledger =  ledger.Ledger(vehicle=input_vehicle, scenario=input_scenario, energy=input_energy)
-print(output_ledger)
+filepath="../results/save_dict.json"
+output_ledger.to_dict(filepath, flatten=False)
 
-print(f'T3CO Run time: {time.time()-start}')
+#%%
+# results_dict = output_ledger.to_dict( flatten=True)
+# with open(filepath, 'w') as f:
+#     json.dump(handle_nan(results_dict), f)
+
 # %%
+print(f'T3CO Run time: {time.time()-start}')
+
 if __name__=='__main__':
     pass
