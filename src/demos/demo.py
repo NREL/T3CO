@@ -25,8 +25,10 @@ tco_0 = TCOCalc(1, input_vehicle, input_scenario, input_energy)
 #%%
 output_ledger =  ledger.Ledger(vehicle=input_vehicle, scenario=input_scenario, energy=input_energy)
 filepath="../results/save_dict.json"
+csv_filepath = "../results/save_csv.csv"
 output_ledger.to_dict(filepath, flatten=False)
-
+output_ledger.to_csv(csv_filepath)
+# print()
 #%%
 # results_dict = output_ledger.to_dict( flatten=True)
 # with open(filepath, 'w') as f:

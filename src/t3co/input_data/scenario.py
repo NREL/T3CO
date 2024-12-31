@@ -224,10 +224,7 @@ class Scenario:
         if self.use_config == True and config != None:
             for field_select in fields_override:
                 if config.__dict__[field_select] != None:
-                    # and (
-                    # not self.__dict__[field_select])
                     setattr(self, field_select, config.__getattribute__(field_select))
-                    # print(f'field: {field}, type: {type(self.__getattribute__(field))}, value: {self.__getattribute__(field)}')
                     self.fields_overriden.append(field_select)
             print(
                 f"Scenario Fields overridden from config: {self.fields_overriden}"

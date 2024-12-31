@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import numpy as np
+import pandas as pd
 from t3co.constants import Global as gl
 from t3co.energy_models.energy import Energy
 from t3co.input_data.config import Config
@@ -256,8 +257,8 @@ class Ledger:
         ].cap_costs_dol.disc_residual_cost_dol
 
     def to_dict(
-        self, filepath: str | Path = None, include_prefix: bool = True, flatten=True
-    ):
+        self, include_prefix: bool = True, flatten=True
+    )->dict:
         """
         This method exports T3CO Ledger to a dictionary
 
@@ -272,14 +273,35 @@ class Ledger:
         else:
             t3co_dict = json.loads(json.dumps(self, default=custom_default))
 
+        return t3co_dict
+
+    def to_json(self, filepath: str|Path, include_prefix: bool = True, flatten=True)->None:
+        t3co_dict = self.to_dict(self, include_predix=include_prefix, delimiter="_")
+
         if filepath:
             filepath = Path(filepath)
             if not filepath.parent.exists():
                 filepath.parent.mkdir()
             with open(Path(filepath), "w") as f:
                 json.dump(handle_nan(t3co_dict), f, indent=4)
+                print(f"Saved to {str(filepath.resolve())}")
         else:
-            return t3co_dict
+            raise Exception
 
+    def to_df(self):
+        t3co_dict = self.to_dict(include_prefix=True, flatten=True)
+        t3co_dict.pop('tco_per_year')
+        return pd.DataFrame([t3co_dict])
+        
+    def to_csv(self, filepath: str|Path):
+        if filepath:
+            filepath = Path(filepath)
+            if not filepath.parent.exists():
+                filepath.parent.mkdir()
+            print(f"Saved to {str(filepath.resolve())}")
+            return self.to_df().to_csv(filepath)
+        else:
+            raise Exception
+        
     def __str__(self):
         return obj_to_string(self)
