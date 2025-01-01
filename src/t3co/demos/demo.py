@@ -14,9 +14,9 @@ from t3co.energy_models import energy
 from t3co.tco.tcocalc import TCOCalc
 
 start = time.time()
-input_vehicle = vehicle.Vehicle().from_db(selection=1, vehicle_db_file=Path(__file__).parents[1]/"t3co"/"resources"/"inputs"/"Demo_FY22_vehicle_model_assumptions.csv")
+input_vehicle = vehicle.Vehicle().from_db(selection=1, vehicle_db_file=Path(__file__).parents[1]/"resources"/"inputs"/"Demo_FY22_vehicle_model_assumptions.csv")
 input_vehicle.set_veh_kg()
-input_scenario = scenario.Scenario().from_db(selection=1, scenario_file=Path(__file__).parents[1]/"t3co"/"resources"/"inputs"/"Demo_FY22_scenario_assumptions.csv")
+input_scenario = scenario.Scenario().from_db(selection=1, scenario_file=Path(__file__).parents[1]/"resources"/"inputs"/"Demo_FY22_scenario_assumptions.csv")
 input_energy = energy.Energy('exogenous', mpgge=4.0, primary_fuel_range_mi=200.0)
 
 tco_0 = TCOCalc(1, input_vehicle, input_scenario, input_energy)
@@ -24,8 +24,8 @@ tco_0 = TCOCalc(1, input_vehicle, input_scenario, input_energy)
 
 #%%
 output_ledger =  ledger.Ledger(vehicle=input_vehicle, scenario=input_scenario, energy=input_energy)
-filepath="../results/save_dict.json"
-csv_filepath = "../results/save_csv.csv"
+filepath= Path(__file__).parents[2]/"results/save_dict.json"
+csv_filepath = Path(__file__).parents[2]/"results/save_csv.csv"
 output_ledger.to_dict(filepath, flatten=False)
 output_ledger.to_csv(csv_filepath)
 # print()

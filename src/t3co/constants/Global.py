@@ -11,7 +11,7 @@ import os
 # ./t3co
 wkdir = Path(__file__).parent.parent
 
-SWEEP_PATH = Path(os.path.abspath(__file__)).parents[1] / "sweep.py"
+SWEEP_PATH = Path(__file__).resolve().parents[1] /"cli"/ "sweep.py"
 
 ### modified from 1/2/3/4: conv/hev/phev/bev to match FASTSim strings
 
@@ -45,7 +45,7 @@ global_opt_range_cycle = None
 # store scenario_name of current run
 vocation_scenario = None
 
-kwh_per_gge = 33.7
+KWH_PER_GGE = 33.7
 
 DieselGalPerGasGal = 0.887  # energy equivalent gallons of diesel per 1 gallon gas
 
@@ -55,16 +55,6 @@ mps_to_mph = 2.23694  # 1 mps = 2.23694 mph
 m_to_mi = 0.000621371  # 1 m = 0.000621371 mi
 
 diesel_to_gge = 1 * (33.7 / 37.95)
-
-def get_kwh_per_gge():
-    """
-    This is a getter for kwh_per_gge, sim and scenario dependant var that can change
-    important to get from one location each time so we can track when and how it's used
-
-    Returns:
-        kwh_per_gge (float): kWh per Gasoline Gallon Equivalent
-    """
-    return kwh_per_gge
 
 
 # --------------------------- ###  directories and files ### ----------------------------
