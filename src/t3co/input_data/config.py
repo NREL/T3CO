@@ -24,6 +24,7 @@ class Config:
     # selections: list = field(default_factory=list)
     vehicle_life_yr: float = 0
     drive_cycle: str = None
+    dc_files: list[str] = None
     # Fueling
     ess_max_charging_power_kw: float = 0
     fs_fueling_rate_kg_per_min: float = 0

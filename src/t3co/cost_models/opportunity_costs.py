@@ -211,13 +211,13 @@ class OpportunityCosts:
             if scenario.fuel_type in ["gasoline"]:
                 self.fdt_full_dwell_hr = (
                     vehicle.fs_kwh
-                    / (gl.kwh_per_gge)
+                    / (gl.KWH_PER_GGE)
                     / scenario.fs_fueling_rate_gasoline_gpm
                 ) / 60
             else:
                 self.fdt_full_dwell_hr = (
                     vehicle.fs_kwh
-                    / (gl.kwh_per_gge / gl.DieselGalPerGasGal)
+                    / (gl.KWH_PER_GGE / gl.DieselGalPerGasGal)
                     / scenario.fs_fueling_rate_diesel_gpm
                 ) / 60
         else:
@@ -225,7 +225,7 @@ class OpportunityCosts:
                 (1 - scenario.fdt_dwpt_fraction_power_pct)
                 * (
                     vehicle.fs_kwh
-                    / (gl.kwh_per_gge / gl.kgH2_per_gge)
+                    / (gl.KWH_PER_GGE / gl.kgH2_per_gge)
                     / scenario.fs_fueling_rate_kg_per_min
                 )
                 / 60

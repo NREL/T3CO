@@ -1,7 +1,7 @@
 import ast
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List
+from typing_extensions import List, Self
 
 import pandas as pd
 
@@ -161,7 +161,7 @@ class Scenario:
     avg_speed_mph: float = None
 
     @classmethod
-    def from_db(cls, selection: int, scenario_file: str | Path):
+    def from_file(cls, selection: int, scenario_file: str | Path):
         scenario_df = pd.read_csv(
             scenario_file, usecols=lambda x: x in cls.__annotations__.keys()
         )
@@ -218,18 +218,19 @@ class Scenario:
             "fdt_frac_full_charge_bounds",
             "activate_mr_downtime_cost",
         ]
-        if config.dc_files == None:
-            fields_override.append("drive_cycle")
-        self.fields_overriden = []
-        if self.use_config == True and config != None:
-            for field_select in fields_override:
-                if config.__dict__[field_select] != None:
-                    setattr(self, field_select, config.__getattribute__(field_select))
-                    self.fields_overriden.append(field_select)
-            print(
-                f"Scenario Fields overridden from config: {self.fields_overriden}"
-            ) if verbose else None
-        else:
+        try:
+            if config.dc_files == None:
+                fields_override.append("drive_cycle")
+            self.fields_overriden = []
+            if self.use_config == True and config != None:
+                for field_select in fields_override:
+                    if config.__dict__[field_select] != None:
+                        setattr(self, field_select, config.__getattribute__(field_select))
+                        self.fields_overriden.append(field_select)
+                print(
+                    f"Scenario Fields overridden from config: {self.fields_overriden}"
+                ) if verbose else None
+        except Exception:
             print(
                 f"Config file not attached or scenario.use_config set to False: {config}"
             )
@@ -240,3 +241,4 @@ class Scenario:
 
         if self.activate_tco_payload_cap_cost_multiplier and config:
             self.plf_weight_distribution_file = config.plf_weight_dist_file
+

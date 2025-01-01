@@ -16,7 +16,7 @@ class Vehicle:
     fs_kwh: float = None
     mc_max_kw: float = None
     ess_max_kwh: float = None
-    has_plugin: bool = False
+    chg_eff: float = None
     glider_kg: float = None
     trans_kg: float = None
     cargo_kg: float = None
@@ -31,12 +31,24 @@ class Vehicle:
     chg_eff: float = None
 
     @classmethod
-    def from_config(cls, config:Config):
-        return cls.from_db(selection = config.selections, vehicle_db_file=config.vehicle_file)
+    def from_config(cls, selection:int , config:Config)->Self:
+        return cls.from_db(
+            selection = selection, 
+            vehicle_db_file=config.vehicle_file
+            )
     
     @classmethod
     def from_db(cls, selection: int, vehicle_db_file: str|Path)->Self:
-        vehicle_db_df = pd.read_csv(vehicle_db_file, usecols = lambda x: x in cls.__annotations__.keys())
+        vehicle_db_df = pd.read_csv(
+             (
+                Path(vehicle_db_file)
+                if Path(vehicle_db_file).is_absolute()
+                else Path(__file__).parents[1]
+                / "resources"
+                /vehicle_db_file
+            ),
+            usecols = lambda x: x in cls.__annotations__.keys()
+        )
         vehicle_dict = vehicle_db_df.loc[vehicle_db_df['selection']==selection].to_dict('records')[0]
         return cls(**vehicle_dict)
     

@@ -91,7 +91,7 @@ class CapitalCosts:
         vehicle.mc_max_kw *= scenario.markup_pct if scenario.markup_pct else 1
 
     def set_plug_cost(self, vehicle: Vehicle, scenario: Scenario):
-        if vehicle.veh_pt_type in [gl.PHEV, gl.BEV, gl.HEV] and vehicle.has_plugin:
+        if vehicle.veh_pt_type in [gl.PHEV, gl.BEV, gl.HEV] and vehicle.chg_eff:
             self.plug_cost_dol = scenario.plug_base_cost_dol
         else:
             self.plug_cost_dol = 0
