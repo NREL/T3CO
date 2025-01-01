@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import List
 
 
@@ -50,7 +51,9 @@ def handle_nan(obj):
 
 def custom_default(obj):
     if (isinstance(obj, float)) and obj != obj:
-        return None  # Replace NaN with None (which becomes null in JSON)
+        return None  
+    elif (isinstance(obj, Path)):
+        return str(obj)
     else:
         return obj.__dict__
 
