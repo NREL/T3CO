@@ -22,15 +22,16 @@ class CapitalCosts:
     disc_residual_cost_dol: float = None
 
     def __init__(self, vehicle: Vehicle, scenario: Scenario):
-        self.set_glider_cost(vehicle, scenario)
-        self.set_fuel_converter_cost_dol(vehicle, scenario)
-        self.set_fuel_storage_cost(vehicle, scenario)
-        self.set_motor_control_power_elecs_cost(vehicle, scenario)
-        self.set_plug_cost(vehicle, scenario)
-        self.set_battery_cost(vehicle, scenario)
-        self.set_msrp(vehicle, scenario)
-        self.set_purchase_tax(vehicle, scenario)
-        self.set_residual_cost(vehicle, scenario)
+        self.set_glider_cost(vehicle=vehicle, scenario=scenario)
+        self.set_fuel_converter_cost_dol(vehicle=vehicle, scenario=scenario)
+        self.set_fuel_storage_cost(vehicle=vehicle, scenario=scenario)
+        self.set_motor_control_power_elecs_cost(vehicle=vehicle, scenario=scenario)
+        self.set_plug_cost(vehicle=vehicle, scenario=scenario)
+        self.set_battery_cost(vehicle=vehicle, scenario=scenario)
+        self.set_msrp(vehicle=vehicle, scenario=scenario)
+        self.set_purchase_tax(vehicle=vehicle, scenario=scenario)
+        self.set_residual_cost(vehicle=vehicle, scenario=scenario)
+        self.set_disc_residual_cost(scenario=scenario)
         self.set_total_cap_cost()
 
     def set_glider_cost(self, vehicle: Vehicle, scenario: Scenario):
@@ -45,7 +46,7 @@ class CapitalCosts:
                 scenario.fc_fuelcell_cost_dol_per_kw * vehicle.fc_max_kw
             )
 
-        elif vehicle.veh_pt_type == gl.CONV:
+        elif vehicle.veh_pt_type == gl.CONV and scenario.fuel_type == 'cng':
             self.fuel_converter_cost_dol = (
                 scenario.fc_cng_ice_cost_dol_per_kw * vehicle.fc_max_kw
             ) + scenario.fc_ice_base_cost_dol
@@ -138,7 +139,7 @@ class CapitalCosts:
             & (residual_rates_all["PowertrainType"].str.lower() == powertrain_type)
         ][year].values[0]
 
-        self.residual_cost_dol = -self.msrp_total_dol * scenario.residual_rate_pct
+        self.residual_cost_dol = - self.msrp_total_dol * scenario.residual_rate_pct
 
     def set_total_cap_cost(self):
         self.net_capital_cost_dol = (

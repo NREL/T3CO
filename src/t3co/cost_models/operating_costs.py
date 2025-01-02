@@ -9,6 +9,7 @@ from t3co.cost_models.opportunity_costs import OpportunityCosts
 from t3co.energy_models.energy import Energy
 from t3co.input_data.scenario import Scenario
 from t3co.input_data.vehicle import Vehicle
+from t3co.utils.print_class_objects import obj_to_string
 
 
 class OperatingCosts:
@@ -32,7 +33,7 @@ class OperatingCosts:
         oppy_costs: OpportunityCosts,
     ):
         self.mpgge = energy.mpgge
-        self.distance_traveled_mi_per_yr = scenario.vmt[year_number]
+        self.distance_traveled_mi_per_yr = scenario.vmt[year_number-1]
 
         self.set_fuel_cost(year_number, vehicle, scenario)
         self.set_maintenance_oper_cost(year_number, vehicle, scenario)
@@ -53,36 +54,35 @@ class OperatingCosts:
         )
         fuel_prices_df.set_index("Fuel", inplace=True)
         fuel_prices_df = fuel_prices_df[fuel_prices_df["Region"] == scenario.region]
-        # all costs are converted to $ per gallon gasoline equivalent
-        # TODO, may want to be more explicit than just finding substrings
+
         if (
             "diesel" in scenario.fuel_type.lower()
             and "bio" not in scenario.fuel_type.lower()
         ):
             dieselDolPerGal = fuel_prices_df.loc[
-                "dieselDolPerGal", str(scenario.model_year + year_number)
+                "dieselDolPerGal", str(scenario.model_year + year_number-1)
             ]
             self.fuel_cost_dol_per_gge = dieselDolPerGal * gl.diesel_to_gge
         elif "gasoline" in scenario.fuel_type.lower():
             gasolineDolPerGal = fuel_prices_df.loc[
-                "gasolineDolPerGal", str(scenario.model_year + year_number)
+                "gasolineDolPerGal", str(scenario.model_year + year_number-1)
             ]
             self.fuel_cost_dol_per_gge = gasolineDolPerGal
         elif "electricity" in scenario.fuel_type.lower():
             dolPerKwh = fuel_prices_df.loc[
-                "dolPerKwh", str(scenario.model_year + year_number)
+                "dolPerKwh", str(scenario.model_year + year_number-1)
             ]
             self.fuel_cost_dol_per_gge = (
                 dolPerKwh * 33.7
             )  # 33.41 kwh per gallon of gasoline
         elif scenario.fuel_type.lower() == "cng":
             CNGDolPerGge = fuel_prices_df.loc[
-                "CNGDolPerGge", str(scenario.model_year + year_number)
+                "CNGDolPerGge", str(scenario.model_year + year_number-1)
             ]
             self.fuel_cost_dol_per_gge = CNGDolPerGge
         elif scenario.fuel_type.lower() == "hydrogen":
             hydrogenDolPerGGE = fuel_prices_df.loc[
-                "hydrogenDolPerGGE", str(scenario.model_year + year_number)
+                "hydrogenDolPerGGE", str(scenario.model_year + year_number-1)
             ]
             self.fuel_cost_dol_per_gge = hydrogenDolPerGGE
         else:
@@ -95,9 +95,10 @@ class OperatingCosts:
     def set_maintenance_oper_cost(
         self, year_number: int, vehicle: Vehicle, scenario: Scenario
     ):
-        self.maintenance_cost_dol_per_mi = scenario.maint_oper_cost_dol_per_mi[
-            year_number
-        ]
+        self.maintenance_cost_dol_per_mi = (
+            scenario.maint_oper_cost_dol_per_mi[year_number-1]
+        )    
+        
         self.maintenance_cost_dol_per_yr = (
             self.maintenance_cost_dol_per_mi * self.distance_traveled_mi_per_yr
         )
@@ -111,7 +112,7 @@ class OperatingCosts:
     ):
         self.insurance_rate_per_yr = ast.literal_eval(
             scenario.insurance_rates_pct_per_yr
-        )[year_number]
+        )[year_number-1]
         self.insurance_cost_dol_per_yr = (
             cap_cost.msrp_total_dol * self.insurance_rate_per_yr
         )
@@ -126,6 +127,7 @@ class OperatingCosts:
     def set_net_oper_cost(self):
         self.net_oper_cost_dol_per_yr = (
             self.fuel_cost_dol_per_yr
+            + self.fueling_dwell_labor_cost_dol_per_yr
             + self.maintenance_cost_dol_per_yr
             + self.insurance_cost_dol_per_yr
         )
@@ -133,4 +135,7 @@ class OperatingCosts:
     def set_disc_oper_cost(self, year_number: int, scenario: Scenario):
         self.disc_oper_cost_dol_per_yr = self.net_oper_cost_dol_per_yr / (
             1.0 + scenario.discount_rate_pct_per_yr
-        ) ** (year_number)
+        ) ** (year_number-1)
+
+    def __str__(self):
+        return obj_to_string(self)

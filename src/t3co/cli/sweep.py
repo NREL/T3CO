@@ -45,7 +45,7 @@ def run_t3co(config: Config, save_results: bool = True):
                 .replace("'", "")
                 .replace(",", "-")
             )
-            RES_FILE = f"results_{ts}_sel_{selections_string[:20]}.csv".strip(
+            RES_FILE = f"new_results_{ts}_sel_{selections_string[:20]}.csv".strip(
                 "_"
             )
         output_path = (

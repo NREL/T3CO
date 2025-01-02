@@ -18,8 +18,8 @@ class Energy():
                 
     def run_fastsim_model(self, veh_no: int, scenario: Scenario, vehicle_file: str|Path = Path(__file__).resolve().parents[2]/"resources"/"inputs"/"Demo_FY22_vehicle_model_assumptions.csv"):
         fastsim_run = RunFastsim(veh_no=veh_no, veh_input_path=vehicle_file, scenario=scenario)
-        
         self.mpgge = fastsim_run.mpgge
-        self.primary_fuel_range_mi = fastsim_run.range_mi        
+        self.primary_fuel_range_mi = fastsim_run.range_mi
+        print(f'Running Fastsim')        
 
         

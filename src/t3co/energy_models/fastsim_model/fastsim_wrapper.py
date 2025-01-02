@@ -43,11 +43,14 @@ class RunFastsim:
                     * self.cycles[i][1]
                     / 3600
                 )
+                # print(f'cycle: {self.cycles[i][0].mph}')
                 self.simdrives.append(self.get_simdrive(cycle=self.cycles[i][0]))
+                # print(f'self.simdrives[i].mpgge: {self.simdrives[i].mpgge}')
                 mpgges_list.append(self.simdrives[i].mpgge)
                 weights.append(self.cycles[i][1])
 
             mpgges_list = np.array(mpgges_list)
+            # print(f'mpgges_list: {mpgges_list}')
             weights = np.array(weights)
             self.mpgge = np.divide(
                 sum(weights), 
@@ -84,11 +87,10 @@ class RunFastsim:
         """
 
         scenario_sel = int(float(str(veh_no).split("_")[0]))
-        self.vehicle = fastsim.vehicle.Vehicle.from_file(
-            vnum=scenario_sel, filename=veh_input_path, to_rust=True
-        )
+        self.vehicle = fastsim.vehicle.Vehicle.from_vehdb(scenario_sel, veh_input_path, to_rust=True)
         self.vehicle.set_derived()
         self.vehicle.set_veh_mass()
+        # print(f'vehicle: {self.vehicle.__dict__}')
 
     def load_design_cycle_from_scenario(
         self,
@@ -96,7 +98,7 @@ class RunFastsim:
         config: Config = None,
         cyc_file_path: str = gl.OPTIMIZATION_DRIVE_CYCLES,
         do_input_validation: bool = False,
-    ) -> fastsim.cycle.Cycle:
+    ) -> fastsim.cycle.Cycle | List[fastsim.cycle.Cycle]:
         """
         This helper method loads the design cycle used for mpgge and range determination.
         It can also be used standalone to get cycles not in standard gl.OPTIMIZATION_DRIVE_CYCLES location,
@@ -122,18 +124,18 @@ class RunFastsim:
             range_cyc = []
             for dc_weight in scenario.drive_cycle:
                 cycle_file_name = Path(dc_weight[0]).name
-                self.load_design_cycle_from_path(
+                cyc = self.load_design_cycle_from_path(
                     cyc_file_path=Path(cyc_file_path) / dc_weight[0]
                 )
-                self.cycles.name = cycle_file_name
+                cyc.name = cycle_file_name
                 weight = dc_weight[1]
-                range_cyc.append((self.cycles, weight))
+                range_cyc.append((cyc, weight))
             return range_cyc
         else:
             cycle_file_name = Path(sdc).name
-            self.load_design_cycle_from_path(cyc_file_path=sdc)
-            self.cycles.name = cycle_file_name
-            return None
+            range_cyc = self.load_design_cycle_from_path(cyc_file_path=sdc)
+            range_cyc.name = cycle_file_name
+            return range_cyc
 
     def load_design_cycle_from_path(self, cyc_file_path: str):
         """
@@ -153,12 +155,14 @@ class RunFastsim:
 
         else:
             finalized_path = cyc_file_path
-        self.cycles = fastsim.cycle.Cycle.from_file(finalized_path)
-        self.cycles = self.cycles.to_rust()
+        cyc = fastsim.cycle.Cycle.from_file(finalized_path)
+        cyc = cyc.to_rust()
+        return cyc
 
-    def get_simdrive(self, cycle):
+    def get_simdrive(self, cycle:fastsim.cycle.Cycle):
         simdrive = fastsim.simdrive.SimDrive(cycle, self.vehicle)
         simdrive = simdrive.to_rust()
+
         sim_params = simdrive.sim_params
         sim_params.reset_orphaned()
         sim_params.missed_trace_correction = False
@@ -166,8 +170,14 @@ class RunFastsim:
         sim_params.energy_audit_error_tol = np.inf
         sim_params.trace_miss_dist_tol = np.inf
         simdrive.sim_params = sim_params
-        
+
+        props = simdrive.props
+        props.reset_orphaned()  # see if this is needed
+        props.kwh_per_gge = gl.KWH_PER_GGE
+        simdrive.props = props
+        simdrive.sim_drive(init_soc=self.vehicle.max_soc)
         return simdrive
+    
     def get_range(self):
         if self.vehicle.veh_pt_type == gl.BEV:
             self.range_mi = (
