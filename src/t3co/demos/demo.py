@@ -17,14 +17,14 @@ input_vehicle = vehicle.Vehicle().from_db(
     / "Demo_FY22_vehicle_model_assumptions.csv",
 )
 input_vehicle.set_veh_kg()
-input_scenario = scenario.Scenario().from_db(
+input_scenario = scenario.Scenario().from_file(
     selection=1,
     scenario_file=Path(__file__).parents[1]
     / "resources"
     / "inputs"
     / "Demo_FY22_scenario_assumptions.csv",
 )
-input_energy = energy.Energy("exogenous", mpgge=4.0, primary_fuel_range_mi=200.0)
+input_energy = energy.Energy( mpgge=4.0, primary_fuel_range_mi=200.0)
 
 tco_0 = TCOCalc(1, input_vehicle, input_scenario, input_energy)
 # print(tco_0)
@@ -37,7 +37,7 @@ filepath = Path(__file__).parents[2] / "results/save_dict.json"
 csv_filepath = Path(__file__).parents[2] / "results/save_csv.csv"
 output_ledger.to_dict(filepath, flatten=False)
 output_ledger.to_csv(csv_filepath)
-# print()
+print(output_ledger)
 # %%
 # results_dict = output_ledger.to_dict( flatten=True)
 # with open(filepath, 'w') as f:
