@@ -46,7 +46,7 @@ class CapitalCosts:
                 scenario.fc_fuelcell_cost_dol_per_kw * vehicle.fc_max_kw
             )
 
-        elif vehicle.veh_pt_type == gl.CONV and scenario.fuel_type == 'cng':
+        elif vehicle.veh_pt_type == gl.CONV and scenario.fuel_type == "cng":
             self.fuel_converter_cost_dol = (
                 scenario.fc_cng_ice_cost_dol_per_kw * vehicle.fc_max_kw
             ) + scenario.fc_ice_base_cost_dol
@@ -139,14 +139,11 @@ class CapitalCosts:
             & (residual_rates_all["PowertrainType"].str.lower() == powertrain_type)
         ][year].values[0]
 
-        self.residual_cost_dol = - self.msrp_total_dol * scenario.residual_rate_pct
+        self.residual_cost_dol = -self.msrp_total_dol * scenario.residual_rate_pct
 
     def set_total_cap_cost(self):
-        self.net_capital_cost_dol = (
-            self.msrp_total_dol
-            + self.purchase_tax_dol
-        )
-    
+        self.net_capital_cost_dol = self.msrp_total_dol + self.purchase_tax_dol
+
     def set_disc_residual_cost(self, scenario: Scenario):
         self.disc_residual_cost_dol = self.residual_cost_dol / (
             1.0 + scenario.discount_rate_pct_per_yr

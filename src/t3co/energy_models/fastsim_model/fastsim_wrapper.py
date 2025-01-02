@@ -35,7 +35,7 @@ class RunFastsim:
             self.simdrives, mpgges_list, weights = [], [], []
             scenario.constant_trip_distance_mi = 0
             for i in range(len(self.cycles)):
-                scenario.constant_trip_distance_mi+=(
+                scenario.constant_trip_distance_mi += (
                     sum(
                         self.cycles[i][0].mph
                         * np.diff(np.array(self.cycles[i][0].time_s), append=0)
@@ -43,17 +43,14 @@ class RunFastsim:
                     * self.cycles[i][1]
                     / 3600
                 )
-                # print(f'cycle: {self.cycles[i][0].mph}')
                 self.simdrives.append(self.get_simdrive(cycle=self.cycles[i][0]))
-                # print(f'self.simdrives[i].mpgge: {self.simdrives[i].mpgge}')
                 mpgges_list.append(self.simdrives[i].mpgge)
                 weights.append(self.cycles[i][1])
 
             mpgges_list = np.array(mpgges_list)
-            # print(f'mpgges_list: {mpgges_list}')
             weights = np.array(weights)
             self.mpgge = np.divide(
-                sum(weights), 
+                sum(weights),
                 np.sum(
                     np.divide(
                         weights,
@@ -62,7 +59,7 @@ class RunFastsim:
                         where=mpgges_list != 0,
                         casting="unsafe",
                     )
-                )
+                ),
             )
         else:
             scenario.constant_trip_distance_mi = (
@@ -71,7 +68,7 @@ class RunFastsim:
             )
             self.simdrives = fastsim.simdrive.SimDrive(cyc=self.cycles)
             self.mpgge = self.simdrives.mpgge
-        
+
         self.get_range()
 
     def load_vehicle(self, veh_no: int, veh_input_path: str) -> fastsim.vehicle.Vehicle:
@@ -87,10 +84,11 @@ class RunFastsim:
         """
 
         scenario_sel = int(float(str(veh_no).split("_")[0]))
-        self.vehicle = fastsim.vehicle.Vehicle.from_vehdb(scenario_sel, veh_input_path, to_rust=True)
+        self.vehicle = fastsim.vehicle.Vehicle.from_vehdb(
+            scenario_sel, veh_input_path, to_rust=True
+        )
         self.vehicle.set_derived()
         self.vehicle.set_veh_mass()
-        # print(f'vehicle: {self.vehicle.__dict__}')
 
     def load_design_cycle_from_scenario(
         self,
@@ -159,7 +157,7 @@ class RunFastsim:
         cyc = cyc.to_rust()
         return cyc
 
-    def get_simdrive(self, cycle:fastsim.cycle.Cycle):
+    def get_simdrive(self, cycle: fastsim.cycle.Cycle):
         simdrive = fastsim.simdrive.SimDrive(cycle, self.vehicle)
         simdrive = simdrive.to_rust()
 
@@ -177,7 +175,7 @@ class RunFastsim:
         simdrive.props = props
         simdrive.sim_drive(init_soc=self.vehicle.max_soc)
         return simdrive
-    
+
     def get_range(self):
         if self.vehicle.veh_pt_type == gl.BEV:
             self.range_mi = (

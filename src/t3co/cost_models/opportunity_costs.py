@@ -37,7 +37,7 @@ class OpportunityCosts:
     ):
         if year_number == 1:
             self.set_payload_cap_cost_multiplier(vehicle=vehicle, scenario=scenario)
-        
+
         self.set_fueling_dwell_time_cost(
             year_number=year_number, vehicle=vehicle, scenario=scenario, energy=energy
         )
@@ -188,10 +188,10 @@ class OpportunityCosts:
             "0" in str(scenario.shifts_per_year) or np.isnan(scenario.shifts_per_year)
         ) and scenario.constant_trip_distance_mi:
             self.shifts_per_year = round(
-                scenario.vmt[year_number-1] / scenario.constant_trip_distance_mi
+                scenario.vmt[year_number - 1] / scenario.constant_trip_distance_mi
             )
         else:
-            self.shifts_per_year = scenario.shifts_per_year[year_number-1]
+            self.shifts_per_year = scenario.shifts_per_year[year_number - 1]
 
         dwellparams = np.array(
             [
@@ -233,7 +233,7 @@ class OpportunityCosts:
                 / 60
             )
 
-        self.trip_distance_mi = scenario.vmt[year_number-1] / self.shifts_per_year
+        self.trip_distance_mi = scenario.vmt[year_number - 1] / self.shifts_per_year
         self.fdt_num_of_dwells = max(
             0,
             (
@@ -263,7 +263,7 @@ class OpportunityCosts:
             scenario.fuel_type
         ):
             self.fueling_dwell_time_hr_per_yr = (
-                scenario.vmt[year_number-1]
+                scenario.vmt[year_number - 1]
                 * (1 - scenario.fdt_dwpt_fraction_power_pct)
                 / energy.primary_fuel_range_mi
                 * (self.fdt_full_dwell_hr + scenario.fdt_avg_overhead_hr_per_dwell_hr)
@@ -297,12 +297,12 @@ class OpportunityCosts:
             scenario.mr_planned_downtime_hr_per_yr
         )  # regular maintenance and inspections
         self.mr_unplanned_downtime_hr = (
-            scenario.mr_unplanned_downtime_hr_per_mi[year_number-1]
-            * scenario.vmt[year_number-1]
+            scenario.mr_unplanned_downtime_hr_per_mi[year_number - 1]
+            * scenario.vmt[year_number - 1]
         )
 
         self.mr_tire_replacement_downtime_hr = (
-            scenario.vmt[year_number-1]
+            scenario.vmt[year_number - 1]
             / scenario.mr_avg_tire_life_mi
             * scenario.mr_tire_replace_downtime_hr_per_event
         )
@@ -317,14 +317,18 @@ class OpportunityCosts:
         )
 
     def set_net_downtime_oppy_cost(self):
-        self.net_downtime_oppy_cost_dol_per_yr = self.fueling_downtime_oppy_cost_dol_per_yr + self.mr_downtime_oppy_cost_dol_per_yr
-        self.net_downtime_hr_per_yr = self.fueling_dwell_time_hr_per_yr + self.mr_downtime_hr_per_yr
+        self.net_downtime_oppy_cost_dol_per_yr = (
+            self.fueling_downtime_oppy_cost_dol_per_yr
+            + self.mr_downtime_oppy_cost_dol_per_yr
+        )
+        self.net_downtime_hr_per_yr = (
+            self.fueling_dwell_time_hr_per_yr + self.mr_downtime_hr_per_yr
+        )
 
     def set_disc_downtime_oppy_cost(self, year_number: int, scenario: Scenario):
-        self.disc_downtime_oppy_cost_dol = (
-            self.net_downtime_oppy_cost_dol_per_yr
-            / (1.0 + scenario.discount_rate_pct_per_yr) ** (year_number-1)
-        )
+        self.disc_downtime_oppy_cost_dol = self.net_downtime_oppy_cost_dol_per_yr / (
+            1.0 + scenario.discount_rate_pct_per_yr
+        ) ** (year_number - 1)
 
     def __str__(self):
         return obj_to_string(self)

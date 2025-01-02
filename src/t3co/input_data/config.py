@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import t3co.constants.Global as gl
 
+
 @dataclass
 class Config:
     """

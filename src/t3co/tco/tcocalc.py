@@ -24,7 +24,7 @@ class TCOCalc:
         payload_cap_cost_multiplier: float = None,
         cap_costs: CapitalCosts = None,
     ):
-        self.year_number = year_index+1
+        self.year_number = year_index + 1
         if self.year_number == 1:
             self.calculate_capital_costs(vehicle=vehicle, scenario=scenario)
 
@@ -58,7 +58,10 @@ class TCOCalc:
         self, vehicle: Vehicle, scenario: Scenario, energy: Energy
     ):
         self.oppy_costs_dol = OpportunityCosts(
-            year_number = self.year_number, vehicle=vehicle, scenario=scenario, energy=energy
+            year_number=self.year_number,
+            vehicle=vehicle,
+            scenario=scenario,
+            energy=energy,
         )
 
     def calculate_operating_costs(
@@ -122,9 +125,9 @@ class TCOCalc:
             )
 
         elif TCO_switch == "EFFICIENCY":
-            disc_VMT_sum = scenario.vmt[self.year_number-1] / (
+            disc_VMT_sum = scenario.vmt[self.year_number - 1] / (
                 1 + scenario.discount_rate_pct_per_yr
-            ) ** (self.year_number-1)
+            ) ** (self.year_number - 1)
 
             downtime_efficiency = 1 / (
                 1

@@ -51,8 +51,8 @@ def handle_nan(obj):
 
 def custom_default(obj):
     if (isinstance(obj, float)) and obj != obj:
-        return None  
-    elif (isinstance(obj, Path)):
+        return None
+    elif isinstance(obj, Path):
         return str(obj)
     else:
         return obj.__dict__

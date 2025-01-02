@@ -174,17 +174,23 @@ class Scenario:
             .join(scenario_dict["scenario_name"].split()[:3])
             .lower()
         )
-        scenario_dict["vmt"] = ast.literal_eval(scenario_dict["vmt"])[:scenario_dict['vehicle_life_yr']]
+        scenario_dict["vmt"] = ast.literal_eval(scenario_dict["vmt"])[
+            : scenario_dict["vehicle_life_yr"]
+        ]
         scenario_dict["shifts_per_year"] = ast.literal_eval(
             scenario_dict["shifts_per_year"]
-        )[:scenario_dict['vehicle_life_yr']]
+        )[: scenario_dict["vehicle_life_yr"]]
         scenario_dict["mr_unplanned_downtime_hr_per_mi"] = (
-            ast.literal_eval(scenario_dict["mr_unplanned_downtime_hr_per_mi"])[:scenario_dict['vehicle_life_yr']]
+            ast.literal_eval(scenario_dict["mr_unplanned_downtime_hr_per_mi"])[
+                : scenario_dict["vehicle_life_yr"]
+            ]
             if scenario_dict["mr_unplanned_downtime_hr_per_mi"]
             else 0
         )
         scenario_dict["maint_oper_cost_dol_per_mi"] = (
-            ast.literal_eval(scenario_dict["maint_oper_cost_dol_per_mi"])[:scenario_dict['vehicle_life_yr']]
+            ast.literal_eval(scenario_dict["maint_oper_cost_dol_per_mi"])[
+                : scenario_dict["vehicle_life_yr"]
+            ]
             if scenario_dict["maint_oper_cost_dol_per_mi"]
             else -1
         )
@@ -225,7 +231,9 @@ class Scenario:
             if self.use_config == True and config != None:
                 for field_select in fields_override:
                     if config.__dict__[field_select] != None:
-                        setattr(self, field_select, config.__getattribute__(field_select))
+                        setattr(
+                            self, field_select, config.__getattribute__(field_select)
+                        )
                         self.fields_overriden.append(field_select)
                 print(
                     f"Scenario Fields overridden from config: {self.fields_overriden}"
@@ -241,4 +249,3 @@ class Scenario:
 
         if self.activate_tco_payload_cap_cost_multiplier and config:
             self.plf_weight_distribution_file = config.plf_weight_dist_file
-
