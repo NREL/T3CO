@@ -125,8 +125,7 @@ class CapitalCosts:
             (
                 Path(scenario.residual_rates_file)
                 if Path(scenario.residual_rates_file).is_absolute()
-                else Path(__file__).parents[1]
-                / "resources"
+                else gl.RESOURCES_FOLDERPATH
                 / scenario.residual_rates_file
             )
         )

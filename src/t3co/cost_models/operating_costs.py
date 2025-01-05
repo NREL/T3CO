@@ -49,7 +49,7 @@ class OperatingCosts:
             (
                 Path(scenario.fuel_prices_file)
                 if Path(scenario.fuel_prices_file).is_absolute()
-                else Path(__file__).parents[1] / "resources" / scenario.fuel_prices_file
+                else gl.RESOURCES_FOLDERPATH / scenario.fuel_prices_file
             )
         )
         fuel_prices_df.set_index("Fuel", inplace=True)

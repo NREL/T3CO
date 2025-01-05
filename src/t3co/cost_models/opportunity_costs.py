@@ -54,8 +54,7 @@ class OpportunityCosts:
                 (
                     Path(scenario.plf_weight_distribution_file)
                     if Path(scenario.plf_weight_distribution_file).is_absolute()
-                    else Path(__file__).parents[1]
-                    / "resources"
+                    else gl.RESOURCES_FOLDERPATH
                     / scenario.plf_weight_distribution_file
                 ),
                 index_col=0,
@@ -105,8 +104,7 @@ class OpportunityCosts:
                         (
                             Path(scenario.plf_weight_distribution_file)
                             if Path(scenario.plf_weight_distribution_file).is_absolute()
-                            else Path(__file__).parents[1]
-                            / "resources"
+                            else gl.RESOURCES_FOLDERPATH
                             / scenario.plf_weight_distribution_file
                         ).parents[0]
                         / "payload_pdf.csv"

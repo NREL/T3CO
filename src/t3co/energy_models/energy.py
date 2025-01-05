@@ -21,11 +21,11 @@ class Energy:
         self,
         veh_no: int,
         scenario: Scenario,
-        vehicle_file: str | Path = Path(__file__).resolve().parents[2]
-        / "resources"
+        vehicle_file: str | Path = gl.RESOURCES_FOLDERPATH
         / "inputs"
         / "Demo_FY22_vehicle_model_assumptions.csv",
     ):
+        # print('Running fastsim')
         fastsim_run = RunFastsim(
             veh_no=veh_no, veh_input_path=vehicle_file, scenario=scenario
         )

@@ -21,8 +21,7 @@ class RunFastsim:
         veh_no: int,
         scenario: Scenario,
         config: Config = None,
-        veh_input_path: str | Path = Path(__file__).resolve().parents[2]
-        / "resources"
+        veh_input_path: str | Path = gl.RESOURCES_FOLDERPATH
         / "inputs"
         / "Demo_FY22_vehicle_model_assumptions.csv",
     ) -> None:
@@ -66,7 +65,7 @@ class RunFastsim:
                 sum(self.cycles.mph * np.diff(np.array(self.cycles.time_s), append=0))
                 / 3600
             )
-            self.simdrives = fastsim.simdrive.SimDrive(cyc=self.cycles)
+            self.simdrives = self.get_simdrive(cycle=self.cycles)
             self.mpgge = self.simdrives.mpgge
 
         self.get_range()
@@ -145,7 +144,7 @@ class RunFastsim:
         Returns:
             range_cyc (fastsim.cycle.Cycle): FASTSim cycle object for current Scenario object
         """
-        if Path(cyc_file_path).exists() == False:
+        if not Path(cyc_file_path).exists():
             print(
                 f"Drive cycle not found in {cyc_file_path}, trying {gl.OPTIMIZATION_DRIVE_CYCLES}"
             )

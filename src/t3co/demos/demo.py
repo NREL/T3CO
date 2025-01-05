@@ -26,7 +26,11 @@ input_scenario = scenario.Scenario().from_file(
 )
 input_energy = energy.Energy( mpgge=4.0, primary_fuel_range_mi=200.0)
 
-tco_0 = TCOCalc(1, input_vehicle, input_scenario, input_energy)
+tco_0 = TCOCalc(
+    year_index=3,
+    vehicle=input_vehicle, 
+    scenario = input_scenario, 
+    energy=input_energy, )
 # print(tco_0)
 
 # %%
@@ -38,6 +42,7 @@ csv_filepath = Path(__file__).parents[2] / "results/save_csv.csv"
 output_ledger.to_dict(filepath, flatten=False)
 output_ledger.to_csv(csv_filepath)
 print(output_ledger)
+
 # %%
 # results_dict = output_ledger.to_dict( flatten=True)
 # with open(filepath, 'w') as f:

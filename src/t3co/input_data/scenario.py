@@ -225,12 +225,12 @@ class Scenario:
             "activate_mr_downtime_cost",
         ]
         try:
-            if config.dc_files == None:
+            if config.dc_files is None:
                 fields_override.append("drive_cycle")
             self.fields_overriden = []
-            if self.use_config == True and config != None:
+            if self.use_config and config is not None:
                 for field_select in fields_override:
-                    if config.__dict__[field_select] != None:
+                    if config.__dict__[field_select] is not None:
                         setattr(
                             self, field_select, config.__getattribute__(field_select)
                         )
