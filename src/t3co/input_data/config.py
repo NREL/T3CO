@@ -1,6 +1,7 @@
 import ast
 from dataclasses import dataclass, field
 from pathlib import Path
+import sys
 from typing_extensions import Self
 import numpy as np
 import pandas as pd
@@ -26,6 +27,8 @@ class Config:
     vehicle_life_yr: float = 0
     drive_cycle: str = None
     dc_files: list[str] = None
+    selections_list: list[str] = None
+
     # Fueling
     ess_max_charging_power_kw: float = 0
     fs_fueling_rate_kg_per_min: float = 0
@@ -73,18 +76,13 @@ class Config:
         Returns:
             Self.from_dict: method that gets Config instance from config_dict
         """
-        filename = str(filename)
-
-        config_df = (
-            pd.read_csv(filename, index_col="analysis_id")
-            .loc[analysis_id]
-            .replace({np.nan: None})
-        )
+        filename = Path(filename)
+        config_df = self.validate_analysis_id(filename=filename, analysis_id=analysis_id)
         config_dict = config_df.to_dict()
 
         return self.from_dict(config_dict=config_dict)
 
-    def from_dict(self, config_dict: dict) -> Self:
+    def from_dict(self, config_dict: dict) -> None:
         """
         This method generates a Config instance from config_dict
 
@@ -96,11 +94,11 @@ class Config:
         """
         try:
             config_dict["selections"] = ast.literal_eval(config_dict["selections"])
-        except:  # noqa: E722
+        except:  
             config_dict["selections"] = int(config_dict["selections"])
         self.__dict__.update(config_dict)
 
-    def validate_analysis_id(self, filename: str, analysis_id: int = 0) -> Self:
+    def validate_analysis_id(self, filename: Path, analysis_id: int) -> pd.DataFrame | None:
         """
         This method validates that correct analysis id is input
 
@@ -109,14 +107,24 @@ class Config:
 
         Raises:
             Exception: Error if analysis_id not found
-        """
-        filename = str(filename)
-        config_df = pd.read_csv(filename)
-        print(f"Try these analysis IDs instead: {list(config_df['analysis_id'])}")
-        assert (
-            analysis_id in config_df["analysis_id"]
-        ), "Given analysis_id not in config input file"
-        raise Exception
+        """     
+
+        try:
+            if filename.exists() and filename.suffix.lower() == '.csv':
+                config_df = pd.read_csv(filename, index_col="analysis_id")
+            else:
+                raise FileExistsError
+
+            config_df = config_df.loc[analysis_id].replace({np.nan: None})
+            return config_df
+
+        except FileExistsError:
+            print(f'Config file ({filename}) does not exist')
+            sys.exit(1)
+
+        except:
+            print(f"T3CO terminated. Analysis ID not available. Try these analysis_id's instead: {config_df.index.to_list()}")
+            sys.exit(1)
 
     def check_drivecycles_and_create_selections(self, config_file: str | Path):
         """
@@ -125,26 +133,23 @@ class Config:
         Args:
             config_file (str|Path): File path of config file
         """
-        self.dc_files = None
-        try:
-            if Path(self.drive_cycle).is_absolute():
-                dc_folder_path = Path(self.drive_cycle)
-            else:
-                dc_folder_path = Path(config_file).parent / self.drive_cycle
-            if not dc_folder_path.exists():
-                try:
-                    dc_folder_path = gl.OPTIMIZATION_DRIVE_CYCLES / self.drive_cycle
-                except:
-                    print(f"Drivecycle folder does not exist: {dc_folder_path}")
 
-            if Path(dc_folder_path).is_dir():
-                self.dc_files = [p.absolute() for p in dc_folder_path.rglob("*.csv")]
-                selections_list = list(self.selections)
-                self.selections = []
-                for selection in selections_list:
+        if self.drive_cycle:
+            self.drive_cycle = (
+                Path(self.drive_cycle)
+                if Path(self.drive_cycle).is_absolute()
+                else Path(config_file).parents[1]
+                / "resources"
+                / self.drive_cycle
+            )
+            if Path(self.drive_cycle).is_dir():
+                self.dc_files = [p.absolute() for p in Path(self.drive_cycle).rglob("*.csv")]
+                self.selections_list = []
+                for selection in self.selections:
                     for i in range(len(self.dc_files)):
-                        self.selections.append(str(selection) + "_" + str(i).zfill(3))
+                        self.selections_list.append(str(selection) + "_" + str(i).zfill(4))
             else:
-                self.dc_files = None
-        except:
-            Exception
+                self.selections_list =  self.selections
+                        
+        else:
+            self.selections_list = self.selections

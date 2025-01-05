@@ -1,65 +1,130 @@
 import argparse
 import ast
 import os
-from pathlib import Path
 import time
+from functools import partial
+from multiprocessing import Pool
+from pathlib import Path
 from typing import Tuple
+
 import pandas as pd
 from typing_extensions import List
+
 from t3co.constants import Global as gl
-from t3co.input_data.config import Config
-from t3co.input_data.vehicle import Vehicle
-from t3co.input_data.scenario import Scenario
 from t3co.energy_models.energy import Energy
+from t3co.input_data.config import Config
+from t3co.input_data.scenario import Scenario
+from t3co.input_data.vehicle import Vehicle
 from t3co.tco.ledger import Ledger
 
-def load_vehicle_scenario_energy(selection:int, config: Config)-> Tuple[Vehicle, Scenario, Energy]:
+
+def load_vehicle_scenario_energy(
+    selection: int | str, config: Config
+) -> Tuple[Vehicle, Scenario, Energy]:
+    print(f'Running selection: {selection}')
+
+    if config.dc_files:
+        selection, dc_id = map(int, selection.split("_"))
+
+    input_scenario = Scenario().from_file(
+        selection=selection, scenario_file=config.scenario_file
+    )
+    input_scenario.from_config(
+        config=config,
+    )
     
-    input_scenario = Scenario().from_file(selection=selection, scenario_file=config.scenario_file)
-    input_scenario.from_config(config=config,)
     input_vehicle = Vehicle().from_config(selection=selection, config=config)
     input_vehicle.set_veh_kg()
+
+    if config.dc_files:
+        input_scenario.drive_cycle = config.dc_files[int(dc_id)]
+
     input_energy = Energy()
-    input_energy.run_fastsim_model(veh_no=selection, vehicle_file=config.vehicle_file, scenario=input_scenario)
+    input_energy.run_fastsim_model(
+        veh_no=selection, vehicle_file=config.vehicle_file, scenario=input_scenario
+    )
 
     return input_vehicle, input_scenario, input_energy
 
+def generate_ledger(selection: int, config: Config):
+    input_vehicle, input_scenario, input_energy = load_vehicle_scenario_energy(
+        selection=selection, config=config
+    )
+    return Ledger(
+        vehicle=input_vehicle,
+        scenario=input_scenario,
+        energy=input_energy,
+        config=config,
+    ).to_dict()
+
+def create_results_filepath(config: Config):
+    ts = time.strftime("%Y-%m-%d_%H-%M-%S")
+    if config.resfile_suffix:
+        result_filename = f"results_{ts}_{str(config.resfile_suffix)}.csv".strip(
+            "_"
+        )
+    else:
+        selections_string = (
+            str(config.selections)
+            .strip("[]")
+            .replace(" ", "")
+            .replace("'", "")
+            .replace(",", "-")
+        )
+        result_filename = (
+            f"new_results_{ts}_sel_{selections_string[:20]}.csv".strip("_")
+        )
+    output_path = (
+        Path(config.dst_dir) / result_filename
+        if Path(config.dst_dir).is_absolute()
+        else gl.RESOURCES_FOLDERPATH
+        / config.dst_dir
+        / result_filename
+    )
+
+    if not output_path.exists():
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    return output_path
+
+def export_results_to_csv(
+    reports_list: list[dict],
+    config: Config,
+    output_path: str | Path = None,
+    return_filepath: bool = True,
+    return_df: bool = False,
+    sort_values: bool = False,
+):
+    reports_df = pd.DataFrame(reports_list)
+
+    if not output_path:
+        output_path = create_results_filepath(config=config)
+
+    if sort_values:
+        reports_df.sort_values(by="selection", inplace=True)
+
+    reports_df.to_csv(output_path)
+
+    return (
+        output_path if return_filepath else None
+        ), (
+        reports_df if return_df else None
+    )
+
+
 def run_t3co(config: Config, save_results: bool = True):
-    reports = []
-    for selection in config.selections:
-        input_vehicle, input_scenario, input_energy  = load_vehicle_scenario_energy(selection=selection, config=config)
-        reports.append(Ledger(vehicle=input_vehicle, scenario=input_scenario, energy=input_energy, config=config).to_dict())
-    reports_df = pd.DataFrame(reports)
-    print(reports_df)
+    reports_list = []
+    for selection in config.selections_list:
+        reports_list.append(generate_ledger(selection=selection, config=config))
+
     if save_results:
-        ts = time.strftime("%Y-%m-%d_%H-%M-%S")
-        if config.resfile_suffix:
-            RES_FILE = f"results_{ts}_{str(config.resfile_suffix)}.csv".strip(
-                "_"
-            )
-        else:
-            selections_string = (
-                str(config.selections)
-                .strip("[]")
-                .replace(" ", "")
-                .replace("'", "")
-                .replace(",", "-")
-            )
-            RES_FILE = f"new_results_{ts}_sel_{selections_string[:20]}.csv".strip(
-                "_"
-            )
-        output_path = (
-                Path(config.dst_dir)/RES_FILE
-                if Path(config.dst_dir).is_absolute()
-                else Path(__file__).parents[1]
-                / "resources"
-                / config.dst_dir / RES_FILE
-            )
-        if not output_path.exists():
-            output_path.parent.mkdir(parents=True, exist_ok=True)
-        reports_df.to_csv(output_path)
-        print(f'T3CO results saved to: {output_path}')
-    
+        output_path, reports_df = export_results_to_csv(
+            reports_list=reports_list, config=config, return_filepath=True, return_df=True
+        )
+        print(reports_df)
+        print(f"T3CO results saved to: {output_path}")
+
+
 if __name__ == "__main__":
     start = time.time()
 
@@ -185,7 +250,7 @@ if __name__ == "__main__":
         default=0.001,
         type=float,
         help="Parameter space tolerance for optimization",
-    ) 
+    )
     parser.add_argument(
         "--f-tol",
         default=0.001,
@@ -264,9 +329,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # selections can be an int, or list of ints, or range expression
-    if args.config is None or args.config=="None":
+    if args.config is None or args.config == "None":
         config = Config()
-        config.selections = (args.selections[0] if isinstance(args.selections[0], list) else [args.selections])
+        config.selections = (
+            args.selections[0]
+            if isinstance(args.selections[0], list)
+            else [args.selections]
+        )
         config.vehicle_file = Path(args.vehicles)
         config.scenario_file = Path(args.scenarios)
         config.eng_eff_imp_curves = Path(args.eng_curves)
@@ -274,19 +343,50 @@ if __name__ == "__main__":
         config.aero_drag_imp_curves = Path(args.aero_curves)
     else:
         config = Config()
-        try:
-            config.from_file(filename=Path(args.config), analysis_id=args.analysis_id)
-        except ValueError:
-            print(f"Config analysis_id not valid: {args.analysis_id}")
-            config.validate_analysis_id(filename=Path(args.config))
+        config.from_file(filename=args.config, analysis_id=args.analysis_id)
         config.check_drivecycles_and_create_selections(args.config)
-        config.vehicle_file = Path(args.config).parent / config.vehicle_file
-        config.scenario_file = Path(args.config).parent / config.scenario_file
-        config.eng_eff_imp_curves = Path(args.config).parent / config.eng_eff_imp_curves
-        config.lw_imp_curves = Path(args.config).parent / config.lw_imp_curves
-        config.aero_drag_imp_curves =  Path(args.config).parent / config.aero_drag_imp_curves
+        gl.RESOURCES_FOLDERPATH = Path(args.config).parent
+        config.vehicle_file = gl.RESOURCES_FOLDERPATH / config.vehicle_file
+        config.scenario_file = gl.RESOURCES_FOLDERPATH / config.scenario_file
+        config.eng_eff_imp_curves = gl.RESOURCES_FOLDERPATH / config.eng_eff_imp_curves
+        config.lw_imp_curves = gl.RESOURCES_FOLDERPATH / config.lw_imp_curves
+        config.aero_drag_imp_curves = gl.RESOURCES_FOLDERPATH / config.aero_drag_imp_curves
         
-    run_t3co(config=config)
-    print(f'T3CO Run time: {time.time()-start}')
 
-        
+    print(f'Selection List: {config.selections_list}')
+
+    if args.run_multi:
+        print("Running multiprocessing version of T3CO")
+        result_filepath =  create_results_filepath(config=config)
+        reports_list = []
+        with Pool(processes=args.n_processors) as pool:
+            for report_i in pool.imap_unordered(
+                partial(generate_ledger, config=config),
+                config.selections_list,
+            ):
+                reports_list.append(report_i)
+                k = len(reports_list)
+                if (k % 20 == 0 or k == 4) and (len(config.selections_list) != 1 and k != 0):
+                    export_results_to_csv(
+                        reports_list=reports_list,
+                        config=config,
+                        output_path=result_filepath,
+                    )
+                    print(f"\nSaving intermediate results to {str(result_filepath)}\n")
+                print(f"Number of files done: {k}/{len(config.selections_list)}")
+
+            pool.close()
+            pool.join()
+
+            export_results_to_csv(
+                reports_list=reports_list,
+                config=config,
+                output_path=result_filepath,
+                sort_values=True,
+            )
+            print(f'T3CO results saved to: {result_filepath}')
+
+    else:
+        run_t3co(config=config, save_results=True)
+
+    print(f"T3CO Run time: {time.time()-start}")

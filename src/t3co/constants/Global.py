@@ -67,15 +67,14 @@ TCO_RES_FIGS = None
 #  ## resources
 
 # ./t3co/resources
-OPTIMIZATION_AND_TCO_RCRS = Path(os.path.abspath(__file__)).parents[1] / "resources"
-
+RESOURCES_FOLDERPATH = Path(__file__).parents[1].resolve() / "resources"
 # ./t3co/resources/cycles
-OPTIMIZATION_DRIVE_CYCLES = OPTIMIZATION_AND_TCO_RCRS / "cycles"
+OPTIMIZATION_DRIVE_CYCLES = RESOURCES_FOLDERPATH / "cycles"
 
 # benchmark resources
-T2COBENCHMARKDATADIR = OPTIMIZATION_AND_TCO_RCRS / "benchmarkdata"
+T2COBENCHMARKDATADIR = RESOURCES_FOLDERPATH / "benchmarkdata"
 
-T3CO_INPUTS_DIR = OPTIMIZATION_AND_TCO_RCRS / "inputs"
+T3CO_INPUTS_DIR = RESOURCES_FOLDERPATH / "inputs"
 
 
 def set_tco_intermediates():
@@ -86,7 +85,7 @@ def set_tco_intermediates():
 
     # ./t3co/resources/f'vehicles/{vocation_scenario}/tco/tco_intermediates'
     TCO_INTERMEDIATES = (
-        OPTIMIZATION_AND_TCO_RCRS
+        RESOURCES_FOLDERPATH
         / f"vehicles/{vocation_scenario}/tco/tco_intermediates"
     )
     if not TCO_INTERMEDIATES.exists():
@@ -100,7 +99,7 @@ def set_tco_results():
     global TCO_RESULTS
     # ./t3co/resources/f'vehicles/{vocation_scenario}/tco/tco_results'
     TCO_RESULTS = (
-        OPTIMIZATION_AND_TCO_RCRS / f"vehicles/{vocation_scenario}/tco/tco_results"
+        RESOURCES_FOLDERPATH / f"vehicles/{vocation_scenario}/tco/tco_results"
     )
     if not TCO_RESULTS.exists():
         TCO_RESULTS.mkdir(parents=True)
@@ -108,13 +107,13 @@ def set_tco_results():
     global TCO_RES_FIGS
     # ./t3co/resources/f'vehicles/{vocation_scenario}/result_figures/'
     TCO_RES_FIGS = (
-        OPTIMIZATION_AND_TCO_RCRS / f"vehicles/{vocation_scenario}/result_figures/"
+        RESOURCES_FOLDERPATH / f"vehicles/{vocation_scenario}/result_figures/"
     )
     if not TCO_RES_FIGS.exists():
         TCO_RES_FIGS.mkdir(parents=True)
 
 
-OPTIMIZATION_RESOURCES_AUX = OPTIMIZATION_AND_TCO_RCRS / "auxiliary"
+OPTIMIZATION_RESOURCES_AUX = RESOURCES_FOLDERPATH / "auxiliary"
 # FASTSim and Scenario input files
 FASTSIM_INPUTS_FILE = "FASTSimInputsHeader.csv"
 OTHER_INPUTS_FILE = "OtherInputs.csv"
