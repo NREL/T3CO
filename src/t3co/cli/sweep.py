@@ -135,7 +135,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--config",
-        default=gl.SWEEP_PATH.parents[1] / "resources/T3COConfig.csv",
+        default=gl.RESOURCES_FOLDERPATH/"T3COConfig.csv",
         type=str,
         help="Input Config file",
     )
@@ -148,15 +148,13 @@ if __name__ == "__main__":
     # input files
     parser.add_argument(
         "--vehicles",
-        default=gl.SWEEP_PATH.parents[1]
-        / "resources/inputs/Demo_FY22_vehicle_model_assumptions.csv",
+        default=gl.RESOURCES_FOLDERPATH/"inputs"/"Demo_FY22_vehicle_model_assumptions.csv",
         type=str,
         help="Input file for Vehicle models",
     )
     parser.add_argument(
         "--scenarios",
-        default=gl.SWEEP_PATH.parents[1]
-        / "resources/inputs/Demo_FY22_scenario_assumptions.csv",
+        default=gl.RESOURCES_FOLDERPATH/"inputs"/"Demo_FY22_scenario_assumptions.csv",
         type=str,
         help="Input file for Scenario models",
     )
@@ -168,22 +166,19 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--eng-curves",
-        default=gl.SWEEP_PATH.parents[1]
-        / "resources/auxiliary/EngineEffImprovementCostCurve.csv",
+        default=gl.RESOURCES_FOLDERPATH/"auxiliary"/"EngineEffImprovementCostCurve.csv",
         type=str,
         help="Input file for engine efficiency improvement cost curves",
     )
     parser.add_argument(
         "--lw-curves",
-        default=gl.SWEEP_PATH.parents[1]
-        / "resources/auxiliary/LightweightImprovementCostCurve.csv",
+        default=gl.RESOURCES_FOLDERPATH/"auxiliary"/"LightweightImprovementCostCurve.csv",
         type=str,
         help="Input file for lightweighting improvement cost curves",
     )
     parser.add_argument(
         "--aero-curves",
-        default=gl.SWEEP_PATH.parents[1]
-        / "resources/auxiliary/AeroDragImprovementCostCurve.csv",
+        default=gl.RESOURCES_FOLDERPATH/"auxiliary"/"AeroDragImprovementCostCurve.csv",
         type=str,
         help="Input file for aerodynamics improvement curves",
     )
