@@ -255,5 +255,5 @@ class Scenario:
         if self.activate_tco_payload_cap_cost_multiplier and config:
             self.plf_weight_distribution_file = config.plf_weight_dist_file
 
-    def __del_dataframes__(self):
+    def delete_dataframes(self):
         remove_df_attrs(self)

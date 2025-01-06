@@ -307,8 +307,8 @@ class Ledger:
                                             Example: 'scenario_selection'. If False, it would be 'selection'. Defaults to True.
             flatten (bool, optional): If True, the nested dict output flattens to single dictionary. Defaults to True.
         """
-        self.scenario.__del_dataframes__()
-        self.config.__del_dataframes__()
+        self.scenario.delete_dataframes()
+        self.config.delete_dataframes()
         
         if flatten:
             t3co_dict = to_flat_dict(self, include_predix=include_prefix, delimiter="_")

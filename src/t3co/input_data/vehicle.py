@@ -73,5 +73,5 @@ class Vehicle:
             )
         )
 
-    def __del_dataframes__(self):
+    def delete_dataframes(self):
         remove_df_attrs(self)
