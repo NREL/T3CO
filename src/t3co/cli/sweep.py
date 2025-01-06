@@ -21,7 +21,6 @@ from t3co.tco.ledger import Ledger
 def load_vehicle_scenario_energy(
     selection: int | str, config: Config
 ) -> Tuple[Vehicle, Scenario, Energy]:
-    print(f'Running selection: {selection}')
 
     if config.dc_files:
         selection, dc_id = map(int, selection.split("_"))
@@ -47,9 +46,12 @@ def load_vehicle_scenario_energy(
     return input_vehicle, input_scenario, input_energy
 
 def generate_ledger(selection: int, config: Config):
+
     input_vehicle, input_scenario, input_energy = load_vehicle_scenario_energy(
         selection=selection, config=config
     )
+    print(f'Running Selecion: {selection}')
+
     return Ledger(
         vehicle=input_vehicle,
         scenario=input_scenario,
@@ -75,7 +77,7 @@ def create_results_filepath(config: Config):
             f"new_results_{ts}_sel_{selections_string[:20]}.csv".strip("_")
         )
     output_path = (
-        Path(config.dst_dir) / result_filename
+        (Path(config.dst_dir) / result_filename).resolve(strict=True)
         if Path(config.dst_dir).is_absolute()
         else gl.RESOURCES_FOLDERPATH
         / config.dst_dir
@@ -164,6 +166,14 @@ if __name__ == "__main__":
         nargs="*",
         help="""Selections desired to run. Selections can be an int, or list of ints, or range expression. Ex: --selections 234 or --selections "[234,236,238]" or --selections "range(234, 150, 2)" """,
     )
+
+    parser.add_argument(
+        "--drive-cycle",
+        type=ast.literal_eval,
+        nargs="*",
+        help="""Override drive_cycle from scenario with a composite cycle, or an individual cycle, or a folder of cycles. File paths should be relative to the resources folder """,
+    )
+
     parser.add_argument(
         "--eng-curves",
         default=gl.RESOURCES_FOLDERPATH/"auxiliary"/"EngineEffImprovementCostCurve.csv",
@@ -331,6 +341,9 @@ if __name__ == "__main__":
             if isinstance(args.selections[0], list)
             else [args.selections]
         )
+        config.drive_cycle = args.drive_cycle
+        config.check_drivecycles_and_create_selections()
+        config.read_auxiliary_files()
         config.vehicle_file = Path(args.vehicles)
         config.scenario_file = Path(args.scenarios)
         config.eng_eff_imp_curves = Path(args.eng_curves)
@@ -340,6 +353,7 @@ if __name__ == "__main__":
         config = Config()
         config.from_file(filename=args.config, analysis_id=args.analysis_id)
         config.check_drivecycles_and_create_selections(args.config)
+        config.read_auxiliary_files()
         gl.RESOURCES_FOLDERPATH = Path(args.config).parent
         config.vehicle_file = gl.RESOURCES_FOLDERPATH / config.vehicle_file
         config.scenario_file = gl.RESOURCES_FOLDERPATH / config.scenario_file

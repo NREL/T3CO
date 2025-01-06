@@ -6,6 +6,7 @@ from typing_extensions import Self
 import numpy as np
 import pandas as pd
 import t3co.constants.Global as gl
+from t3co.utils.print_class_objects import remove_df_attrs
 
 
 @dataclass
@@ -64,6 +65,9 @@ class Config:
     activate_tco_fueling_dwell_time_cost: bool = False
     fdt_frac_full_charge_bounds: list = field(default_factory=list)
     activate_mr_downtime_cost: bool = False
+
+    fuel_prices_df: pd.DataFrame = None
+    residual_rates_df: pd.DataFrame = None
 
     def from_file(self, filename: str, analysis_id: int) -> Self:
         """
@@ -126,7 +130,7 @@ class Config:
             print(f"T3CO terminated. Analysis ID not available. Try these analysis_id's instead: {config_df.index.to_list()}")
             sys.exit(1)
 
-    def check_drivecycles_and_create_selections(self, config_file: str | Path):
+    def check_drivecycles_and_create_selections(self, config_file: str | Path = gl.RESOURCES_FOLDERPATH/"T3COConfig.csv"):
         """
         This method checks if the config.drive_cycle input is a file or a folder. If a folder is provided, then it creates a list of all selections for each drivecycle in the folders as config.dc_files
 
@@ -153,3 +157,24 @@ class Config:
                         
         else:
             self.selections_list = self.selections
+
+    def read_auxiliary_files(self):
+        self.fuel_prices_df = pd.read_csv(
+            (
+                Path(self.fuel_prices_file)
+                if Path(self.fuel_prices_file).is_absolute()
+                else gl.RESOURCES_FOLDERPATH / self.fuel_prices_file
+            )
+        )
+        self.fuel_prices_df.set_index("Fuel", inplace=True)
+
+        self.residual_rates_df = pd.read_csv(
+            (
+                Path(self.residual_rates_file)
+                if Path(self.residual_rates_file).is_absolute()
+                else gl.RESOURCES_FOLDERPATH / self.residual_rates_file
+            )
+        )
+        
+    def __del_dataframes__(self):
+        remove_df_attrs(self)

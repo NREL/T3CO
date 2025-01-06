@@ -5,6 +5,7 @@ from typing_extensions import Self
 import pandas as pd
 
 from t3co.input_data.config import Config
+from t3co.utils.print_class_objects import remove_df_attrs
 
 
 @dataclass
@@ -71,3 +72,6 @@ class Vehicle:
                 else 0
             )
         )
+
+    def __del_dataframes__(self):
+        remove_df_attrs(self)

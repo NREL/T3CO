@@ -121,21 +121,24 @@ class CapitalCosts:
         self.purchase_tax_dol = self.msrp_total_dol * scenario.tax_rate_pct
 
     def set_residual_cost(self, vehicle: Vehicle, scenario: Scenario):
-        residual_rates_all = pd.read_csv(
-            (
-                Path(scenario.residual_rates_file)
-                if Path(scenario.residual_rates_file).is_absolute()
-                else gl.RESOURCES_FOLDERPATH
-                / scenario.residual_rates_file
+        
+        if scenario.residual_rates_df is None:
+            scenario.residual_rates_df = pd.read_csv(
+                (
+                    Path(scenario.residual_rates_file)
+                    if Path(scenario.residual_rates_file).is_absolute()
+                    else gl.RESOURCES_FOLDERPATH
+                    / scenario.residual_rates_file
+                )
             )
-        )
+
         vehicle_class = scenario.vehicle_class
         powertrain_type = vehicle.veh_pt_type.lower()
         year = str(scenario.vehicle_life_yr)
 
-        scenario.residual_rate_pct = residual_rates_all.loc[
-            (residual_rates_all["VehicleClass"].str.lower() == vehicle_class)
-            & (residual_rates_all["PowertrainType"].str.lower() == powertrain_type)
+        scenario.residual_rate_pct = scenario.residual_rates_df.loc[
+            (scenario.residual_rates_df["VehicleClass"].str.lower() == vehicle_class)
+            & (scenario.residual_rates_df["PowertrainType"].str.lower() == powertrain_type)
         ][year].values[0]
 
         self.residual_cost_dol = -self.msrp_total_dol * scenario.residual_rate_pct

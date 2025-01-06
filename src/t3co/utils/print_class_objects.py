@@ -2,6 +2,8 @@ import json
 from pathlib import Path
 from typing import List
 
+import pandas as pd
+
 
 def obj_to_string(obj, extra="    "):
     if isinstance(obj, list) or isinstance(obj, List):  # Check if the object is a list
@@ -54,6 +56,8 @@ def custom_default(obj):
         return None
     elif isinstance(obj, Path):
         return str(obj)
+    elif isinstance(obj, pd.DataFrame):
+        return None
     else:
         return obj.__dict__
 
@@ -76,3 +80,9 @@ def to_flat_dict(obj, include_predix=True, prefix="", delimiter="_"):
     flatten(json.loads(json.dumps(obj, default=custom_default)), prefix)
 
     return flat_dict
+
+
+def remove_df_attrs(obj):
+    for attr_name in dir(obj):
+            if isinstance(getattr(obj, attr_name), pd.DataFrame):
+                delattr(obj, attr_name)

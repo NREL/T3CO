@@ -41,6 +41,8 @@ class Ledger:
     msrp_total_dol: float = 0.0
     total_fuel_cost_dol: float = 0.0
     total_maintenance_cost_dol: float = 0.0
+    total_fuel_used_gal_ge: float = 0.0
+    total_fuel_used_gal_de: float = 0.0
     mpgge: float = 0.0
     grid_mpgge: float = 0.0
     mpgde: float = 0.0
@@ -147,6 +149,7 @@ class Ledger:
             self.cumu_tco_dol_per_mi.append(
                 self.cumu_tco_dol_per_yr[year_index] / self.total_vmt
             )
+        
 
         self.total_fuel_cost_dol = sum(
             self.get_discounted_value(
@@ -272,6 +275,21 @@ class Ledger:
         self.battery_cost_dol = self.tco_per_year[0].cap_costs_dol.battery_cost_dol
         self.purchase_tax_dol = self.tco_per_year[0].cap_costs_dol.purchase_tax_dol
         self.msrp_total_dol = self.tco_per_year[0].cap_costs_dol.msrp_total_dol
+
+        self.scenario.fuel_prices_dol_per_gge = [
+            self.tco_per_year[year_index].oper_costs_dol.fuel_price_dol_per_gge
+                for year_index in range(self.vehicle_life_yr)
+                ]
+        self.total_fuel_used_gal_ge = sum(
+            [
+                self.tco_per_year[year_index].oper_costs_dol.fuel_used_gal_gge_per_yr
+                for year_index in range(self.vehicle_life_yr)
+            ]
+        )
+
+        self.total_fuel_used_gal_de = self.total_fuel_used_gal_ge / gl.DGE_TO_GGE
+        self.total_energy_used_kwh = self.total_fuel_used_gal_ge * gl.KWH_PER_GGE
+
         self.mpgge = self.energy.mpgge
         self.grid_mpgge = (
             self.energy.mpgge * self.vehicle.chg_eff if self.vehicle.chg_eff else None
@@ -289,11 +307,13 @@ class Ledger:
                                             Example: 'scenario_selection'. If False, it would be 'selection'. Defaults to True.
             flatten (bool, optional): If True, the nested dict output flattens to single dictionary. Defaults to True.
         """
+        self.scenario.__del_dataframes__()
+        self.config.__del_dataframes__()
+        
         if flatten:
             t3co_dict = to_flat_dict(self, include_predix=include_prefix, delimiter="_")
         else:
             t3co_dict = json.loads(json.dumps(self, default=custom_default))
-
         return t3co_dict
 
     def to_json(

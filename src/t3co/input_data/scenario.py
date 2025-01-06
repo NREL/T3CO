@@ -6,6 +6,7 @@ from typing_extensions import List, Self
 import pandas as pd
 
 from t3co.input_data.config import Config
+from t3co.utils.print_class_objects import remove_df_attrs
 
 
 @dataclass
@@ -141,11 +142,14 @@ class Scenario:
     fdt_frac_full_charge_bounds: str = 0
     fdt_num_free_dwell_trips: float = 0
     fdt_available_freetime_hr: float = 0
+
+    fuel_prices_dol_per_gge: list = field(default_factory=float)
     # Insurance factors
     insurance_rates_pct_per_yr: list = field(default_factory=float)
 
     # Residual Rate
-    residual_rates_file: str = ""
+    residual_rates_file: str = None
+    residual_rates_df: pd.DataFrame = None
     residual_rate_pct: float = 0
 
     # Maintenance and Repair Downtime factors MR
@@ -156,6 +160,7 @@ class Scenario:
     mr_tire_replace_downtime_hr_per_event: float = 0
 
     fuel_prices_file: str = ""
+    fuel_prices_df: pd.DataFrame = None
     plf_weight_distribution_file: str = ""
 
     avg_speed_mph: float = None
@@ -243,9 +248,12 @@ class Scenario:
                 f"Config file not attached or scenario.use_config set to False: {config}"
             )
 
-        self.residual_rates_file = config.residual_rates_file
+        self.residual_rates_df = config.residual_rates_df
         self.insurance_rates_file = config.insurance_rates_file
-        self.fuel_prices_file = config.fuel_prices_file
+        self.fuel_prices_df = config.fuel_prices_df
 
         if self.activate_tco_payload_cap_cost_multiplier and config:
             self.plf_weight_distribution_file = config.plf_weight_dist_file
+
+    def __del_dataframes__(self):
+        remove_df_attrs(self)
