@@ -255,5 +255,8 @@ class Scenario:
         if self.activate_tco_payload_cap_cost_multiplier and config:
             self.plf_weight_distribution_file = config.plf_weight_dist_file
 
+    def get_discounted_value(self, value: float, year_number: int):
+        return value / (1 + self.discount_rate_pct_per_yr) ** (year_number)
+    
     def delete_dataframes(self):
         remove_df_attrs(self)

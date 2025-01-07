@@ -143,9 +143,7 @@ class OperatingCosts:
         )
 
     def set_disc_oper_cost(self, year_number: int, scenario: Scenario):
-        self.disc_oper_cost_dol_per_yr = self.net_oper_cost_dol_per_yr / (
-            1.0 + scenario.discount_rate_pct_per_yr
-        ) ** (year_number - 1)
+        self.disc_oper_cost_dol_per_yr = scenario.get_discounted_value(value=self.net_oper_cost_dol_per_yr, year_number=year_number)
 
     def __str__(self):
         return obj_to_string(self)

@@ -132,7 +132,7 @@ class Ledger:
                 year_index
             ].oppy_costs_dol.disc_downtime_oppy_cost_dol
             self.total_vmt += self.scenario.vmt[year_index]
-            self.disc_total_vmt += self.get_discounted_value(
+            self.disc_total_vmt += self.scenario.get_discounted_value(
                 self.scenario.vmt[year_index], year_number=year_index + 1
             )
             self.cumu_disc_tco_dol_per_yr.append(
@@ -156,7 +156,7 @@ class Ledger:
             )        
 
         self.total_fuel_cost_dol = sum(
-            self.get_discounted_value(
+            self.scenario.get_discounted_value(
                 self.tco_per_year[year_index].oper_costs_dol.fuel_cost_dol_per_yr,
                 year_number=year_index + 1,
             )
@@ -164,7 +164,7 @@ class Ledger:
         )
 
         self.total_maintenance_cost_dol = sum(
-            self.get_discounted_value(
+            self.scenario.get_discounted_value(
                 self.tco_per_year[
                     year_index
                 ].oper_costs_dol.maintenance_cost_dol_per_yr,
@@ -186,14 +186,14 @@ class Ledger:
             for year_index in range(self.vehicle_life_yr)
         )
         self.insurance_cost_dol = sum(
-            self.get_discounted_value(
+            self.scenario.get_discounted_value(
                 self.tco_per_year[year_index].oper_costs_dol.insurance_cost_dol_per_yr,
                 year_number=year_index + 1,
             )
             for year_index in range(self.vehicle_life_yr)
         )
         self.fueling_dwell_labor_cost_dol = sum(
-            self.get_discounted_value(
+            self.scenario.get_discounted_value(
                 self.tco_per_year[
                     year_index
                 ].oper_costs_dol.fueling_dwell_labor_cost_dol_per_yr,
@@ -202,7 +202,7 @@ class Ledger:
             for year_index in range(self.vehicle_life_yr)
         )
         self.fueling_downtime_oppy_cost_dol = sum(
-            self.get_discounted_value(
+            self.scenario.get_discounted_value(
                 self.tco_per_year[
                     year_index
                 ].oppy_costs_dol.fueling_downtime_oppy_cost_dol_per_yr,
@@ -211,7 +211,7 @@ class Ledger:
             for year_index in range(self.vehicle_life_yr)
         )
         self.mr_downtime_oppy_cost_dol = sum(
-            self.get_discounted_value(
+            self.scenario.get_discounted_value(
                 self.tco_per_year[
                     year_index
                 ].oppy_costs_dol.mr_downtime_oppy_cost_dol_per_yr,
@@ -361,5 +361,3 @@ class Ledger:
     def __str__(self):
         return obj_to_string(self)
 
-    def get_discounted_value(self, value: float, year_number: int):
-        return value / (1 + self.scenario.discount_rate_pct_per_yr) ** (year_number - 1)

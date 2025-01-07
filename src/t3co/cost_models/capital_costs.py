@@ -147,6 +147,4 @@ class CapitalCosts:
         self.net_capital_cost_dol = self.msrp_total_dol + self.purchase_tax_dol
 
     def set_disc_residual_cost(self, scenario: Scenario):
-        self.disc_residual_cost_dol = self.residual_cost_dol / (
-            1.0 + scenario.discount_rate_pct_per_yr
-        ) ** (scenario.vehicle_life_yr - 1)
+        self.disc_residual_cost_dol = scenario.get_discounted_value(self.residual_cost_dol, year_number=scenario.vehicle_life_yr)
