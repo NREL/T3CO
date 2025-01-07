@@ -68,6 +68,7 @@ class Config:
 
     fuel_prices_df: pd.DataFrame = None
     residual_rates_df: pd.DataFrame = None
+    config_filename: str | Path = gl.RESOURCES_FOLDERPATH/"T3COConfig.csv"
 
     def from_file(self, filename: str, analysis_id: int) -> Self:
         """
@@ -80,10 +81,11 @@ class Config:
         Returns:
             Self.from_dict: method that gets Config instance from config_dict
         """
-        filename = Path(filename)
-        config_df = self.validate_analysis_id(filename=filename, analysis_id=analysis_id)
+        self.config_filename = Path(filename)
+        self.analysis_id = analysis_id
+        config_df = self.validate_analysis_id()
         config_dict = config_df.to_dict()
-
+        
         return self.from_dict(config_dict=config_dict)
 
     def from_dict(self, config_dict: dict) -> None:
@@ -102,7 +104,7 @@ class Config:
             config_dict["selections"] = int(config_dict["selections"])
         self.__dict__.update(config_dict)
 
-    def validate_analysis_id(self, filename: Path, analysis_id: int) -> pd.DataFrame | None:
+    def validate_analysis_id(self) -> pd.DataFrame | None:
         """
         This method validates that correct analysis id is input
 
@@ -114,23 +116,23 @@ class Config:
         """     
 
         try:
-            if filename.exists() and filename.suffix.lower() == '.csv':
-                config_df = pd.read_csv(filename, index_col="analysis_id")
+            if self.config_filename.exists() and self.config_filename.suffix.lower() == '.csv':
+                config_df = pd.read_csv(self.config_filename, index_col="analysis_id")
             else:
                 raise FileExistsError
 
-            config_df = config_df.loc[analysis_id].replace({np.nan: None})
+            config_df = config_df.loc[self.analysis_id].replace({np.nan: None})
             return config_df
 
         except FileExistsError:
-            print(f'Config file ({filename}) does not exist')
+            print(f'Config file ({self.config_filename}) does not exist')
             sys.exit(1)
 
         except:
             print(f"T3CO terminated. Analysis ID not available. Try these analysis_id's instead: {config_df.index.to_list()}")
             sys.exit(1)
 
-    def check_drivecycles_and_create_selections(self, config_file: str | Path = gl.RESOURCES_FOLDERPATH/"T3COConfig.csv"):
+    def check_drivecycles_and_create_selections(self):
         """
         This method checks if the config.drive_cycle input is a file or a folder. If a folder is provided, then it creates a list of all selections for each drivecycle in the folders as config.dc_files
 
@@ -142,8 +144,7 @@ class Config:
             self.drive_cycle = (
                 Path(self.drive_cycle)
                 if Path(self.drive_cycle).is_absolute()
-                else Path(config_file).parents[1]
-                / "resources"
+                else Path(self.config_filename).parents[0]
                 / self.drive_cycle
             )
             if Path(self.drive_cycle).is_dir():
@@ -154,7 +155,7 @@ class Config:
                         self.selections_list.append(str(selection) + "_" + str(i).zfill(4))
             else:
                 self.selections_list =  self.selections
-                        
+
         else:
             self.selections_list = self.selections
 

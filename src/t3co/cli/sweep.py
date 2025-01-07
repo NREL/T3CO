@@ -1,6 +1,5 @@
 import argparse
 import ast
-import os
 import time
 from functools import partial
 from multiprocessing import Pool
@@ -8,7 +7,6 @@ from pathlib import Path
 from typing import Tuple
 
 import pandas as pd
-from typing_extensions import List
 
 from t3co.constants import Global as gl
 from t3co.energy_models.energy import Energy
@@ -21,7 +19,6 @@ from t3co.tco.ledger import Ledger
 def load_vehicle_scenario_energy(
     selection: int | str, config: Config
 ) -> Tuple[Vehicle, Scenario, Energy]:
-
     if config.dc_files:
         selection, dc_id = map(int, selection.split("_"))
 
@@ -31,7 +28,7 @@ def load_vehicle_scenario_energy(
     input_scenario.from_config(
         config=config,
     )
-    
+
     input_vehicle = Vehicle().from_config(selection=selection, config=config)
     input_vehicle.set_veh_kg()
 
@@ -45,12 +42,12 @@ def load_vehicle_scenario_energy(
 
     return input_vehicle, input_scenario, input_energy
 
-def generate_ledger(selection: int, config: Config):
 
+def generate_ledger(selection: int, config: Config):
     input_vehicle, input_scenario, input_energy = load_vehicle_scenario_energy(
         selection=selection, config=config
     )
-    print(f'Running Selecion: {selection}')
+    print(f"Running Selecion: {selection}")
 
     return Ledger(
         vehicle=input_vehicle,
@@ -59,12 +56,11 @@ def generate_ledger(selection: int, config: Config):
         config=config,
     ).to_dict()
 
+
 def create_results_filepath(config: Config):
     ts = time.strftime("%Y-%m-%d_%H-%M-%S")
     if config.resfile_suffix:
-        result_filename = f"results_{ts}_{str(config.resfile_suffix)}.csv".strip(
-            "_"
-        )
+        result_filename = f"results_{ts}_{str(config.resfile_suffix)}.csv".strip("_")
     else:
         selections_string = (
             str(config.selections)
@@ -73,21 +69,20 @@ def create_results_filepath(config: Config):
             .replace("'", "")
             .replace(",", "-")
         )
-        result_filename = (
-            f"new_results_{ts}_sel_{selections_string[:20]}.csv".strip("_")
+        result_filename = f"new_results_{ts}_sel_{selections_string[:20]}.csv".strip(
+            "_"
         )
     output_path = (
         (Path(config.dst_dir) / result_filename).resolve(strict=True)
         if Path(config.dst_dir).is_absolute()
-        else gl.RESOURCES_FOLDERPATH
-        / config.dst_dir
-        / result_filename
+        else gl.RESOURCES_FOLDERPATH / config.dst_dir / result_filename
     )
 
     if not output_path.exists():
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
     return output_path
+
 
 def export_results_to_csv(
     reports_list: list[dict],
@@ -107,9 +102,7 @@ def export_results_to_csv(
 
     reports_df.to_csv(output_path)
 
-    return (
-        output_path if return_filepath else None
-        ), (
+    return (output_path if return_filepath else None), (
         reports_df if return_df else None
     )
 
@@ -121,7 +114,10 @@ def run_t3co(config: Config, save_results: bool = True):
 
     if save_results:
         output_path, reports_df = export_results_to_csv(
-            reports_list=reports_list, config=config, return_filepath=True, return_df=True
+            reports_list=reports_list,
+            config=config,
+            return_filepath=True,
+            return_df=True,
         )
         print(reports_df)
         print(f"T3CO results saved to: {output_path}")
@@ -137,7 +133,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--config",
-        default=gl.RESOURCES_FOLDERPATH/"T3COConfig.csv",
+        default=gl.RESOURCES_FOLDERPATH / "T3COConfig.csv",
         type=str,
         help="Input Config file",
     )
@@ -150,13 +146,17 @@ if __name__ == "__main__":
     # input files
     parser.add_argument(
         "--vehicles",
-        default=gl.RESOURCES_FOLDERPATH/"inputs"/"Demo_FY22_vehicle_model_assumptions.csv",
+        default=gl.RESOURCES_FOLDERPATH
+        / "inputs"
+        / "Demo_FY22_vehicle_model_assumptions.csv",
         type=str,
         help="Input file for Vehicle models",
     )
     parser.add_argument(
         "--scenarios",
-        default=gl.RESOURCES_FOLDERPATH/"inputs"/"Demo_FY22_scenario_assumptions.csv",
+        default=gl.RESOURCES_FOLDERPATH
+        / "inputs"
+        / "Demo_FY22_scenario_assumptions.csv",
         type=str,
         help="Input file for Scenario models",
     )
@@ -176,19 +176,25 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--eng-curves",
-        default=gl.RESOURCES_FOLDERPATH/"auxiliary"/"EngineEffImprovementCostCurve.csv",
+        default=gl.RESOURCES_FOLDERPATH
+        / "auxiliary"
+        / "EngineEffImprovementCostCurve.csv",
         type=str,
         help="Input file for engine efficiency improvement cost curves",
     )
     parser.add_argument(
         "--lw-curves",
-        default=gl.RESOURCES_FOLDERPATH/"auxiliary"/"LightweightImprovementCostCurve.csv",
+        default=gl.RESOURCES_FOLDERPATH
+        / "auxiliary"
+        / "LightweightImprovementCostCurve.csv",
         type=str,
         help="Input file for lightweighting improvement cost curves",
     )
     parser.add_argument(
         "--aero-curves",
-        default=gl.RESOURCES_FOLDERPATH/"auxiliary"/"AeroDragImprovementCostCurve.csv",
+        default=gl.RESOURCES_FOLDERPATH
+        / "auxiliary"
+        / "AeroDragImprovementCostCurve.csv",
         type=str,
         help="Input file for aerodynamics improvement curves",
     )
@@ -352,21 +358,22 @@ if __name__ == "__main__":
     else:
         config = Config()
         config.from_file(filename=args.config, analysis_id=args.analysis_id)
-        config.check_drivecycles_and_create_selections(args.config)
+        config.check_drivecycles_and_create_selections()
         config.read_auxiliary_files()
         gl.RESOURCES_FOLDERPATH = Path(args.config).parent
         config.vehicle_file = gl.RESOURCES_FOLDERPATH / config.vehicle_file
         config.scenario_file = gl.RESOURCES_FOLDERPATH / config.scenario_file
         config.eng_eff_imp_curves = gl.RESOURCES_FOLDERPATH / config.eng_eff_imp_curves
         config.lw_imp_curves = gl.RESOURCES_FOLDERPATH / config.lw_imp_curves
-        config.aero_drag_imp_curves = gl.RESOURCES_FOLDERPATH / config.aero_drag_imp_curves
-        
+        config.aero_drag_imp_curves = (
+            gl.RESOURCES_FOLDERPATH / config.aero_drag_imp_curves
+        )
 
-    print(f'Selection List: {config.selections_list}')
+    print(f"Selection List: {config.selections_list}")
 
     if args.run_multi:
         print("Running multiprocessing version of T3CO")
-        result_filepath =  create_results_filepath(config=config)
+        result_filepath = create_results_filepath(config=config)
         reports_list = []
         with Pool(processes=args.n_processors) as pool:
             for report_i in pool.imap_unordered(
@@ -375,7 +382,9 @@ if __name__ == "__main__":
             ):
                 reports_list.append(report_i)
                 k = len(reports_list)
-                if (k % 20 == 0 or k == 4) and (len(config.selections_list) != 1 and k != 0):
+                if (k % 20 == 0 or k == 4) and (
+                    len(config.selections_list) != 1 and k != 0
+                ):
                     export_results_to_csv(
                         reports_list=reports_list,
                         config=config,
@@ -393,7 +402,7 @@ if __name__ == "__main__":
                 output_path=result_filepath,
                 sort_values=True,
             )
-            print(f'T3CO results saved to: {result_filepath}')
+            print(f"T3CO results saved to: {result_filepath}")
 
     else:
         run_t3co(config=config, save_results=True)
