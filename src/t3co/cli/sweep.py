@@ -35,7 +35,7 @@ def load_vehicle_scenario_energy(
     input_scenario = Scenario().from_file(
         selection=selection, scenario_file=config.scenario_file
     )
-    input_scenario.from_config(config=config)
+    input_scenario.override_from_config(config=config)
 
     input_vehicle = Vehicle().from_config(selection=selection, config=config)
     input_vehicle.set_veh_kg()

@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 from typing import List, Union
+from typing_extensions import Self
 
 from t3co.input_data.config import Config
 from t3co.utils.print_class_objects import remove_df_attrs
@@ -16,7 +17,7 @@ class Scenario:
     for a vehicle such that performance and TCO can be computed during optimization.
     """
 
-    selection: float = 0
+    selection: int = None
     scenario_name: str = ""
     drive_cycle: str = ""
     use_config: bool = True
@@ -189,7 +190,7 @@ class Scenario:
         )
         return cls(**scenario_dict)
 
-    def from_config(self, config: Config = None, verbose: bool = False) -> None:
+    def override_from_config(self, config: Config = None, verbose: bool = False) -> Self:
         """
         Overrides certain scenario fields if use_config is True and config object is not None.
 

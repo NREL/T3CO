@@ -23,8 +23,6 @@ class Config:
     selections: Union[str, list] = ""
     vehicle_life_yr: float = 0
     drive_cycle: str = None
-    dc_files: list[str] = None
-    selections_list: list[str] = None
 
     # Fueling
     ess_max_charging_power_kw: float = 0
@@ -61,6 +59,9 @@ class Config:
     activate_tco_fueling_dwell_time_cost: bool = False
     fdt_frac_full_charge_bounds: list = field(default_factory=list)
     activate_mr_downtime_cost: bool = False
+
+    selections_list: list[str] = None
+    dc_files: list[str] = None
 
     fuel_prices_df: pd.DataFrame = None
     residual_rates_df: pd.DataFrame = None
