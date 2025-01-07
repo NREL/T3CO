@@ -1,12 +1,13 @@
 import ast
+import sys
 from pathlib import Path
+
 import fastsim
 import numpy as np
 from typing_extensions import List
 
-from t3co.input_data.config import Config
-from t3co.input_data.scenario import Scenario
 from t3co.constants import Global as gl
+from t3co.input_data.scenario import Scenario
 
 
 class RunFastsim:
@@ -20,15 +21,12 @@ class RunFastsim:
         self,
         veh_no: int,
         scenario: Scenario,
-        config: Config = None,
         veh_input_path: str | Path = gl.RESOURCES_FOLDERPATH
         / "inputs"
         / "Demo_FY22_vehicle_model_assumptions.csv",
     ) -> None:
         self.load_vehicle(veh_no=veh_no, veh_input_path=veh_input_path)
-        self.cycles = self.load_design_cycle_from_scenario(
-            scenario=scenario, config=config
-        )
+        self.cycles = self.load_design_cycle_from_scenario(scenario=scenario)
 
         if isinstance(self.cycles, list):
             self.simdrives, mpgges_list, weights = [], [], []
@@ -92,47 +90,51 @@ class RunFastsim:
     def load_design_cycle_from_scenario(
         self,
         scenario: Scenario,
-        config: Config = None,
-        cyc_file_path: str = gl.OPTIMIZATION_DRIVE_CYCLES,
-        do_input_validation: bool = False,
+        cyc_file_path: str = gl.CYCLES_FOLDER,
     ) -> fastsim.cycle.Cycle | List[fastsim.cycle.Cycle]:
         """
         This helper method loads the design cycle used for mpgge and range determination.
-        It can also be used standalone to get cycles not in standard gl.OPTIMIZATION_DRIVE_CYCLES location,
+        It can also be used standalone to get cycles not in standard gl.CYCLES_FOLDER location,
         but still needs cycle name from scenario object, carried in scenario.drive_cycle.
         If the drive cycles are a list of tuples, handle accordingly with eval.
 
         Args:
             scenario (Scenario): Scenario object for current selection
-            cyc_file_path (str, optional): drivecycle input file path. Defaults to gl.OPTIMIZATION_DRIVE_CYCLES.
+            cyc_file_path (str, optional): drivecycle input file path. Defaults to gl.CYCLES_FOLDER.
 
         Returns:
-            range_cyc (fastsim.cycle.Cycle): FASTSim cycle object for current Scenario object
+            design_cycles (fastsim.cycle.Cycle): FASTSim cycle object for current Scenario object
         """
-
-        if config:
-            if config.dc_files != None and not do_input_validation:
-                dc_id = int(float(str(scenario.selection).split("_")[1]))
-                sdc = str(config.dc_files[dc_id])
-        else:
-            sdc = str(scenario.drive_cycle)
-        if "[" in sdc and "]" in sdc and "(" in sdc and ")" in sdc:
-            scenario.drive_cycle = ast.literal_eval(sdc)
-            range_cyc = []
+        scenario.drive_cycle = (
+            ast.literal_eval(scenario.drive_cycle)
+            if not Path(scenario.drive_cycle).exists()
+            else scenario.drive_cycle
+        )
+        if isinstance(scenario.drive_cycle, list):
+            design_cycles = []
+            weights = []
             for dc_weight in scenario.drive_cycle:
-                cycle_file_name = Path(dc_weight[0]).name
-                cyc = self.load_design_cycle_from_path(
-                    cyc_file_path=Path(cyc_file_path) / dc_weight[0]
+                if isinstance(dc_weight, tuple):
+                    cycle_file_name, weight = dc_weight
+                    cyc = self.load_design_cycle_from_path(
+                        cyc_file_path=Path(cyc_file_path) / cycle_file_name
+                    )
+                    cyc.name = cycle_file_name
+                weights.append(weight)
+                design_cycles.append((cyc, weight))
+            if sum(weights) != 1:
+                print(
+                    f"Sum of weights for composite cycles (sum = {sum(weights)}) is not 1."
                 )
-                cyc.name = cycle_file_name
-                weight = dc_weight[1]
-                range_cyc.append((cyc, weight))
-            return range_cyc
+                sys.exit(1)
+            return design_cycles
         else:
-            cycle_file_name = Path(sdc).name
-            range_cyc = self.load_design_cycle_from_path(cyc_file_path=sdc)
-            range_cyc.name = cycle_file_name
-            return range_cyc
+            cycle_file_name = Path(scenario.drive_cycle).name
+            design_cycles = self.load_design_cycle_from_path(
+                cyc_file_path=scenario.drive_cycle
+            )
+            design_cycles.name = cycle_file_name
+            return design_cycles
 
     def load_design_cycle_from_path(self, cyc_file_path: str):
         """
@@ -142,13 +144,13 @@ class RunFastsim:
             cyc_file_path (str): drivecycle input file path
 
         Returns:
-            range_cyc (fastsim.cycle.Cycle): FASTSim cycle object for current Scenario object
+            design_cycles (fastsim.cycle.Cycle): FASTSim cycle object for current Scenario object
         """
         if not Path(cyc_file_path).exists():
             print(
-                f"Drive cycle not found in {cyc_file_path}, trying {gl.OPTIMIZATION_DRIVE_CYCLES}"
+                f"Drive cycle not found in {cyc_file_path}, trying {gl.CYCLES_FOLDER}"
             )
-            finalized_path = Path(gl.OPTIMIZATION_DRIVE_CYCLES) / cyc_file_path
+            finalized_path = Path(gl.CYCLES_FOLDER) / cyc_file_path
 
         else:
             finalized_path = cyc_file_path

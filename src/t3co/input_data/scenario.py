@@ -1,9 +1,9 @@
 import ast
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing_extensions import List, Self
 
 import pandas as pd
+from typing_extensions import List
 
 from t3co.input_data.config import Config
 from t3co.utils.print_class_objects import remove_df_attrs
@@ -257,6 +257,6 @@ class Scenario:
 
     def get_discounted_value(self, value: float, year_number: int):
         return value / (1 + self.discount_rate_pct_per_yr) ** (year_number)
-    
+
     def delete_dataframes(self):
         remove_df_attrs(self)

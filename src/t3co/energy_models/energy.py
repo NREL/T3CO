@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 from t3co.energy_models.fastsim_model.fastsim_wrapper import RunFastsim
+from t3co.input_data.config import Config
 from t3co.input_data.scenario import Scenario
 from t3co.constants import Global as gl
 
@@ -25,9 +26,10 @@ class Energy:
         / "inputs"
         / "Demo_FY22_vehicle_model_assumptions.csv",
     ):
-        # print('Running fastsim')
         fastsim_run = RunFastsim(
-            veh_no=veh_no, veh_input_path=vehicle_file, scenario=scenario
+            veh_no=veh_no,
+            scenario=scenario,
+            veh_input_path=vehicle_file,
         )
         self.mpgge = fastsim_run.mpgge
         self.primary_fuel_range_mi = fastsim_run.range_mi
