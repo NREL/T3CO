@@ -40,7 +40,7 @@ maxGvwrKg = 0
 evGVWRAllowanceLbs = 0
 
 # store reference to range cycle used for optimization
-global_opt_range_cycle = None
+global_opt_design_cyclesle = None
 
 # store scenario_name of current run
 vocation_scenario = None
@@ -69,7 +69,7 @@ TCO_RES_FIGS = None
 # ./t3co/resources
 RESOURCES_FOLDERPATH = Path(__file__).parents[1].resolve() / "resources"
 # ./t3co/resources/cycles
-OPTIMIZATION_DRIVE_CYCLES = RESOURCES_FOLDERPATH / "cycles"
+CYCLES_FOLDER = RESOURCES_FOLDERPATH / "cycles"
 
 # benchmark resources
 T2COBENCHMARKDATADIR = RESOURCES_FOLDERPATH / "benchmarkdata"
