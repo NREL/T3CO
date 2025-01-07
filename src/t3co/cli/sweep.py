@@ -109,8 +109,13 @@ def export_results_to_csv(
 
 def run_t3co(config: Config, save_results: bool = True):
     reports_list = []
+    error_list = []
     for selection in config.selections_list:
-        reports_list.append(generate_ledger(selection=selection, config=config))
+        try:
+            reports_list.append(generate_ledger(selection=selection, config=config))
+        except ValueError:
+            error_list.append(selection)
+            continue
 
     if save_results:
         output_path, reports_df = export_results_to_csv(
@@ -120,6 +125,8 @@ def run_t3co(config: Config, save_results: bool = True):
             return_df=True,
         )
         print(reports_df)
+        if len(error_list):
+            print(f"Selections {error_list} were skipped due to assumptions errors.")
         print(f"T3CO results saved to: {output_path}")
 
 

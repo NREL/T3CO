@@ -126,7 +126,8 @@ class RunFastsim:
                 print(
                     f"Sum of weights for composite cycles (sum = {sum(weights)}) is not 1."
                 )
-                sys.exit(1)
+                raise ValueError
+            
             return design_cycles
         else:
             cycle_file_name = Path(scenario.drive_cycle).name
