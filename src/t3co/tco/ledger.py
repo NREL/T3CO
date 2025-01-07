@@ -26,8 +26,9 @@ class Ledger:
     discounted_total_cap_cost_dol: float = 0.0
     discounted_total_oper_cost_dol: float = 0.0
     discounted_downtime_oppy_cost_dol: float = 0.0
-    cumu_tco_dol_per_yr: list[float] = []
+    cumu_disc_tco_dol_per_yr: list[float] = []
     cumu_tco_dol_per_mi: list[float] = []
+    cumu_levelized_tco_dol_per_mi: list[float] = []
     total_vmt: float = 0
     disc_total_vmt: float = 0
 
@@ -41,6 +42,8 @@ class Ledger:
     msrp_total_dol: float = 0.0
     total_fuel_cost_dol: float = 0.0
     total_maintenance_cost_dol: float = 0.0
+    total_fuel_used_gal_ge: float = 0.0
+    total_fuel_used_gal_de: float = 0.0
     mpgge: float = 0.0
     grid_mpgge: float = 0.0
     mpgde: float = 0.0
@@ -113,7 +116,6 @@ class Ledger:
         self.set_discounted_tco()
 
     def set_discounted_costs(self):
-        self.cumu_tco_dol_per_yr, self.cumu_tco_dol_per_mi = [], []
 
         self.payload_cap_cost_multiplier = self.tco_per_year[
             0
@@ -130,11 +132,11 @@ class Ledger:
                 year_index
             ].oppy_costs_dol.disc_downtime_oppy_cost_dol
             self.total_vmt += self.scenario.vmt[year_index]
-            self.disc_total_vmt += self.get_discounted_value(
+            self.disc_total_vmt += self.scenario.get_discounted_value(
                 self.scenario.vmt[year_index], year_number=year_index + 1
             )
-            self.cumu_tco_dol_per_yr.append(
-                (self.cumu_tco_dol_per_yr[year_index - 1] if year_index else 0)
+            self.cumu_disc_tco_dol_per_yr.append(
+                (self.cumu_disc_tco_dol_per_yr[year_index - 1] if year_index else 0)
                 + (self.discounted_total_cap_cost_dol if year_index == 0 else 0)
                 + self.discounted_total_oper_cost_dol
                 + self.discounted_downtime_oppy_cost_dol
@@ -144,12 +146,17 @@ class Ledger:
                     else 0
                 )
             )
+
             self.cumu_tco_dol_per_mi.append(
-                self.cumu_tco_dol_per_yr[year_index] / self.total_vmt
+                self.cumu_disc_tco_dol_per_yr[year_index] / self.total_vmt
             )
 
+            self.cumu_levelized_tco_dol_per_mi.append(
+                self.cumu_disc_tco_dol_per_yr[year_index] / self.disc_total_vmt
+            )        
+
         self.total_fuel_cost_dol = sum(
-            self.get_discounted_value(
+            self.scenario.get_discounted_value(
                 self.tco_per_year[year_index].oper_costs_dol.fuel_cost_dol_per_yr,
                 year_number=year_index + 1,
             )
@@ -157,7 +164,7 @@ class Ledger:
         )
 
         self.total_maintenance_cost_dol = sum(
-            self.get_discounted_value(
+            self.scenario.get_discounted_value(
                 self.tco_per_year[
                     year_index
                 ].oper_costs_dol.maintenance_cost_dol_per_yr,
@@ -179,14 +186,14 @@ class Ledger:
             for year_index in range(self.vehicle_life_yr)
         )
         self.insurance_cost_dol = sum(
-            self.get_discounted_value(
+            self.scenario.get_discounted_value(
                 self.tco_per_year[year_index].oper_costs_dol.insurance_cost_dol_per_yr,
                 year_number=year_index + 1,
             )
             for year_index in range(self.vehicle_life_yr)
         )
         self.fueling_dwell_labor_cost_dol = sum(
-            self.get_discounted_value(
+            self.scenario.get_discounted_value(
                 self.tco_per_year[
                     year_index
                 ].oper_costs_dol.fueling_dwell_labor_cost_dol_per_yr,
@@ -195,7 +202,7 @@ class Ledger:
             for year_index in range(self.vehicle_life_yr)
         )
         self.fueling_downtime_oppy_cost_dol = sum(
-            self.get_discounted_value(
+            self.scenario.get_discounted_value(
                 self.tco_per_year[
                     year_index
                 ].oppy_costs_dol.fueling_downtime_oppy_cost_dol_per_yr,
@@ -204,7 +211,7 @@ class Ledger:
             for year_index in range(self.vehicle_life_yr)
         )
         self.mr_downtime_oppy_cost_dol = sum(
-            self.get_discounted_value(
+            self.scenario.get_discounted_value(
                 self.tco_per_year[
                     year_index
                 ].oppy_costs_dol.mr_downtime_oppy_cost_dol_per_yr,
@@ -217,6 +224,14 @@ class Ledger:
         ].cap_costs_dol.disc_residual_cost_dol
 
     def set_discounted_tco(self):
+        self.undiscounted_tco_dol = self.payload_cap_cost_multiplier * sum(
+                self.tco_per_year[
+                    year_index
+                ].total_cost_dol_per_yr
+            
+            for year_index in range(self.vehicle_life_yr)
+        )    
+        
         if self.tco_method == "DIRECT":
             self.discounted_tco_dol = self.payload_cap_cost_multiplier * (
                 self.discounted_total_cap_cost_dol
@@ -272,6 +287,21 @@ class Ledger:
         self.battery_cost_dol = self.tco_per_year[0].cap_costs_dol.battery_cost_dol
         self.purchase_tax_dol = self.tco_per_year[0].cap_costs_dol.purchase_tax_dol
         self.msrp_total_dol = self.tco_per_year[0].cap_costs_dol.msrp_total_dol
+
+        self.scenario.fuel_prices_dol_per_gge = [
+            self.tco_per_year[year_index].oper_costs_dol.fuel_price_dol_per_gge
+                for year_index in range(self.vehicle_life_yr)
+                ]
+        self.total_fuel_used_gal_ge = sum(
+            [
+                self.tco_per_year[year_index].oper_costs_dol.fuel_used_gal_gge_per_yr
+                for year_index in range(self.vehicle_life_yr)
+            ]
+        )
+
+        self.total_fuel_used_gal_de = self.total_fuel_used_gal_ge / gl.DGE_TO_GGE
+        self.total_energy_used_kwh = self.total_fuel_used_gal_ge * gl.KWH_PER_GGE
+
         self.mpgge = self.energy.mpgge
         self.grid_mpgge = (
             self.energy.mpgge * self.vehicle.chg_eff if self.vehicle.chg_eff else None
@@ -289,11 +319,13 @@ class Ledger:
                                             Example: 'scenario_selection'. If False, it would be 'selection'. Defaults to True.
             flatten (bool, optional): If True, the nested dict output flattens to single dictionary. Defaults to True.
         """
+        self.scenario.delete_dataframes()
+        if self.config: self.config.delete_dataframes()
+        
         if flatten:
             t3co_dict = to_flat_dict(self, include_predix=include_prefix, delimiter="_")
         else:
             t3co_dict = json.loads(json.dumps(self, default=custom_default))
-
         return t3co_dict
 
     def to_json(
@@ -329,5 +361,3 @@ class Ledger:
     def __str__(self):
         return obj_to_string(self)
 
-    def get_discounted_value(self, value: float, year_number: int):
-        return value / (1 + self.scenario.discount_rate_pct_per_yr) ** (year_number - 1)

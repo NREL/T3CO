@@ -125,9 +125,7 @@ class TCOCalc:
             )
 
         elif TCO_switch == "EFFICIENCY":
-            disc_VMT_sum = scenario.vmt[self.year_number - 1] / (
-                1 + scenario.discount_rate_pct_per_yr
-            ) ** (self.year_number - 1)
+            disc_VMT_sum = scenario.get_discounted_value(value=scenario.vmt[self.year_number - 1], year_number=self.year_number)
 
             downtime_efficiency = 1 / (
                 1

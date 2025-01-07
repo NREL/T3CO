@@ -39,9 +39,10 @@ output_ledger = ledger.Ledger(
 )
 filepath = Path(__file__).parents[2] / "results/save_dict.json"
 csv_filepath = Path(__file__).parents[2] / "results/save_csv.csv"
+print(output_ledger)
+
 output_ledger.to_dict(filepath, flatten=False)
 output_ledger.to_csv(csv_filepath)
-print(output_ledger)
 
 # %%
 # results_dict = output_ledger.to_dict( flatten=True)
