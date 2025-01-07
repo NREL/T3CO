@@ -24,6 +24,17 @@ class TCOCalc:
         payload_cap_cost_multiplier: float = None,
         cap_costs: CapitalCosts = None,
     ):
+        """
+        Initializes the TCOCalc instance.
+
+        Args:
+            year_index (int): The year index.
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance.
+            energy (Energy): The energy instance.
+            payload_cap_cost_multiplier (float, optional): Payload capacity cost multiplier. Defaults to None.
+            cap_costs (CapitalCosts, optional): Capital costs instance. Defaults to None.
+        """
         self.year_number = year_index + 1
         if self.year_number == 1:
             self.calculate_capital_costs(vehicle=vehicle, scenario=scenario)
@@ -51,12 +62,27 @@ class TCOCalc:
             payload_cap_cost_multiplier=payload_cap_cost_multiplier,
         )
 
-    def calculate_capital_costs(self, vehicle: Vehicle, scenario: Scenario):
+    def calculate_capital_costs(self, vehicle: Vehicle, scenario: Scenario) -> None:
+        """
+        Calculates the capital costs.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance.
+        """
         self.cap_costs_dol = CapitalCosts(vehicle=vehicle, scenario=scenario)
 
     def calculate_opportunity_costs(
         self, vehicle: Vehicle, scenario: Scenario, energy: Energy
-    ):
+    ) -> None:
+        """
+        Calculates the opportunity costs.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance.
+            energy (Energy): The energy instance.
+        """
         self.oppy_costs_dol = OpportunityCosts(
             year_number=self.year_number,
             vehicle=vehicle,
@@ -66,7 +92,15 @@ class TCOCalc:
 
     def calculate_operating_costs(
         self, vehicle: Vehicle, scenario: Scenario, energy: Energy
-    ):
+    ) -> None:
+        """
+        Calculates the operating costs.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance.
+            energy (Energy): The energy instance.
+        """
         self.oper_costs_dol = OperatingCosts(
             year_number=self.year_number,
             cap_costs=self.cap_costs_dol,
@@ -76,7 +110,13 @@ class TCOCalc:
             oppy_costs=self.oppy_costs_dol,
         )
 
-    def set_total_cost(self, scenario: Scenario):
+    def set_total_cost(self, scenario: Scenario) -> None:
+        """
+        Sets the total cost for the year.
+
+        Args:
+            scenario (Scenario): The scenario instance.
+        """
         self.total_cost_dol_per_yr = (
             (self.cap_costs_dol.net_capital_cost_dol if self.year_number == 1 else 0)
             + self.oper_costs_dol.net_oper_cost_dol_per_yr
@@ -94,7 +134,16 @@ class TCOCalc:
         scenario: Scenario,
         payload_cap_cost_multiplier: float = None,
         TCO_switch="DIRECT",
-    ):
+    ) -> None:
+        """
+        Sets the discounted total cost for the year.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance.
+            payload_cap_cost_multiplier (float, optional): Payload capacity cost multiplier. Defaults to None.
+            TCO_switch (str, optional): TCO calculation method. Defaults to "DIRECT".
+        """
         if (
             payload_cap_cost_multiplier is not None
             and not self.oppy_costs_dol.payload_cap_cost_multiplier
@@ -156,5 +205,11 @@ class TCOCalc:
                 * self.disc_total_cost_dol_per_yr
             )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Returns a string representation of the TCOCalc instance.
+
+        Returns:
+            str: String representation of the TCOCalc instance.
+        """
         return obj_to_string(self)

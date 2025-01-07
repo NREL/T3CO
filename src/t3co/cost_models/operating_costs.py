@@ -35,6 +35,17 @@ class OperatingCosts:
         energy: Energy,
         oppy_costs: OpportunityCosts,
     ):
+        """
+        Initializes the OperatingCosts instance.
+
+        Args:
+            year_number (int): The year number for which the operating costs are calculated.
+            cap_costs (CapitalCosts): The capital costs associated with the vehicle.
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+            energy (Energy): The energy model instance.
+            oppy_costs (OpportunityCosts): The opportunity costs associated with the vehicle.
+        """
         self.mpgge = energy.mpgge
         self.distance_traveled_mi_per_yr = scenario.vmt[year_number - 1]
 
@@ -48,7 +59,15 @@ class OperatingCosts:
         self.set_net_oper_cost()
         self.set_disc_oper_cost(year_number=year_number, scenario=scenario)
 
-    def set_fuel_cost(self, year_number: int, vehicle: Vehicle, scenario: Scenario):
+    def set_fuel_cost(self, year_number: int, vehicle: Vehicle, scenario: Scenario) -> None:
+        """
+        Sets the fuel cost for the given year.
+
+        Args:
+            year_number (int): The year number for which the fuel cost is calculated.
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         if scenario.fuel_prices_df is None:
             scenario.fuel_prices_df = pd.read_csv(
                 (
@@ -104,7 +123,15 @@ class OperatingCosts:
 
     def set_maintenance_oper_cost(
         self, year_number: int, vehicle: Vehicle, scenario: Scenario
-    ):
+    ) -> None:
+        """
+        Sets the maintenance operating cost for the given year.
+
+        Args:
+            year_number (int): The year number for which the maintenance cost is calculated.
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         self.maintenance_cost_dol_per_mi = scenario.maint_oper_cost_dol_per_mi[
             year_number - 1
         ]
@@ -119,7 +146,16 @@ class OperatingCosts:
         cap_cost: CapitalCosts,
         vehicle: Vehicle,
         scenario: Scenario,
-    ):
+    ) -> None:
+        """
+        Sets the insurance cost for the given year.
+
+        Args:
+            year_number (int): The year number for which the insurance cost is calculated.
+            cap_cost (CapitalCosts): The capital costs associated with the vehicle.
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         self.insurance_rate_per_yr = ast.literal_eval(
             scenario.insurance_rates_pct_per_yr
         )[year_number - 1]
@@ -129,12 +165,22 @@ class OperatingCosts:
 
     def set_fueling_dwell_labor_cost(
         self, scenario: Scenario, oppy_costs: OpportunityCosts
-    ):
+    ) -> None:
+        """
+        Sets the fueling dwell labor cost for the given year.
+
+        Args:
+            scenario (Scenario): The scenario instance containing configuration data.
+            oppy_costs (OpportunityCosts): The opportunity costs associated with the vehicle.
+        """
         self.fueling_dwell_labor_cost_dol_per_yr = (
             oppy_costs.fueling_dwell_time_hr_per_yr * scenario.labor_rate_dol_per_hr
         )
 
-    def set_net_oper_cost(self):
+    def set_net_oper_cost(self) -> None:
+        """
+        Sets the net operating cost for the given year.
+        """
         self.net_oper_cost_dol_per_yr = (
             self.fuel_cost_dol_per_yr
             + self.fueling_dwell_labor_cost_dol_per_yr
@@ -142,8 +188,21 @@ class OperatingCosts:
             + self.insurance_cost_dol_per_yr
         )
 
-    def set_disc_oper_cost(self, year_number: int, scenario: Scenario):
+    def set_disc_oper_cost(self, year_number: int, scenario: Scenario) -> None:
+        """
+        Sets the discounted operating cost for the given year.
+
+        Args:
+            year_number (int): The year number for which the discounted operating cost is calculated.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         self.disc_oper_cost_dol_per_yr = scenario.get_discounted_value(value=self.net_oper_cost_dol_per_yr, year_number=year_number)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Returns a string representation of the OperatingCosts instance.
+
+        Returns:
+            str: String representation of the OperatingCosts instance.
+        """
         return obj_to_string(self)

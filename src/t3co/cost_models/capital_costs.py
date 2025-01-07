@@ -22,6 +22,13 @@ class CapitalCosts:
     disc_residual_cost_dol: float = None
 
     def __init__(self, vehicle: Vehicle, scenario: Scenario):
+        """
+        Initializes the CapitalCosts instance.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         self.set_glider_cost(vehicle=vehicle, scenario=scenario)
         self.set_fuel_converter_cost_dol(vehicle=vehicle, scenario=scenario)
         self.set_fuel_storage_cost(vehicle=vehicle, scenario=scenario)
@@ -34,23 +41,34 @@ class CapitalCosts:
         self.set_disc_residual_cost(scenario=scenario)
         self.set_total_cap_cost()
 
-    def set_glider_cost(self, vehicle: Vehicle, scenario: Scenario):
+    def set_glider_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
+        """
+        Sets the glider cost for the vehicle.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         self.glider_cost_dol = scenario.vehicle_glider_cost_dol
 
-    def set_fuel_converter_cost_dol(self, vehicle: Vehicle, scenario: Scenario):
+    def set_fuel_converter_cost_dol(self, vehicle: Vehicle, scenario: Scenario) -> None:
+        """
+        Sets the fuel converter cost for the vehicle.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         if vehicle.veh_pt_type == gl.BEV or vehicle.fc_max_kw == 0:
             self.fuel_converter_cost_dol = 0
-
         elif vehicle.veh_pt_type == gl.HEV:
             self.fuel_converter_cost_dol = (
                 scenario.fc_fuelcell_cost_dol_per_kw * vehicle.fc_max_kw
             )
-
         elif vehicle.veh_pt_type == gl.CONV and scenario.fuel_type == "cng":
             self.fuel_converter_cost_dol = (
                 scenario.fc_cng_ice_cost_dol_per_kw * vehicle.fc_max_kw
             ) + scenario.fc_ice_base_cost_dol
-
         else:
             self.fuel_converter_cost_dol = (
                 scenario.fc_ice_cost_dol_per_kw * vehicle.fc_max_kw
@@ -60,7 +78,14 @@ class CapitalCosts:
             scenario.markup_pct if scenario.markup_pct else 1
         )
 
-    def set_fuel_storage_cost(self, vehicle: Vehicle, scenario: Scenario):
+    def set_fuel_storage_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
+        """
+        Sets the fuel storage cost for the vehicle.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         if vehicle.veh_pt_type == gl.BEV:
             self.fuel_storage_cost_dol = 0
         elif vehicle.veh_pt_type == gl.HEV and scenario.fuel_type[0] == "hydrogen":
@@ -77,12 +102,18 @@ class CapitalCosts:
         elif vehicle.veh_pt_type in [gl.CONV, gl.HEV, gl.PHEV]:
             self.fuel_storage_cost_dol = scenario.fs_cost_dol_per_kwh * vehicle.fs_kwh
         else:
-            self.fuel_storage_cost_dol = (
-                0  # TODO test that there are no other fuel types
-            )
+            self.fuel_storage_cost_dol = 0
+
         self.fuel_storage_cost_dol *= scenario.markup_pct if scenario.markup_pct else 1
 
-    def set_motor_control_power_elecs_cost(self, vehicle: Vehicle, scenario: Scenario):
+    def set_motor_control_power_elecs_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
+        """
+        Sets the motor control and power electronics cost for the vehicle.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         if vehicle.mc_max_kw == 0 or vehicle.mc_max_kw is None:
             self.motor_control_power_elecs_cost_dol = 0
         else:
@@ -91,23 +122,46 @@ class CapitalCosts:
             )
         vehicle.mc_max_kw *= scenario.markup_pct if scenario.markup_pct else 1
 
-    def set_plug_cost(self, vehicle: Vehicle, scenario: Scenario):
+    def set_plug_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
+        """
+        Sets the plug cost for the vehicle.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         if vehicle.veh_pt_type in [gl.PHEV, gl.BEV, gl.HEV] and vehicle.chg_eff:
             self.plug_cost_dol = scenario.plug_base_cost_dol
         else:
             self.plug_cost_dol = 0
+
         self.plug_cost_dol *= scenario.markup_pct if scenario.markup_pct else 1
 
-    def set_battery_cost(self, vehicle: Vehicle, scenario: Scenario):
+    def set_battery_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
+        """
+        Sets the battery cost for the vehicle.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         if vehicle.ess_max_kwh == 0:
             self.battery_cost_dol = 0
         else:
             self.battery_cost_dol = scenario.ess_base_cost_dol + (
                 scenario.ess_cost_dol_per_kwh * vehicle.ess_max_kwh
             )
+
         self.battery_cost_dol *= scenario.markup_pct if scenario.markup_pct else 1
 
-    def set_msrp(self, vehicle: Vehicle, scenario: Scenario):
+    def set_msrp(self, vehicle: Vehicle, scenario: Scenario) -> None:
+        """
+        Sets the Manufacturer's Suggested Retail Price (MSRP) for the vehicle.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         self.msrp_total_dol = (
             self.glider_cost_dol
             + self.fuel_storage_cost_dol
@@ -117,11 +171,24 @@ class CapitalCosts:
             + self.plug_cost_dol
         )
 
-    def set_purchase_tax(self, vehicle: Vehicle, scenario: Scenario):
+    def set_purchase_tax(self, vehicle: Vehicle, scenario: Scenario) -> None:
+        """
+        Sets the purchase tax for the vehicle.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         self.purchase_tax_dol = self.msrp_total_dol * scenario.tax_rate_pct
 
-    def set_residual_cost(self, vehicle: Vehicle, scenario: Scenario):
-        
+    def set_residual_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
+        """
+        Sets the residual cost for the vehicle.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         if scenario.residual_rates_df is None:
             scenario.residual_rates_df = pd.read_csv(
                 (
@@ -143,8 +210,17 @@ class CapitalCosts:
 
         self.residual_cost_dol = -self.msrp_total_dol * scenario.residual_rate_pct
 
-    def set_total_cap_cost(self):
+    def set_total_cap_cost(self) -> None:
+        """
+        Sets the total capital cost for the vehicle.
+        """
         self.net_capital_cost_dol = self.msrp_total_dol + self.purchase_tax_dol
 
-    def set_disc_residual_cost(self, scenario: Scenario):
+    def set_disc_residual_cost(self, scenario: Scenario) -> None:
+        """
+        Sets the discounted residual cost for the vehicle.
+
+        Args:
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         self.disc_residual_cost_dol = scenario.get_discounted_value(self.residual_cost_dol, year_number=scenario.vehicle_life_yr)

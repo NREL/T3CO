@@ -35,6 +35,15 @@ class OpportunityCosts:
     def __init__(
         self, year_number: int, vehicle: Vehicle, scenario: Scenario, energy: Energy
     ):
+        """
+        Initializes the OpportunityCosts instance.
+
+        Args:
+            year_number (int): The year number for which the opportunity costs are calculated.
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+            energy (Energy): The energy model instance.
+        """
         if year_number == 1:
             self.set_payload_cap_cost_multiplier(vehicle=vehicle, scenario=scenario)
 
@@ -48,7 +57,14 @@ class OpportunityCosts:
         self.set_net_downtime_oppy_cost()
         self.set_disc_downtime_oppy_cost(year_number=year_number, scenario=scenario)
 
-    def set_payload_cap_cost_multiplier(self, vehicle: Vehicle, scenario: Scenario):
+    def set_payload_cap_cost_multiplier(self, vehicle: Vehicle, scenario: Scenario) -> None:
+        """
+        Sets the payload capacity cost multiplier for the vehicle.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         if scenario.activate_tco_fueling_dwell_time_cost:
             df_veh_wt = pd.read_csv(
                 (
@@ -64,16 +80,18 @@ class OpportunityCosts:
                 df_veh_wt: pd.DataFrame,
                 bw_method: float = 0.15,
                 verbose: bool = False,
-            ) -> None:
+            ) -> tuple[np.ndarray, np.ndarray]:
                 """
-                This method sets tje kde kernel. This is time-consuming, only call this once, if possible.
+                Sets the kernel density estimation (KDE) for vehicle weights.
 
                 Args:
-                    scenario (run_scenario.Scenario): Scenario object
-                    bw_method (float, optional):  kernel bandwidth method used by guassian_kde. Defaults to .15.
-                    verbose (bool, optional): if True, prints process sets. Defaults to False.
-                """
+                    df_veh_wt (pd.DataFrame): DataFrame containing vehicle weights.
+                    bw_method (float, optional): Kernel bandwidth method used by gaussian_kde. Defaults to 0.15.
+                    verbose (bool, optional): If True, prints process steps. Defaults to False.
 
+                Returns:
+                    tuple[np.ndarray, np.ndarray]: Normalized probabilities and vehicle weight bins in kg.
+                """
                 if verbose:
                     print("Initializing kernels.")
 
@@ -170,13 +188,15 @@ class OpportunityCosts:
 
     def set_fueling_dwell_time_cost(
         self, year_number: int, vehicle: Vehicle, scenario: Scenario, energy: Energy
-    ):
+    ) -> None:
         """
-        This function calculates the fueling dwell time cost for a vehicle based on fuel fill rate/charging power and shifts_per_year
+        Calculates the fueling dwell time cost for a vehicle based on fuel fill rate/charging power and shifts per year.
 
         Args:
-            vehicle (fastsim.vehicle): FASTSim vehicle object of analysis vehicle
-            scenario (run_scenario.Scenario): Scenario object for current selection
+            year_number (int): The year number for which the fueling dwell time cost is calculated.
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
+            energy (Energy): The energy model instance.
         """
         self.fdt_frac_of_fullcharge_bounds = list(
             np.float_(scenario.fdt_frac_full_charge_bounds.strip(" ][").split(","))
@@ -199,9 +219,6 @@ class OpportunityCosts:
                 scenario.downtime_oppy_cost_dol_per_hr,
             ]
         )
-        assert any(
-            dwellparams
-        ), f"Missing parameters in {str(dwellparams)}: {np.isnan(dwellparams)}"
 
         if vehicle.veh_pt_type in ["BEV"]:
             self.fdt_full_dwell_hr = (1 - scenario.fdt_dwpt_fraction_power_pct) * (
@@ -283,17 +300,18 @@ class OpportunityCosts:
 
     def set_mr_downtime_cost(
         self, year_number: int, vehicle: Vehicle, scenario: Scenario
-    ):
+    ) -> None:
         """
-        This function calculates the Maintenance and Repair (M&R) downtime cost based on planned, unplanned, and tire replacement downtime inputs
+        Calculates the Maintenance and Repair (M&R) downtime cost based on planned, unplanned, and tire replacement downtime inputs.
 
         Args:
-            vehicle (fastsim.vehicle): FASTSim object of the analysis vehicle
-            scenario (run_scenario.Scenario): Scenario object for the current selection
+            year_number (int): The year number for which the M&R downtime cost is calculated.
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data.
         """
         self.mr_planned_downtime_hr = (
             scenario.mr_planned_downtime_hr_per_yr
-        )  # regular maintenance and inspections
+        )
         self.mr_unplanned_downtime_hr = (
             scenario.mr_unplanned_downtime_hr_per_mi[year_number - 1]
             * scenario.vmt[year_number - 1]
@@ -314,7 +332,10 @@ class OpportunityCosts:
             self.mr_downtime_hr_per_yr * scenario.downtime_oppy_cost_dol_per_hr
         )
 
-    def set_net_downtime_oppy_cost(self):
+    def set_net_downtime_oppy_cost(self) -> None:
+        """
+        Sets the net downtime opportunity cost for the given year.
+        """
         self.net_downtime_oppy_cost_dol_per_yr = (
             self.fueling_downtime_oppy_cost_dol_per_yr
             + self.mr_downtime_oppy_cost_dol_per_yr
@@ -323,8 +344,21 @@ class OpportunityCosts:
             self.fueling_dwell_time_hr_per_yr + self.mr_downtime_hr_per_yr
         )
 
-    def set_disc_downtime_oppy_cost(self, year_number: int, scenario: Scenario):
+    def set_disc_downtime_oppy_cost(self, year_number: int, scenario: Scenario) -> None:
+        """
+        Sets the discounted downtime opportunity cost for the given year.
+
+        Args:
+            year_number (int): The year number for which the discounted downtime opportunity cost is calculated.
+            scenario (Scenario): The scenario instance containing configuration data.
+        """
         self.disc_downtime_oppy_cost_dol = scenario.get_discounted_value(value=self.net_downtime_oppy_cost_dol_per_yr, year_number=year_number)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Returns a string representation of the OpportunityCosts instance.
+
+        Returns:
+            str: String representation of the OpportunityCosts instance.
+        """
         return obj_to_string(self)

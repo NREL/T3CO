@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Union
 from typing_extensions import Self
 
 import pandas as pd
@@ -10,7 +11,7 @@ from t3co.utils.print_class_objects import remove_df_attrs
 
 @dataclass
 class Vehicle:
-    selection: int | str = None
+    selection: Union[int, str] = None
     veh_pt_type: str = ""
     fc_eff_type: str = ""
     fc_max_kw: float = None
@@ -33,10 +34,30 @@ class Vehicle:
 
     @classmethod
     def from_config(cls, selection: int, config: Config) -> Self:
+        """
+        Creates a Vehicle instance from the configuration.
+
+        Args:
+            selection (int): The selection index.
+            config (Config): The configuration instance.
+
+        Returns:
+            Self: An instance of the Vehicle class.
+        """
         return cls.from_db(selection=selection, vehicle_db_file=config.vehicle_file)
 
     @classmethod
-    def from_db(cls, selection: int, vehicle_db_file: str | Path) -> Self:
+    def from_db(cls, selection: int, vehicle_db_file: Union[str, Path]) -> Self:
+        """
+        Creates a Vehicle instance from the vehicle database file.
+
+        Args:
+            selection (int): The selection index.
+            vehicle_db_file (Union[str, Path]): The vehicle database file path.
+
+        Returns:
+            Self: An instance of the Vehicle class.
+        """
         vehicle_db_df = pd.read_csv(
             (
                 Path(vehicle_db_file)
@@ -50,7 +71,10 @@ class Vehicle:
         ].to_dict("records")[0]
         return cls(**vehicle_dict)
 
-    def set_veh_kg(self):
+    def set_veh_kg(self) -> None:
+        """
+        Sets the vehicle weight in kilograms.
+        """
         self.veh_kg = (
             self.glider_kg
             + self.trans_kg
@@ -73,5 +97,8 @@ class Vehicle:
             )
         )
 
-    def delete_dataframes(self):
+    def delete_dataframes(self) -> None:
+        """
+        Deletes DataFrame attributes from the Vehicle instance.
+        """
         remove_df_attrs(self)
