@@ -30,8 +30,8 @@ class Ledger:
     cumu_disc_tco_dol_per_yr: list[float] = []
     cumu_tco_dol_per_mi: list[float] = []
     cumu_levelized_tco_dol_per_mi: list[float] = []
-    total_vmt: float = 0
-    disc_total_vmt: float = 0
+    total_vmt: float = 0.0
+    disc_total_vmt: float = 0.0
 
     glider_cost_dol: float = 0.0
     fuel_converter_cost_dol: float = 0.0
@@ -66,6 +66,13 @@ class Ledger:
     config: Config = None
     energy: Energy = None
 
+    def __new__(cls, *args, **kwargs):
+        """
+        Creates a new instance of the Ledger class.
+        """
+        instance = super(Ledger, cls).__new__(cls)
+        return instance
+    
     def __init__(
         self,
         vehicle: Vehicle,
@@ -132,10 +139,11 @@ class Ledger:
         self.payload_cap_cost_multiplier = self.tco_per_year[
             0
         ].oppy_costs_dol.payload_cap_cost_multiplier
-        self.discounted_total_cap_cost_dol += self.tco_per_year[
+        self.discounted_total_cap_cost_dol = self.tco_per_year[
             0
         ].cap_costs_dol.net_capital_cost_dol
 
+        self.total_vmt, self.disc_total_vmt = 0.0, 0.0
         for year_index in range(self.vehicle_life_yr):
             self.discounted_total_oper_cost_dol += self.tco_per_year[
                 year_index
