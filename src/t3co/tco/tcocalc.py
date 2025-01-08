@@ -14,7 +14,14 @@ class TCOCalc:
     cap_costs_dol: CapitalCosts = None
     oper_costs_dol: OperatingCosts = None
     oppy_costs_dol: OpportunityCosts = None
-
+    
+    def __new__(cls, *args, **kwargs):
+        """
+        Creates a new instance of the TCOCalc class.
+        """
+        instance = super(TCOCalc, cls).__new__(cls)
+        return instance
+    
     def __init__(
         self,
         year_index: int,

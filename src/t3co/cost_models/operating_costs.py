@@ -62,6 +62,8 @@ class OperatingCosts:
 
         if scenario.activate_tco_fueling_dwell_time_cost and oppy_costs:
             self.set_fueling_dwell_labor_cost(scenario=scenario, oppy_costs=oppy_costs)
+        else:
+            self.fueling_dwell_labor_cost_dol_per_yr = 0.0
 
         self.set_net_oper_cost()
         self.set_disc_oper_cost(year_number=year_number, scenario=scenario)
@@ -76,7 +78,6 @@ class OperatingCosts:
             scenario (Scenario): The scenario instance containing configuration data.
         """
         if scenario.fuel_prices_df is None:
-            print(f'fuel_prices_df is none')
             scenario.fuel_prices_df = pd.read_csv(
                 (
                     Path(scenario.fuel_prices_file)
@@ -165,11 +166,14 @@ class OperatingCosts:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data.
         """
-        self.insurance_rate_per_yr = ast.literal_eval(
+        self.insurance_rates_pct_per_yr = (
+            ast.literal_eval(
             scenario.insurance_rates_pct_per_yr
-        )[year_number - 1]
+            )[year_number - 1] if isinstance(scenario.insurance_rates_pct_per_yr, str) else scenario.insurance_rates_pct_per_yr[year_number - 1]
+        )
+
         self.insurance_cost_dol_per_yr = (
-            cap_cost.msrp_total_dol * self.insurance_rate_per_yr
+            cap_cost.msrp_total_dol * self.insurance_rates_pct_per_yr
         )
 
     def set_fueling_dwell_labor_cost(

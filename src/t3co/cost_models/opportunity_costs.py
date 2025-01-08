@@ -141,7 +141,7 @@ class OpportunityCosts:
                     scenario.plf_ref_veh_empty_mass_kg, scenario.gvwr_kg
                 )
             ]["p_of_weights"].sum()
-            p_of_weights_normalized = p_of_weights / normalization_factor
+            p_of_weights_normalized = p_of_weights / (normalization_factor if normalization_factor else 1)
 
             return p_of_weights_normalized, vehicle_weights_bins_kg
 
@@ -211,7 +211,6 @@ class OpportunityCosts:
         if (
             "0" in str(scenario.shifts_per_year) or np.isnan(scenario.shifts_per_year)
         ) and scenario.constant_trip_distance_mi:
-            print(f'Setting shifts_per_yeaar')
             self.shifts_per_year = round(
                 scenario.vmt[year_number - 1] / scenario.constant_trip_distance_mi
             )
