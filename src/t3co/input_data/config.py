@@ -15,8 +15,8 @@ class Config:
 
     analysis_id: int = 0
     analysis_name: str = ""
-    vehicle_file: str = ""
-    scenario_file: str = ""
+    vehicle_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH/"inputs"/"Demo_FY22_vehicle_model_assumptions.csv"
+    scenario_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH/"inputs"/"Demo_FY22_scenario_assumptions.csv"
     dst_dir: str = ""
     resfile_suffix: str = None
     write_tsv: bool = False
@@ -33,7 +33,7 @@ class Config:
     insurance_rates_file: str = ""
     residual_rates_file: str = ""
     fuel_prices_file: str = ""
-    plf_weight_dist_file: str = ""
+    plf_weight_dist_file: str = None
 
     TCO_method: str = "DIRECT"
 
@@ -74,7 +74,7 @@ class Config:
         instance = super(Config, cls).__new__(cls)
         return instance
     
-    def from_file(self, filename: str, analysis_id: int) -> Self:
+    def from_file(self, analysis_id: int=0, filename: str=gl.RESOURCES_FOLDERPATH/"T3COConfig.csv") -> Self:
         """
         Generates a Config dictionary from CSV file and calls Config.from_dict.
 

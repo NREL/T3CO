@@ -8,6 +8,7 @@ from typing_extensions import Self
 
 from t3co.input_data.config import Config
 from t3co.utils.print_class_objects import remove_df_attrs
+from t3co.constants import Global as gl
 
 
 @dataclass
@@ -138,14 +139,20 @@ class Scenario:
     mr_avg_tire_life_mi: float = 0
     mr_tire_replace_downtime_hr_per_event: float = 0
 
-    fuel_prices_file: str =  "./auxiliary/FuelPrices.csv"
+    fuel_prices_file: str = "./auxiliary/FuelPrices.csv"
     fuel_prices_df: pd.DataFrame = None
     plf_weight_distribution_file: str = "./auxiliary/tractorweightvars.csv"
 
     avg_speed_mph: float = None
 
     @classmethod
-    def from_file(cls, selection: int, scenario_file: Union[str, Path]) -> 'Scenario':
+    def from_file(
+        cls,
+        selection: int,
+        scenario_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH
+        / "inputs"
+        / "Demo_FY22_scenario_assumptions.csv",
+    ) -> Self:
         """
         Creates a Scenario instance from a CSV file.
 
@@ -190,7 +197,9 @@ class Scenario:
         )
         return cls(**scenario_dict)
 
-    def override_from_config(self, config: Config = None, verbose: bool = False) -> Self:
+    def override_from_config(
+        self, config: Config = None, verbose: bool = False
+    ) -> Self:
         """
         Overrides certain scenario fields if use_config is True and config object is not None.
 

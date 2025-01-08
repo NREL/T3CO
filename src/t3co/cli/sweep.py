@@ -17,7 +17,7 @@ from t3co.tco.ledger import Ledger
 
 
 def load_vehicle_scenario_energy(
-    selection: Union[int, str], config: Config
+    selection: Union[int, str], config: Config, vehicle: Vehicle = None, scenario: Scenario = None, energy: Energy = None
 ) -> Tuple[Vehicle, Scenario, Energy]:
     """
     Loads the vehicle, scenario, and energy models based on the selection and config.
@@ -32,21 +32,30 @@ def load_vehicle_scenario_energy(
     if config.dc_files:
         selection, dc_id = map(int, selection.split("_"))
 
-    input_scenario = Scenario().from_file(
-        selection=selection, scenario_file=config.scenario_file
-    )
-    input_scenario.override_from_config(config=config)
+    if scenario:
+        input_scenario = scenario
+    else:
+        input_scenario = Scenario().from_file(
+            selection=selection, scenario_file=config.scenario_file
+        )
+        input_scenario.override_from_config(config=config)
 
-    input_vehicle = Vehicle().from_config(selection=selection, config=config)
-    input_vehicle.set_veh_kg()
+    if vehicle:
+        input_vehicle = vehicle
+    else:
+        input_vehicle = Vehicle().from_config(selection=selection, config=config)
+        input_vehicle.set_veh_kg()
 
     if config.dc_files:
         input_scenario.drive_cycle = config.dc_files[int(dc_id)]
 
-    input_energy = Energy()
-    input_energy.run_fastsim_model(
-        veh_no=selection, vehicle_file=config.vehicle_file, scenario=input_scenario
-    )
+    if energy:
+        input_energy = energy
+    else:       
+        input_energy = Energy()
+        input_energy.run_fastsim_model(
+            veh_no=selection, vehicle_file=config.vehicle_file, scenario=input_scenario
+        )
 
     return input_vehicle, input_scenario, input_energy
 
@@ -96,7 +105,7 @@ def create_results_filepath(config: Config) -> Path:
             .replace("'", "")
             .replace(",", "-")
         )
-        result_filename = f"new_results_{ts}_sel_{selections_string[:20]}.csv".strip(
+        result_filename = f"results_{ts}_sel_{selections_string[:20]}.csv".strip(
             "_"
         )
     output_path = (

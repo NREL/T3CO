@@ -204,13 +204,10 @@ class CapitalCosts:
                 )
             )
 
-        vehicle_class = scenario.vehicle_class
-        powertrain_type = vehicle.veh_pt_type.lower()
         year = str(scenario.vehicle_life_yr)
-
         scenario.residual_rate_pct = scenario.residual_rates_df.loc[
-            (scenario.residual_rates_df["VehicleClass"].str.lower() == vehicle_class)
-            & (scenario.residual_rates_df["PowertrainType"].str.lower() == powertrain_type)
+            (scenario.residual_rates_df["VehicleClass"].str.lower() == scenario.vehicle_class)
+            & (scenario.residual_rates_df["PowertrainType"].str.lower() ==  vehicle.veh_pt_type.lower())
         ][year].values[0]
 
         self.residual_cost_dol = -self.msrp_total_dol * scenario.residual_rate_pct
