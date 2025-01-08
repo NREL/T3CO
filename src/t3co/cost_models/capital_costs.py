@@ -9,18 +9,25 @@ from t3co.input_data.vehicle import Vehicle
 
 
 class CapitalCosts:
-    glider_cost_dol: float = np.nan
-    fuel_converter_cost_dol: float = np.nan
-    fuel_storage_cost_dol: float = np.nan
-    motor_control_power_elecs_cost_dol: float = np.nan
-    plug_cost_dol: float = np.nan
-    battery_cost_dol: float = np.nan
-    purchase_tax_dol: float = np.nan
-    msrp_total_dol: float = np.nan
-    residual_cost_dol: float = np.nan
+    glider_cost_dol: float = 0.0
+    fuel_converter_cost_dol: float = 0.0
+    fuel_storage_cost_dol: float = 0.0
+    motor_control_power_elecs_cost_dol: float = 0.0
+    plug_cost_dol: float = 0.0
+    battery_cost_dol: float = 0.0
+    purchase_tax_dol: float = 0.0
+    msrp_total_dol: float = 0.0
+    residual_cost_dol: float = 0.0
     net_capital_cost_dol: float = None
     disc_residual_cost_dol: float = None
 
+    def __new__(cls, *args, **kwargs):
+        """
+        Creates a new instance of the CapitalCosts class.
+        """
+        instance = super(CapitalCosts, cls).__new__(cls)
+        return instance
+    
     def __init__(self, vehicle: Vehicle, scenario: Scenario):
         """
         Initializes the CapitalCosts instance.
@@ -74,9 +81,7 @@ class CapitalCosts:
                 scenario.fc_ice_cost_dol_per_kw * vehicle.fc_max_kw
             ) + scenario.fc_ice_base_cost_dol
 
-        self.fuel_converter_cost_dol *= (
-            scenario.markup_pct if scenario.markup_pct else 1
-        )
+        self.fuel_converter_cost_dol = self.get_marked_up_value(self.fuel_converter_cost_dol, scenario)
 
     def set_fuel_storage_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
@@ -104,7 +109,7 @@ class CapitalCosts:
         else:
             self.fuel_storage_cost_dol = 0
 
-        self.fuel_storage_cost_dol *= scenario.markup_pct if scenario.markup_pct else 1
+        self.fuel_storage_cost_dol = self.get_marked_up_value(self.fuel_storage_cost_dol, scenario)
 
     def set_motor_control_power_elecs_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
@@ -120,7 +125,7 @@ class CapitalCosts:
             self.motor_control_power_elecs_cost_dol = scenario.pe_mc_base_cost_dol + (
                 scenario.pe_mc_cost_dol_per_kw * vehicle.mc_max_kw
             )
-        vehicle.mc_max_kw *= scenario.markup_pct if scenario.markup_pct else 1
+        self.motor_control_power_elecs_cost_dol = self.get_marked_up_value(self.motor_control_power_elecs_cost_dol, scenario)
 
     def set_plug_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
@@ -135,7 +140,7 @@ class CapitalCosts:
         else:
             self.plug_cost_dol = 0
 
-        self.plug_cost_dol *= scenario.markup_pct if scenario.markup_pct else 1
+        self.plug_cost_dol = self.get_marked_up_value(self.plug_cost_dol, scenario)
 
     def set_battery_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
@@ -152,7 +157,7 @@ class CapitalCosts:
                 scenario.ess_cost_dol_per_kwh * vehicle.ess_max_kwh
             )
 
-        self.battery_cost_dol *= scenario.markup_pct if scenario.markup_pct else 1
+        self.battery_cost_dol = self.get_marked_up_value(self.battery_cost_dol, scenario)
 
     def set_msrp(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
@@ -224,3 +229,16 @@ class CapitalCosts:
             scenario (Scenario): The scenario instance containing configuration data.
         """
         self.disc_residual_cost_dol = scenario.get_discounted_value(self.residual_cost_dol, year_number=scenario.vehicle_life_yr)
+
+    def get_marked_up_value(self, value: float, scenario: Scenario) -> float:
+        """
+        Returns the marked up value.
+
+        Args:
+            value (float): The value to mark up.
+            scenario (Scenario): The scenario instance containing configuration data.
+
+        Returns:
+            float: The marked up value.
+        """
+        return value * (1+ scenario.markup_pct if scenario.markup_pct else 1)

@@ -14,24 +14,30 @@ class Vehicle:
     selection: Union[int, str] = None
     veh_pt_type: str = ""
     fc_eff_type: str = ""
-    fc_max_kw: float = None
-    fs_kwh: float = None
-    mc_max_kw: float = None
-    ess_max_kwh: float = None
-    chg_eff: float = None
-    glider_kg: float = None
-    trans_kg: float = None
-    cargo_kg: float = None
-    fc_base_kg: float = None
-    fs_kwh_per_kg: float = None
-    fc_kw_per_kg: float = None
-    mc_pe_kg_per_kw: float = None
-    mc_pe_base_kg: float = None
-    ess_kg_per_kwh: float = None
-    ess_base_kg: float = None
-    veh_override_kg: float = None
-    chg_eff: float = None
+    fc_max_kw: float = 0.0
+    fs_kwh: float = 0.0
+    mc_max_kw: float = 0.0
+    ess_max_kwh: float = 0.0
+    chg_eff: float = 0.0
+    glider_kg: float = 0.0
+    trans_kg: float = 0.0
+    cargo_kg: float = 0.0
+    fc_base_kg: float = 0.0
+    fs_kwh_per_kg: float = 0.0
+    fc_kw_per_kg: float = 0.0
+    mc_pe_kg_per_kw: float = 0.0
+    mc_pe_base_kg: float = 0.0
+    ess_kg_per_kwh: float = 0.0
+    ess_base_kg: float = 0.0
+    veh_override_kg: float = 0.0
 
+    def __new__(cls, *args, **kwargs):
+        """
+        Creates a new instance of the OpportunityCosts class.
+        """
+        instance = super(Vehicle, cls).__new__(cls)
+        return instance
+    
     @classmethod
     def from_config(cls, selection: int, config: Config) -> Self:
         """
@@ -75,27 +81,30 @@ class Vehicle:
         """
         Sets the vehicle weight in kilograms.
         """
-        self.veh_kg = (
-            self.glider_kg
-            + self.trans_kg
-            + self.cargo_kg
-            + (self.fs_kwh / self.fs_kwh_per_kg if self.fs_kwh else 0)
-            + (
-                self.fc_base_kg + self.fc_kw_per_kg / self.fc_max_kw
-                if self.fc_max_kw
-                else 0
+        if self.veh_override_kg:
+            self.veh_kg = self.veh_override_kg
+        else:
+            self.veh_kg = (
+                self.glider_kg
+                + self.trans_kg
+                + self.cargo_kg
+                + (self.fs_kwh / self.fs_kwh_per_kg if self.fs_kwh_per_kg!=0 else 0)
+                + (
+                    self.fc_base_kg + self.fc_kw_per_kg / self.fc_max_kw
+                    if self.fc_max_kw!=0
+                    else 0
+                )
+                + (
+                    self.mc_pe_base_kg + self.mc_pe_kg_per_kw / self.mc_max_kw
+                    if self.mc_max_kw!=0
+                    else 0
+                )
+                + (
+                    self.ess_base_kg + self.ess_kg_per_kwh / self.ess_max_kwh
+                    if self.ess_max_kwh!=0
+                    else 0
+                )
             )
-            + (
-                self.mc_pe_base_kg + self.mc_pe_kg_per_kw / self.mc_max_kw
-                if self.mc_max_kw
-                else 0
-            )
-            + (
-                self.ess_base_kg + self.ess_kg_per_kwh / self.ess_max_kwh
-                if self.ess_max_kwh
-                else 0
-            )
-        )
 
     def delete_dataframes(self) -> None:
         """

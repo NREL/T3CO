@@ -26,7 +26,7 @@ class Scenario:
     constant_trip_distance_mi: float = 0
     vehicle_life_yr: float = 0
     desired_ess_replacements: float = 0
-    discount_rate_pct_per_yr: float = 0
+    discount_rate_pct_per_yr: float = 0.0
 
     ess_max_charging_power_kw: float = 0
     ess_cost_dol_per_kw: float = 0
@@ -51,7 +51,7 @@ class Scenario:
     segment_name: str = ""
     gvwr_kg: float = 0
     gvwr_credit_kg: float = 0
-    fuel_type: List[str] = field(default_factory=str)
+    fuel_type: str = ""
     maint_oper_cost_dol_per_mi: List[float] = field(default_factory=float)
     vocation: str = ""
     vehicle_class: str = ""
@@ -121,14 +121,14 @@ class Scenario:
     dlf_min_charge_time_hr: float = 0
     fdt_dwpt_fraction_power_pct: float = 0
     fdt_avg_overhead_hr_per_dwell_hr: float = 0
-    fdt_frac_full_charge_bounds: str = 0
+    fdt_frac_full_charge_bounds: List[float] = field(default_factory=float)
     fdt_num_free_dwell_trips: float = 0
     fdt_available_freetime_hr: float = 0
 
     fuel_prices_dol_per_gge: List[float] = field(default_factory=float)
     insurance_rates_pct_per_yr: List[float] = field(default_factory=float)
 
-    residual_rates_file: str = None
+    residual_rates_file: str = "./auxiliary/ResidualValues.csv"
     residual_rates_df: pd.DataFrame = None
     residual_rate_pct: float = 0
 
@@ -138,9 +138,9 @@ class Scenario:
     mr_avg_tire_life_mi: float = 0
     mr_tire_replace_downtime_hr_per_event: float = 0
 
-    fuel_prices_file: str = ""
+    fuel_prices_file: str =  "./auxiliary/FuelPrices.csv"
     fuel_prices_df: pd.DataFrame = None
-    plf_weight_distribution_file: str = ""
+    plf_weight_distribution_file: str = "./auxiliary/tractorweightvars.csv"
 
     avg_speed_mph: float = None
 

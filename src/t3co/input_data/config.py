@@ -67,6 +67,13 @@ class Config:
     residual_rates_df: pd.DataFrame = None
     config_filename: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "T3COConfig.csv"
 
+    def __new__(cls, *args, **kwargs):
+        """
+        Creates a new instance of the Config class.
+        """
+        instance = super(Config, cls).__new__(cls)
+        return instance
+    
     def from_file(self, filename: str, analysis_id: int) -> Self:
         """
         Generates a Config dictionary from CSV file and calls Config.from_dict.

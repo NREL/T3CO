@@ -26,14 +26,21 @@ class OperatingCosts:
     net_oper_cost_dol_per_yr: float = None
     disc_oper_cost_dol_per_yr: float = None
 
+    def __new__(cls, *args, **kwargs):
+        """
+        Creates a new instance of the OperatingCosts class.
+        """
+        instance = super(OperatingCosts, cls).__new__(cls)
+        return instance
+    
     def __init__(
         self,
         year_number: int,
         cap_costs: CapitalCosts,
         vehicle: Vehicle,
         scenario: Scenario,
-        energy: Energy,
-        oppy_costs: OpportunityCosts,
+        energy: Energy = None,
+        oppy_costs: OpportunityCosts = None,
     ):
         """
         Initializes the OperatingCosts instance.
@@ -46,7 +53,7 @@ class OperatingCosts:
             energy (Energy): The energy model instance.
             oppy_costs (OpportunityCosts): The opportunity costs associated with the vehicle.
         """
-        self.mpgge = energy.mpgge
+        if energy: self.mpgge = energy.mpgge
         self.distance_traveled_mi_per_yr = scenario.vmt[year_number - 1]
 
         self.set_fuel_cost(year_number=year_number, vehicle=vehicle, scenario=scenario)
@@ -69,6 +76,7 @@ class OperatingCosts:
             scenario (Scenario): The scenario instance containing configuration data.
         """
         if scenario.fuel_prices_df is None:
+            print(f'fuel_prices_df is none')
             scenario.fuel_prices_df = pd.read_csv(
                 (
                     Path(scenario.fuel_prices_file)
@@ -94,12 +102,13 @@ class OperatingCosts:
             ]
             self.fuel_price_dol_per_gge = gasolineDolPerGal
         elif "electricity" in scenario.fuel_type.lower():
+            print(scenario.fuel_prices_df)
             dolPerKwh = scenario.fuel_prices_df.loc[
                 "dolPerKwh", str(scenario.model_year + year_number - 1)
             ]
             self.fuel_price_dol_per_gge = (
                 dolPerKwh * gl.KWH_PER_GGE
-            )  # 33.41 kwh per gallon of gasoline
+            )  
         elif scenario.fuel_type.lower() == "cng":
             CNGDolPerGge = scenario.fuel_prices_df.loc[
                 "CNGDolPerGge", str(scenario.model_year + year_number - 1)
