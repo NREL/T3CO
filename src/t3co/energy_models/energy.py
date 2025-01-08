@@ -12,6 +12,13 @@ class Energy:
     mpgge: float = None
     primary_fuel_range_mi: float = None
 
+    def __new__(cls, *args, **kwargs):
+        """
+        Creates a new instance of the Energy class.
+        """
+        instance = super(Energy, cls).__new__(cls)
+        return instance
+    
     def __init__(self, mpgge: float = None, primary_fuel_range_mi: float = None):
         """
         Initializes the Energy instance.
