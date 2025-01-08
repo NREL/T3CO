@@ -16,8 +16,8 @@ def config():
 def mock_vehicle_db(tmp_path):
     # Create a mock vehicle database CSV file
     data = """selection,veh_pt_type,fc_eff_type,fc_max_kw,fs_kwh,mc_max_kw,ess_max_kwh,chg_eff,glider_kg,trans_kg,cargo_kg,fc_base_kg,fs_kwh_per_kg,fc_kw_per_kg,mc_pe_kg_per_kw,mc_pe_base_kg,ess_kg_per_kwh,ess_base_kg,veh_override_kg
-1,BEV,Type1,100,50,200,75,0.9,1000,500,200,300,0.5,0.1,0.05,50,0.2,100,1500
-2,HEV,Type2,150,60,250,80,0.85,1100,550,250,350,0.6,0.15,0.06,55,0.25,110,1600
+1,BEV,Type1,100,50,200,75,0.9,1000,500,200,300,0.5,0.1,0.05,50,0.2,100,0
+2,HEV,Type2,150,60,250,80,0.85,1100,550,250,350,0.6,0.15,0.06,55,0.25,110,0
 """
     mock_file = tmp_path / "mock_vehicle_db.csv"
     mock_file.write_text(data)
@@ -44,7 +44,7 @@ def test_from_config(config, mock_vehicle_db):
     assert vehicle.mc_pe_base_kg == 50
     assert vehicle.ess_kg_per_kwh == 0.2
     assert vehicle.ess_base_kg == 100
-    assert vehicle.veh_override_kg == 1500
+    assert vehicle.veh_override_kg == 0
 
 def test_set_veh_kg(config, mock_vehicle_db):
     config.vehicle_file = mock_vehicle_db
