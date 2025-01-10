@@ -150,6 +150,13 @@ class Scenario:
 
     avg_speed_mph: float = None
 
+    def __new__(cls, *args, **kwargs):
+        """
+        Creates a new instance of the Scenario class.
+        """
+        instance = super(Scenario, cls).__new__(cls)
+        return instance
+
     @classmethod
     def from_file(
         cls,
@@ -174,6 +181,10 @@ class Scenario:
         scenario_dict = scenario_df.loc[scenario_df["selection"] == selection].to_dict(
             "records"
         )[0]
+        
+        return cls.from_dict(cls, scenario_dict=scenario_dict)
+        
+    def from_dict(cls, scenario_dict:dict):
         scenario_dict["vehicle_class"] = " "
         scenario_dict["vehicle_class"] = (
             scenario_dict["vehicle_class"]
@@ -207,6 +218,7 @@ class Scenario:
             if scenario_dict["maint_oper_cost_dol_per_mi"]
             else -1
         )
+        
         return cls(**scenario_dict)
 
     def override_from_config(
@@ -230,7 +242,7 @@ class Scenario:
             "lw_imp_curve_sel",
             "eng_eff_imp_curve_sel",
             "aero_drag_imp_curve_sel",
-            "financing_method",
+            "purchasing_method",
             "constraint_range",
             "constraint_accel",
             "constraint_grade",
@@ -262,6 +274,13 @@ class Scenario:
             print(
                 f"Error in Config file. T3COConfig either not attached or scenario.use_config set to False: {config}"
             )
+
+        if self.purchasing_method.lower() in ['loan', 'financing', 'autoloan', 'borrowing']:
+            self.purchasing_method = 'loan'
+        elif self.purchasing_method.lower() in ['leasing', 'renting', 'lease']:
+            self.purchasing_method = 'lease'
+        else:
+            self.purchasing_method = 'cash'
 
         self.insurance_rates_file = config.insurance_rates_file
         self.fuel_prices_df = config.fuel_prices_df

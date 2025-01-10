@@ -181,11 +181,11 @@ class OperatingCosts:
         )
 
     def set_purchasing_payment_cost(self, year_number: int, scenario: Scenario, cap_costs: CapitalCosts):
-        if scenario.purchasing_method.lower() in ['cash', 'upfront', 'fullpayment']:
+        if scenario.purchasing_method == 'cash':
             self.purchasing_payment_dol_per_yr = 0
             self.purchasing_interest_cost_dol_per_yr = 0
             
-        elif scenario.purchasing_method.lower() in ['financing', 'loan']:
+        elif scenario.purchasing_method == 'loan':
             interest_rate_pct_per_frequency = scenario.financing_interest_rate_pct_per_yr/12*scenario.financing_payment_frequency_months
 
             total_number_of_payments = int(scenario.financing_tenure_yr * 12 /scenario.financing_payment_frequency_months) #TODO check for missing payment
