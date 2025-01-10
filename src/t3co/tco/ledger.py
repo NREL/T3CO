@@ -349,8 +349,8 @@ class Ledger:
         self.grid_mpgge = (
             self.energy.mpgge * self.vehicle.chg_eff if self.vehicle.chg_eff else None
         )
-        self.mpgde = self.energy.mpgge / gl.DieselGalPerGasGal
-        self.kwh_per_mi = None
+        self.mpgde = self.energy.mpgge / gl.DGE_TO_GGE
+        self.kwh_per_mi =  (gl.KWH_PER_GGE / self.mpgge if self.mpgge else None)
 
     def to_dict(self, include_prefix: bool = True, flatten: bool = True) -> dict:
         """
