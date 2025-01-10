@@ -87,9 +87,6 @@ class Scenario:
     financing_payment_frequency_months: float = 0.0
     financing_tenure_yr: float  =   0.0
     leasing_money_factor: float = 0.0
-
-    depreciation_rates_pct_per_yr: List[float] = field(default_factory=list)
-
     shifts_per_year: List[float] = field(default_factory=list)
 
     missed_trace_correction: bool = False
@@ -138,9 +135,8 @@ class Scenario:
     fuel_prices_dol_per_gge: List[float] = field(default_factory=float)
     insurance_rates_pct_per_yr: List[float] = field(default_factory=float)
 
-    residual_rates_file: str = "./auxiliary/ResidualValues.csv"
-    residual_rates_df: pd.DataFrame = None
-    residual_rate_pct: float = 0
+    depreciation_rates_pct_per_yr: List[float] = field(default_factory=float)
+    residual_rate_pct: float = 1.0
 
     activate_mr_downtime_cost: bool = True
     mr_planned_downtime_hr_per_yr: float = 0
@@ -195,6 +191,13 @@ class Scenario:
                 : scenario_dict["vehicle_life_yr"]
             ]
             if scenario_dict["mr_unplanned_downtime_hr_per_mi"]
+            else 0
+        )
+        scenario_dict["depreciation_rates_pct_per_yr"] = (
+            ast.literal_eval(scenario_dict["depreciation_rates_pct_per_yr"])[
+                : scenario_dict["vehicle_life_yr"]
+            ]
+            if scenario_dict["depreciation_rates_pct_per_yr"]
             else 0
         )
         scenario_dict["maint_oper_cost_dol_per_mi"] = (
@@ -254,12 +257,12 @@ class Scenario:
                 print(
                     f"Scenario Fields overridden from config: {self.fields_overriden}"
                 ) if verbose else None
+
         except Exception:
             print(
-                f"Config file not attached or scenario.use_config set to False: {config}"
+                f"Error in Config file. T3COConfig either not attached or scenario.use_config set to False: {config}"
             )
 
-        self.residual_rates_df = config.residual_rates_df
         self.insurance_rates_file = config.insurance_rates_file
         self.fuel_prices_df = config.fuel_prices_df
 

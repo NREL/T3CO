@@ -31,7 +31,6 @@ class Config:
     fs_fueling_rate_diesel_gpm: float = 0
 
     insurance_rates_file: str = ""
-    residual_rates_file: str = ""
     fuel_prices_file: str = ""
     plf_weight_dist_file: str = None
 
@@ -64,7 +63,6 @@ class Config:
     dc_files: list[str] = None
 
     fuel_prices_df: pd.DataFrame = None
-    residual_rates_df: pd.DataFrame = None
     config_filename: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "T3COConfig.csv"
 
     def __new__(cls, *args, **kwargs):
@@ -171,13 +169,6 @@ class Config:
         )
         self.fuel_prices_df.set_index("Fuel", inplace=True)
 
-        self.residual_rates_df = pd.read_csv(
-            (
-                Path(self.residual_rates_file)
-                if Path(self.residual_rates_file).is_absolute()
-                else gl.RESOURCES_FOLDERPATH / self.residual_rates_file
-            )
-        )
         
     def delete_dataframes(self) -> None:
         """

@@ -40,7 +40,6 @@ def scenario():
         labor_rate_dol_per_hr = 50.0,
         markup_pct=0.1,
         tax_rate_pct=0.08,
-        residual_rates_file="residual_rates.csv",
         vehicle_class="class8",
         vehicle_life_yr=10,
         discount_rate_pct_per_yr=0.05,
@@ -61,11 +60,6 @@ def scenario():
         region="US",
         activate_tco_payload_cap_cost_multiplier=False,
         activate_mr_downtime_cost=False,
-        residual_rates_df = pd.DataFrame({
-            "VehicleClass": ["class8"],
-            "PowertrainType": ["bev"],
-            "10": [0.2]
-        }),
 
         fuel_prices_df = pd.DataFrame({
             "Fuel": ["dolPerKwh"],

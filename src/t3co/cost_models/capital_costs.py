@@ -192,7 +192,7 @@ class CapitalCosts:
         if scenario.purchasing_method =='cash':
             self.purchasing_downpayment_dol = self.msrp_total_dol + self.purchase_tax_dol
             self.purchasing_initial_principal_dol = 0.0
-            
+
         elif scenario.purchasing_method == 'loan':
             self.purchasing_downpayment_dol = (self.msrp_total_dol + self.purchase_tax_dol) * scenario.financing_down_payment_pct
             self.purchasing_initial_principal_dol = (self.msrp_total_dol + self.purchase_tax_dol) * (1 - scenario.financing_down_payment_pct)
@@ -205,23 +205,9 @@ class CapitalCosts:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data.
         """
-        if scenario.residual_rates_df is None:
-            scenario.residual_rates_df = pd.read_csv(
-                (
-                    Path(scenario.residual_rates_file)
-                    if Path(scenario.residual_rates_file).is_absolute()
-                    else gl.RESOURCES_FOLDERPATH
-                    / scenario.residual_rates_file
-                )
-            )
-
-        year = str(scenario.vehicle_life_yr)
-        scenario.residual_rate_pct = scenario.residual_rates_df.loc[
-            (scenario.residual_rates_df["VehicleClass"].str.lower() == scenario.vehicle_class)
-            & (scenario.residual_rates_df["PowertrainType"].str.lower() ==  vehicle.veh_pt_type.lower())
-        ][year].values[0]
-
-        self.residual_cost_dol = -self.msrp_total_dol * scenario.residual_rate_pct
+        
+        scenario.residual_rate_pct *= np.prod([(1-scenario.depreciation_rates_pct_per_yr[i]) for i in range(scenario.vehicle_life_yr)])
+        self.residual_cost_dol = - self.msrp_total_dol * scenario.residual_rate_pct
 
     def set_total_cap_cost(self) -> None:
         """

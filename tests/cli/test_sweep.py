@@ -24,9 +24,6 @@ def scenario(config):
         selection=1
         )
     
-    scenario.residual_rates_df=pd.DataFrame(
-            {"VehicleClass": ["class8"], "PowertrainType": ["conv"], "4": [0.2]}
-        )
     scenario.fuel_prices_df=pd.DataFrame(
             {
                 "Fuel": ["dieselDolPerGal"],

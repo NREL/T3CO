@@ -76,9 +76,6 @@ def scenario():
         vehicle_class="class8",
         insurance_rates_pct_per_yr=[0.01] * 10,
         maint_oper_cost_dol_per_mi=[0.05] * 10,
-        residual_rates_df=pd.DataFrame(
-            {"VehicleClass": ["class8"], "PowertrainType": ["bev"], "10": [0.2]}
-        ),
         fuel_prices_df=pd.DataFrame(
             {
                 "Fuel": ["dolPerKwh"],

@@ -127,7 +127,6 @@ OTHER_INPUTS = OPTIMIZATION_RESOURCES_AUX / OTHER_INPUTS_FILE
 # ./t3co/resources/'FuelPrices.csv'
 REGIONAL_FUEL_PRICES_BY_TYPE_BY_YEAR = OPTIMIZATION_RESOURCES_AUX / "FuelPrices.csv"
 
-RESIDUAL_VALUE_PER_YEAR = OPTIMIZATION_RESOURCES_AUX / "ResidualValues.csv"
 MOO_KNOB_SWEEP_PLOTS_DIR = (
     Path(os.path.abspath(__file__)).parents[1] / "tco_results" / "knob_sweep_results"
 )

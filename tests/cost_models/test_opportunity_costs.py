@@ -38,7 +38,6 @@ def scenario():
         ess_cost_dol_per_kwh=200.0,
         markup_pct=0.1,
         tax_rate_pct=0.08,
-        residual_rates_file="residual_rates.csv",
         vehicle_class="class8",
         vehicle_life_yr=10,
         discount_rate_pct_per_yr=0.05,
