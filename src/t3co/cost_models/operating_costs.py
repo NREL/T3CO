@@ -23,6 +23,7 @@ class OperatingCosts:
     insurance_cost_dol_per_yr: float = None
     distance_traveled_mi_per_yr: float = None
     purchasing_payment_dol_per_yr: float = None
+    purchasing_tax_amount_dol_per_year: float = None
     purchasing_interest_cost_dol_per_yr: float = None
     purchasing_remaining_principal_dol: float = None
     fueling_dwell_labor_cost_dol_per_yr: float = None
@@ -107,7 +108,6 @@ class OperatingCosts:
             ]
             self.fuel_price_dol_per_gge = gasolineDolPerGal
         elif "electricity" in scenario.fuel_type.lower():
-            print(scenario.fuel_prices_df)
             dolPerKwh = scenario.fuel_prices_df.loc[
                 "dolPerKwh", str(scenario.model_year + year_number - 1)
             ]
@@ -186,10 +186,9 @@ class OperatingCosts:
             self.purchasing_interest_cost_dol_per_yr = 0
             
         elif scenario.purchasing_method == 'loan':
-            interest_rate_pct_per_frequency = scenario.financing_interest_rate_pct_per_yr/12*scenario.financing_payment_frequency_months
-
-            total_number_of_payments = int(scenario.financing_tenure_yr * 12 /scenario.financing_payment_frequency_months) #TODO check for missing payment
-            annual_number_of_payments = int(12/scenario.financing_payment_frequency_months)
+            interest_rate_pct_per_frequency = scenario.purchasing_interest_rate_pct_per_yr/12*scenario.purchasing_payment_frequency_months
+            total_number_of_payments = int(scenario.purchasing_tenure_yr * 12 /scenario.purchasing_payment_frequency_months) #TODO check for missing payment
+            annual_number_of_payments = int(12/scenario.purchasing_payment_frequency_months)
 
             purchasing_payment_dol_per_freq = (
                 (
@@ -198,6 +197,7 @@ class OperatingCosts:
                 /(
                 (1 + interest_rate_pct_per_frequency) ** total_number_of_payments - 1)
             )
+
             self.purchasing_remaining_principal_dol = (
                  (cap_costs.purchasing_initial_principal_dol * (1 + interest_rate_pct_per_frequency)** (year_number * annual_number_of_payments))
                 - purchasing_payment_dol_per_freq / interest_rate_pct_per_frequency *((1+interest_rate_pct_per_frequency)**(year_number * annual_number_of_payments) - 1)
@@ -210,6 +210,13 @@ class OperatingCosts:
                 purchasing_payment_dol_per_freq * annual_number_of_payments
             )
 
+        elif scenario.purchasing_method == 'lease':
+            adjusted_cap_cost_dol = (cap_costs.msrp_total_dol + cap_costs.purchase_tax_dol - cap_costs.purchasing_downpayment_dol)
+            depreciation_cost_dol_per_month = (adjusted_cap_cost_dol + cap_costs.residual_cost_dol)/(scenario.purchasing_tenure_yr*12)
+            finance_fee_dol_per_month = (adjusted_cap_cost_dol - cap_costs.residual_cost_dol) * scenario.leasing_money_factor
+            self.purchasing_tax_amount_dol_per_year = (depreciation_cost_dol_per_month + finance_fee_dol_per_month) * scenario.tax_rate_pct * 12
+            self.purchasing_payment_dol_per_yr = (depreciation_cost_dol_per_month + finance_fee_dol_per_month + self.purchasing_tax_amount_dol_per_year / 12) * 12
+            self.purchasing_leasing_cost_dol_per_yr = finance_fee_dol_per_month * 12
 
     def set_fueling_dwell_labor_cost(
         self, scenario: Scenario, oppy_costs: OpportunityCosts
@@ -234,7 +241,7 @@ class OperatingCosts:
             + self.fueling_dwell_labor_cost_dol_per_yr
             + self.maintenance_cost_dol_per_yr
             + self.insurance_cost_dol_per_yr
-            + self.purchasing_payment_dol_per_yr
+            + self.purchasing_payment_dol_per_yr 
         )
 
     def set_disc_oper_cost(self, year_number: int, scenario: Scenario) -> None:

@@ -82,10 +82,10 @@ class Scenario:
     motor_power_override_kw_fc_demand_on_pct: float = -1
 
     purchasing_method: str = ""
-    financing_down_payment_pct: float = 0.0
-    financing_interest_rate_pct_per_yr: float = 0.0
-    financing_payment_frequency_months: float = 0.0
-    financing_tenure_yr: float  =   0.0
+    purchasing_down_payment_pct: float = 0.0
+    purchasing_interest_rate_pct_per_yr: float = 0.0
+    purchasing_payment_frequency_months: float = 0.0
+    purchasing_tenure_yr: float  =   0.0
     leasing_money_factor: float = 0.0
     shifts_per_year: List[float] = field(default_factory=list)
 

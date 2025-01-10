@@ -195,9 +195,16 @@ class Ledger:
         )
         self.total_purchasing_interest_cost_dol = sum(
             self.scenario.get_discounted_value(
-                self.tco_per_year[
+                (
+                    self.tco_per_year[
                     year_index
-                ].oper_costs_dol.purchasing_interest_cost_dol_per_yr,
+                ].oper_costs_dol.purchasing_interest_cost_dol_per_yr if self.tco_per_year[
+                    year_index
+                ].oper_costs_dol.purchasing_interest_cost_dol_per_yr
+                else self.tco_per_year[
+                    year_index
+                ].oper_costs_dol.purchasing_leasing_cost_dol_per_yr)
+                ,
                 year_number=year_index + 1,
             )
             for year_index in range(self.vehicle_life_yr)

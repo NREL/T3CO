@@ -79,7 +79,6 @@ def test_load_vehicle_scenario_energy(mocker, config, vehicle, scenario, energy)
     mocker.patch('t3co.energy_models.energy.Energy.run_fastsim_model', return_value=None)
 
     veh, scen, en = load_vehicle_scenario_energy(selection="1", config=config, vehicle=vehicle, scenario=scenario, energy=energy)
-    print(en)
     assert veh == vehicle
     assert scen == scenario
     assert en.mpgge == pytest.approx(6.03, 0.01)
@@ -94,7 +93,6 @@ def test_generate_ledger(mocker, config, vehicle, scenario, energy):
 
 def test_create_results_filepath(config):
     result_filepath = create_results_filepath(config=config)
-    print(f'result_filepath: {result_filepath.name}')
     assert result_filepath.name.startswith("results_")
     assert result_filepath.name.endswith("_test_suffix.csv")
 

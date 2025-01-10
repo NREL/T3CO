@@ -46,6 +46,7 @@ class CapitalCosts:
         self.set_battery_cost(vehicle=vehicle, scenario=scenario)
         self.set_msrp(vehicle=vehicle, scenario=scenario)
         self.set_purchase_tax(vehicle=vehicle, scenario=scenario)
+        self.set_downpayment(vehicle=vehicle, scenario=scenario)
         self.set_residual_cost(vehicle=vehicle, scenario=scenario)
         self.set_disc_residual_cost(scenario=scenario)
         self.set_total_cap_cost()
@@ -194,8 +195,13 @@ class CapitalCosts:
             self.purchasing_initial_principal_dol = 0.0
 
         elif scenario.purchasing_method == 'loan':
-            self.purchasing_downpayment_dol = (self.msrp_total_dol + self.purchase_tax_dol) * scenario.financing_down_payment_pct
-            self.purchasing_initial_principal_dol = (self.msrp_total_dol + self.purchase_tax_dol) * (1 - scenario.financing_down_payment_pct)
+            self.purchasing_downpayment_dol = (self.msrp_total_dol + self.purchase_tax_dol) * scenario.purchasing_down_payment_pct
+            self.purchasing_initial_principal_dol = (self.msrp_total_dol + self.purchase_tax_dol) * (1 - scenario.purchasing_down_payment_pct)
+        
+        elif scenario.purchasing_method == 'lease':
+            scenario.leasing_money_factor = scenario.purchasing_interest_rate_pct_per_yr/24
+            self.purchasing_downpayment_dol = (self.msrp_total_dol + self.purchase_tax_dol) * scenario.purchasing_down_payment_pct
+            self.purchasing_initial_principal_dol = 0.0
 
     def set_residual_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
