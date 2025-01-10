@@ -18,6 +18,8 @@ class CapitalCosts:
     purchase_tax_dol: float = 0.0
     msrp_total_dol: float = 0.0
     residual_cost_dol: float = 0.0
+    purchasing_downpayment_dol: float = 0.0
+    purchasing_initial_principal_dol: float = 0.0
     net_capital_cost_dol: float = None
     disc_residual_cost_dol: float = None
 
@@ -186,6 +188,15 @@ class CapitalCosts:
         """
         self.purchase_tax_dol = self.msrp_total_dol * scenario.tax_rate_pct
 
+    def set_downpayment(self, vehicle: Vehicle, scenario: Scenario) -> None:
+        if scenario.purchasing_method =='cash':
+            self.purchasing_downpayment_dol = self.msrp_total_dol + self.purchase_tax_dol
+            self.purchasing_initial_principal_dol = 0.0
+            
+        elif scenario.purchasing_method == 'loan':
+            self.purchasing_downpayment_dol = (self.msrp_total_dol + self.purchase_tax_dol) * scenario.financing_down_payment_pct
+            self.purchasing_initial_principal_dol = (self.msrp_total_dol + self.purchase_tax_dol) * (1 - scenario.financing_down_payment_pct)
+
     def set_residual_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
         Sets the residual cost for the vehicle.
@@ -216,7 +227,7 @@ class CapitalCosts:
         """
         Sets the total capital cost for the vehicle.
         """
-        self.net_capital_cost_dol = self.msrp_total_dol + self.purchase_tax_dol
+        self.net_capital_cost_dol = self.purchasing_downpayment_dol
 
     def set_disc_residual_cost(self, scenario: Scenario) -> None:
         """
