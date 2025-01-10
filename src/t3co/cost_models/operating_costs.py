@@ -23,7 +23,8 @@ class OperatingCosts:
     insurance_cost_dol_per_yr: float = None
     distance_traveled_mi_per_yr: float = None
     purchasing_payment_dol_per_yr: float = None
-    purchasing_interest_amount_dol_per_yr: float = None
+    purchasing_interest_cost_dol_per_yr: float = None
+    purchasing_remaining_principal_dol: float = None
     fueling_dwell_labor_cost_dol_per_yr: float = None
     net_oper_cost_dol_per_yr: float = None
     disc_oper_cost_dol_per_yr: float = None
@@ -182,13 +183,13 @@ class OperatingCosts:
     def set_purchasing_payment_cost(self, year_number: int, scenario: Scenario, cap_costs: CapitalCosts):
         if scenario.purchasing_method.lower() in ['cash', 'upfront', 'fullpayment']:
             self.purchasing_payment_dol_per_yr = 0
-            self.purchasing_interest_amount_dol_per_yr = 0
+            self.purchasing_interest_cost_dol_per_yr = 0
             
         elif scenario.purchasing_method.lower() in ['financing', 'loan']:
             interest_rate_pct_per_frequency = scenario.financing_interest_rate_pct_per_yr/12*scenario.financing_payment_frequency_months
-            print(f'interest_rate_pct_per_frequency: {interest_rate_pct_per_frequency}')
             loan_amount_dol = (cap_costs.msrp_total_dol + cap_costs.purchase_tax_dol) * (1 - scenario.financing_down_payment_pct)
-            total_number_of_payments = scenario.financing_tenure_yr * 12 /scenario.financing_payment_frequency_months #TODO check for missing payment
+            total_number_of_payments = int(scenario.financing_tenure_yr * 12 /scenario.financing_payment_frequency_months) #TODO check for missing payment
+            annual_number_of_payments = int(12/scenario.financing_payment_frequency_months)
             purchasing_payment_dol_per_freq = (
                 (
                 loan_amount_dol
@@ -196,9 +197,12 @@ class OperatingCosts:
                 /(
                 (1 + interest_rate_pct_per_frequency) ** total_number_of_payments - 1)
             )
-            print(f'purchasing_payment_dol_per_freq: {purchasing_payment_dol_per_freq}')
-            self.purchasing_interest_amount_dol_per_yr  =  sum([interest_rate_pct_per_frequency * (loan_amount_dol * (1 + interest_rate_pct_per_frequency)**n - purchasing_payment_dol_per_freq / interest_rate_pct_per_frequency *((1+interest_rate_pct_per_frequency)**n - 1))
-                                            for n in range(1, year_number + int(12/scenario.financing_payment_frequency_months)+1)])
+            self.purchasing_remaining_principal_dol = (
+                 (loan_amount_dol * (1 + interest_rate_pct_per_frequency)** (year_number * annual_number_of_payments))
+                - purchasing_payment_dol_per_freq / interest_rate_pct_per_frequency *((1+interest_rate_pct_per_frequency)**(year_number * annual_number_of_payments) - 1)
+            )
+            self.purchasing_interest_cost_dol_per_yr  =  sum([interest_rate_pct_per_frequency * (loan_amount_dol * (1 + interest_rate_pct_per_frequency)**n - purchasing_payment_dol_per_freq / interest_rate_pct_per_frequency *((1+interest_rate_pct_per_frequency)**n - 1))
+                                            for n in range((year_number-1)*annual_number_of_payments, (year_number * annual_number_of_payments + 1))])
             
             self.purchasing_payment_dol_per_yr = (
                 purchasing_payment_dol_per_freq * int(12 / scenario.financing_payment_frequency_months)
@@ -228,6 +232,7 @@ class OperatingCosts:
             + self.fueling_dwell_labor_cost_dol_per_yr
             + self.maintenance_cost_dol_per_yr
             + self.insurance_cost_dol_per_yr
+            + self.purchasing_interest_cost_dol_per_yr
         )
 
     def set_disc_oper_cost(self, year_number: int, scenario: Scenario) -> None:
