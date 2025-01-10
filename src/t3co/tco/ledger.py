@@ -45,6 +45,7 @@ class Ledger:
     total_maintenance_cost_dol: float = 0.0
     total_fuel_used_gal_ge: float = 0.0
     total_fuel_used_gal_de: float = 0.0
+    total_purchasing_interest_cost_dol: float = 0.0
     mpgge: float = 0.0
     grid_mpgge: float = 0.0
     mpgde: float = 0.0
@@ -188,6 +189,15 @@ class Ledger:
                 self.tco_per_year[
                     year_index
                 ].oper_costs_dol.maintenance_cost_dol_per_yr,
+                year_number=year_index + 1,
+            )
+            for year_index in range(self.vehicle_life_yr)
+        )
+        self.total_purchasing_interest_cost_dol = sum(
+            self.scenario.get_discounted_value(
+                self.tco_per_year[
+                    year_index
+                ].oper_costs_dol.purchasing_interest_cost_dol_per_yr,
                 year_number=year_index + 1,
             )
             for year_index in range(self.vehicle_life_yr)
