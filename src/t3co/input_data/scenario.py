@@ -81,6 +81,15 @@ class Scenario:
     phev_utility_factor_computed: float = -1
     motor_power_override_kw_fc_demand_on_pct: float = -1
 
+    purchasing_method: str = ""
+    financing_down_payment_pct: float = 0.0
+    financing_interest_rate_pct_per_yr: float = 0.0
+    financing_payment_frequency_months: float = 0.0
+    financing_tenure_yr: float  =   0.0
+    leasing_money_factor: float = 0.0
+
+    depreciation_rates_pct_per_yr: List[float] = field(default_factory=list)
+
     shifts_per_year: List[float] = field(default_factory=list)
 
     missed_trace_correction: bool = False
@@ -218,6 +227,7 @@ class Scenario:
             "lw_imp_curve_sel",
             "eng_eff_imp_curve_sel",
             "aero_drag_imp_curve_sel",
+            "financing_method",
             "constraint_range",
             "constraint_accel",
             "constraint_grade",
