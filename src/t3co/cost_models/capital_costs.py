@@ -55,19 +55,42 @@ class CapitalCosts:
         """
         Sets the glider cost for the vehicle.
 
+        This method calculates the marked up glider cost based on the vehicle class and the base cost.
+
+        Inputs from scenario:
+        - vehicle_glider_cost_dol
+
+        Estimated class variables:
+        - glider_cost_dol
+
         Args:
             vehicle (Vehicle): The vehicle instance.
-            scenario (Scenario): The scenario instance containing configuration data.
+            scenario (Scenario): The scenario instance containing configuration data, including the base cost for the glider.
         """
         self.glider_cost_dol = scenario.vehicle_glider_cost_dol
+
 
     def set_fuel_converter_cost_dol(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
         Sets the fuel converter cost for the vehicle.
 
+        This method calculates the marked up fuel converter cost based on the vehicle powertrain type and the cost per kW.
+
+        Inputs from vehicle:
+        - fc_max_kw
+
+        Inputs from scenario:
+        - fc_fuelcell_cost_dol_per_kw
+        - fc_ice_cost_dol_per_kw
+        - fc_cng_ice_cost_dol_per_kw
+        - fc_ice_base_cost_dol
+
+        Estimated class variables:
+        - fuel_converter_cost_dol
+
         Args:
             vehicle (Vehicle): The vehicle instance.
-            scenario (Scenario): The scenario instance containing configuration data.
+            scenario (Scenario): The scenario instance containing configuration data, including the cost per kW for the fuel converter.
         """
         if vehicle.veh_pt_type == gl.BEV or vehicle.fc_max_kw == 0:
             self.fuel_converter_cost_dol = 0
@@ -90,9 +113,22 @@ class CapitalCosts:
         """
         Sets the fuel storage cost for the vehicle.
 
+        This method calculates the marked up fuel storage cost based on the vehicle powertrain type and the cost per kWh.
+
+        Inputs from vehicle:
+        - fs_kwh
+
+        Inputs from scenario:
+        - fs_h2_cost_dol_per_kwh
+        - fs_cng_cost_dol_per_kwh
+        - fs_cost_dol_per_kwh
+
+        Estimated class variables:
+        - fuel_storage_cost_dol
+
         Args:
             vehicle (Vehicle): The vehicle instance.
-            scenario (Scenario): The scenario instance containing configuration data.
+            scenario (Scenario): The scenario instance containing configuration data, including the cost per kWh for the fuel storage.
         """
         if vehicle.veh_pt_type == gl.BEV:
             self.fuel_storage_cost_dol = 0
@@ -118,9 +154,21 @@ class CapitalCosts:
         """
         Sets the motor control and power electronics cost for the vehicle.
 
+        This method calculates the marked up motor control and power electronics cost based on the vehicle powertrain type and the cost per kW.
+
+        Inputs from vehicle:
+        - mc_max_kw
+
+        Inputs from scenario:
+        - pe_mc_base_cost_dol
+        - pe_mc_cost_dol_per_kw
+
+        Estimated class variables:
+        - motor_control_power_elecs_cost_dol
+
         Args:
             vehicle (Vehicle): The vehicle instance.
-            scenario (Scenario): The scenario instance containing configuration data.
+            scenario (Scenario): The scenario instance containing configuration data, including the cost per kW for the motor control and power electronics.
         """
         if vehicle.mc_max_kw == 0 or vehicle.mc_max_kw is None:
             self.motor_control_power_elecs_cost_dol = 0
@@ -134,9 +182,17 @@ class CapitalCosts:
         """
         Sets the plug cost for the vehicle.
 
+        This method calculates the marked up plug cost based on the base cost.
+
+        Inputs from scenario:
+        - plug_base_cost_dol
+
+        Estimated class variables:
+        - plug_cost_dol
+
         Args:
             vehicle (Vehicle): The vehicle instance.
-            scenario (Scenario): The scenario instance containing configuration data.
+            scenario (Scenario): The scenario instance containing configuration data, including the base cost for the plug.
         """
         if vehicle.veh_pt_type in [gl.PHEV, gl.BEV, gl.HEV] and vehicle.chg_eff:
             self.plug_cost_dol = scenario.plug_base_cost_dol
@@ -149,9 +205,21 @@ class CapitalCosts:
         """
         Sets the battery cost for the vehicle.
 
+        This method calculates the marked up battery cost based on the energy storage system (ESS) capacity and the cost per kWh.
+
+        Inputs from vehicle:
+        - ess_max_kwh
+
+        Inputs from scenario:
+        - ess_base_cost_dol
+        - ess_cost_dol_per_kwh
+
+        Estimated class variables:
+        - battery_cost_dol
+
         Args:
             vehicle (Vehicle): The vehicle instance.
-            scenario (Scenario): The scenario instance containing configuration data.
+            scenario (Scenario): The scenario instance containing configuration data, including the cost per kWh for the battery.
         """
         if vehicle.ess_max_kwh == 0:
             self.battery_cost_dol = 0
@@ -174,7 +242,11 @@ class CapitalCosts:
         - motor_control_power_elecs_cost_dol
         - battery_cost_dol
         - plug_cost_dol
+
+        Estimated class variables:
+        - msrp_total_dol
         """
+
         self.msrp_total_dol = (
             self.glider_cost_dol
             + self.fuel_storage_cost_dol
@@ -189,6 +261,14 @@ class CapitalCosts:
         Sets the purchase tax for the vehicle.
 
         This method calculates the purchase tax based on the total MSRP (Manufacturer's Suggested Retail Price) of the vehicle components.
+        The calculations use the following CapitalCosts elements:
+        - msrp_total_dol
+
+        Inputs from scenario:
+        - tax_rate_pct
+
+        Estimated class variables:
+        - purchase_tax_dol
 
         Args:
             vehicle (Vehicle): The vehicle instance.
@@ -204,6 +284,15 @@ class CapitalCosts:
         The calculations use the following CapitalCosts elements:
         - msrp_total_dol
         - purchase_tax_dol
+
+        Inputs from scenario:
+        - purchasing_method
+        - purchasing_down_payment_pct
+        - purchasing_interest_apr_pct_per_yr
+
+        Estimated class variables:
+        - purchasing_downpayment_dol
+        - purchasing_initial_principal_dol
 
         Args:
             vehicle (Vehicle): The vehicle instance.
@@ -231,6 +320,16 @@ class CapitalCosts:
         The calculation uses the following CapitalCosts elements:
         - msrp_total_dol
 
+        Inputs from scenario:
+        - depreciation_rates_pct_per_yr
+        - vehicle_life_yr
+
+        Estimated scenario variables:
+        - residual_rate_pct
+
+        Estimated class variables:
+        - residual_cost_dol
+
         Args:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data, including depreciation rates and vehicle life span.
@@ -242,6 +341,17 @@ class CapitalCosts:
     def set_total_cap_cost(self) -> None:
         """
         Sets the total capital cost for the vehicle.
+
+        This method calculates the total capital cost by summing the costs of various components and applying the purchase tax.
+        The calculation uses the following CapitalCosts elements:
+        - purchasing_downpayment_dol
+
+        Inputs from scenario:
+        - tax_rate_pct
+
+        Estimated class variables:
+        - net_capital_cost_dol
+
         """
         self.net_capital_cost_dol = (self.purchasing_downpayment_dol if self.purchasing_downpayment_dol else (self.msrp_total_dol+self.purchase_tax_dol))
 
