@@ -215,7 +215,7 @@ class CapitalCosts:
             self.purchasing_initial_principal_dol = (self.msrp_total_dol + self.purchase_tax_dol) * (1 - scenario.purchasing_down_payment_pct)
         
         elif scenario.purchasing_method == 'lease':
-            scenario.leasing_money_factor = scenario.purchasing_interest_rate_pct_per_yr/24
+            scenario.leasing_money_factor = scenario.purchasing_interest_apr_pct_per_yr/24
             self.purchasing_downpayment_dol = (self.msrp_total_dol + self.purchase_tax_dol) * scenario.purchasing_down_payment_pct
             self.purchasing_initial_principal_dol = 0.0
         else:

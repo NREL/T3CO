@@ -13,22 +13,22 @@ from t3co.utils.print_class_objects import obj_to_string
 
 
 class OperatingCosts:
-    fuel_cost_dol_per_yr: float = None
-    fuel_price_dol_per_gge: float = None
-    fuel_used_gal_gge_per_yr: float = None
-    fuel_used_gal_gde_per_yr: float = None
-    energy_used_kwh_per_yr: float = None
-    maintenance_cost_dol_per_yr: float = None
-    maintenance_cost_dol_per_mi: float = None
-    insurance_cost_dol_per_yr: float = None
-    distance_traveled_mi_per_yr: float = None
-    purchasing_payment_dol_per_yr: float = None
-    purchasing_tax_amount_dol_per_year: float = None
-    purchasing_interest_cost_dol_per_yr: float = None
-    purchasing_remaining_principal_dol: float = None
-    fueling_dwell_labor_cost_dol_per_yr: float = None
-    net_oper_cost_dol_per_yr: float = None
-    disc_oper_cost_dol_per_yr: float = None
+    fuel_cost_dol_per_yr: float = 0.0
+    fuel_price_dol_per_gge: float = 0.0
+    fuel_used_gal_gge_per_yr: float = 0.0
+    fuel_used_gal_gde_per_yr: float = 0.0
+    energy_used_kwh_per_yr: float = 0.0
+    maintenance_cost_dol_per_yr: float = 0.0
+    maintenance_cost_dol_per_mi: float = 0.0
+    insurance_cost_dol_per_yr: float = 0.0
+    distance_traveled_mi_per_yr: float = 0.0
+    purchasing_payment_dol_per_yr: float = 0.0
+    purchasing_tax_amount_dol_per_year: float = 0.0
+    purchasing_cost_dol_per_yr: float = 0.0
+    purchasing_remaining_principal_dol: float = 0.0
+    fueling_dwell_labor_cost_dol_per_yr: float = 0.0
+    net_oper_cost_dol_per_yr: float = 0.0
+    disc_oper_cost_dol_per_yr: float = 0.0
 
     def __new__(cls, *args, **kwargs):
         """
@@ -183,11 +183,11 @@ class OperatingCosts:
     def set_purchasing_payment_cost(self, year_number: int, scenario: Scenario, cap_costs: CapitalCosts):
         if scenario.purchasing_method == 'cash':
             self.purchasing_payment_dol_per_yr = 0
-            self.purchasing_interest_cost_dol_per_yr = 0
+            self.purchasing_cost_dol_per_yr = 0
             
         elif scenario.purchasing_method == 'loan':
-            interest_rate_pct_per_frequency = scenario.purchasing_interest_rate_pct_per_yr/12*scenario.purchasing_payment_frequency_months
-            total_number_of_payments = int(scenario.purchasing_tenure_yr * 12 /scenario.purchasing_payment_frequency_months) #TODO check for missing payment
+            interest_rate_pct_per_frequency = scenario.purchasing_interest_apr_pct_per_yr/12*scenario.purchasing_payment_frequency_months
+            total_number_of_payments = int(scenario.purchasing_term_yr * 12 /scenario.purchasing_payment_frequency_months) #TODO check for missing payment
             annual_number_of_payments = int(12/scenario.purchasing_payment_frequency_months)
 
             purchasing_payment_dol_per_freq = (
@@ -203,7 +203,7 @@ class OperatingCosts:
                 - purchasing_payment_dol_per_freq / interest_rate_pct_per_frequency *((1+interest_rate_pct_per_frequency)**(year_number * annual_number_of_payments) - 1)
             )
             
-            self.purchasing_interest_cost_dol_per_yr  =  sum([interest_rate_pct_per_frequency * (cap_costs.purchasing_initial_principal_dol * (1 + interest_rate_pct_per_frequency)**n - purchasing_payment_dol_per_freq / interest_rate_pct_per_frequency *((1+interest_rate_pct_per_frequency)**n - 1))
+            self.purchasing_cost_dol_per_yr  =  sum([interest_rate_pct_per_frequency * (cap_costs.purchasing_initial_principal_dol * (1 + interest_rate_pct_per_frequency)**n - purchasing_payment_dol_per_freq / interest_rate_pct_per_frequency *((1+interest_rate_pct_per_frequency)**n - 1))
                                             for n in range((year_number-1)*annual_number_of_payments, (year_number * annual_number_of_payments + 1))])
             
             self.purchasing_payment_dol_per_yr = (
@@ -212,11 +212,11 @@ class OperatingCosts:
 
         elif scenario.purchasing_method == 'lease':
             adjusted_cap_cost_dol = (cap_costs.msrp_total_dol + cap_costs.purchase_tax_dol - cap_costs.purchasing_downpayment_dol)
-            depreciation_cost_dol_per_month = (adjusted_cap_cost_dol + cap_costs.residual_cost_dol)/(scenario.purchasing_tenure_yr*12)
+            depreciation_cost_dol_per_month = (adjusted_cap_cost_dol + cap_costs.residual_cost_dol)/(scenario.purchasing_term_yr*12)
             finance_fee_dol_per_month = (adjusted_cap_cost_dol - cap_costs.residual_cost_dol) * scenario.leasing_money_factor
             self.purchasing_tax_amount_dol_per_year = (depreciation_cost_dol_per_month + finance_fee_dol_per_month) * scenario.tax_rate_pct * 12
             self.purchasing_payment_dol_per_yr = (depreciation_cost_dol_per_month + finance_fee_dol_per_month + self.purchasing_tax_amount_dol_per_year / 12) * 12
-            self.purchasing_leasing_cost_dol_per_yr = finance_fee_dol_per_month * 12
+            self.purchasing_cost_dol_per_yr = finance_fee_dol_per_month * 12
 
     def set_fueling_dwell_labor_cost(
         self, scenario: Scenario, oppy_costs: OpportunityCosts

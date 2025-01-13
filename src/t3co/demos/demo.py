@@ -24,6 +24,8 @@ input_scenario = scenario.Scenario().from_file(
     / "inputs"
     / "Demo_FY22_scenario_assumptions.csv",
 )
+
+
 input_energy = energy.Energy( mpgge=4.0, primary_fuel_range_mi=200.0)
 
 tco_0 = TCOCalc(
@@ -31,7 +33,7 @@ tco_0 = TCOCalc(
     vehicle=input_vehicle, 
     scenario = input_scenario, 
     energy=input_energy, )
-# print(tco_0)
+print(tco_0)
 
 # %%
 output_ledger = ledger.Ledger(

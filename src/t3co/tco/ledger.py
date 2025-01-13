@@ -198,12 +198,12 @@ class Ledger:
                 (
                     self.tco_per_year[
                     year_index
-                ].oper_costs_dol.purchasing_interest_cost_dol_per_yr if self.tco_per_year[
+                ].oper_costs_dol.purchasing_cost_dol_per_yr if self.tco_per_year[
                     year_index
-                ].oper_costs_dol.purchasing_interest_cost_dol_per_yr
+                ].oper_costs_dol.purchasing_cost_dol_per_yr
                 else self.tco_per_year[
                     year_index
-                ].oper_costs_dol.purchasing_leasing_cost_dol_per_yr)
+                ].oper_costs_dol.purchasing_cost_dol_per_yr)
                 ,
                 year_number=year_index + 1,
             )
