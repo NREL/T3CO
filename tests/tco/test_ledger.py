@@ -74,6 +74,7 @@ def scenario():
         discount_rate_pct_per_yr=0.05,
         avg_speed_mph=50.0,
         vehicle_class="class8",
+        depreciation_rates_pct_per_yr = [0.09]*10,
         insurance_rates_pct_per_yr=[0.01] * 10,
         maint_oper_cost_dol_per_mi=[0.05] * 10,
         fuel_prices_df=pd.DataFrame(

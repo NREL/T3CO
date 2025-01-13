@@ -14,9 +14,9 @@ def config():
 @pytest.fixture
 def mock_scenario_db(tmp_path):
     # Create a mock scenario database CSV file
-    data = """selection,scenario_name,drive_cycle,use_config,vmt_reduct_per_yr,vmt,constant_trip_distance_mi,vehicle_life_yr,desired_ess_replacements,discount_rate_pct_per_yr,ess_max_charging_power_kw,ess_cost_dol_per_kw,ess_cost_dol_per_kwh,ess_base_cost_dol,shifts_per_year,mr_unplanned_downtime_hr_per_mi,maint_oper_cost_dol_per_mi
-1,Scenario1,cycle1,True,0.1,"[10000, 9000, 8000]",50,10,1,5,100,200,300,400,"[2, 2, 2]","[0.1, 0.1, 0.1]","[0.05, 0.05, 0.05]"
-2,Scenario2,cycle2,False,0.2,"[20000, 18000, 16000]",60,12,2,6,110,210,310,410,"[3, 3, 3]","[0.2, 0.2, 0.2]","[0.1, 0.1, 0.1]"
+    data = """selection,scenario_name,drive_cycle,use_config,vmt_reduct_per_yr,vmt,constant_trip_distance_mi,vehicle_life_yr,desired_ess_replacements,discount_rate_pct_per_yr,ess_max_charging_power_kw,ess_cost_dol_per_kw,ess_cost_dol_per_kwh,ess_base_cost_dol,shifts_per_year,mr_unplanned_downtime_hr_per_mi,maint_oper_cost_dol_per_mi,depreciation_rates_pct_per_yr
+1,Scenario1,cycle1,True,0.1,"[10000, 9000, 8000]",50,10,1,5,100,200,300,400,"[2, 2, 2]","[0.1, 0.1, 0.1]","[0.05, 0.05, 0.05]","[0.09, 0.09, 0.09]"
+2,Scenario2,cycle2,False,0.2,"[20000, 18000, 16000]",60,12,2,6,110,210,310,410,"[3, 3, 3]","[0.2, 0.2, 0.2]","[0.1, 0.1, 0.1]","[0.09, 0.09, 0.09]"
 """
     mock_file = tmp_path / "mock_scenario_db.csv"
     mock_file.write_text(data)
@@ -31,7 +31,7 @@ def test_scenario_initialization():
         vmt_reduct_per_yr=0.1,
         vmt=[10000, 9000, 8000],
         constant_trip_distance_mi=50,
-        vehicle_life_yr=10,
+        vehicle_life_yr=3,
         desired_ess_replacements=1,
         discount_rate_pct_per_yr=5,
         ess_max_charging_power_kw=100,
@@ -39,6 +39,7 @@ def test_scenario_initialization():
         ess_cost_dol_per_kwh=300,
         ess_base_cost_dol=400,
         shifts_per_year=[2, 2, 2],
+        depreciation_rates_pct_per_yr=[0.09]*3,
         mr_unplanned_downtime_hr_per_mi=[0.1, 0.1, 0.1],
         maint_oper_cost_dol_per_mi=[0.05, 0.05, 0.05],
     )
@@ -49,7 +50,7 @@ def test_scenario_initialization():
     assert scenario.vmt_reduct_per_yr == 0.1
     assert scenario.vmt == [10000, 9000, 8000]
     assert scenario.constant_trip_distance_mi == 50
-    assert scenario.vehicle_life_yr == 10
+    assert scenario.vehicle_life_yr == 3
     assert scenario.desired_ess_replacements == 1
     assert scenario.discount_rate_pct_per_yr == 5
     assert scenario.ess_max_charging_power_kw == 100
@@ -57,7 +58,7 @@ def test_scenario_initialization():
     assert scenario.ess_cost_dol_per_kwh == 300
     assert scenario.ess_base_cost_dol == 400
     assert scenario.shifts_per_year == [2, 2, 2]
-    assert scenario.mr_unplanned_downtime_hr_per_mi == [0.1, 0.1, 0.1]
+    assert scenario.mr_unplanned_downtime_hr_per_mi == [0.1, 0.1, 0.1,]
     assert scenario.maint_oper_cost_dol_per_mi == [0.05, 0.05, 0.05]
 
 def test_scenario_from_file(config, mock_scenario_db):
