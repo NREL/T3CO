@@ -77,6 +77,24 @@ class OperatingCosts:
         """
         Sets the fuel cost for the given year.
 
+        This method calculates the fuel cost based on the fuel price and the amount of fuel used.
+        The calculation uses the following OperatingCosts elements:
+        - distance_traveled_mi_per_yr
+        - mpgge
+
+        Inputs from scenario:
+        - fuel_prices_df
+        - fuel_type
+        - model_year
+        - region
+
+        Estimated class variables:
+        - fuel_price_dol_per_gge
+        - fuel_used_gal_gge_per_yr
+        - fuel_used_gal_gde_per_yr
+        - energy_used_kwh_per_yr
+        - fuel_cost_dol_per_yr
+
         Args:
             year_number (int): The year number for which the fuel cost is calculated.
             vehicle (Vehicle): The vehicle instance.
@@ -141,6 +159,16 @@ class OperatingCosts:
         """
         Sets the maintenance operating cost for the given year.
 
+        This method calculates the maintenance cost based on the maintenance cost per mile and the distance traveled.
+
+        Inputs from scenario:
+        - maint_oper_cost_dol_per_mi
+        - vmt
+
+        Estimated class variables:
+        - maintenance_cost_dol_per_mi
+        - maintenance_cost_dol_per_yr
+
         Args:
             year_number (int): The year number for which the maintenance cost is calculated.
             vehicle (Vehicle): The vehicle instance.
@@ -164,6 +192,17 @@ class OperatingCosts:
         """
         Sets the insurance cost for the given year.
 
+        This method calculates the insurance cost based on the insurance rate and the total value of the vehicle.
+
+        Inputs from scenario:
+        - insurance_rates_pct_per_yr
+
+        Inputs from cap_cost:
+        - msrp_total_dol
+
+        Estimated class variables:
+        - insurance_cost_dol_per_yr
+
         Args:
             year_number (int): The year number for which the insurance cost is calculated.
             cap_cost (CapitalCosts): The capital costs associated with the vehicle.
@@ -181,6 +220,37 @@ class OperatingCosts:
         )
 
     def set_purchasing_payment_cost(self, year_number: int, scenario: Scenario, cap_costs: CapitalCosts):
+        """
+        Sets the purchasing payment cost for the given year.
+
+        This method calculates the purchasing payment cost based on the purchasing method specified in the scenario.
+
+        Inputs from scenario:
+        - purchasing_method
+        - purchasing_interest_apr_pct_per_yr
+        - purchasing_payment_frequency_months
+        - purchasing_term_yr
+        - tax_rate_pct
+        - leasing_money_factor
+
+        Inputs from cap_costs:
+        - purchasing_initial_principal_dol
+        - msrp_total_dol
+        - purchase_tax_dol
+        - purchasing_downpayment_dol
+        - residual_cost_dol
+
+        Estimated OperatingCosts variables:
+        - purchasing_payment_dol_per_yr
+        - purchasing_cost_dol_per_yr
+        - purchasing_remaining_principal_dol
+        - purchasing_tax_amount_dol_per_year
+
+        Args:
+            year_number (int): The year number for which the purchasing payment cost is calculated.
+            scenario (Scenario): The scenario instance containing configuration data, including the purchasing method, interest rate, and term.
+            cap_costs (CapitalCosts): The capital costs associated with the vehicle.
+        """
         if scenario.purchasing_method == 'cash':
             self.purchasing_payment_dol_per_yr = 0
             self.purchasing_cost_dol_per_yr = 0
@@ -224,6 +294,17 @@ class OperatingCosts:
         """
         Sets the fueling dwell labor cost for the given year.
 
+        This method calculates the fueling dwell labor cost based on the fueling dwell time and the labor rate.
+
+        Inputs from scenario:
+        - labor_rate_dol_per_hr
+
+        Inputs from oppy_costs:
+        - fueling_dwell_time_hr_per_yr
+
+        Estimated OperatingCosts variables:
+        - fueling_dwell_labor_cost_dol_per_yr
+
         Args:
             scenario (Scenario): The scenario instance containing configuration data.
             oppy_costs (OpportunityCosts): The opportunity costs associated with the vehicle.
@@ -235,6 +316,17 @@ class OperatingCosts:
     def set_net_oper_cost(self) -> None:
         """
         Sets the net operating cost for the given year.
+
+        This method calculates the net operating cost by summing the various operating cost components.
+        The calculation uses the following OperatingCosts elements:
+        - fuel_cost_dol_per_yr
+        - fueling_dwell_labor_cost_dol_per_yr
+        - maintenance_cost_dol_per_yr
+        - insurance_cost_dol_per_yr
+        - purchasing_payment_dol_per_yr
+
+        Estimated OperatingCosts variables:
+        - net_oper_cost_dol_per_yr
         """
         self.net_oper_cost_dol_per_yr = (
             self.fuel_cost_dol_per_yr
@@ -247,6 +339,16 @@ class OperatingCosts:
     def set_disc_oper_cost(self, year_number: int, scenario: Scenario) -> None:
         """
         Sets the discounted operating cost for the given year.
+
+        This method calculates the discounted operating cost based on the net operating cost and the discount rate.
+        The calculation uses the following OperatingCosts elements:
+        - net_oper_cost_dol_per_yr
+
+        Inputs from scenario:
+        - discount_rate_pct_per_yr
+
+        Estimated OperatingCosts variables:
+        - disc_oper_cost_dol_per_yr
 
         Args:
             year_number (int): The year number for which the discounted operating cost is calculated.
