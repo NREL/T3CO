@@ -164,11 +164,16 @@ class CapitalCosts:
 
     def set_msrp(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
-        Sets the Manufacturer's Suggested Retail Price (MSRP) for the vehicle.
+        Calculates the total MSRP (Manufacturer's Suggested Retail Price) for the vehicle.
 
-        Args:
-            vehicle (Vehicle): The vehicle instance.
-            scenario (Scenario): The scenario instance containing configuration data.
+        This method calculates the total MSRP by summing the costs of various components of the vehicle.
+        The calculation uses the following CapitalCosts elements:
+        - glider_cost_dol
+        - fuel_storage_cost_dol
+        - fuel_converter_cost_dol
+        - motor_control_power_elecs_cost_dol
+        - battery_cost_dol
+        - plug_cost_dol
         """
         self.msrp_total_dol = (
             self.glider_cost_dol
@@ -183,18 +188,29 @@ class CapitalCosts:
         """
         Sets the purchase tax for the vehicle.
 
+        This method calculates the purchase tax based on the total MSRP (Manufacturer's Suggested Retail Price) of the vehicle components.
+
         Args:
             vehicle (Vehicle): The vehicle instance.
-            scenario (Scenario): The scenario instance containing configuration data.
+            scenario (Scenario): The scenario instance containing configuration data, including the tax rate.
         """
         self.purchase_tax_dol = self.msrp_total_dol * scenario.tax_rate_pct
 
     def set_downpayment(self, vehicle: Vehicle, scenario: Scenario) -> None:
-        if scenario.purchasing_method =='cash':
-            self.purchasing_downpayment_dol = self.msrp_total_dol + self.purchase_tax_dol
-            self.purchasing_initial_principal_dol = 0.0
+        """
+        Sets the downpayment and initial principal for the vehicle purchase.
 
-        elif scenario.purchasing_method == 'loan':
+        This method calculates the downpayment and initial principal based on the purchasing method specified in the scenario.
+        The calculations use the following CapitalCosts elements:
+        - msrp_total_dol
+        - purchase_tax_dol
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance containing configuration data, including the purchasing method, down payment percentage, and interest rate.
+        """
+
+        if scenario.purchasing_method == 'loan':
             self.purchasing_downpayment_dol = (self.msrp_total_dol + self.purchase_tax_dol) * scenario.purchasing_down_payment_pct
             self.purchasing_initial_principal_dol = (self.msrp_total_dol + self.purchase_tax_dol) * (1 - scenario.purchasing_down_payment_pct)
         
@@ -202,14 +218,22 @@ class CapitalCosts:
             scenario.leasing_money_factor = scenario.purchasing_interest_rate_pct_per_yr/24
             self.purchasing_downpayment_dol = (self.msrp_total_dol + self.purchase_tax_dol) * scenario.purchasing_down_payment_pct
             self.purchasing_initial_principal_dol = 0.0
+        else:
+            self.purchasing_downpayment_dol = self.msrp_total_dol + self.purchase_tax_dol
+            self.purchasing_initial_principal_dol = 0.0
 
     def set_residual_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
         Sets the residual cost for the vehicle.
 
+        This method calculates the residual cost based on the total MSRP (Manufacturer's Suggested Retail Price) of the vehicle components,
+        the depreciation rates per year, and the vehicle's life span. The residual cost is the remaining value of the vehicle after depreciation.
+        The calculation uses the following CapitalCosts elements:
+        - msrp_total_dol
+
         Args:
             vehicle (Vehicle): The vehicle instance.
-            scenario (Scenario): The scenario instance containing configuration data.
+            scenario (Scenario): The scenario instance containing configuration data, including depreciation rates and vehicle life span.
         """
         
         scenario.residual_rate_pct *= np.prod([(1-scenario.depreciation_rates_pct_per_yr[i]) for i in range(scenario.vehicle_life_yr)])
@@ -219,7 +243,7 @@ class CapitalCosts:
         """
         Sets the total capital cost for the vehicle.
         """
-        self.net_capital_cost_dol = self.purchasing_downpayment_dol
+        self.net_capital_cost_dol = (self.purchasing_downpayment_dol if self.purchasing_downpayment_dol else (self.msrp_total_dol+self.purchase_tax_dol))
 
     def set_disc_residual_cost(self, scenario: Scenario) -> None:
         """
