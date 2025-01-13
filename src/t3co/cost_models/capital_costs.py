@@ -68,6 +68,7 @@ class CapitalCosts:
             scenario (Scenario): The scenario instance containing configuration data, including the base cost for the glider.
         """
         self.glider_cost_dol = scenario.vehicle_glider_cost_dol
+        self.glider_cost_dol = self.get_marked_up_value(self.glider_cost_dol, scenario)
 
 
     def set_fuel_converter_cost_dol(self, vehicle: Vehicle, scenario: Scenario) -> None:
@@ -351,7 +352,7 @@ class CapitalCosts:
 
         Estimated class variables:
         - net_capital_cost_dol
-
+        
         """
         self.net_capital_cost_dol = (self.purchasing_downpayment_dol if self.purchasing_downpayment_dol else (self.msrp_total_dol+self.purchase_tax_dol))
 

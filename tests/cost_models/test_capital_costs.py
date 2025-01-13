@@ -43,22 +43,23 @@ def scenario():
 
 def test_capital_costs_initialization(vehicle, scenario):
     capital_costs = CapitalCosts(vehicle=vehicle, scenario=scenario)
-    assert capital_costs.glider_cost_dol == pytest.approx(10000, 0.01)
+    assert capital_costs.glider_cost_dol == pytest.approx(11000.0, 0.01)
     assert capital_costs.fuel_converter_cost_dol == pytest.approx(0, 0.01)
     assert capital_costs.fuel_storage_cost_dol == pytest.approx(0, 0.01)
     assert capital_costs.motor_control_power_elecs_cost_dol == pytest.approx(14300.0, 0.01)
     assert capital_costs.plug_cost_dol == pytest.approx(1100, 0.01)
     assert capital_costs.battery_cost_dol == pytest.approx(22000.0, 0.01)
-    assert capital_costs.msrp_total_dol == pytest.approx(47400, 0.01)
-    assert capital_costs.purchase_tax_dol == pytest.approx(3792.0, 0.01)
-    assert capital_costs.residual_cost_dol == pytest.approx(-18458.32, 0.01)
-    assert capital_costs.net_capital_cost_dol == pytest.approx(5119.20, 0.01)
-    assert capital_costs.disc_residual_cost_dol == pytest.approx(-11331.81, 0.01)
+    assert capital_costs.msrp_total_dol == pytest.approx(48400, 0.01)
+    assert capital_costs.purchase_tax_dol == pytest.approx(3872.0, 0.01)
+    assert capital_costs.residual_cost_dol == pytest.approx(-18847.74, 0.01)
+    assert capital_costs.purchasing_downpayment_dol == pytest.approx(5227.20, 0.01)
+    assert capital_costs.net_capital_cost_dol == pytest.approx(5227.20, 0.01)
+    assert capital_costs.disc_residual_cost_dol == pytest.approx(-11570.87, 0.01)
 
 def test_set_glider_cost(vehicle, scenario):
     capital_costs = CapitalCosts.__new__(CapitalCosts, vehicle=vehicle, scenario=scenario)
     capital_costs.set_glider_cost(vehicle=vehicle, scenario=scenario)
-    assert capital_costs.glider_cost_dol == pytest.approx(10000, 0.01)
+    assert capital_costs.glider_cost_dol == pytest.approx(11000.0, 0.01)
 
 def test_set_fuel_converter_cost_dol(vehicle, scenario):
     capital_costs = CapitalCosts.__new__(CapitalCosts,vehicle=vehicle, scenario=scenario)
@@ -98,36 +99,36 @@ def test_set_msrp(vehicle, scenario):
 
 def test_set_purchase_tax(vehicle, scenario):
     capital_costs = CapitalCosts.__new__(CapitalCosts,vehicle=vehicle, scenario=scenario)
-    capital_costs.msrp_total_dol = 47400.0
+    capital_costs.msrp_total_dol = 48400.0
     capital_costs.set_purchase_tax(vehicle=vehicle, scenario=scenario)
-    assert capital_costs.purchase_tax_dol == pytest.approx(3792.0, 0.01)
+    assert capital_costs.purchase_tax_dol == pytest.approx(3872.0, 0.01)
 
 def test_set_downpayment(vehicle, scenario):
     capital_costs = CapitalCosts.__new__(CapitalCosts,vehicle=vehicle, scenario=scenario)
-    capital_costs.msrp_total_dol = 47400.0
+    capital_costs.msrp_total_dol = 48400.0
     capital_costs.purchase_tax_dol = 3792.0
     capital_costs.set_downpayment(vehicle=vehicle, scenario=scenario)
-    assert capital_costs.purchasing_downpayment_dol == pytest.approx(5119.20, 0.01)
+    assert capital_costs.purchasing_downpayment_dol == pytest.approx(5219.20, 0.01)
 
 def test_set_residual_cost(vehicle, scenario):
     capital_costs = CapitalCosts.__new__(CapitalCosts,vehicle=vehicle, scenario=scenario)
-    capital_costs.msrp_total_dol = 47400.0
+    capital_costs.msrp_total_dol = 48400.0
     capital_costs.set_residual_cost(vehicle=vehicle, scenario=scenario)
-    assert capital_costs.residual_cost_dol == pytest.approx(-18458.32, 0.01)
+    assert capital_costs.residual_cost_dol == pytest.approx(-18847.74, 0.01)
 
 def test_set_total_cap_cost(vehicle, scenario):
     capital_costs = CapitalCosts.__new__(CapitalCosts,vehicle=vehicle, scenario=scenario)
-    capital_costs.msrp_total_dol = 47400.0
+    capital_costs.msrp_total_dol = 48400.0
     capital_costs.purchase_tax_dol = 3792.0
     capital_costs.set_total_cap_cost()
-    assert capital_costs.net_capital_cost_dol == pytest.approx(51192.0, 0.01)
+    assert capital_costs.net_capital_cost_dol == pytest.approx(52192.0, 0.01)
 
 def test_set_disc_residual_cost(vehicle, scenario):
     capital_costs = CapitalCosts.__new__(CapitalCosts,vehicle=vehicle, scenario=scenario)
-    capital_costs.residual_cost_dol = -18458.32
+    capital_costs.residual_cost_dol = -18847.74
     capital_costs.set_disc_residual_cost(scenario=scenario)
     print(capital_costs.disc_residual_cost_dol)
-    assert capital_costs.disc_residual_cost_dol == pytest.approx(-11331.81, 0.01)
+    assert capital_costs.disc_residual_cost_dol == pytest.approx(-11570.877, 0.01)
 
 def test_get_marked_up_value(vehicle, scenario):
     capital_costs = CapitalCosts.__new__(CapitalCosts,vehicle=vehicle, scenario=scenario)
