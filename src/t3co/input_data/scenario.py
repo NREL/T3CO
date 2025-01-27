@@ -22,19 +22,15 @@ class Scenario:
     scenario_name: str = ""
     drive_cycle: str = ""
     use_config: bool = True
-    vmt_reduct_per_yr: float = 0
     vmt: list = field(default_factory=str)
     constant_trip_distance_mi: float = 0
     vehicle_life_yr: float = 0
-    desired_ess_replacements: float = 0
     discount_rate_pct_per_yr: float = 0.0
 
     ess_max_charging_power_kw: float = 0
-    ess_cost_dol_per_kw: float = 0
     ess_cost_dol_per_kwh: float = 0
     ess_base_cost_dol: float = 0
     ess_cost_reduction_dol_per_yr: float = 0
-    ess_salvage_value_dol: float = 0
     ess_charge_rate_kW: float = 0
     pe_mc_cost_dol_per_kw: float = 0
     pe_mc_base_cost_dol: float = 0

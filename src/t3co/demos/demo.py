@@ -28,12 +28,12 @@ input_scenario = scenario.Scenario().from_file(
 
 input_energy = energy.Energy( mpgge=4.0, primary_fuel_range_mi=200.0)
 
-tco_0 = TCOCalc(
+tco_3 = TCOCalc(
     year_index=3,
     vehicle=input_vehicle, 
     scenario = input_scenario, 
     energy=input_energy, )
-print(tco_0)
+print(tco_3)
 
 # %%
 output_ledger = ledger.Ledger(
@@ -42,6 +42,7 @@ output_ledger = ledger.Ledger(
 filepath = Path(__file__).parents[2] / "results/save_dict.json"
 csv_filepath = Path(__file__).parents[2] / "results/save_csv.csv"
 print(output_ledger)
+print(output_ledger.tco_per_year[2].oper_costs_dol.insurance_cost_dol_per_yr)
 
 output_ledger.to_dict(filepath, flatten=False)
 output_ledger.to_csv(csv_filepath)
