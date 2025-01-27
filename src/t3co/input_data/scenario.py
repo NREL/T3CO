@@ -30,7 +30,6 @@ class Scenario:
     ess_max_charging_power_kw: float = 0
     ess_cost_dol_per_kwh: float = 0
     ess_base_cost_dol: float = 0
-    ess_cost_reduction_dol_per_yr: float = 0
     ess_charge_rate_kW: float = 0
     pe_mc_cost_dol_per_kw: float = 0
     pe_mc_base_cost_dol: float = 0
@@ -45,7 +44,6 @@ class Scenario:
     fc_cng_ice_cost_dol_per_kw: float = 0
     fs_cng_cost_dol_per_kwh: float = 0
     vehicle_glider_cost_dol: float = 0
-    segment_name: str = ""
     gvwr_kg: float = 0
     gvwr_credit_kg: float = 0
     fuel_type: str = ""
