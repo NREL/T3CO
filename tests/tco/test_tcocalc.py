@@ -68,11 +68,10 @@ def scenario():
         discount_rate_pct_per_yr=0.05,
         avg_speed_mph=50.0,
         vehicle_class="class8",
+        depreciation_rates_pct_per_yr = [0.09]*10,
         insurance_rates_pct_per_yr=[0.01] * 10,
         maint_oper_cost_dol_per_mi=[0.05] * 10,
-        residual_rates_df=pd.DataFrame(
-            {"VehicleClass": ["class8"], "PowertrainType": ["bev"], "10": [0.2]}
-        ),
+        
         fuel_prices_df=pd.DataFrame(
             {
                 "Fuel": ["dolPerKwh"],
@@ -142,8 +141,8 @@ def test_tcocalc_initialization(
     assert tcocalc.oppy_costs_dol.net_downtime_oppy_cost_dol_per_yr == pytest.approx(
         7282.5, 0.01
     )
-    assert tcocalc.total_cost_dol_per_yr == pytest.approx(70681.83, 0.01)
-    assert tcocalc.disc_total_cost_dol_per_yr == pytest.approx(69753.74, 0.01)
+    assert tcocalc.total_cost_dol_per_yr == pytest.approx(71771.83, 0.01)
+    assert tcocalc.disc_total_cost_dol_per_yr == pytest.approx(70843.26, 0.01)
 
 
 def test_calculate_capital_costs(vehicle, scenario):
@@ -152,7 +151,7 @@ def test_calculate_capital_costs(vehicle, scenario):
     )
     tcocalc.year_number = 0 + 1
     tcocalc.calculate_capital_costs(vehicle=vehicle, scenario=scenario)
-    assert tcocalc.cap_costs_dol.glider_cost_dol == pytest.approx(10000.0, 0.01)
+    assert tcocalc.cap_costs_dol.glider_cost_dol == pytest.approx(11000.0, 0.01)
 
 
 def test_calculate_opportunity_costs(vehicle, scenario, energy):
@@ -196,7 +195,7 @@ def test_set_total_cost(vehicle, scenario, energy, cap_costs, oper_costs, oppy_c
     tcocalc.oper_costs_dol = oper_costs
     tcocalc.oppy_costs_dol = oppy_costs
     tcocalc.set_total_cost(scenario=scenario)
-    assert tcocalc.total_cost_dol_per_yr == pytest.approx(70681.83, 0.01)
+    assert tcocalc.total_cost_dol_per_yr == pytest.approx(71771.83, 0.01)
 
 
 def test_set_disc_total_cost(
@@ -212,4 +211,4 @@ def test_set_disc_total_cost(
     tcocalc.oper_costs_dol = oper_costs
     tcocalc.oppy_costs_dol = oppy_costs
     tcocalc.set_disc_total_cost(vehicle=vehicle, scenario=scenario)
-    assert tcocalc.disc_total_cost_dol_per_yr == pytest.approx(69753.74, 0.01)
+    assert tcocalc.disc_total_cost_dol_per_yr == pytest.approx(70843.26, 0.01)

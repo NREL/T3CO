@@ -22,19 +22,14 @@ class Scenario:
     scenario_name: str = ""
     drive_cycle: str = ""
     use_config: bool = True
-    vmt_reduct_per_yr: float = 0
     vmt: list = field(default_factory=str)
     constant_trip_distance_mi: float = 0
     vehicle_life_yr: float = 0
-    desired_ess_replacements: float = 0
     discount_rate_pct_per_yr: float = 0.0
 
     ess_max_charging_power_kw: float = 0
-    ess_cost_dol_per_kw: float = 0
     ess_cost_dol_per_kwh: float = 0
     ess_base_cost_dol: float = 0
-    ess_cost_reduction_dol_per_yr: float = 0
-    ess_salvage_value_dol: float = 0
     ess_charge_rate_kW: float = 0
     pe_mc_cost_dol_per_kw: float = 0
     pe_mc_base_cost_dol: float = 0
@@ -49,7 +44,6 @@ class Scenario:
     fc_cng_ice_cost_dol_per_kw: float = 0
     fs_cng_cost_dol_per_kwh: float = 0
     vehicle_glider_cost_dol: float = 0
-    segment_name: str = ""
     gvwr_kg: float = 0
     gvwr_credit_kg: float = 0
     fuel_type: str = ""
@@ -77,10 +71,12 @@ class Scenario:
     fs_fueling_rate_diesel_gpm: float = 0
     fs_fueling_rate_kg_per_min: float = 0
 
-    phev_utility_factor_override: float = -1
-    phev_utility_factor_computed: float = -1
-    motor_power_override_kw_fc_demand_on_pct: float = -1
-
+    purchasing_method: str = ""
+    purchasing_down_payment_pct: float = 0.0
+    purchasing_interest_apr_pct_per_yr: float = 0.0
+    purchasing_payment_frequency_months: float = 0.0
+    purchasing_term_yr: float  =   0.0
+    leasing_money_factor: float = 0.0
     shifts_per_year: List[float] = field(default_factory=list)
 
     missed_trace_correction: bool = False
@@ -97,7 +93,6 @@ class Scenario:
     knob_max_fc_kw: List[float] = field(default_factory=list)
     knob_min_fs_kwh: List[float] = field(default_factory=list)
     knob_max_fs_kwh: List[float] = field(default_factory=list)
-    objective_phev_minimize_fuel_use: bool = False
     constraint_c_rate: bool = False
     constraint_range: bool = False
     constraint_accel: bool = False
@@ -105,8 +100,6 @@ class Scenario:
     objective_tco: bool = False
     constraint_trace_miss_dist_percent_on: bool = False
     trace_miss_dist_percent: float = 0
-    constraint_phev_minimize_fuel_use_on: bool = False
-    constraint_phev_minimize_fuel_use_percent: float = 0
 
     labor_rate_dol_per_hr: float = 0
     downtime_oppy_cost_dol_per_hr: float = 0
@@ -129,9 +122,8 @@ class Scenario:
     fuel_prices_dol_per_gge: List[float] = field(default_factory=float)
     insurance_rates_pct_per_yr: List[float] = field(default_factory=float)
 
-    residual_rates_file: str = "./auxiliary/ResidualValues.csv"
-    residual_rates_df: pd.DataFrame = None
-    residual_rate_pct: float = 0
+    depreciation_rates_pct_per_yr: List[float] = field(default_factory=float)
+    residual_rate_pct: float = 1.0
 
     activate_mr_downtime_cost: bool = True
     mr_planned_downtime_hr_per_yr: float = 0
@@ -144,6 +136,13 @@ class Scenario:
     plf_weight_distribution_file: str = "./auxiliary/tractorweightvars.csv"
 
     avg_speed_mph: float = None
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Creates a new instance of the Scenario class.
+        """
+        instance = super(Scenario, cls).__new__(cls)
+        return instance
 
     @classmethod
     def from_file(
@@ -169,6 +168,10 @@ class Scenario:
         scenario_dict = scenario_df.loc[scenario_df["selection"] == selection].to_dict(
             "records"
         )[0]
+        
+        return cls.from_dict(cls, scenario_dict=scenario_dict)
+        
+    def from_dict(cls, scenario_dict:dict):
         scenario_dict["vehicle_class"] = " "
         scenario_dict["vehicle_class"] = (
             scenario_dict["vehicle_class"]
@@ -188,6 +191,13 @@ class Scenario:
             if scenario_dict["mr_unplanned_downtime_hr_per_mi"]
             else 0
         )
+        scenario_dict["depreciation_rates_pct_per_yr"] = (
+            ast.literal_eval(scenario_dict["depreciation_rates_pct_per_yr"])[
+                : scenario_dict["vehicle_life_yr"]
+            ]
+            if scenario_dict["depreciation_rates_pct_per_yr"]
+            else 0
+        )
         scenario_dict["maint_oper_cost_dol_per_mi"] = (
             ast.literal_eval(scenario_dict["maint_oper_cost_dol_per_mi"])[
                 : scenario_dict["vehicle_life_yr"]
@@ -195,6 +205,7 @@ class Scenario:
             if scenario_dict["maint_oper_cost_dol_per_mi"]
             else -1
         )
+        
         return cls(**scenario_dict)
 
     def override_from_config(
@@ -218,13 +229,13 @@ class Scenario:
             "lw_imp_curve_sel",
             "eng_eff_imp_curve_sel",
             "aero_drag_imp_curve_sel",
+            "purchasing_method",
             "constraint_range",
             "constraint_accel",
             "constraint_grade",
             "objective_tco",
             "constraint_c_rate",
             "constraint_trace_miss_dist_percent_on",
-            "objective_phev_minimize_fuel_use",
             "activate_tco_payload_cap_cost_multiplier",
             "activate_tco_fueling_dwell_time_cost",
             "fdt_frac_full_charge_bounds",
@@ -244,12 +255,19 @@ class Scenario:
                 print(
                     f"Scenario Fields overridden from config: {self.fields_overriden}"
                 ) if verbose else None
+
         except Exception:
             print(
-                f"Config file not attached or scenario.use_config set to False: {config}"
+                f"Error in Config file. T3COConfig either not attached or scenario.use_config set to False: {config}"
             )
 
-        self.residual_rates_df = config.residual_rates_df
+        if self.purchasing_method.lower() in ['loan', 'financing', 'autoloan', 'borrowing']:
+            self.purchasing_method = 'loan'
+        elif self.purchasing_method.lower() in ['leasing', 'renting', 'lease']:
+            self.purchasing_method = 'lease'
+        else:
+            self.purchasing_method = 'cash'
+
         self.insurance_rates_file = config.insurance_rates_file
         self.fuel_prices_df = config.fuel_prices_df
 

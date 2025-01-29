@@ -45,6 +45,7 @@ class Ledger:
     total_maintenance_cost_dol: float = 0.0
     total_fuel_used_gal_ge: float = 0.0
     total_fuel_used_gal_de: float = 0.0
+    total_purchasing_interest_cost_dol: float = 0.0
     mpgge: float = 0.0
     grid_mpgge: float = 0.0
     mpgde: float = 0.0
@@ -192,6 +193,22 @@ class Ledger:
             )
             for year_index in range(self.vehicle_life_yr)
         )
+        self.total_purchasing_interest_cost_dol = sum(
+            self.scenario.get_discounted_value(
+                (
+                    self.tco_per_year[
+                    year_index
+                ].oper_costs_dol.purchasing_cost_dol_per_yr if self.tco_per_year[
+                    year_index
+                ].oper_costs_dol.purchasing_cost_dol_per_yr
+                else self.tco_per_year[
+                    year_index
+                ].oper_costs_dol.purchasing_cost_dol_per_yr)
+                ,
+                year_number=year_index + 1,
+            )
+            for year_index in range(self.vehicle_life_yr)
+        )
 
         self.total_downtime_hr = sum(
             self.tco_per_year[year_index].oppy_costs_dol.net_downtime_hr_per_yr
@@ -332,8 +349,8 @@ class Ledger:
         self.grid_mpgge = (
             self.energy.mpgge * self.vehicle.chg_eff if self.vehicle.chg_eff else None
         )
-        self.mpgde = self.energy.mpgge / gl.DieselGalPerGasGal
-        self.kwh_per_mi = None
+        self.mpgde = self.energy.mpgge / gl.DGE_TO_GGE
+        self.kwh_per_mi =  (gl.KWH_PER_GGE / self.mpgge if self.mpgge else None)
 
     def to_dict(self, include_prefix: bool = True, flatten: bool = True) -> dict:
         """

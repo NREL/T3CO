@@ -19,7 +19,6 @@ class Config:
     scenario_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH/"inputs"/"Demo_FY22_scenario_assumptions.csv"
     dst_dir: str = ""
     resfile_suffix: str = None
-    write_tsv: bool = False
     selections: Union[str, list] = ""
     vehicle_life_yr: float = 0
     drive_cycle: str = None
@@ -31,7 +30,6 @@ class Config:
     fs_fueling_rate_diesel_gpm: float = 0
 
     insurance_rates_file: str = ""
-    residual_rates_file: str = ""
     fuel_prices_file: str = ""
     plf_weight_dist_file: str = None
 
@@ -52,7 +50,6 @@ class Config:
     objective_tco: bool = False
     constraint_c_rate: bool = False
     constraint_trace_miss_dist_percent_on: bool = False
-    objective_phev_minimize_fuel_use: bool = False
 
     # Opportunity Cost
     activate_tco_payload_cap_cost_multiplier: bool = False
@@ -64,7 +61,6 @@ class Config:
     dc_files: list[str] = None
 
     fuel_prices_df: pd.DataFrame = None
-    residual_rates_df: pd.DataFrame = None
     config_filename: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "T3COConfig.csv"
 
     def __new__(cls, *args, **kwargs):
@@ -142,7 +138,7 @@ class Config:
         """
         if self.drive_cycle:
             self.drive_cycle = (
-                Path(self.drive_cycle)
+                Path(self.drive_cycle).resolve(strict=True)
                 if Path(self.drive_cycle).is_absolute()
                 else Path(self.config_filename).parents[0]
                 / self.drive_cycle
@@ -164,20 +160,13 @@ class Config:
         """
         self.fuel_prices_df = pd.read_csv(
             (
-                Path(self.fuel_prices_file)
+                Path(self.fuel_prices_file).resolve(strict=True)
                 if Path(self.fuel_prices_file).is_absolute()
                 else gl.RESOURCES_FOLDERPATH / self.fuel_prices_file
             )
         )
         self.fuel_prices_df.set_index("Fuel", inplace=True)
 
-        self.residual_rates_df = pd.read_csv(
-            (
-                Path(self.residual_rates_file)
-                if Path(self.residual_rates_file).is_absolute()
-                else gl.RESOURCES_FOLDERPATH / self.residual_rates_file
-            )
-        )
         
     def delete_dataframes(self) -> None:
         """

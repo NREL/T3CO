@@ -4,7 +4,7 @@ scenario_name,Scenario Name,Name of the selected scenario/vehicle,string
 veh_year,Vehicle Year,Current year,int
 vehicle_weight_class,Vehicle Weight Class,Vehicle Weight Class,string
 tech_progress,Technology Progress,Technology Progress - Low or High,string
-vehicle_fuel_type,Vehicle Fuel Type,"Vehicle Fuel Type - Gasoline, Diesel, BEV, HEV, FCEV, PHEV",string
+vehicle_fuel_type,Vehicle Fuel Type,"Vehicle Fuel Type - Gasoline, Diesel, BEV, HEV, FCEV",string
 vehicle_type,Vehicle Type,"Vehicle/Vocation Type like Sleeper Cab Low Roof, Box Truck, etc.,",string
 veh_pt_type,Vehicle Powertrain Type,Vehicle powertrain type,string
 pareto_front_number,Pareto Front Solution Number,Optimization solution number from pareto front ,int

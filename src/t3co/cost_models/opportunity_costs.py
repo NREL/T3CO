@@ -70,13 +70,28 @@ class OpportunityCosts:
         """
         Sets the payload capacity cost multiplier for the vehicle.
 
+        This method calculates the payload capacity cost multiplier based on the vehicle's weight and the scenario's weight distribution.
+
+        Inputs from scenario:
+        - plf_weight_distribution_file
+        - plf_ref_veh_empty_mass_kg
+        - gvwr_kg
+        - gvwr_credit_kg
+
+        Inputs from vehicle:
+        - veh_kg
+        - cargo_kg
+
+        Estimated class variables:
+        - payload_cap_cost_multiplier
+
         Args:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data.
         """
         df_veh_wt = pd.read_csv(
             (
-                Path(scenario.plf_weight_distribution_file)
+                Path(scenario.plf_weight_distribution_file).resolve(strict=True)
                 if Path(scenario.plf_weight_distribution_file).is_absolute()
                 else gl.RESOURCES_FOLDERPATH
                 / scenario.plf_weight_distribution_file
@@ -128,7 +143,7 @@ class OpportunityCosts:
             if verbose:
                 probability_payload.to_csv(
                     (
-                        Path(scenario.plf_weight_distribution_file)
+                        Path(scenario.plf_weight_distribution_file).resolve(strict=True)
                         if Path(scenario.plf_weight_distribution_file).is_absolute()
                         else gl.RESOURCES_FOLDERPATH
                         / scenario.plf_weight_distribution_file
@@ -199,12 +214,43 @@ class OpportunityCosts:
         """
         Calculates the fueling dwell time cost for a vehicle based on fuel fill rate/charging power and shifts per year.
 
+        Inputs from scenario:
+        - fdt_frac_full_charge_bounds
+        - shifts_per_year
+        - constant_trip_distance_mi
+        - vmt
+        - fdt_dwpt_fraction_power_pct
+        - ess_max_charging_power_kw
+        - fs_fueling_rate_gasoline_gpm
+        - fs_fueling_rate_diesel_gpm
+        - fdt_num_free_dwell_trips
+        - fdt_avg_overhead_hr_per_dwell_hr
+        - fdt_available_freetime_hr
+        - downtime_oppy_cost_dol_per_hr
+
+        Inputs from vehicle:
+        - veh_pt_type
+        - ess_max_kwh
+        - fs_kwh
+
+        Inputs from energy:
+        - primary_fuel_range_mi
+
+        Estimated OpportunityCosts variables:
+        - fdt_frac_full_charge_bounds
+        - shifts_per_year
+        - fdt_full_dwell_hr
+        - trip_distance_mi
+        - fdt_num_of_dwells
+        - fueling_dwell_time_hr_per_yr
+        - fueling_downtime_oppy_cost_dol_per_yr
+
         Args:
-            year_number (int): The year number for which the fueling dwell time cost is calculated.
-            vehicle (Vehicle): The vehicle instance.
-            scenario (Scenario): The scenario instance containing configuration data.
-            energy (Energy): The energy model instance.
-        """
+        year_number (int): The year number for which the fueling dwell time cost is calculated.
+        vehicle (Vehicle): The vehicle instance.
+        scenario (Scenario): The scenario instance containing configuration data.
+        energy (Energy): The energy model instance.
+    """
         self.fdt_frac_full_charge_bounds = (ast.literal_eval(scenario.fdt_frac_full_charge_bounds) if isinstance(scenario.fdt_frac_full_charge_bounds, str) else scenario.fdt_frac_full_charge_bounds)
 
         if (
@@ -309,6 +355,21 @@ class OpportunityCosts:
         """
         Calculates the Maintenance and Repair (M&R) downtime cost based on planned, unplanned, and tire replacement downtime inputs.
 
+        Inputs from scenario:
+        - mr_planned_downtime_hr_per_yr
+        - mr_unplanned_downtime_hr_per_mi
+        - vmt
+        - mr_avg_tire_life_mi
+        - mr_tire_replace_downtime_hr_per_event
+        - downtime_oppy_cost_dol_per_hr
+
+        Estimated OpportunityCosts variables:
+        - mr_planned_downtime_hr
+        - mr_unplanned_downtime_hr
+        - mr_tire_replacement_downtime_hr
+        - mr_downtime_hr_per_yr
+        - mr_downtime_oppy_cost_dol_per_yr
+
         Args:
             year_number (int): The year number for which the M&R downtime cost is calculated.
             vehicle (Vehicle): The vehicle instance.
@@ -339,7 +400,18 @@ class OpportunityCosts:
 
     def set_net_downtime_oppy_cost(self) -> None:
         """
-        Sets the net downtime opportunity cost for the given year.
+        Sets the net downtime opportunity cost for the vehicle.
+
+        This method calculates the net downtime opportunity cost by summing the fueling downtime and MR downtime opportunity costs.
+        The calculation uses the following OpportunityCosts elements:
+        - fueling_downtime_oppy_cost_dol_per_yr
+        - mr_downtime_oppy_cost_dol_per_yr
+        - fueling_dwell_time_hr_per_yr
+        - mr_downtime_hr_per_yr
+
+        Estimated OpportunityCosts variables:
+        - net_downtime_oppy_cost_dol_per_yr
+        - net_downtime_hr_per_yr
         """
         self.net_downtime_oppy_cost_dol_per_yr = (
             self.fueling_downtime_oppy_cost_dol_per_yr
@@ -352,6 +424,12 @@ class OpportunityCosts:
     def set_disc_downtime_oppy_cost(self, year_number: int, scenario: Scenario) -> None:
         """
         Sets the discounted downtime opportunity cost for the given year.
+
+        Inputs from scenario:
+        - discount_rate_pct_per_yr
+
+        Estimated class variables:
+        - disc_downtime_oppy_cost_dol
 
         Args:
             year_number (int): The year number for which the discounted downtime opportunity cost is calculated.
