@@ -6,8 +6,8 @@ import pandas as pd
 @pytest.fixture
 def mock_config_file(tmp_path):
     # Create a mock config CSV file
-    data = """analysis_id,analysis_name,vehicle_file,scenario_file,dst_dir,resfile_suffix,write_tsv,selections,vehicle_life_yr,drive_cycle,ess_max_charging_power_kw,fs_fueling_rate_kg_per_min,fs_fueling_rate_gasoline_gpm,fs_fueling_rate_diesel_gpm,insurance_rates_file,fuel_prices_file,plf_weight_dist_file,TCO_method,algorithms,lw_imp_curves,eng_eff_imp_curves,aero_drag_imp_curves,lw_imp_curve_sel,eng_eff_imp_curve_sel,aero_drag_imp_curve_sel,skip_all_opt,constraint_range,constraint_accel,constraint_grade,objective_tco,constraint_c_rate,constraint_trace_miss_dist_percent_on,objective_phev_minimize_fuel_use,activate_tco_payload_cap_cost_multiplier,activate_tco_fueling_dwell_time_cost,fdt_frac_full_charge_bounds,activate_mr_downtime_cost
-1,Test Analysis,vehicle.csv,scenario.csv,dst_dir,suffix,False,"[1, 2, 3]",10,drive_cycle.csv,100,200,300,400,insurance.csv,fuel.csv,weight_dist.csv,DIRECT,algorithms,lw_imp_curves,eng_eff_curves,aero_drag_curves,lw_imp_curve_sel,eng_eff_imp_curve_sel,aero_drag_imp_curve_sel,True,False,False,False,False,False,False,False,False,False,,False
+    data = """analysis_id,analysis_name,vehicle_file,scenario_file,dst_dir,resfile_suffix,selections,vehicle_life_yr,drive_cycle,ess_max_charging_power_kw,fs_fueling_rate_kg_per_min,fs_fueling_rate_gasoline_gpm,fs_fueling_rate_diesel_gpm,insurance_rates_file,fuel_prices_file,plf_weight_dist_file,TCO_method,algorithms,lw_imp_curves,eng_eff_imp_curves,aero_drag_imp_curves,lw_imp_curve_sel,eng_eff_imp_curve_sel,aero_drag_imp_curve_sel,skip_all_opt,constraint_range,constraint_accel,constraint_grade,objective_tco,constraint_c_rate,constraint_trace_miss_dist_percent_on,objective_phev_minimize_fuel_use,activate_tco_payload_cap_cost_multiplier,activate_tco_fueling_dwell_time_cost,fdt_frac_full_charge_bounds,activate_mr_downtime_cost
+1,Test Analysis,vehicle.csv,scenario.csv,dst_dir,suffix,"[1, 2, 3]",10,drive_cycle.csv,100,200,300,400,insurance.csv,fuel.csv,weight_dist.csv,DIRECT,algorithms,lw_imp_curves,eng_eff_curves,aero_drag_curves,lw_imp_curve_sel,eng_eff_imp_curve_sel,aero_drag_imp_curve_sel,True,False,False,False,False,False,False,False,False,False,,False
 """
     mock_file = tmp_path / "mock_config.csv"
     mock_file.write_text(data)
@@ -21,7 +21,6 @@ def test_config_initialization():
         scenario_file="scenario.csv",
         dst_dir="dst_dir",
         resfile_suffix="suffix",
-        write_tsv=False,
         selections=[1, 2, 3],
         vehicle_life_yr=10,
         drive_cycle="drive_cycle.csv",
@@ -59,7 +58,6 @@ def test_config_initialization():
     assert config.scenario_file == "scenario.csv"
     assert config.dst_dir == "dst_dir"
     assert config.resfile_suffix == "suffix"
-    assert config.write_tsv is False
     assert config.selections == [1, 2, 3]
     assert config.vehicle_life_yr == 10
     assert config.drive_cycle == "drive_cycle.csv"
@@ -99,7 +97,6 @@ def test_config_from_file(mock_config_file):
     assert config.scenario_file == "scenario.csv"
     assert config.dst_dir == "dst_dir"
     assert config.resfile_suffix == "suffix"
-    assert config.write_tsv is False
     assert config.selections == [1, 2, 3]
     assert config.vehicle_life_yr == 10
     assert config.drive_cycle == "drive_cycle.csv"
