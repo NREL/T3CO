@@ -4,7 +4,7 @@ import time
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Union, List, Dict
 
 import pandas as pd
 
@@ -17,37 +17,64 @@ from t3co.tco.ledger import Ledger
 
 
 def load_vehicle_scenario_energy(
-    selection: int | str, config: Config
+    selection: Union[int, str], config: Config, vehicle: Vehicle = None, scenario: Scenario = None, energy: Energy = None
 ) -> Tuple[Vehicle, Scenario, Energy]:
+    """
+    Loads the vehicle, scenario, and energy models based on the selection and config.
+
+    Args:
+        selection (Union[int, str]): The selection index or string.
+        config (Config): The configuration instance.
+
+    Returns:
+        Tuple[Vehicle, Scenario, Energy]: The vehicle, scenario, and energy models.
+    """
     if config.dc_files:
         selection, dc_id = map(int, selection.split("_"))
 
-    input_scenario = Scenario().from_file(
-        selection=selection, scenario_file=config.scenario_file
-    )
-    input_scenario.from_config(
-        config=config,
-    )
+    if scenario:
+        input_scenario = scenario
+    else:
+        input_scenario = Scenario().from_file(
+            selection=selection, scenario_file=config.scenario_file
+        )
+        input_scenario.override_from_config(config=config)
 
-    input_vehicle = Vehicle().from_config(selection=selection, config=config)
-    input_vehicle.set_veh_kg()
+    if vehicle:
+        input_vehicle = vehicle
+    else:
+        input_vehicle = Vehicle().from_config(selection=selection, config=config)
+        input_vehicle.set_veh_kg()
 
     if config.dc_files:
         input_scenario.drive_cycle = config.dc_files[int(dc_id)]
 
-    input_energy = Energy()
-    input_energy.run_fastsim_model(
-        veh_no=selection, vehicle_file=config.vehicle_file, scenario=input_scenario
-    )
+    if energy:
+        input_energy = energy
+    else:       
+        input_energy = Energy()
+        input_energy.run_fastsim_model(
+            veh_no=selection, vehicle_file=config.vehicle_file, scenario=input_scenario
+        )
 
     return input_vehicle, input_scenario, input_energy
 
 
-def generate_ledger(selection: int, config: Config):
+def generate_ledger(selection: int, config: Config) -> Dict:
+    """
+    Generates the ledger for the given selection and config.
+
+    Args:
+        selection (int): The selection index.
+        config (Config): The configuration instance.
+
+    Returns:
+        Dict: The ledger as a dictionary.
+    """
     input_vehicle, input_scenario, input_energy = load_vehicle_scenario_energy(
         selection=selection, config=config
     )
-    print(f"Running Selecion: {selection}")
+    print(f"Running Selection: {selection}")
 
     return Ledger(
         vehicle=input_vehicle,
@@ -57,7 +84,16 @@ def generate_ledger(selection: int, config: Config):
     ).to_dict()
 
 
-def create_results_filepath(config: Config):
+def create_results_filepath(config: Config) -> Path:
+    """
+    Creates the results file path based on the config.
+
+    Args:
+        config (Config): The configuration instance.
+
+    Returns:
+        Path: The path to the results file.
+    """
     ts = time.strftime("%Y-%m-%d_%H-%M-%S")
     if config.resfile_suffix:
         result_filename = f"results_{ts}_{str(config.resfile_suffix)}.csv".strip("_")
@@ -69,7 +105,7 @@ def create_results_filepath(config: Config):
             .replace("'", "")
             .replace(",", "-")
         )
-        result_filename = f"new_results_{ts}_sel_{selections_string[:20]}.csv".strip(
+        result_filename = f"results_{ts}_sel_{selections_string[:20]}.csv".strip(
             "_"
         )
     output_path = (
@@ -85,13 +121,27 @@ def create_results_filepath(config: Config):
 
 
 def export_results_to_csv(
-    reports_list: list[dict],
+    reports_list: List[Dict],
     config: Config,
-    output_path: str | Path = None,
+    output_path: Union[str, Path] = None,
     return_filepath: bool = True,
     return_df: bool = False,
     sort_values: bool = False,
-):
+) -> Tuple[Union[Path, None], Union[pd.DataFrame, None]]:
+    """
+    Exports the results to a CSV file.
+
+    Args:
+        reports_list (List[Dict]): The list of reports.
+        config (Config): The configuration instance.
+        output_path (Union[str, Path], optional): The output path for the CSV file. Defaults to None.
+        return_filepath (bool, optional): Whether to return the file path. Defaults to True.
+        return_df (bool, optional): Whether to return the DataFrame. Defaults to False.
+        sort_values (bool, optional): Whether to sort the values by selection. Defaults to False.
+
+    Returns:
+        Tuple[Union[Path, None], Union[pd.DataFrame, None]]: The output path and DataFrame if specified.
+    """
     reports_df = pd.DataFrame(reports_list)
 
     if not output_path:
@@ -107,7 +157,14 @@ def export_results_to_csv(
     )
 
 
-def run_t3co(config: Config, save_results: bool = True):
+def run_t3co(config: Config, save_results: bool = True) -> None:
+    """
+    Runs the T3CO analysis.
+
+    Args:
+        config (Config): The configuration instance.
+        save_results (bool, optional): Whether to save the results. Defaults to True.
+    """
     reports_list = []
     error_list = []
     for selection in config.selections_list:
@@ -150,7 +207,6 @@ if __name__ == "__main__":
         type=int,
         help="Analysis key from input Config file - 'config.analysis_id'",
     )
-    # input files
     parser.add_argument(
         "--vehicles",
         default=gl.RESOURCES_FOLDERPATH
@@ -173,14 +229,12 @@ if __name__ == "__main__":
         nargs="*",
         help="""Selections desired to run. Selections can be an int, or list of ints, or range expression. Ex: --selections 234 or --selections "[234,236,238]" or --selections "range(234, 150, 2)" """,
     )
-
     parser.add_argument(
         "--drive-cycle",
         type=ast.literal_eval,
         nargs="*",
         help="""Override drive_cycle from scenario with a composite cycle, or an individual cycle, or a folder of cycles. File paths should be relative to the resources folder """,
     )
-
     parser.add_argument(
         "--eng-curves",
         default=gl.RESOURCES_FOLDERPATH
@@ -205,7 +259,6 @@ if __name__ == "__main__":
         type=str,
         help="Input file for aerodynamics improvement curves",
     )
-
     parser.add_argument(
         "--look-for",
         default="",
@@ -273,7 +326,7 @@ if __name__ == "__main__":
         "--f-tol",
         default=0.001,
         type=float,
-        help="Objective space tolerance for optimzation",
+        help="Objective space tolerance for optimization",
     )
     parser.add_argument(
         "--n-max-gen",
@@ -300,7 +353,6 @@ if __name__ == "__main__":
         type=float,
         help="Range overshoot tolerance, example '0.20' allows 20%% range overshoot. Default of 'None' does not constrain overshoot.",
     )
-
     parser.add_argument(
         "---missed-trace-correction",
         action="store_true",
@@ -324,14 +376,12 @@ if __name__ == "__main__":
         type=float,
         help="Convergence criteria for time dilation",
     )
-
     parser.add_argument(
         "--write-tsv",
         default=False,
         type=bool,
         help="Boolean toggle to save intermediary .TSV cost results files",
     )
-
     parser.add_argument(
         "--run-multi",
         action="store_true",
@@ -346,7 +396,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # selections can be an int, or list of ints, or range expression
     if args.config is None or args.config == "None":
         config = Config()
         config.selections = (
@@ -368,13 +417,11 @@ if __name__ == "__main__":
         config.check_drivecycles_and_create_selections()
         config.read_auxiliary_files()
         gl.RESOURCES_FOLDERPATH = Path(args.config).parent
-        config.vehicle_file = gl.RESOURCES_FOLDERPATH / config.vehicle_file
-        config.scenario_file = gl.RESOURCES_FOLDERPATH / config.scenario_file
-        config.eng_eff_imp_curves = gl.RESOURCES_FOLDERPATH / config.eng_eff_imp_curves
-        config.lw_imp_curves = gl.RESOURCES_FOLDERPATH / config.lw_imp_curves
-        config.aero_drag_imp_curves = (
-            gl.RESOURCES_FOLDERPATH / config.aero_drag_imp_curves
-        )
+        config.vehicle_file = (Path(config.vehicle_file).resolve(strict=True) if Path(config.vehicle_file).is_absolute() else gl.RESOURCES_FOLDERPATH / config.vehicle_file)
+        config.scenario_file = (Path(config.scenario_file).resolve(strict=True) if Path(config.scenario_file).is_absolute() else gl.RESOURCES_FOLDERPATH / config.scenario_file)
+        config.eng_eff_imp_curves = (Path(config.eng_eff_imp_curves).resolve(strict=True) if Path(config.eng_eff_imp_curves).is_absolute() else gl.RESOURCES_FOLDERPATH / config.eng_eff_imp_curves)
+        config.lw_imp_curves = (Path(config.lw_imp_curves).resolve(strict=True) if Path(config.lw_imp_curves).is_absolute() else gl.RESOURCES_FOLDERPATH / config.lw_imp_curves)
+        config.aero_drag_imp_curves = (Path(config.aero_drag_imp_curves).resolve(strict=True) if Path(config.aero_drag_imp_curves).is_absolute() else gl.RESOURCES_FOLDERPATH / config.aero_drag_imp_curves)
 
     print(f"Selection List: {config.selections_list}")
 

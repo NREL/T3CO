@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import Union
 import numpy as np
 import pandas as pd
 from t3co.constants import Global as gl
@@ -17,7 +18,7 @@ from t3co.utils.print_class_objects import (
 
 
 class Ledger:
-    selection: int | str = None
+    selection: Union[int, str] = None
     scenario_name: str = ""
     discounted_tco_dol: float = None
     vehicle_life_yr: int = None
@@ -29,8 +30,8 @@ class Ledger:
     cumu_disc_tco_dol_per_yr: list[float] = []
     cumu_tco_dol_per_mi: list[float] = []
     cumu_levelized_tco_dol_per_mi: list[float] = []
-    total_vmt: float = 0
-    disc_total_vmt: float = 0
+    total_vmt: float = 0.0
+    disc_total_vmt: float = 0.0
 
     glider_cost_dol: float = 0.0
     fuel_converter_cost_dol: float = 0.0
@@ -44,6 +45,7 @@ class Ledger:
     total_maintenance_cost_dol: float = 0.0
     total_fuel_used_gal_ge: float = 0.0
     total_fuel_used_gal_de: float = 0.0
+    total_purchasing_interest_cost_dol: float = 0.0
     mpgge: float = 0.0
     grid_mpgge: float = 0.0
     mpgde: float = 0.0
@@ -65,6 +67,13 @@ class Ledger:
     config: Config = None
     energy: Energy = None
 
+    def __new__(cls, *args, **kwargs):
+        """
+        Creates a new instance of the Ledger class.
+        """
+        instance = super(Ledger, cls).__new__(cls)
+        return instance
+    
     def __init__(
         self,
         vehicle: Vehicle,
@@ -72,6 +81,15 @@ class Ledger:
         energy: Energy = None,
         config: Config = None,
     ):
+        """
+        Initializes the Ledger instance.
+
+        Args:
+            vehicle (Vehicle): The vehicle instance.
+            scenario (Scenario): The scenario instance.
+            energy (Energy, optional): The energy instance. Defaults to None.
+            config (Config, optional): The configuration instance. Defaults to None.
+        """
         self.scenario = scenario
         self.vehicle = vehicle
         self.selection = scenario.selection
@@ -116,14 +134,17 @@ class Ledger:
         self.set_discounted_tco()
 
     def set_discounted_costs(self):
-
+        """
+        Sets the discounted cost components for the Ledger instance.
+        """
         self.payload_cap_cost_multiplier = self.tco_per_year[
             0
         ].oppy_costs_dol.payload_cap_cost_multiplier
-        self.discounted_total_cap_cost_dol += self.tco_per_year[
+        self.discounted_total_cap_cost_dol = self.tco_per_year[
             0
         ].cap_costs_dol.net_capital_cost_dol
 
+        self.total_vmt, self.disc_total_vmt = 0.0, 0.0
         for year_index in range(self.vehicle_life_yr):
             self.discounted_total_oper_cost_dol += self.tco_per_year[
                 year_index
@@ -168,6 +189,22 @@ class Ledger:
                 self.tco_per_year[
                     year_index
                 ].oper_costs_dol.maintenance_cost_dol_per_yr,
+                year_number=year_index + 1,
+            )
+            for year_index in range(self.vehicle_life_yr)
+        )
+        self.total_purchasing_interest_cost_dol = sum(
+            self.scenario.get_discounted_value(
+                (
+                    self.tco_per_year[
+                    year_index
+                ].oper_costs_dol.purchasing_cost_dol_per_yr if self.tco_per_year[
+                    year_index
+                ].oper_costs_dol.purchasing_cost_dol_per_yr
+                else self.tco_per_year[
+                    year_index
+                ].oper_costs_dol.purchasing_cost_dol_per_yr)
+                ,
                 year_number=year_index + 1,
             )
             for year_index in range(self.vehicle_life_yr)
@@ -224,6 +261,9 @@ class Ledger:
         ].cap_costs_dol.disc_residual_cost_dol
 
     def set_discounted_tco(self):
+        """
+        Sets the discounted TCO for the Ledger instance.
+        """
         self.undiscounted_tco_dol = self.payload_cap_cost_multiplier * sum(
                 self.tco_per_year[
                     year_index
@@ -273,6 +313,9 @@ class Ledger:
             )
 
     def set_cost_components(self):
+        """
+        Sets the cost components for the Ledger instance.
+        """
         self.glider_cost_dol = self.tco_per_year[0].cap_costs_dol.glider_cost_dol
         self.fuel_converter_cost_dol = self.tco_per_year[
             0
@@ -306,58 +349,83 @@ class Ledger:
         self.grid_mpgge = (
             self.energy.mpgge * self.vehicle.chg_eff if self.vehicle.chg_eff else None
         )
-        self.mpgde = self.energy.mpgge / gl.DieselGalPerGasGal
-        self.kwh_per_mi = None
+        self.mpgde = self.energy.mpgge / gl.DGE_TO_GGE
+        self.kwh_per_mi =  (gl.KWH_PER_GGE / self.mpgge if self.mpgge else None)
 
-    def to_dict(self, include_prefix: bool = True, flatten=True) -> dict:
+    def to_dict(self, include_prefix: bool = True, flatten: bool = True) -> dict:
         """
-        This method exports T3CO Ledger to a dictionary
+        Exports the Ledger instance to a dictionary.
 
         Args:
-            filepath (str|Path, optional): File path of desired JSON output file. If provided, t3co_dict gets saved to filepath. Defaults to None.
-            include_prefix (bool, optional): If True, exported column names contain the T3CO submodule names as prefix.
-                                            Example: 'scenario_selection'. If False, it would be 'selection'. Defaults to True.
-            flatten (bool, optional): If True, the nested dict output flattens to single dictionary. Defaults to True.
+            include_prefix (bool, optional): If True, exported column names contain the T3CO submodule names as prefix. Defaults to True.
+            flatten (bool, optional): If True, the nested dict output flattens to a single dictionary. Defaults to True.
+
+        Returns:
+            dict: The Ledger instance as a dictionary.
         """
         self.scenario.delete_dataframes()
-        if self.config: self.config.delete_dataframes()
-        
+        if self.config:
+            self.config.delete_dataframes()
+            
         if flatten:
             t3co_dict = to_flat_dict(self, include_predix=include_prefix, delimiter="_")
         else:
             t3co_dict = json.loads(json.dumps(self, default=custom_default))
         return t3co_dict
 
-    def to_json(
-        self, filepath: str | Path, include_prefix: bool = True, flatten=True
-    ) -> None:
-        t3co_dict = self.to_dict(self, include_predix=include_prefix, delimiter="_")
+    def to_json(self, filepath: Union[str, Path], include_prefix: bool = True, flatten: bool = True) -> None:
+        """
+        Saves the Ledger instance to a JSON file.
+
+        Args:
+            filepath (Union[str, Path]): The file path where the JSON will be saved.
+            include_prefix (bool, optional): If True, exported column names contain the T3CO submodule names as prefix. Defaults to True.
+            flatten (bool, optional): If True, the nested dict output flattens to a single dictionary. Defaults to True.
+        """
+        t3co_dict = self.to_dict(include_prefix=include_prefix, flatten=flatten)
 
         if filepath:
             filepath = Path(filepath)
             if not filepath.parent.exists():
                 filepath.parent.mkdir()
-            with open(Path(filepath), "w") as f:
+            with open(filepath, "w") as f:
                 json.dump(handle_nan(t3co_dict), f, indent=4)
                 print(f"Saved to {str(filepath.resolve())}")
         else:
-            raise Exception
+            raise Exception("Filepath must be provided.")
 
-    def to_df(self):
+    def to_df(self) -> pd.DataFrame:
+        """
+        Converts the Ledger instance to a DataFrame.
+
+        Returns:
+            pd.DataFrame: The Ledger instance as a DataFrame.
+        """
         t3co_dict = self.to_dict(include_prefix=True, flatten=True)
         t3co_dict.pop("tco_per_year")
         return pd.DataFrame([t3co_dict])
 
-    def to_csv(self, filepath: str | Path):
+    def to_csv(self, filepath: Union[str, Path]) -> None:
+        """
+        Saves the Ledger instance to a CSV file.
+
+        Args:
+            filepath (Union[str, Path]): The file path where the CSV will be saved.
+        """
         if filepath:
             filepath = Path(filepath)
             if not filepath.parent.exists():
                 filepath.parent.mkdir()
             print(f"Saved to {str(filepath.resolve())}")
-            return self.to_df().to_csv(filepath)
+            self.to_df().to_csv(filepath)
         else:
-            raise Exception
+            raise Exception("Filepath must be provided.")
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Returns a string representation of the Ledger instance.
+
+        Returns:
+            str: String representation of the Ledger instance.
+        """
         return obj_to_string(self)
-

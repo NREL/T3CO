@@ -13,13 +13,12 @@ wkdir = Path(__file__).parent.parent
 
 SWEEP_PATH = Path(__file__).resolve().parents[1] /"cli"/ "sweep.py"
 
-### modified from 1/2/3/4: conv/hev/phev/bev to match FASTSim strings
 
 CONV = vehicle.CONV
 HEV = vehicle.HEV
-PHEV = vehicle.PHEV
+# PHEV = vehicle.PHEV
 BEV = vehicle.BEV
-PT_TYPES_NUM_TO_STR = {CONV: "Conv", HEV: "HEV", PHEV: "PHEV", BEV: "BEV"}
+PT_TYPES_NUM_TO_STR = {CONV: "Conv", HEV: "HEV", BEV: "BEV"}
 ###
 
 FC_EFF_TYPES = {
@@ -127,7 +126,6 @@ OTHER_INPUTS = OPTIMIZATION_RESOURCES_AUX / OTHER_INPUTS_FILE
 # ./t3co/resources/'FuelPrices.csv'
 REGIONAL_FUEL_PRICES_BY_TYPE_BY_YEAR = OPTIMIZATION_RESOURCES_AUX / "FuelPrices.csv"
 
-RESIDUAL_VALUE_PER_YEAR = OPTIMIZATION_RESOURCES_AUX / "ResidualValues.csv"
 MOO_KNOB_SWEEP_PLOTS_DIR = (
     Path(os.path.abspath(__file__)).parents[1] / "tco_results" / "knob_sweep_results"
 )

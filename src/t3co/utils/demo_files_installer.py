@@ -1,11 +1,12 @@
 import os
 import shutil
 from pathlib import Path
+from typing import Union
 
 
 def main():
     """
-    This function requests user inputs for whether and where to copy t3co demo input files from the t3co.resources folder. It then calls the copy_demo_input_files function.
+    Requests user inputs for whether and where to copy t3co demo input files from the t3co.resources folder. Calls the copy_demo_input_files function.
     """
     choice = (
         input("Do you want to copy the t3co demo input files? (y/n): ").strip().lower()
@@ -19,12 +20,12 @@ def main():
         print("Demo input files were not copied.")
 
 
-def copy_demo_input_files(destination_path: str):
+def copy_demo_input_files(destination_path: Union[str, Path]) -> None:
     """
-    This function copies the t3co.resources folder that includes demo input files to a user input destination_path.
+    Copies the t3co.resources folder that includes demo input files to a user input destination_path.
 
     Args:
-        destination_path (str | Path): Path of destination directory for copying t3co.resources folder
+        destination_path (Union[str, Path]): Path of destination directory for copying t3co.resources folder.
     """
     source_path = Path(__file__).parents[1] / "resources"
     destination_path = Path(destination_path) / "demo_inputs"
