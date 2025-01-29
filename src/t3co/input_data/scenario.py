@@ -71,10 +71,6 @@ class Scenario:
     fs_fueling_rate_diesel_gpm: float = 0
     fs_fueling_rate_kg_per_min: float = 0
 
-    phev_utility_factor_override: float = -1
-    phev_utility_factor_computed: float = -1
-    motor_power_override_kw_fc_demand_on_pct: float = -1
-
     purchasing_method: str = ""
     purchasing_down_payment_pct: float = 0.0
     purchasing_interest_apr_pct_per_yr: float = 0.0
