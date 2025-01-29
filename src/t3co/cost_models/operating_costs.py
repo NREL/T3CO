@@ -103,7 +103,7 @@ class OperatingCosts:
         if scenario.fuel_prices_df is None:
             scenario.fuel_prices_df = pd.read_csv(
                 (
-                    Path(scenario.fuel_prices_file)
+                    Path(scenario.fuel_prices_file).resolve(strict=True)
                     if Path(scenario.fuel_prices_file).is_absolute()
                     else gl.RESOURCES_FOLDERPATH / scenario.fuel_prices_file
                 )

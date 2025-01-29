@@ -91,7 +91,7 @@ class OpportunityCosts:
         """
         df_veh_wt = pd.read_csv(
             (
-                Path(scenario.plf_weight_distribution_file)
+                Path(scenario.plf_weight_distribution_file).resolve(strict=True)
                 if Path(scenario.plf_weight_distribution_file).is_absolute()
                 else gl.RESOURCES_FOLDERPATH
                 / scenario.plf_weight_distribution_file
@@ -143,7 +143,7 @@ class OpportunityCosts:
             if verbose:
                 probability_payload.to_csv(
                     (
-                        Path(scenario.plf_weight_distribution_file)
+                        Path(scenario.plf_weight_distribution_file).resolve(strict=True)
                         if Path(scenario.plf_weight_distribution_file).is_absolute()
                         else gl.RESOURCES_FOLDERPATH
                         / scenario.plf_weight_distribution_file

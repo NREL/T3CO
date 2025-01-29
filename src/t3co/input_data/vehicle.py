@@ -66,7 +66,7 @@ class Vehicle:
         """
         vehicle_db_df = pd.read_csv(
             (
-                Path(vehicle_db_file)
+                Path(vehicle_db_file).resolve(strict=True)
                 if Path(vehicle_db_file).is_absolute()
                 else Path(__file__).parents[1] / "resources" / vehicle_db_file
             ),

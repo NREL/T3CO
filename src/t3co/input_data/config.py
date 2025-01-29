@@ -138,7 +138,7 @@ class Config:
         """
         if self.drive_cycle:
             self.drive_cycle = (
-                Path(self.drive_cycle)
+                Path(self.drive_cycle).resolve(strict=True)
                 if Path(self.drive_cycle).is_absolute()
                 else Path(self.config_filename).parents[0]
                 / self.drive_cycle
@@ -160,7 +160,7 @@ class Config:
         """
         self.fuel_prices_df = pd.read_csv(
             (
-                Path(self.fuel_prices_file)
+                Path(self.fuel_prices_file).resolve(strict=True)
                 if Path(self.fuel_prices_file).is_absolute()
                 else gl.RESOURCES_FOLDERPATH / self.fuel_prices_file
             )
