@@ -138,13 +138,13 @@ class CapitalCosts:
                 scenario.fs_h2_cost_dol_per_kwh * vehicle.fs_kwh
             )
         elif (
-            vehicle.veh_pt_type in [gl.CONV, gl.HEV, gl.PHEV]
+            vehicle.veh_pt_type in [gl.CONV, gl.HEV]
             and scenario.fuel_type[0] == "cng"
         ):
             self.fuel_storage_cost_dol = (
                 scenario.fs_cng_cost_dol_per_kwh * vehicle.fs_kwh
             )
-        elif vehicle.veh_pt_type in [gl.CONV, gl.HEV, gl.PHEV]:
+        elif vehicle.veh_pt_type in [gl.CONV, gl.HEV]:
             self.fuel_storage_cost_dol = scenario.fs_cost_dol_per_kwh * vehicle.fs_kwh
         else:
             self.fuel_storage_cost_dol = 0
@@ -195,7 +195,7 @@ class CapitalCosts:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data, including the base cost for the plug.
         """
-        if vehicle.veh_pt_type in [gl.PHEV, gl.BEV, gl.HEV] and vehicle.chg_eff:
+        if vehicle.veh_pt_type in [gl.BEV, gl.HEV] and vehicle.chg_eff:
             self.plug_cost_dol = scenario.plug_base_cost_dol
         else:
             self.plug_cost_dol = 0

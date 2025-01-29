@@ -13,13 +13,12 @@ wkdir = Path(__file__).parent.parent
 
 SWEEP_PATH = Path(__file__).resolve().parents[1] /"cli"/ "sweep.py"
 
-### modified from 1/2/3/4: conv/hev/phev/bev to match FASTSim strings
 
 CONV = vehicle.CONV
 HEV = vehicle.HEV
-PHEV = vehicle.PHEV
+# PHEV = vehicle.PHEV
 BEV = vehicle.BEV
-PT_TYPES_NUM_TO_STR = {CONV: "Conv", HEV: "HEV", PHEV: "PHEV", BEV: "BEV"}
+PT_TYPES_NUM_TO_STR = {CONV: "Conv", HEV: "HEV", BEV: "BEV"}
 ###
 
 FC_EFF_TYPES = {

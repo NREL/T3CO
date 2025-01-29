@@ -93,7 +93,6 @@ class Scenario:
     knob_max_fc_kw: List[float] = field(default_factory=list)
     knob_min_fs_kwh: List[float] = field(default_factory=list)
     knob_max_fs_kwh: List[float] = field(default_factory=list)
-    objective_phev_minimize_fuel_use: bool = False
     constraint_c_rate: bool = False
     constraint_range: bool = False
     constraint_accel: bool = False
@@ -101,8 +100,6 @@ class Scenario:
     objective_tco: bool = False
     constraint_trace_miss_dist_percent_on: bool = False
     trace_miss_dist_percent: float = 0
-    constraint_phev_minimize_fuel_use_on: bool = False
-    constraint_phev_minimize_fuel_use_percent: float = 0
 
     labor_rate_dol_per_hr: float = 0
     downtime_oppy_cost_dol_per_hr: float = 0
@@ -239,7 +236,6 @@ class Scenario:
             "objective_tco",
             "constraint_c_rate",
             "constraint_trace_miss_dist_percent_on",
-            "objective_phev_minimize_fuel_use",
             "activate_tco_payload_cap_cost_multiplier",
             "activate_tco_fueling_dwell_time_cost",
             "fdt_frac_full_charge_bounds",

@@ -19,7 +19,6 @@ class Config:
     scenario_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH/"inputs"/"Demo_FY22_scenario_assumptions.csv"
     dst_dir: str = ""
     resfile_suffix: str = None
-    write_tsv: bool = False
     selections: Union[str, list] = ""
     vehicle_life_yr: float = 0
     drive_cycle: str = None
@@ -51,7 +50,6 @@ class Config:
     objective_tco: bool = False
     constraint_c_rate: bool = False
     constraint_trace_miss_dist_percent_on: bool = False
-    objective_phev_minimize_fuel_use: bool = False
 
     # Opportunity Cost
     activate_tco_payload_cap_cost_multiplier: bool = False
