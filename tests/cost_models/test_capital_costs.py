@@ -58,7 +58,7 @@ def test_capital_costs_initialization(vehicle, scenario):
 
 def test_set_glider_cost(vehicle, scenario):
     capital_costs = CapitalCosts.__new__(CapitalCosts, vehicle=vehicle, scenario=scenario)
-    capital_costs.set_glider_cost(vehicle=vehicle, scenario=scenario)
+    capital_costs.set_glider_cost(scenario=scenario)
     assert capital_costs.glider_cost_dol == pytest.approx(11000.0, 0.01)
 
 def test_set_fuel_converter_cost_dol(vehicle, scenario):
@@ -94,26 +94,26 @@ def test_set_msrp(vehicle, scenario):
     capital_costs.fuel_storage_cost_dol = 0
     capital_costs.fuel_converter_cost_dol = 0
     capital_costs.glider_cost_dol = 10000
-    capital_costs.set_msrp(vehicle=vehicle, scenario=scenario)
+    capital_costs.set_msrp()
     assert capital_costs.msrp_total_dol == pytest.approx(47400.0, 0.01)
 
 def test_set_purchase_tax(vehicle, scenario):
     capital_costs = CapitalCosts.__new__(CapitalCosts,vehicle=vehicle, scenario=scenario)
     capital_costs.msrp_total_dol = 48400.0
-    capital_costs.set_purchase_tax(vehicle=vehicle, scenario=scenario)
+    capital_costs.set_purchase_tax(scenario=scenario)
     assert capital_costs.purchase_tax_dol == pytest.approx(3872.0, 0.01)
 
 def test_set_downpayment(vehicle, scenario):
     capital_costs = CapitalCosts.__new__(CapitalCosts,vehicle=vehicle, scenario=scenario)
     capital_costs.msrp_total_dol = 48400.0
     capital_costs.purchase_tax_dol = 3792.0
-    capital_costs.set_downpayment(vehicle=vehicle, scenario=scenario)
+    capital_costs.set_downpayment(scenario=scenario)
     assert capital_costs.purchasing_downpayment_dol == pytest.approx(5219.20, 0.01)
 
 def test_set_residual_cost(vehicle, scenario):
     capital_costs = CapitalCosts.__new__(CapitalCosts,vehicle=vehicle, scenario=scenario)
     capital_costs.msrp_total_dol = 48400.0
-    capital_costs.set_residual_cost(vehicle=vehicle, scenario=scenario)
+    capital_costs.set_residual_cost(scenario=scenario)
     assert capital_costs.residual_cost_dol == pytest.approx(-18847.74, 0.01)
 
 def test_set_total_cap_cost(vehicle, scenario):
