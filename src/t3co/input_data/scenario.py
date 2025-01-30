@@ -136,6 +136,7 @@ class Scenario:
     plf_weight_distribution_file: str = "./auxiliary/tractorweightvars.csv"
 
     avg_speed_mph: float = None
+    msrp_total_dol: float = None
 
     def __new__(cls, *args, **kwargs):
         """

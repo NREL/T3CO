@@ -77,7 +77,7 @@ class TCOCalc:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance.
         """
-        self.cap_costs_dol = CapitalCosts(vehicle=vehicle, scenario=scenario)
+        self.cap_costs_dol = CapitalCosts(vehicle=vehicle, scenario=scenario, msrp_total_dol = scenario.msrp_total_dol)
 
     def calculate_opportunity_costs(
         self, vehicle: Vehicle, scenario: Scenario, energy: Energy

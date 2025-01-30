@@ -39,14 +39,16 @@ class CapitalCosts:
             scenario (Scenario): The scenario instance containing configuration data.
             msrp_total_dol (float, optional): MSRP in dollars as input
         """
-        if not msrp_total_dol and vehicle:
+        if msrp_total_dol:
+            self.msrp_total_dol=msrp_total_dol
+        else:
             self.set_glider_cost(scenario=scenario)
             self.set_fuel_converter_cost_dol(vehicle=vehicle, scenario=scenario)
             self.set_fuel_storage_cost(vehicle=vehicle, scenario=scenario)
             self.set_motor_control_power_elecs_cost(vehicle=vehicle, scenario=scenario)
             self.set_plug_cost(vehicle=vehicle, scenario=scenario)
             self.set_battery_cost(vehicle=vehicle, scenario=scenario)
-            self.set_msrp()
+            self.set_msrp()            
 
         self.set_purchase_tax(scenario=scenario)
         self.set_downpayment(scenario=scenario)
