@@ -55,6 +55,11 @@ def load_vehicle_scenario_energy(
 
     if energy:
         input_energy = energy
+    elif input_scenario.mpgge and input_scenario.primary_fuel_range_mi:
+        input_energy = Energy(
+            mpgge=float(input_scenario.mpgge),
+            primary_fuel_range_mi=float(input_scenario.primary_fuel_range_mi),
+        )
     else:
         input_energy = Energy()
         input_energy.run_fastsim_model(
