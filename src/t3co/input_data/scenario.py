@@ -7,7 +7,7 @@ from typing import List, Union
 from typing_extensions import Self
 
 from t3co.input_data.config import Config
-from t3co.utils.print_class_objects import remove_df_attrs
+from t3co.utils.print_class_objects import handle_nan, remove_df_attrs
 from t3co.constants import Global as gl
 
 
@@ -135,8 +135,11 @@ class Scenario:
     fuel_prices_df: pd.DataFrame = None
     plf_weight_distribution_file: str = "./auxiliary/tractorweightvars.csv"
 
-    avg_speed_mph: float = None
-    msrp_total_dol: float = None
+    avg_speed_mph: float = 0.0
+    msrp_total_dol: float = 0.0
+
+    mpgge: float = 0.0
+    primary_fuel_range_mi: float = 0.0
 
     def __new__(cls, *args, **kwargs):
         """
@@ -207,7 +210,7 @@ class Scenario:
             else -1
         )
 
-        return cls(**scenario_dict)
+        return cls(**handle_nan(scenario_dict))
 
     def override_from_config(
         self, config: Config = None, verbose: bool = False
