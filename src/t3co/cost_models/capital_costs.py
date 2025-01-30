@@ -56,7 +56,7 @@ class CapitalCosts:
         self.set_downpayment(scenario=scenario)
         self.set_residual_cost(scenario=scenario)
         self.set_disc_residual_cost(scenario=scenario)
-        self.set_total_cap_cost()
+        self.set_net_capital_cost()
 
     def set_glider_cost(self, scenario: Scenario) -> None:
         """
@@ -365,7 +365,7 @@ class CapitalCosts:
         )
         self.residual_cost_dol = -self.msrp_total_dol * scenario.residual_rate_pct
 
-    def set_total_cap_cost(self) -> None:
+    def set_net_capital_cost(self) -> None:
         """
         Sets the total capital cost for the vehicle.
 

@@ -6,7 +6,7 @@ from typing_extensions import Self
 import pandas as pd
 
 from t3co.input_data.config import Config
-from t3co.utils.print_class_objects import remove_df_attrs
+from t3co.utils.print_class_objects import handle_nan, remove_df_attrs
 
 
 @dataclass
@@ -75,7 +75,7 @@ class Vehicle:
         vehicle_dict = vehicle_db_df.loc[
             vehicle_db_df["selection"] == selection
         ].to_dict("records")[0]
-        return cls(**vehicle_dict)
+        return cls(**handle_nan(vehicle_dict))
 
     def set_veh_kg(self) -> None:
         """
