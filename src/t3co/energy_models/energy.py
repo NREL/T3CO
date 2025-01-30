@@ -18,7 +18,7 @@ class Energy:
         """
         instance = super(Energy, cls).__new__(cls)
         return instance
-    
+
     def __init__(self, mpgge: float = None, primary_fuel_range_mi: float = None):
         """
         Initializes the Energy instance.

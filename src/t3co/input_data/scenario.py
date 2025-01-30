@@ -75,7 +75,7 @@ class Scenario:
     purchasing_down_payment_pct: float = 0.0
     purchasing_interest_apr_pct_per_yr: float = 0.0
     purchasing_payment_frequency_months: float = 0.0
-    purchasing_term_yr: float  =   0.0
+    purchasing_term_yr: float = 0.0
     leasing_money_factor: float = 0.0
     shifts_per_year: List[float] = field(default_factory=list)
 
@@ -136,6 +136,7 @@ class Scenario:
     plf_weight_distribution_file: str = "./auxiliary/tractorweightvars.csv"
 
     avg_speed_mph: float = None
+    msrp_total_dol: float = None
 
     def __new__(cls, *args, **kwargs):
         """
@@ -168,10 +169,10 @@ class Scenario:
         scenario_dict = scenario_df.loc[scenario_df["selection"] == selection].to_dict(
             "records"
         )[0]
-        
+
         return cls.from_dict(cls, scenario_dict=scenario_dict)
-        
-    def from_dict(cls, scenario_dict:dict):
+
+    def from_dict(cls, scenario_dict: dict):
         scenario_dict["vehicle_class"] = " "
         scenario_dict["vehicle_class"] = (
             scenario_dict["vehicle_class"]
@@ -205,7 +206,7 @@ class Scenario:
             if scenario_dict["maint_oper_cost_dol_per_mi"]
             else -1
         )
-        
+
         return cls(**scenario_dict)
 
     def override_from_config(
@@ -261,12 +262,17 @@ class Scenario:
                 f"Error in Config file. T3COConfig either not attached or scenario.use_config set to False: {config}"
             )
 
-        if self.purchasing_method.lower() in ['loan', 'financing', 'autoloan', 'borrowing']:
-            self.purchasing_method = 'loan'
-        elif self.purchasing_method.lower() in ['leasing', 'renting', 'lease']:
-            self.purchasing_method = 'lease'
+        if self.purchasing_method.lower() in [
+            "loan",
+            "financing",
+            "autoloan",
+            "borrowing",
+        ]:
+            self.purchasing_method = "loan"
+        elif self.purchasing_method.lower() in ["leasing", "renting", "lease"]:
+            self.purchasing_method = "lease"
         else:
-            self.purchasing_method = 'cash'
+            self.purchasing_method = "cash"
 
         self.insurance_rates_file = config.insurance_rates_file
         self.fuel_prices_df = config.fuel_prices_df

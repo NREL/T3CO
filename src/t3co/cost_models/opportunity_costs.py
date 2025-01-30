@@ -38,7 +38,7 @@ class OpportunityCosts:
         """
         instance = super(OpportunityCosts, cls).__new__(cls)
         return instance
-    
+
     def __init__(
         self, year_number: int, vehicle: Vehicle, scenario: Scenario, energy: Energy
     ):
@@ -56,7 +56,10 @@ class OpportunityCosts:
 
         if scenario.activate_tco_fueling_dwell_time_cost:
             self.set_fueling_dwell_time_cost(
-                year_number=year_number, vehicle=vehicle, scenario=scenario, energy=energy
+                year_number=year_number,
+                vehicle=vehicle,
+                scenario=scenario,
+                energy=energy,
             )
         if scenario.activate_mr_downtime_cost:
             self.set_mr_downtime_cost(
@@ -66,7 +69,9 @@ class OpportunityCosts:
         self.set_net_downtime_oppy_cost()
         self.set_disc_downtime_oppy_cost(year_number=year_number, scenario=scenario)
 
-    def set_payload_cap_cost_multiplier(self, vehicle: Vehicle, scenario: Scenario) -> None:
+    def set_payload_cap_cost_multiplier(
+        self, vehicle: Vehicle, scenario: Scenario
+    ) -> None:
         """
         Sets the payload capacity cost multiplier for the vehicle.
 
@@ -93,8 +98,7 @@ class OpportunityCosts:
             (
                 Path(scenario.plf_weight_distribution_file).resolve(strict=True)
                 if Path(scenario.plf_weight_distribution_file).is_absolute()
-                else gl.RESOURCES_FOLDERPATH
-                / scenario.plf_weight_distribution_file
+                else gl.RESOURCES_FOLDERPATH / scenario.plf_weight_distribution_file
             ),
             index_col=0,
         )
@@ -155,7 +159,9 @@ class OpportunityCosts:
                     scenario.plf_ref_veh_empty_mass_kg, scenario.gvwr_kg
                 )
             ]["p_of_weights"].sum()
-            p_of_weights_normalized = p_of_weights / (normalization_factor if normalization_factor else 1)
+            p_of_weights_normalized = p_of_weights / (
+                normalization_factor if normalization_factor else 1
+            )
 
             return p_of_weights_normalized, vehicle_weights_bins_kg
 
@@ -176,9 +182,7 @@ class OpportunityCosts:
         if empty_increase_kg >= scenario.gvwr_credit_kg:
             a = vehicle_weights_bins_kg - new_cargo_cieling_kg
             minidx = (
-                np.where(
-                    vehicle_weights_bins_kg == a[a > 0][0] + new_cargo_cieling_kg
-                )
+                np.where(vehicle_weights_bins_kg == a[a > 0][0] + new_cargo_cieling_kg)
             )[0][0]
             a = vehicle_weights_bins_kg - scenario.gvwr_kg
             maxidx = (
@@ -206,7 +210,6 @@ class OpportunityCosts:
         scenario.plf_scenario_vehicle_cargo_capacity_kg = (
             scenario.gvwr_kg + scenario.gvwr_credit_kg - new_empty_weight_kg
         )
-
 
     def set_fueling_dwell_time_cost(
         self, year_number: int, vehicle: Vehicle, scenario: Scenario, energy: Energy
@@ -250,8 +253,12 @@ class OpportunityCosts:
         vehicle (Vehicle): The vehicle instance.
         scenario (Scenario): The scenario instance containing configuration data.
         energy (Energy): The energy model instance.
-    """
-        self.fdt_frac_full_charge_bounds = (ast.literal_eval(scenario.fdt_frac_full_charge_bounds) if isinstance(scenario.fdt_frac_full_charge_bounds, str) else scenario.fdt_frac_full_charge_bounds)
+        """
+        self.fdt_frac_full_charge_bounds = (
+            ast.literal_eval(scenario.fdt_frac_full_charge_bounds)
+            if isinstance(scenario.fdt_frac_full_charge_bounds, str)
+            else scenario.fdt_frac_full_charge_bounds
+        )
 
         if (
             "0" in str(scenario.shifts_per_year) or np.isnan(scenario.shifts_per_year)
@@ -375,9 +382,7 @@ class OpportunityCosts:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data.
         """
-        self.mr_planned_downtime_hr = (
-            scenario.mr_planned_downtime_hr_per_yr
-        )
+        self.mr_planned_downtime_hr = scenario.mr_planned_downtime_hr_per_yr
         self.mr_unplanned_downtime_hr = (
             scenario.mr_unplanned_downtime_hr_per_mi[year_number - 1]
             * scenario.vmt[year_number - 1]
@@ -435,7 +440,9 @@ class OpportunityCosts:
             year_number (int): The year number for which the discounted downtime opportunity cost is calculated.
             scenario (Scenario): The scenario instance containing configuration data.
         """
-        self.disc_downtime_oppy_cost_dol = scenario.get_discounted_value(value=self.net_downtime_oppy_cost_dol_per_yr, year_number=year_number)
+        self.disc_downtime_oppy_cost_dol = scenario.get_discounted_value(
+            value=self.net_downtime_oppy_cost_dol_per_yr, year_number=year_number
+        )
 
     def __str__(self) -> str:
         """

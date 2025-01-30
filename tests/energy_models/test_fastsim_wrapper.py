@@ -6,10 +6,13 @@ import fastsim
 import numpy as np
 from t3co.constants import Global as gl
 
+
 @pytest.fixture
 def scenario():
     return Scenario(
-        drive_cycle=gl.RESOURCES_FOLDERPATH/"cycles"/"EPA_Ph2_urban_highway_55mph.csv",
+        drive_cycle=gl.RESOURCES_FOLDERPATH
+        / "cycles"
+        / "EPA_Ph2_urban_highway_55mph.csv",
         constant_trip_distance_mi=100.0,
         vmt=[10000] * 10,
         model_year=2020,
@@ -28,51 +31,72 @@ def scenario():
         mr_planned_downtime_hr_per_yr=10.0,
         mr_unplanned_downtime_hr_per_mi=[0.01] * 10,
         mr_avg_tire_life_mi=50000.0,
-        mr_tire_replace_downtime_hr_per_event=2.0
+        mr_tire_replace_downtime_hr_per_event=2.0,
     )
+
 
 @pytest.fixture
 def fastsim_vehicle():
-    return fastsim.vehicle.Vehicle.from_vehdb(1, gl.RESOURCES_FOLDERPATH/"inputs"/"Demo_FY22_vehicle_model_assumptions.csv", to_rust=True)
+    return fastsim.vehicle.Vehicle.from_vehdb(
+        1,
+        gl.RESOURCES_FOLDERPATH / "inputs" / "Demo_FY22_vehicle_model_assumptions.csv",
+        to_rust=True,
+    )
+
 
 @pytest.fixture
 def fastsim_cycle():
-    return fastsim.cycle.Cycle.from_file(gl.RESOURCES_FOLDERPATH/"cycles"/"EPA_Ph2_urban_highway_55mph.csv")
+    return fastsim.cycle.Cycle.from_file(
+        gl.RESOURCES_FOLDERPATH / "cycles" / "EPA_Ph2_urban_highway_55mph.csv"
+    )
+
 
 def test_run_fastsim_initialization(scenario, fastsim_vehicle, fastsim_cycle, mocker):
-    mocker.patch('fastsim.vehicle.Vehicle.from_vehdb', return_value=fastsim_vehicle)
-    mocker.patch('fastsim.cycle.Cycle.from_file', return_value=fastsim_cycle)
+    mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
+    mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
 
     run_fastsim = RunFastsim(veh_no=1, scenario=scenario, use_rust=False)
     assert run_fastsim.vehicle == fastsim_vehicle
     assert run_fastsim.cycles == fastsim_cycle
     # assert run_fastsim.mpgge == pytest.approx(fastsim_cycle.mpgge, 0.01)
 
+
 def test_load_vehicle(scenario, fastsim_vehicle, mocker):
-    mocker.patch('fastsim.vehicle.Vehicle.from_vehdb', return_value=fastsim_vehicle)
+    mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
 
     run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
-    run_fastsim.load_vehicle(veh_no=1, veh_input_path=gl.RESOURCES_FOLDERPATH/"inputs"/"Demo_FY22_vehicle_model_assumptions.csv", use_rust=False)
+    run_fastsim.load_vehicle(
+        veh_no=1,
+        veh_input_path=gl.RESOURCES_FOLDERPATH
+        / "inputs"
+        / "Demo_FY22_vehicle_model_assumptions.csv",
+        use_rust=False,
+    )
     assert run_fastsim.vehicle == fastsim_vehicle
 
+
 def test_load_design_cycle_from_scenario(scenario, fastsim_cycle, mocker):
-    mocker.patch('fastsim.cycle.Cycle.from_file', return_value=fastsim_cycle)
+    mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
 
     run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
-    cycles = run_fastsim.load_design_cycle_from_scenario(scenario=scenario, return_rustcycle=False)
+    cycles = run_fastsim.load_design_cycle_from_scenario(
+        scenario=scenario, return_rustcycle=False
+    )
     assert cycles == fastsim_cycle
 
+
 def test_get_simdrive(scenario, fastsim_vehicle, fastsim_cycle, mocker):
-    mocker.patch('fastsim.vehicle.Vehicle.from_vehdb', return_value=fastsim_vehicle)
-    mocker.patch('fastsim.cycle.Cycle.from_file', return_value=fastsim_cycle)
+    mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
+    mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
 
     run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
     simdrive = run_fastsim.get_simdrive(cycle=fastsim_cycle)
     assert isinstance(simdrive, fastsim.fastsimrust.RustSimDrive)
 
+
 def test_get_range(scenario, fastsim_vehicle, fastsim_cycle, mocker):
-    mocker.patch('fastsim.vehicle.Vehicle.from_vehdb', return_value=fastsim_vehicle)
-    mocker.patch('fastsim.cycle.Cycle.from_file', return_value=fastsim_cycle)
+    mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
+    mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
 
     run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
     run_fastsim.get_range()
@@ -84,7 +108,9 @@ def test_get_range(scenario, fastsim_vehicle, fastsim_cycle, mocker):
             / gl.KWH_PER_GGE
         )
     elif run_fastsim.vehicle.veh_pt_type == gl.CONV:
-        expected_range = (run_fastsim.vehicle.fs_kwh / gl.KWH_PER_GGE) * run_fastsim.mpgge
+        expected_range = (
+            run_fastsim.vehicle.fs_kwh / gl.KWH_PER_GGE
+        ) * run_fastsim.mpgge
     elif run_fastsim.vehicle.veh_pt_type == gl.HEV:
         elec_range_mi = (
             run_fastsim.vehicle.ess_max_kwh
@@ -92,7 +118,9 @@ def test_get_range(scenario, fastsim_vehicle, fastsim_cycle, mocker):
             * run_fastsim.mpgge
             / gl.KWH_PER_GGE
         )
-        conv_range_mi = (run_fastsim.vehicle.fs_kwh / gl.KWH_PER_GGE) * run_fastsim.mpgge
+        conv_range_mi = (
+            run_fastsim.vehicle.fs_kwh / gl.KWH_PER_GGE
+        ) * run_fastsim.mpgge
         expected_range = elec_range_mi + conv_range_mi
 
     assert run_fastsim.range_mi == pytest.approx(expected_range, 0.01)

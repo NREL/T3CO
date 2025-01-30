@@ -3,6 +3,7 @@ from t3co.input_data.config import Config
 from pathlib import Path
 import pandas as pd
 
+
 @pytest.fixture
 def mock_config_file(tmp_path):
     # Create a mock config CSV file
@@ -12,6 +13,7 @@ def mock_config_file(tmp_path):
     mock_file = tmp_path / "mock_config.csv"
     mock_file.write_text(data)
     return mock_file
+
 
 def test_config_initialization():
     config = Config(
@@ -87,6 +89,7 @@ def test_config_initialization():
     assert config.fdt_frac_full_charge_bounds == []
     assert config.activate_mr_downtime_cost is False
 
+
 def test_config_from_file(mock_config_file):
     config = Config().from_file(filename=mock_config_file, analysis_id=1)
     assert config.analysis_id == 1
@@ -125,11 +128,13 @@ def test_config_from_file(mock_config_file):
     assert config.fdt_frac_full_charge_bounds == None
     assert config.activate_mr_downtime_cost is False
 
+
 def test_validate_analysis_id(mock_config_file):
     config = Config(config_filename=mock_config_file, analysis_id=1)
     config_df = config.validate_analysis_id()
     assert not config_df.empty
     assert config_df["analysis_name"] == "Test Analysis"
+
 
 def test_check_drivecycles_and_create_selections(mock_config_file, tmp_path):
     # Create a mock drive cycle folder with CSV files
@@ -144,6 +149,7 @@ def test_check_drivecycles_and_create_selections(mock_config_file, tmp_path):
     assert config.dc_files is not None
     assert len(config.dc_files) == 2
     assert config.selections_list is not None
+
 
 def test_read_auxiliary_files(mock_config_file, tmp_path):
     # Create mock auxiliary files
@@ -160,6 +166,7 @@ Diesel,3.0
     )
     config.read_auxiliary_files()
     assert not config.fuel_prices_df.empty
+
 
 def test_delete_dataframes():
     config = Config()

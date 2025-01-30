@@ -12,11 +12,14 @@ from t3co.utils.print_class_objects import remove_df_attrs
 
 @dataclass
 class Config:
-
     analysis_id: int = 0
     analysis_name: str = ""
-    vehicle_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH/"inputs"/"Demo_FY22_vehicle_model_assumptions.csv"
-    scenario_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH/"inputs"/"Demo_FY22_scenario_assumptions.csv"
+    vehicle_file: Union[str, Path] = (
+        gl.RESOURCES_FOLDERPATH / "inputs" / "Demo_FY22_vehicle_model_assumptions.csv"
+    )
+    scenario_file: Union[str, Path] = (
+        gl.RESOURCES_FOLDERPATH / "inputs" / "Demo_FY22_scenario_assumptions.csv"
+    )
     dst_dir: str = ""
     resfile_suffix: str = None
     selections: Union[str, list] = ""
@@ -69,8 +72,12 @@ class Config:
         """
         instance = super(Config, cls).__new__(cls)
         return instance
-    
-    def from_file(self, analysis_id: int=0, filename: str=gl.RESOURCES_FOLDERPATH/"T3COConfig.csv") -> Self:
+
+    def from_file(
+        self,
+        analysis_id: int = 0,
+        filename: str = gl.RESOURCES_FOLDERPATH / "T3COConfig.csv",
+    ) -> Self:
         """
         Generates a Config dictionary from CSV file and calls Config.from_dict.
 
@@ -85,7 +92,7 @@ class Config:
         self.analysis_id = analysis_id
         config_df = self.validate_analysis_id()
         config_dict = config_df.to_dict()
-        
+
         return self.from_dict(config_dict=config_dict)
 
     def from_dict(self, config_dict: dict) -> Self:
@@ -100,7 +107,7 @@ class Config:
         """
         try:
             config_dict["selections"] = ast.literal_eval(config_dict["selections"])
-        except:  
+        except:
             config_dict["selections"] = int(config_dict["selections"])
         self.__dict__.update(config_dict)
         return self
@@ -114,9 +121,12 @@ class Config:
 
         Raises:
             Exception: If analysis_id is not found or config file does not exist.
-        """     
+        """
         try:
-            if self.config_filename.exists() and self.config_filename.suffix.lower() == '.csv':
+            if (
+                self.config_filename.exists()
+                and self.config_filename.suffix.lower() == ".csv"
+            ):
                 config_df = pd.read_csv(self.config_filename, index_col="analysis_id")
             else:
                 raise FileExistsError
@@ -125,11 +135,13 @@ class Config:
             return config_df
 
         except FileExistsError:
-            print(f'Config file ({self.config_filename}) does not exist')
+            print(f"Config file ({self.config_filename}) does not exist")
             sys.exit(1)
 
         except:
-            print(f"T3CO terminated. Analysis ID not available. Try these analysis_id's instead: {config_df.index.to_list()}")
+            print(
+                f"T3CO terminated. Analysis ID not available. Try these analysis_id's instead: {config_df.index.to_list()}"
+            )
             sys.exit(1)
 
     def check_drivecycles_and_create_selections(self) -> None:
@@ -140,17 +152,20 @@ class Config:
             self.drive_cycle = (
                 Path(self.drive_cycle).resolve(strict=True)
                 if Path(self.drive_cycle).is_absolute()
-                else Path(self.config_filename).parents[0]
-                / self.drive_cycle
+                else Path(self.config_filename).parents[0] / self.drive_cycle
             )
             if Path(self.drive_cycle).is_dir():
-                self.dc_files = [p.absolute() for p in Path(self.drive_cycle).rglob("*.csv")]
+                self.dc_files = [
+                    p.absolute() for p in Path(self.drive_cycle).rglob("*.csv")
+                ]
                 self.selections_list = []
                 for selection in self.selections:
                     for i in range(len(self.dc_files)):
-                        self.selections_list.append(str(selection) + "_" + str(i).zfill(4))
+                        self.selections_list.append(
+                            str(selection) + "_" + str(i).zfill(4)
+                        )
             else:
-                self.selections_list =  self.selections
+                self.selections_list = self.selections
         else:
             self.selections_list = self.selections
 
@@ -167,7 +182,6 @@ class Config:
         )
         self.fuel_prices_df.set_index("Fuel", inplace=True)
 
-        
     def delete_dataframes(self) -> None:
         """
         Deletes DataFrame attributes from the Config instance.

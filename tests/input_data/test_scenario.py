@@ -4,12 +4,14 @@ from t3co.input_data.config import Config
 from pathlib import Path
 import pandas as pd
 
+
 @pytest.fixture
 def config():
     # Create a mock Config object
     config = Config()
     config.scenario_file = Path(__file__).parent / "mock_scenario_db.csv"
     return config
+
 
 @pytest.fixture
 def mock_scenario_db(tmp_path):
@@ -21,6 +23,7 @@ def mock_scenario_db(tmp_path):
     mock_file = tmp_path / "mock_scenario_db.csv"
     mock_file.write_text(data)
     return mock_file
+
 
 def test_scenario_initialization():
     scenario = Scenario(
@@ -36,7 +39,7 @@ def test_scenario_initialization():
         ess_cost_dol_per_kwh=300,
         ess_base_cost_dol=400,
         shifts_per_year=[2, 2, 2],
-        depreciation_rates_pct_per_yr=[0.09]*3,
+        depreciation_rates_pct_per_yr=[0.09] * 3,
         mr_unplanned_downtime_hr_per_mi=[0.1, 0.1, 0.1],
         maint_oper_cost_dol_per_mi=[0.05, 0.05, 0.05],
     )
@@ -52,8 +55,13 @@ def test_scenario_initialization():
     assert scenario.ess_cost_dol_per_kwh == 300
     assert scenario.ess_base_cost_dol == 400
     assert scenario.shifts_per_year == [2, 2, 2]
-    assert scenario.mr_unplanned_downtime_hr_per_mi == [0.1, 0.1, 0.1,]
+    assert scenario.mr_unplanned_downtime_hr_per_mi == [
+        0.1,
+        0.1,
+        0.1,
+    ]
     assert scenario.maint_oper_cost_dol_per_mi == [0.05, 0.05, 0.05]
+
 
 def test_scenario_from_file(config, mock_scenario_db):
     config.scenario_file = mock_scenario_db
@@ -73,6 +81,7 @@ def test_scenario_from_file(config, mock_scenario_db):
     assert scenario.mr_unplanned_downtime_hr_per_mi == [0.1, 0.1, 0.1]
     assert scenario.maint_oper_cost_dol_per_mi == [0.05, 0.05, 0.05]
 
+
 def test_scenario_override_from_config(config, mock_scenario_db):
     config.scenario_file = mock_scenario_db
     scenario = Scenario.from_file(selection=1, scenario_file=config.scenario_file)
@@ -80,10 +89,12 @@ def test_scenario_override_from_config(config, mock_scenario_db):
     assert scenario.vehicle_life_yr == config.vehicle_life_yr
     assert scenario.fs_fueling_rate_kg_per_min == config.fs_fueling_rate_kg_per_min
 
+
 def test_get_discounted_value():
     scenario = Scenario(discount_rate_pct_per_yr=0.05)
     discounted_value = scenario.get_discounted_value(value=1000, year_number=2)
     assert discounted_value == pytest.approx(907.03, 0.01)
+
 
 def test_delete_dataframes():
     scenario = Scenario()

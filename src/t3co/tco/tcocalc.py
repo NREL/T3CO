@@ -14,14 +14,14 @@ class TCOCalc:
     cap_costs_dol: CapitalCosts = None
     oper_costs_dol: OperatingCosts = None
     oppy_costs_dol: OpportunityCosts = None
-    
+
     def __new__(cls, *args, **kwargs):
         """
         Creates a new instance of the TCOCalc class.
         """
         instance = super(TCOCalc, cls).__new__(cls)
         return instance
-    
+
     def __init__(
         self,
         year_index: int,
@@ -77,7 +77,9 @@ class TCOCalc:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance.
         """
-        self.cap_costs_dol = CapitalCosts(vehicle=vehicle, scenario=scenario)
+        self.cap_costs_dol = CapitalCosts(
+            vehicle=vehicle, scenario=scenario, msrp_total_dol=scenario.msrp_total_dol
+        )
 
     def calculate_opportunity_costs(
         self, vehicle: Vehicle, scenario: Scenario, energy: Energy
@@ -181,7 +183,9 @@ class TCOCalc:
             )
 
         elif TCO_switch == "EFFICIENCY":
-            disc_VMT_sum = scenario.get_discounted_value(value=scenario.vmt[self.year_number - 1], year_number=self.year_number)
+            disc_VMT_sum = scenario.get_discounted_value(
+                value=scenario.vmt[self.year_number - 1], year_number=self.year_number
+            )
 
             downtime_efficiency = 1 / (
                 1

@@ -11,7 +11,7 @@ import os
 # ./t3co
 wkdir = Path(__file__).parent.parent
 
-SWEEP_PATH = Path(__file__).resolve().parents[1] /"cli"/ "sweep.py"
+SWEEP_PATH = Path(__file__).resolve().parents[1] / "cli" / "sweep.py"
 
 
 CONV = vehicle.CONV
@@ -84,8 +84,7 @@ def set_tco_intermediates():
 
     # ./t3co/resources/f'vehicles/{vocation_scenario}/tco/tco_intermediates'
     TCO_INTERMEDIATES = (
-        RESOURCES_FOLDERPATH
-        / f"vehicles/{vocation_scenario}/tco/tco_intermediates"
+        RESOURCES_FOLDERPATH / f"vehicles/{vocation_scenario}/tco/tco_intermediates"
     )
     if not TCO_INTERMEDIATES.exists():
         TCO_INTERMEDIATES.mkdir(parents=True)
@@ -97,9 +96,7 @@ def set_tco_results():
     """
     global TCO_RESULTS
     # ./t3co/resources/f'vehicles/{vocation_scenario}/tco/tco_results'
-    TCO_RESULTS = (
-        RESOURCES_FOLDERPATH / f"vehicles/{vocation_scenario}/tco/tco_results"
-    )
+    TCO_RESULTS = RESOURCES_FOLDERPATH / f"vehicles/{vocation_scenario}/tco/tco_results"
     if not TCO_RESULTS.exists():
         TCO_RESULTS.mkdir(parents=True)
 

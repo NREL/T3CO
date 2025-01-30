@@ -29,29 +29,36 @@ class CapitalCosts:
         """
         instance = super(CapitalCosts, cls).__new__(cls)
         return instance
-    
-    def __init__(self, vehicle: Vehicle, scenario: Scenario):
+
+    def __init__(
+        self, vehicle: Vehicle, scenario: Scenario, msrp_total_dol: float = None
+    ):
         """
         Initializes the CapitalCosts instance.
 
         Args:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data.
+            msrp_total_dol (float, optional): MSRP in dollars as input
         """
-        self.set_glider_cost(vehicle=vehicle, scenario=scenario)
-        self.set_fuel_converter_cost_dol(vehicle=vehicle, scenario=scenario)
-        self.set_fuel_storage_cost(vehicle=vehicle, scenario=scenario)
-        self.set_motor_control_power_elecs_cost(vehicle=vehicle, scenario=scenario)
-        self.set_plug_cost(vehicle=vehicle, scenario=scenario)
-        self.set_battery_cost(vehicle=vehicle, scenario=scenario)
-        self.set_msrp(vehicle=vehicle, scenario=scenario)
-        self.set_purchase_tax(vehicle=vehicle, scenario=scenario)
-        self.set_downpayment(vehicle=vehicle, scenario=scenario)
-        self.set_residual_cost(vehicle=vehicle, scenario=scenario)
+        if not msrp_total_dol and vehicle:
+            self.set_glider_cost(scenario=scenario)
+            self.set_fuel_converter_cost_dol(vehicle=vehicle, scenario=scenario)
+            self.set_fuel_storage_cost(vehicle=vehicle, scenario=scenario)
+            self.set_motor_control_power_elecs_cost(vehicle=vehicle, scenario=scenario)
+            self.set_plug_cost(vehicle=vehicle, scenario=scenario)
+            self.set_battery_cost(vehicle=vehicle, scenario=scenario)
+            self.set_msrp()
+        else:
+            self.msrp_total_dol = msrp_total_dol
+
+        self.set_purchase_tax(scenario=scenario)
+        self.set_downpayment(scenario=scenario)
+        self.set_residual_cost(scenario=scenario)
         self.set_disc_residual_cost(scenario=scenario)
         self.set_total_cap_cost()
 
-    def set_glider_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
+    def set_glider_cost(self, scenario: Scenario) -> None:
         """
         Sets the glider cost for the vehicle.
 
@@ -64,12 +71,10 @@ class CapitalCosts:
         - glider_cost_dol
 
         Args:
-            vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data, including the base cost for the glider.
         """
         self.glider_cost_dol = scenario.vehicle_glider_cost_dol
         self.glider_cost_dol = self.get_marked_up_value(self.glider_cost_dol, scenario)
-
 
     def set_fuel_converter_cost_dol(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
@@ -108,7 +113,9 @@ class CapitalCosts:
                 scenario.fc_ice_cost_dol_per_kw * vehicle.fc_max_kw
             ) + scenario.fc_ice_base_cost_dol
 
-        self.fuel_converter_cost_dol = self.get_marked_up_value(self.fuel_converter_cost_dol, scenario)
+        self.fuel_converter_cost_dol = self.get_marked_up_value(
+            self.fuel_converter_cost_dol, scenario
+        )
 
     def set_fuel_storage_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
@@ -138,8 +145,7 @@ class CapitalCosts:
                 scenario.fs_h2_cost_dol_per_kwh * vehicle.fs_kwh
             )
         elif (
-            vehicle.veh_pt_type in [gl.CONV, gl.HEV]
-            and scenario.fuel_type[0] == "cng"
+            vehicle.veh_pt_type in [gl.CONV, gl.HEV] and scenario.fuel_type[0] == "cng"
         ):
             self.fuel_storage_cost_dol = (
                 scenario.fs_cng_cost_dol_per_kwh * vehicle.fs_kwh
@@ -149,9 +155,13 @@ class CapitalCosts:
         else:
             self.fuel_storage_cost_dol = 0
 
-        self.fuel_storage_cost_dol = self.get_marked_up_value(self.fuel_storage_cost_dol, scenario)
+        self.fuel_storage_cost_dol = self.get_marked_up_value(
+            self.fuel_storage_cost_dol, scenario
+        )
 
-    def set_motor_control_power_elecs_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
+    def set_motor_control_power_elecs_cost(
+        self, vehicle: Vehicle, scenario: Scenario
+    ) -> None:
         """
         Sets the motor control and power electronics cost for the vehicle.
 
@@ -177,7 +187,9 @@ class CapitalCosts:
             self.motor_control_power_elecs_cost_dol = scenario.pe_mc_base_cost_dol + (
                 scenario.pe_mc_cost_dol_per_kw * vehicle.mc_max_kw
             )
-        self.motor_control_power_elecs_cost_dol = self.get_marked_up_value(self.motor_control_power_elecs_cost_dol, scenario)
+        self.motor_control_power_elecs_cost_dol = self.get_marked_up_value(
+            self.motor_control_power_elecs_cost_dol, scenario
+        )
 
     def set_plug_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
         """
@@ -229,9 +241,11 @@ class CapitalCosts:
                 scenario.ess_cost_dol_per_kwh * vehicle.ess_max_kwh
             )
 
-        self.battery_cost_dol = self.get_marked_up_value(self.battery_cost_dol, scenario)
+        self.battery_cost_dol = self.get_marked_up_value(
+            self.battery_cost_dol, scenario
+        )
 
-    def set_msrp(self, vehicle: Vehicle, scenario: Scenario) -> None:
+    def set_msrp(self) -> None:
         """
         Calculates the total MSRP (Manufacturer's Suggested Retail Price) for the vehicle.
 
@@ -257,7 +271,7 @@ class CapitalCosts:
             + self.plug_cost_dol
         )
 
-    def set_purchase_tax(self, vehicle: Vehicle, scenario: Scenario) -> None:
+    def set_purchase_tax(self, scenario: Scenario) -> None:
         """
         Sets the purchase tax for the vehicle.
 
@@ -272,12 +286,11 @@ class CapitalCosts:
         - purchase_tax_dol
 
         Args:
-            vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data, including the tax rate.
         """
         self.purchase_tax_dol = self.msrp_total_dol * scenario.tax_rate_pct
 
-    def set_downpayment(self, vehicle: Vehicle, scenario: Scenario) -> None:
+    def set_downpayment(self, scenario: Scenario) -> None:
         """
         Sets the downpayment and initial principal for the vehicle purchase.
 
@@ -296,23 +309,32 @@ class CapitalCosts:
         - purchasing_initial_principal_dol
 
         Args:
-            vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data, including the purchasing method, down payment percentage, and interest rate.
         """
 
-        if scenario.purchasing_method == 'loan':
-            self.purchasing_downpayment_dol = (self.msrp_total_dol + self.purchase_tax_dol) * scenario.purchasing_down_payment_pct
-            self.purchasing_initial_principal_dol = (self.msrp_total_dol + self.purchase_tax_dol) * (1 - scenario.purchasing_down_payment_pct)
-        
-        elif scenario.purchasing_method == 'lease':
-            scenario.leasing_money_factor = scenario.purchasing_interest_apr_pct_per_yr/24
-            self.purchasing_downpayment_dol = (self.msrp_total_dol + self.purchase_tax_dol) * scenario.purchasing_down_payment_pct
+        if scenario.purchasing_method == "loan":
+            self.purchasing_downpayment_dol = (
+                self.msrp_total_dol + self.purchase_tax_dol
+            ) * scenario.purchasing_down_payment_pct
+            self.purchasing_initial_principal_dol = (
+                self.msrp_total_dol + self.purchase_tax_dol
+            ) * (1 - scenario.purchasing_down_payment_pct)
+
+        elif scenario.purchasing_method == "lease":
+            scenario.leasing_money_factor = (
+                scenario.purchasing_interest_apr_pct_per_yr / 24
+            )
+            self.purchasing_downpayment_dol = (
+                self.msrp_total_dol + self.purchase_tax_dol
+            ) * scenario.purchasing_down_payment_pct
             self.purchasing_initial_principal_dol = 0.0
         else:
-            self.purchasing_downpayment_dol = self.msrp_total_dol + self.purchase_tax_dol
+            self.purchasing_downpayment_dol = (
+                self.msrp_total_dol + self.purchase_tax_dol
+            )
             self.purchasing_initial_principal_dol = 0.0
 
-    def set_residual_cost(self, vehicle: Vehicle, scenario: Scenario) -> None:
+    def set_residual_cost(self, scenario: Scenario) -> None:
         """
         Sets the residual cost for the vehicle.
 
@@ -332,12 +354,16 @@ class CapitalCosts:
         - residual_cost_dol
 
         Args:
-            vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data, including depreciation rates and vehicle life span.
         """
-        
-        scenario.residual_rate_pct *= np.prod([(1-scenario.depreciation_rates_pct_per_yr[i]) for i in range(scenario.vehicle_life_yr)])
-        self.residual_cost_dol = - self.msrp_total_dol * scenario.residual_rate_pct
+
+        scenario.residual_rate_pct *= np.prod(
+            [
+                (1 - scenario.depreciation_rates_pct_per_yr[i])
+                for i in range(scenario.vehicle_life_yr)
+            ]
+        )
+        self.residual_cost_dol = -self.msrp_total_dol * scenario.residual_rate_pct
 
     def set_total_cap_cost(self) -> None:
         """
@@ -352,9 +378,13 @@ class CapitalCosts:
 
         Estimated class variables:
         - net_capital_cost_dol
-        
+
         """
-        self.net_capital_cost_dol = (self.purchasing_downpayment_dol if self.purchasing_downpayment_dol else (self.msrp_total_dol+self.purchase_tax_dol))
+        self.net_capital_cost_dol = (
+            self.purchasing_downpayment_dol
+            if self.purchasing_downpayment_dol
+            else (self.msrp_total_dol + self.purchase_tax_dol)
+        )
 
     def set_disc_residual_cost(self, scenario: Scenario) -> None:
         """
@@ -363,7 +393,9 @@ class CapitalCosts:
         Args:
             scenario (Scenario): The scenario instance containing configuration data.
         """
-        self.disc_residual_cost_dol = scenario.get_discounted_value(self.residual_cost_dol, year_number=scenario.vehicle_life_yr)
+        self.disc_residual_cost_dol = scenario.get_discounted_value(
+            self.residual_cost_dol, year_number=scenario.vehicle_life_yr
+        )
 
     def get_marked_up_value(self, value: float, scenario: Scenario) -> float:
         """
@@ -376,4 +408,4 @@ class CapitalCosts:
         Returns:
             float: The marked up value.
         """
-        return value * (1+ scenario.markup_pct if scenario.markup_pct else 1)
+        return value * (1 + scenario.markup_pct if scenario.markup_pct else 1)

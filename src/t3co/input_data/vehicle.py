@@ -37,7 +37,7 @@ class Vehicle:
         """
         instance = super(Vehicle, cls).__new__(cls)
         return instance
-    
+
     @classmethod
     def from_config(cls, selection: int, config: Config) -> Self:
         """
@@ -88,20 +88,20 @@ class Vehicle:
                 self.glider_kg
                 + self.trans_kg
                 + self.cargo_kg
-                + (self.fs_kwh / self.fs_kwh_per_kg if self.fs_kwh_per_kg!=0 else 0)
+                + (self.fs_kwh / self.fs_kwh_per_kg if self.fs_kwh_per_kg != 0 else 0)
                 + (
                     self.fc_base_kg + self.fc_kw_per_kg / self.fc_max_kw
-                    if self.fc_max_kw!=0
+                    if self.fc_max_kw != 0
                     else 0
                 )
                 + (
                     self.mc_pe_base_kg + self.mc_pe_kg_per_kw / self.mc_max_kw
-                    if self.mc_max_kw!=0
+                    if self.mc_max_kw != 0
                     else 0
                 )
                 + (
                     self.ess_base_kg + self.ess_kg_per_kwh / self.ess_max_kwh
-                    if self.ess_max_kwh!=0
+                    if self.ess_max_kwh != 0
                     else 0
                 )
             )
