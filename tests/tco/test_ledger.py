@@ -74,7 +74,7 @@ def scenario():
         discount_rate_pct_per_yr=0.05,
         avg_speed_mph=50.0,
         vehicle_class="class8",
-        depreciation_rates_pct_per_yr = [0.09]*10,
+        depreciation_rates_pct_per_yr=[0.09] * 10,
         insurance_rates_pct_per_yr=[0.01] * 10,
         maint_oper_cost_dol_per_mi=[0.05] * 10,
         fuel_prices_df=pd.DataFrame(
@@ -97,25 +97,27 @@ def scenario():
     scenario.fuel_prices_df.set_index("Fuel", inplace=True)
     return scenario
 
+
 @pytest.fixture
 def energy():
     return Energy(mpgge=3.0, primary_fuel_range_mi=300.0)
 
+
 @pytest.fixture
 def config():
-    config =  Config(
-        selections=[1],
-        vehicle_life_yr=10,
-        TCO_method="DIRECT"
-    )
+    config = Config(selections=[1], vehicle_life_yr=10, TCO_method="DIRECT")
     config.check_drivecycles_and_create_selections()
     return config
 
+
 @pytest.fixture
 def ledger(vehicle, scenario, energy, config):
-    ledger = Ledger.__new__(Ledger, vehicle=vehicle, scenario=scenario, energy=energy, config=config)
+    ledger = Ledger.__new__(
+        Ledger, vehicle=vehicle, scenario=scenario, energy=energy, config=config
+    )
     ledger = run_tco_per_year(ledger, scenario, vehicle, energy, config)
     return ledger
+
 
 def test_ledger_initialization(vehicle, scenario, energy, config):
     ledger = Ledger(vehicle=vehicle, scenario=scenario, energy=energy, config=config)
@@ -127,42 +129,74 @@ def test_ledger_initialization(vehicle, scenario, energy, config):
     assert ledger.tco_method == "DIRECT"
     assert len(ledger.tco_per_year) == 10
 
+
 def test_set_discounted_costs(vehicle, scenario, energy, config, ledger):
     ledger.set_discounted_costs()
-    assert ledger.discounted_total_cap_cost_dol == pytest.approx(ledger.tco_per_year[0].cap_costs_dol.net_capital_cost_dol, 0.01)
+    assert ledger.discounted_total_cap_cost_dol == pytest.approx(
+        ledger.tco_per_year[0].cap_costs_dol.net_capital_cost_dol, 0.01
+    )
     assert ledger.total_vmt == pytest.approx(sum(scenario.vmt), 0.01)
-    assert ledger.disc_total_vmt == pytest.approx(sum([scenario.get_discounted_value(vmt, year_number=i+1) for i, vmt in enumerate(scenario.vmt)]), 0.01)
+    assert ledger.disc_total_vmt == pytest.approx(
+        sum(
+            [
+                scenario.get_discounted_value(vmt, year_number=i + 1)
+                for i, vmt in enumerate(scenario.vmt)
+            ]
+        ),
+        0.01,
+    )
+
 
 def test_set_discounted_tco(vehicle, scenario, energy, config, ledger):
-    
     ledger.set_discounted_costs()
     ledger.set_discounted_tco()
     assert ledger.discounted_tco_dol == pytest.approx(
-        ledger.payload_cap_cost_multiplier * (
+        ledger.payload_cap_cost_multiplier
+        * (
             ledger.discounted_total_cap_cost_dol
             + ledger.discounted_total_oper_cost_dol
             + ledger.discounted_downtime_oppy_cost_dol
             + ledger.residual_cost_dol
-        ), 0.01
+        ),
+        0.01,
     )
+
 
 def test_set_cost_components(vehicle, scenario, energy, config, ledger):
     # ledger = Ledger.__new__(vehicle=vehicle, scenario=scenario, energy=energy, config=config)
     ledger.set_cost_components()
-    assert ledger.glider_cost_dol == pytest.approx(ledger.tco_per_year[0].cap_costs_dol.glider_cost_dol, 0.01)
-    assert ledger.fuel_converter_cost_dol == pytest.approx(ledger.tco_per_year[0].cap_costs_dol.fuel_converter_cost_dol, 0.01)
-    assert ledger.fuel_storage_cost_dol == pytest.approx(ledger.tco_per_year[0].cap_costs_dol.fuel_storage_cost_dol, 0.01)
-    assert ledger.motor_control_power_elecs_cost_dol == pytest.approx(ledger.tco_per_year[0].cap_costs_dol.motor_control_power_elecs_cost_dol, 0.01)
-    assert ledger.plug_cost_dol == pytest.approx(ledger.tco_per_year[0].cap_costs_dol.plug_cost_dol, 0.01)
-    assert ledger.battery_cost_dol == pytest.approx(ledger.tco_per_year[0].cap_costs_dol.battery_cost_dol, 0.01)
-    assert ledger.purchase_tax_dol == pytest.approx(ledger.tco_per_year[0].cap_costs_dol.purchase_tax_dol, 0.01)
-    assert ledger.msrp_total_dol == pytest.approx(ledger.tco_per_year[0].cap_costs_dol.msrp_total_dol, 0.01)
+    assert ledger.glider_cost_dol == pytest.approx(
+        ledger.tco_per_year[0].cap_costs_dol.glider_cost_dol, 0.01
+    )
+    assert ledger.fuel_converter_cost_dol == pytest.approx(
+        ledger.tco_per_year[0].cap_costs_dol.fuel_converter_cost_dol, 0.01
+    )
+    assert ledger.fuel_storage_cost_dol == pytest.approx(
+        ledger.tco_per_year[0].cap_costs_dol.fuel_storage_cost_dol, 0.01
+    )
+    assert ledger.motor_control_power_elecs_cost_dol == pytest.approx(
+        ledger.tco_per_year[0].cap_costs_dol.motor_control_power_elecs_cost_dol, 0.01
+    )
+    assert ledger.plug_cost_dol == pytest.approx(
+        ledger.tco_per_year[0].cap_costs_dol.plug_cost_dol, 0.01
+    )
+    assert ledger.battery_cost_dol == pytest.approx(
+        ledger.tco_per_year[0].cap_costs_dol.battery_cost_dol, 0.01
+    )
+    assert ledger.purchase_tax_dol == pytest.approx(
+        ledger.tco_per_year[0].cap_costs_dol.purchase_tax_dol, 0.01
+    )
+    assert ledger.msrp_total_dol == pytest.approx(
+        ledger.tco_per_year[0].cap_costs_dol.msrp_total_dol, 0.01
+    )
+
 
 def test_to_dict(vehicle, scenario, energy, config, ledger):
     # ledger = Ledger(vehicle=vehicle, scenario=scenario, energy=energy, config=config)
     ledger_dict = ledger.to_dict()
     assert isinstance(ledger_dict, dict)
     assert ledger_dict["vehicle_veh_pt_type"] == vehicle.veh_pt_type
+
 
 def test_to_json(vehicle, scenario, energy, config, tmp_path, ledger):
     # ledger = Ledger(vehicle=vehicle, scenario=scenario, energy=energy, config=config)
@@ -173,11 +207,13 @@ def test_to_json(vehicle, scenario, energy, config, tmp_path, ledger):
         data = json.load(f)
     assert data["vehicle_veh_pt_type"] == vehicle.veh_pt_type
 
+
 def test_to_df(vehicle, scenario, energy, config, ledger):
     # ledger = Ledger(vehicle=vehicle, scenario=scenario, energy=energy, config=config)
     df = ledger.to_df()
     assert isinstance(df, pd.DataFrame)
     assert df.iloc[0]["vehicle_veh_pt_type"] == vehicle.veh_pt_type
+
 
 def test_to_csv(vehicle, scenario, energy, config, tmp_path, ledger):
     # ledger = Ledger(vehicle=vehicle, scenario=scenario, energy=energy, config=config)
@@ -188,7 +224,7 @@ def test_to_csv(vehicle, scenario, energy, config, tmp_path, ledger):
     assert df.iloc[0]["vehicle_veh_pt_type"] == vehicle.veh_pt_type
 
 
-def run_tco_per_year(ledger,scenario, vehicle, energy, config):
+def run_tco_per_year(ledger, scenario, vehicle, energy, config):
     ledger.scenario = scenario
     ledger.vehicle = vehicle
     ledger.selection = scenario.selection

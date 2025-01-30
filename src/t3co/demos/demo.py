@@ -26,13 +26,14 @@ input_scenario = scenario.Scenario().from_file(
 )
 
 
-input_energy = energy.Energy( mpgge=4.0, primary_fuel_range_mi=200.0)
+input_energy = energy.Energy(mpgge=4.0, primary_fuel_range_mi=200.0)
 
 tco_3 = TCOCalc(
     year_index=3,
-    vehicle=input_vehicle, 
-    scenario = input_scenario, 
-    energy=input_energy, )
+    vehicle=input_vehicle,
+    scenario=input_scenario,
+    energy=input_energy,
+)
 print(tco_3)
 
 # %%
@@ -53,7 +54,7 @@ output_ledger.to_csv(csv_filepath)
 #     json.dump(handle_nan(results_dict), f)
 
 # %%
-print(f"T3CO Run time: {time.time()-start}")
+print(f"T3CO Run time: {time.time() - start}")
 
 if __name__ == "__main__":
     pass

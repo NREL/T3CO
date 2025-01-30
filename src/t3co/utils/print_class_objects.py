@@ -90,7 +90,9 @@ def custom_default(obj: object) -> Union[None, dict, str]:
         return obj.__dict__
 
 
-def to_flat_dict(obj: object, include_predix: bool = True, prefix: str = "", delimiter: str = "_") -> dict:
+def to_flat_dict(
+    obj: object, include_predix: bool = True, prefix: str = "", delimiter: str = "_"
+) -> dict:
     """
     Flattens a nested object into a dictionary.
 

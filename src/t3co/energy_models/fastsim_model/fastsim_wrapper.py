@@ -23,7 +23,7 @@ class RunFastsim:
         """
         instance = super(RunFastsim, cls).__new__(cls)
         return instance
-    
+
     def __init__(
         self,
         veh_no: int,
@@ -33,8 +33,12 @@ class RunFastsim:
         / "Demo_FY22_vehicle_model_assumptions.csv",
         use_rust: bool = True,
     ) -> None:
-        self.load_vehicle(veh_no=veh_no, veh_input_path=veh_input_path, use_rust=use_rust)
-        self.cycles = self.load_design_cycle_from_scenario(scenario=scenario, return_rustcycle=use_rust)
+        self.load_vehicle(
+            veh_no=veh_no, veh_input_path=veh_input_path, use_rust=use_rust
+        )
+        self.cycles = self.load_design_cycle_from_scenario(
+            scenario=scenario, return_rustcycle=use_rust
+        )
 
         if isinstance(self.cycles, list):
             self.simdrives, mpgges_list, weights = [], [], []
@@ -76,7 +80,9 @@ class RunFastsim:
 
         self.get_range()
 
-    def load_vehicle(self, veh_no: int, veh_input_path: Union[str, Path], use_rust:bool = True) -> fastsim.vehicle.Vehicle:
+    def load_vehicle(
+        self, veh_no: int, veh_input_path: Union[str, Path], use_rust: bool = True
+    ) -> fastsim.vehicle.Vehicle:
         """
         Loads vehicle object from vehicle number and input CSV filepath.
 
@@ -98,7 +104,7 @@ class RunFastsim:
         self,
         scenario: Scenario,
         cyc_file_path: Union[str, Path] = gl.CYCLES_FOLDER,
-        return_rustcycle: bool = True
+        return_rustcycle: bool = True,
     ) -> Union[fastsim.cycle.Cycle, List[fastsim.cycle.Cycle]]:
         """
         Loads the design cycle used for mpgge and range determination.
@@ -123,7 +129,7 @@ class RunFastsim:
                     cycle_file_name, weight = dc_weight
                     cyc = self.load_design_cycle_from_path(
                         cyc_file_path=Path(cyc_file_path) / cycle_file_name,
-                        return_rustcycle=return_rustcycle
+                        return_rustcycle=return_rustcycle,
                     )
                     cyc.name = cycle_file_name
                 weights.append(weight)
@@ -133,18 +139,19 @@ class RunFastsim:
                     f"Sum of weights for composite cycles (sum = {sum(weights)}) is not 1."
                 )
                 raise ValueError
-            
+
             return design_cycles
         else:
             cycle_file_name = Path(scenario.drive_cycle).name
             design_cycles = self.load_design_cycle_from_path(
-                cyc_file_path=scenario.drive_cycle,
-                return_rustcycle=return_rustcycle
+                cyc_file_path=scenario.drive_cycle, return_rustcycle=return_rustcycle
             )
             design_cycles.name = cycle_file_name
             return design_cycles
 
-    def load_design_cycle_from_path(self, cyc_file_path: Union[str, Path], return_rustcycle: bool = True) -> Union[fastsim.cycle.RustCycle, fastsim.cycle.Cycle]:
+    def load_design_cycle_from_path(
+        self, cyc_file_path: Union[str, Path], return_rustcycle: bool = True
+    ) -> Union[fastsim.cycle.RustCycle, fastsim.cycle.Cycle]:
         """
         Loads the Cycle object from the drive cycle filepath.
 
@@ -167,9 +174,10 @@ class RunFastsim:
             return cyc.to_rust()
         else:
             return cyc
-        
 
-    def get_simdrive(self, cycle: fastsim.cycle.Cycle) -> fastsim.fastsimrust.RustSimDrive:
+    def get_simdrive(
+        self, cycle: fastsim.cycle.Cycle
+    ) -> fastsim.fastsimrust.RustSimDrive:
         """
         Creates a SimDrive object for the given cycle and vehicle.
 

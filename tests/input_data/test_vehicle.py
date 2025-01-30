@@ -4,13 +4,15 @@ from pathlib import Path
 from t3co.input_data.config import Config
 from t3co.input_data.vehicle import Vehicle
 
+
 @pytest.fixture
 def config():
     # Create a mock Config object
     config = Config()
-    config.selections_list = [1,1]
+    config.selections_list = [1, 1]
     config.vehicle_file = Path(__file__).parent / "mock_vehicle_db.csv"
     return config
+
 
 @pytest.fixture
 def mock_vehicle_db(tmp_path):
@@ -22,6 +24,7 @@ def mock_vehicle_db(tmp_path):
     mock_file = tmp_path / "mock_vehicle_db.csv"
     mock_file.write_text(data)
     return mock_file
+
 
 def test_from_config(config, mock_vehicle_db):
     config.vehicle_file = mock_vehicle_db
@@ -46,6 +49,7 @@ def test_from_config(config, mock_vehicle_db):
     assert vehicle.ess_base_kg == 100
     assert vehicle.veh_override_kg == 0
 
+
 def test_set_veh_kg(config, mock_vehicle_db):
     config.vehicle_file = mock_vehicle_db
     vehicle = Vehicle.from_config(selection=1, config=config)
@@ -55,11 +59,24 @@ def test_set_veh_kg(config, mock_vehicle_db):
         + vehicle.trans_kg
         + vehicle.cargo_kg
         + (vehicle.fs_kwh / vehicle.fs_kwh_per_kg if vehicle.fs_kwh else 0)
-        + (vehicle.fc_base_kg + vehicle.fc_kw_per_kg / vehicle.fc_max_kw if vehicle.fc_max_kw else 0)
-        + (vehicle.mc_pe_base_kg + vehicle.mc_pe_kg_per_kw / vehicle.mc_max_kw if vehicle.mc_max_kw else 0)
-        + (vehicle.ess_base_kg + vehicle.ess_kg_per_kwh / vehicle.ess_max_kwh if vehicle.ess_max_kwh else 0)
+        + (
+            vehicle.fc_base_kg + vehicle.fc_kw_per_kg / vehicle.fc_max_kw
+            if vehicle.fc_max_kw
+            else 0
+        )
+        + (
+            vehicle.mc_pe_base_kg + vehicle.mc_pe_kg_per_kw / vehicle.mc_max_kw
+            if vehicle.mc_max_kw
+            else 0
+        )
+        + (
+            vehicle.ess_base_kg + vehicle.ess_kg_per_kwh / vehicle.ess_max_kwh
+            if vehicle.ess_max_kwh
+            else 0
+        )
     )
     assert vehicle.veh_kg == expected_veh_kg
+
 
 def test_delete_dataframes(config, mock_vehicle_db):
     config.vehicle_file = mock_vehicle_db

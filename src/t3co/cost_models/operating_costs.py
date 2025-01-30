@@ -36,7 +36,7 @@ class OperatingCosts:
         """
         instance = super(OperatingCosts, cls).__new__(cls)
         return instance
-    
+
     def __init__(
         self,
         year_number: int,
@@ -57,23 +57,35 @@ class OperatingCosts:
             energy (Energy): The energy model instance.
             oppy_costs (OpportunityCosts): The opportunity costs associated with the vehicle.
         """
-        if energy: self.mpgge = energy.mpgge
+        if energy:
+            self.mpgge = energy.mpgge
         self.distance_traveled_mi_per_yr = scenario.vmt[year_number - 1]
 
         self.set_fuel_cost(year_number=year_number, vehicle=vehicle, scenario=scenario)
-        self.set_maintenance_oper_cost(year_number=year_number, vehicle=vehicle, scenario=scenario)
-        self.set_insurance_cost(year_number=year_number, cap_cost=cap_costs, vehicle=vehicle, scenario=scenario)
+        self.set_maintenance_oper_cost(
+            year_number=year_number, vehicle=vehicle, scenario=scenario
+        )
+        self.set_insurance_cost(
+            year_number=year_number,
+            cap_cost=cap_costs,
+            vehicle=vehicle,
+            scenario=scenario,
+        )
 
         if scenario.activate_tco_fueling_dwell_time_cost and oppy_costs:
             self.set_fueling_dwell_labor_cost(scenario=scenario, oppy_costs=oppy_costs)
         else:
             self.fueling_dwell_labor_cost_dol_per_yr = 0.0
 
-        self.set_purchasing_payment_cost(year_number=year_number, scenario=scenario, cap_costs=cap_costs)
+        self.set_purchasing_payment_cost(
+            year_number=year_number, scenario=scenario, cap_costs=cap_costs
+        )
         self.set_net_oper_cost()
         self.set_disc_oper_cost(year_number=year_number, scenario=scenario)
 
-    def set_fuel_cost(self, year_number: int, vehicle: Vehicle, scenario: Scenario) -> None:
+    def set_fuel_cost(
+        self, year_number: int, vehicle: Vehicle, scenario: Scenario
+    ) -> None:
         """
         Sets the fuel cost for the given year.
 
@@ -109,8 +121,10 @@ class OperatingCosts:
                 )
             )
             scenario.fuel_prices_df.set_index("Fuel", inplace=True)
-            
-        scenario.fuel_prices_df = scenario.fuel_prices_df[scenario.fuel_prices_df["Region"] == scenario.region]
+
+        scenario.fuel_prices_df = scenario.fuel_prices_df[
+            scenario.fuel_prices_df["Region"] == scenario.region
+        ]
 
         if (
             "diesel" in scenario.fuel_type.lower()
@@ -129,9 +143,7 @@ class OperatingCosts:
             dolPerKwh = scenario.fuel_prices_df.loc[
                 "dolPerKwh", str(scenario.model_year + year_number - 1)
             ]
-            self.fuel_price_dol_per_gge = (
-                dolPerKwh * gl.KWH_PER_GGE
-            )  
+            self.fuel_price_dol_per_gge = dolPerKwh * gl.KWH_PER_GGE
         elif scenario.fuel_type.lower() == "cng":
             CNGDolPerGge = scenario.fuel_prices_df.loc[
                 "CNGDolPerGge", str(scenario.model_year + year_number - 1)
@@ -143,7 +155,9 @@ class OperatingCosts:
             ]
             self.fuel_price_dol_per_gge = hydrogenDolPerGGE
         else:
-            raise Exception(f"Operating Costs calculation: Unknown fuel type {scenario.fuel_type}")
+            raise Exception(
+                f"Operating Costs calculation: Unknown fuel type {scenario.fuel_type}"
+            )
 
         self.fuel_used_gal_gge_per_yr = self.distance_traveled_mi_per_yr / self.mpgge
         self.fuel_used_gal_gde_per_yr = self.fuel_used_gal_gge_per_yr / gl.DGE_TO_GGE
@@ -210,16 +224,18 @@ class OperatingCosts:
             scenario (Scenario): The scenario instance containing configuration data.
         """
         self.insurance_rates_pct_per_yr = (
-            ast.literal_eval(
-            scenario.insurance_rates_pct_per_yr
-            )[year_number - 1] if isinstance(scenario.insurance_rates_pct_per_yr, str) else scenario.insurance_rates_pct_per_yr[year_number - 1]
+            ast.literal_eval(scenario.insurance_rates_pct_per_yr)[year_number - 1]
+            if isinstance(scenario.insurance_rates_pct_per_yr, str)
+            else scenario.insurance_rates_pct_per_yr[year_number - 1]
         )
 
         self.insurance_cost_dol_per_yr = (
             cap_cost.msrp_total_dol * self.insurance_rates_pct_per_yr
         )
 
-    def set_purchasing_payment_cost(self, year_number: int, scenario: Scenario, cap_costs: CapitalCosts):
+    def set_purchasing_payment_cost(
+        self, year_number: int, scenario: Scenario, cap_costs: CapitalCosts
+    ):
         """
         Sets the purchasing payment cost for the given year.
 
@@ -251,41 +267,84 @@ class OperatingCosts:
             scenario (Scenario): The scenario instance containing configuration data, including the purchasing method, interest rate, and term.
             cap_costs (CapitalCosts): The capital costs associated with the vehicle.
         """
-        if scenario.purchasing_method == 'cash':
+        if scenario.purchasing_method == "cash":
             self.purchasing_payment_dol_per_yr = 0
             self.purchasing_cost_dol_per_yr = 0
-            
-        elif scenario.purchasing_method == 'loan':
-            interest_rate_pct_per_frequency = scenario.purchasing_interest_apr_pct_per_yr/12*scenario.purchasing_payment_frequency_months
-            total_number_of_payments = int(scenario.purchasing_term_yr * 12 /scenario.purchasing_payment_frequency_months) #TODO check for missing payment
-            annual_number_of_payments = int(12/scenario.purchasing_payment_frequency_months)
+
+        elif scenario.purchasing_method == "loan":
+            interest_rate_pct_per_frequency = (
+                scenario.purchasing_interest_apr_pct_per_yr
+                / 12
+                * scenario.purchasing_payment_frequency_months
+            )
+            total_number_of_payments = int(
+                scenario.purchasing_term_yr
+                * 12
+                / scenario.purchasing_payment_frequency_months
+            )  # TODO check for missing payment
+            annual_number_of_payments = int(
+                12 / scenario.purchasing_payment_frequency_months
+            )
 
             purchasing_payment_dol_per_freq = (
-                (
                 cap_costs.purchasing_initial_principal_dol
-                * interest_rate_pct_per_frequency * (1 + interest_rate_pct_per_frequency) ** total_number_of_payments)
-                /(
-                (1 + interest_rate_pct_per_frequency) ** total_number_of_payments - 1)
-            )
+                * interest_rate_pct_per_frequency
+                * (1 + interest_rate_pct_per_frequency) ** total_number_of_payments
+            ) / ((1 + interest_rate_pct_per_frequency) ** total_number_of_payments - 1)
 
             self.purchasing_remaining_principal_dol = (
-                 (cap_costs.purchasing_initial_principal_dol * (1 + interest_rate_pct_per_frequency)** (year_number * annual_number_of_payments))
-                - purchasing_payment_dol_per_freq / interest_rate_pct_per_frequency *((1+interest_rate_pct_per_frequency)**(year_number * annual_number_of_payments) - 1)
+                cap_costs.purchasing_initial_principal_dol
+                * (1 + interest_rate_pct_per_frequency)
+                ** (year_number * annual_number_of_payments)
+            ) - purchasing_payment_dol_per_freq / interest_rate_pct_per_frequency * (
+                (1 + interest_rate_pct_per_frequency)
+                ** (year_number * annual_number_of_payments)
+                - 1
             )
-            
-            self.purchasing_cost_dol_per_yr  =  sum([interest_rate_pct_per_frequency * (cap_costs.purchasing_initial_principal_dol * (1 + interest_rate_pct_per_frequency)**n - purchasing_payment_dol_per_freq / interest_rate_pct_per_frequency *((1+interest_rate_pct_per_frequency)**n - 1))
-                                            for n in range((year_number-1)*annual_number_of_payments, (year_number * annual_number_of_payments + 1))])
-            
+
+            self.purchasing_cost_dol_per_yr = sum(
+                [
+                    interest_rate_pct_per_frequency
+                    * (
+                        cap_costs.purchasing_initial_principal_dol
+                        * (1 + interest_rate_pct_per_frequency) ** n
+                        - purchasing_payment_dol_per_freq
+                        / interest_rate_pct_per_frequency
+                        * ((1 + interest_rate_pct_per_frequency) ** n - 1)
+                    )
+                    for n in range(
+                        (year_number - 1) * annual_number_of_payments,
+                        (year_number * annual_number_of_payments + 1),
+                    )
+                ]
+            )
+
             self.purchasing_payment_dol_per_yr = (
                 purchasing_payment_dol_per_freq * annual_number_of_payments
             )
 
-        elif scenario.purchasing_method == 'lease':
-            adjusted_cap_cost_dol = (cap_costs.msrp_total_dol + cap_costs.purchase_tax_dol - cap_costs.purchasing_downpayment_dol)
-            depreciation_cost_dol_per_month = (adjusted_cap_cost_dol + cap_costs.residual_cost_dol)/(scenario.purchasing_term_yr*12)
-            finance_fee_dol_per_month = (adjusted_cap_cost_dol - cap_costs.residual_cost_dol) * scenario.leasing_money_factor
-            self.purchasing_tax_amount_dol_per_year = (depreciation_cost_dol_per_month + finance_fee_dol_per_month) * scenario.tax_rate_pct * 12
-            self.purchasing_payment_dol_per_yr = (depreciation_cost_dol_per_month + finance_fee_dol_per_month + self.purchasing_tax_amount_dol_per_year / 12) * 12
+        elif scenario.purchasing_method == "lease":
+            adjusted_cap_cost_dol = (
+                cap_costs.msrp_total_dol
+                + cap_costs.purchase_tax_dol
+                - cap_costs.purchasing_downpayment_dol
+            )
+            depreciation_cost_dol_per_month = (
+                adjusted_cap_cost_dol + cap_costs.residual_cost_dol
+            ) / (scenario.purchasing_term_yr * 12)
+            finance_fee_dol_per_month = (
+                adjusted_cap_cost_dol - cap_costs.residual_cost_dol
+            ) * scenario.leasing_money_factor
+            self.purchasing_tax_amount_dol_per_year = (
+                (depreciation_cost_dol_per_month + finance_fee_dol_per_month)
+                * scenario.tax_rate_pct
+                * 12
+            )
+            self.purchasing_payment_dol_per_yr = (
+                depreciation_cost_dol_per_month
+                + finance_fee_dol_per_month
+                + self.purchasing_tax_amount_dol_per_year / 12
+            ) * 12
             self.purchasing_cost_dol_per_yr = finance_fee_dol_per_month * 12
 
     def set_fueling_dwell_labor_cost(
@@ -333,7 +392,7 @@ class OperatingCosts:
             + self.fueling_dwell_labor_cost_dol_per_yr
             + self.maintenance_cost_dol_per_yr
             + self.insurance_cost_dol_per_yr
-            + self.purchasing_payment_dol_per_yr 
+            + self.purchasing_payment_dol_per_yr
         )
 
     def set_disc_oper_cost(self, year_number: int, scenario: Scenario) -> None:
@@ -354,7 +413,9 @@ class OperatingCosts:
             year_number (int): The year number for which the discounted operating cost is calculated.
             scenario (Scenario): The scenario instance containing configuration data.
         """
-        self.disc_oper_cost_dol_per_yr = scenario.get_discounted_value(value=self.net_oper_cost_dol_per_yr, year_number=year_number)
+        self.disc_oper_cost_dol_per_yr = scenario.get_discounted_value(
+            value=self.net_oper_cost_dol_per_yr, year_number=year_number
+        )
 
     def __str__(self) -> str:
         """

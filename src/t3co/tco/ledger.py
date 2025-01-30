@@ -73,7 +73,7 @@ class Ledger:
         """
         instance = super(Ledger, cls).__new__(cls)
         return instance
-    
+
     def __init__(
         self,
         vehicle: Vehicle,
@@ -174,7 +174,7 @@ class Ledger:
 
             self.cumu_levelized_tco_dol_per_mi.append(
                 self.cumu_disc_tco_dol_per_yr[year_index] / self.disc_total_vmt
-            )        
+            )
 
         self.total_fuel_cost_dol = sum(
             self.scenario.get_discounted_value(
@@ -197,14 +197,15 @@ class Ledger:
             self.scenario.get_discounted_value(
                 (
                     self.tco_per_year[
-                    year_index
-                ].oper_costs_dol.purchasing_cost_dol_per_yr if self.tco_per_year[
-                    year_index
-                ].oper_costs_dol.purchasing_cost_dol_per_yr
-                else self.tco_per_year[
-                    year_index
-                ].oper_costs_dol.purchasing_cost_dol_per_yr)
-                ,
+                        year_index
+                    ].oper_costs_dol.purchasing_cost_dol_per_yr
+                    if self.tco_per_year[
+                        year_index
+                    ].oper_costs_dol.purchasing_cost_dol_per_yr
+                    else self.tco_per_year[
+                        year_index
+                    ].oper_costs_dol.purchasing_cost_dol_per_yr
+                ),
                 year_number=year_index + 1,
             )
             for year_index in range(self.vehicle_life_yr)
@@ -265,13 +266,10 @@ class Ledger:
         Sets the discounted TCO for the Ledger instance.
         """
         self.undiscounted_tco_dol = self.payload_cap_cost_multiplier * sum(
-                self.tco_per_year[
-                    year_index
-                ].total_cost_dol_per_yr
-            
+            self.tco_per_year[year_index].total_cost_dol_per_yr
             for year_index in range(self.vehicle_life_yr)
-        )    
-        
+        )
+
         if self.tco_method == "DIRECT":
             self.discounted_tco_dol = self.payload_cap_cost_multiplier * (
                 self.discounted_total_cap_cost_dol
@@ -333,8 +331,8 @@ class Ledger:
 
         self.scenario.fuel_prices_dol_per_gge = [
             self.tco_per_year[year_index].oper_costs_dol.fuel_price_dol_per_gge
-                for year_index in range(self.vehicle_life_yr)
-                ]
+            for year_index in range(self.vehicle_life_yr)
+        ]
         self.total_fuel_used_gal_ge = sum(
             [
                 self.tco_per_year[year_index].oper_costs_dol.fuel_used_gal_gge_per_yr
@@ -350,7 +348,7 @@ class Ledger:
             self.energy.mpgge * self.vehicle.chg_eff if self.vehicle.chg_eff else None
         )
         self.mpgde = self.energy.mpgge / gl.DGE_TO_GGE
-        self.kwh_per_mi =  (gl.KWH_PER_GGE / self.mpgge if self.mpgge else None)
+        self.kwh_per_mi = gl.KWH_PER_GGE / self.mpgge if self.mpgge else None
 
     def to_dict(self, include_prefix: bool = True, flatten: bool = True) -> dict:
         """
@@ -366,14 +364,19 @@ class Ledger:
         self.scenario.delete_dataframes()
         if self.config:
             self.config.delete_dataframes()
-            
+
         if flatten:
             t3co_dict = to_flat_dict(self, include_predix=include_prefix, delimiter="_")
         else:
             t3co_dict = json.loads(json.dumps(self, default=custom_default))
         return t3co_dict
 
-    def to_json(self, filepath: Union[str, Path], include_prefix: bool = True, flatten: bool = True) -> None:
+    def to_json(
+        self,
+        filepath: Union[str, Path],
+        include_prefix: bool = True,
+        flatten: bool = True,
+    ) -> None:
         """
         Saves the Ledger instance to a JSON file.
 
