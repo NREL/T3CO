@@ -175,10 +175,6 @@ class OpportunityCosts:
             scenario.gvwr_kg - empty_increase_kg + scenario.gvwr_credit_kg
         )
 
-        # determine indices where lost cargo capacity is bounded in vehicle_weights
-        # and get the corresponding indices for p_of_weights
-        # based on current vehicle's new_cargo_cieling_lb and base_vehicle_gvwr_lb
-
         if empty_increase_kg >= scenario.gvwr_credit_kg:
             a = vehicle_weights_bins_kg - new_cargo_cieling_kg
             minidx = (
