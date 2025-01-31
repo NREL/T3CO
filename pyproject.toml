@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "t3co"
-version = "1.0.11"
+version = "2.0.0"
 dynamic = ["dependencies"]
 description = """
 NREL's Transportation Technology Total Cost of Ownership tool
@@ -46,3 +46,14 @@ Repository = "https://github.nrel.gov/AVCI/T3CO"
 [project.scripts]
 install_t3co_demo_inputs = "t3co.utils.demo_inputs_installer:main"
 
+[[tool.pydoc-markdown.loaders]]
+type = "python"
+search_path = [ "src" ]
+
+[tool.pydoc-markdown.renderer]
+type = "mkdocs"
+
+[[tool.pydoc-markdown.renderer.pages]]
+title = "API Documentation"
+name = "index"
+contents = [ "school.*" ]
