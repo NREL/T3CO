@@ -4,6 +4,8 @@ repo_url: https://github.com/NREL/T3CO
 edit_uri: https://github.com/NREL/T3CO/tree/main/docs
 site_author: Harish Panneer Selvam 
 
+extra_css:
+  - stylesheets/extra.css
 plugins:
   - search
   - mkdocstrings:
@@ -66,7 +68,7 @@ nav:
     - Overview: T3CO_Overview.md
     - Inputs: 
       - Vehicle: vehicle_inputs_descriptions.md
-      - Scenario: scenario_inputs_descriptions.md
+      - Scenario: pages/scenario_inputs_descriptions.md
       - Config: config_inputs_descriptions.md
     - Results:
       - Outputs: t3co_outputs_descriptions.md
