@@ -71,7 +71,7 @@ git pull origin main
 
 
 ## Copying T3CO Demo Input Files <a name=copy-demo-inputs></a>
-The `t3co.resources` folder contains all the necessary input files needed for running T3CO. However, it sometimes is difficult to navigate to these files when installing. To help with this, run this command on the Command Line Interface.
+The `t3co.resources` module contains all the necessary input files needed for running T3CO. However, it is sometimes difficult to navigate to these files when installing. To help with this, run this command on the Command Line Interface.
 
 ```bash
 install_t3co_demo_inputs
@@ -83,7 +83,7 @@ The user will receive these questions on the command line:
 
 `Enter the path where you want to copy demo input files:`
 
-Choose `y` and provide the desired destination path to get a `demo_inputs` folder containing the `t3co.resources` files copied to your local directory. To copy the folder to the current directory you are on, answer the second question with ".".
+Choose `y` and provide the desired destination path to get a `demo_inputs` folder containing the `t3co.resources` module files copied to your local directory. To copy the folder to the current directory you are on, answer the second question with ".".
 
 ## Running your first analysis
 To learn about the tool and run your first T3CO analysis, proceed to the [Quick Start Guide](./quick_start.md)
