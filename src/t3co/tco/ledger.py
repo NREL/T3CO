@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import json
 from pathlib import Path
 from typing import Union
@@ -20,13 +21,14 @@ from t3co.utils.print_class_objects import (
 class Ledger:
     selection: Union[int, str] = None
     scenario_name: str = ""
-    discounted_tco_dol: float = None
+    model_year: int = None
     vehicle_life_yr: int = None
     tco_method: str = "DIRECT"
     tco_per_year: list[TCOCalc] = []
     discounted_total_cap_cost_dol: float = 0.0
     discounted_total_oper_cost_dol: float = 0.0
     discounted_downtime_oppy_cost_dol: float = 0.0
+    discounted_tco_dol: float = None
     cumu_disc_tco_dol_per_yr: list[float] = []
     cumu_tco_dol_per_mi: list[float] = []
     cumu_levelized_tco_dol_per_mi: list[float] = []
@@ -41,31 +43,36 @@ class Ledger:
     battery_cost_dol: float = 0.0
     purchase_tax_dol: float = 0.0
     msrp_total_dol: float = 0.0
+    purchasing_downpayment_dol: float = 0.0
+    residual_cost_dol: float = 0.0
+
     total_fuel_cost_dol: float = 0.0
     total_maintenance_cost_dol: float = 0.0
+    total_purchasing_cost_dol: float = 0.0
+    insurance_cost_dol: float = 0.0
+    fueling_dwell_labor_cost_dol: float = 0.0
+
+    payload_capacity_cost_dol: float = 0.0
+    fueling_downtime_oppy_cost_dol: float = 0.0
+    mr_downtime_oppy_cost_dol: float = 0.0
+    discounted_downtime_oppy_cost_dol: float = 0.0
+
     total_fuel_used_gal_ge: float = 0.0
     total_fuel_used_gal_de: float = 0.0
-    total_purchasing_interest_cost_dol: float = 0.0
     mpgge: float = 0.0
     grid_mpgge: float = 0.0
     mpgde: float = 0.0
     kwh_per_mi: float = 0.0
+
     payload_cap_cost_multiplier: float = 1.0
     total_fueling_dwell_time_hr: float = 0.0
     total_mr_downtime_hr: float = 0.0
     total_downtime_hr: float = 0.0
-    fueling_dwell_labor_cost_dol: float = 0.0
-    fueling_downtime_oppy_cost_dol: float = 0.0
-    mr_downtime_oppy_cost_dol: float = 0.0
-    discounted_downtime_oppy_cost_dol: float = 0.0
-    payload_capacity_cost_dol: float = 0.0
-    insurance_cost_dol: float = 0.0
-    residual_cost_dol: float = 0.0
 
     scenario: Scenario = None
     vehicle: Vehicle = None
-    config: Config = None
     energy: Energy = None
+    config: Config = None
 
     def __new__(cls, *args, **kwargs):
         """
@@ -94,6 +101,7 @@ class Ledger:
         self.vehicle = vehicle
         self.selection = scenario.selection
         self.scenario_name = scenario.scenario_name
+        self.model_year = scenario.model_year
 
         self.tco_per_year = []
         if config:
@@ -193,7 +201,7 @@ class Ledger:
             )
             for year_index in range(self.vehicle_life_yr)
         )
-        self.total_purchasing_interest_cost_dol = sum(
+        self.total_purchasing_cost_dol = sum(
             self.scenario.get_discounted_value(
                 (
                     self.tco_per_year[
@@ -328,6 +336,9 @@ class Ledger:
         self.battery_cost_dol = self.tco_per_year[0].cap_costs_dol.battery_cost_dol
         self.purchase_tax_dol = self.tco_per_year[0].cap_costs_dol.purchase_tax_dol
         self.msrp_total_dol = self.tco_per_year[0].cap_costs_dol.msrp_total_dol
+        self.purchasing_downpayment_dol = self.tco_per_year[
+            0
+        ].cap_costs_dol.purchasing_downpayment_dol
 
         self.scenario.fuel_prices_dol_per_gge = [
             self.tco_per_year[year_index].oper_costs_dol.fuel_price_dol_per_gge
@@ -368,7 +379,14 @@ class Ledger:
         if flatten:
             t3co_dict = to_flat_dict(self, include_predix=include_prefix, delimiter="_")
         else:
-            t3co_dict = json.loads(json.dumps(self, default=custom_default))
+            cls = self.__class__
+            field_order = list(cls.__annotations__.keys())
+            t3co_dict = json.loads(
+                json.dumps(
+                    OrderedDict((field, getattr(self, field)) for field in field_order),
+                    default=custom_default,
+                )
+            )
         return t3co_dict
 
     def to_json(

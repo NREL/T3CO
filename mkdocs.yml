@@ -4,6 +4,8 @@ repo_url: https://github.com/NREL/T3CO
 edit_uri: https://github.com/NREL/T3CO/tree/main/docs
 site_author: Harish Panneer Selvam 
 
+extra_css:
+  - stylesheets/extra.css
 plugins:
   - search
   - mkdocstrings:
@@ -65,29 +67,28 @@ nav:
     - Quick Start: quick_start.md
     - Overview: T3CO_Overview.md
     - Inputs: 
-      - Vehicle: vehicle_inputs_descriptions.md
-      - Scenario: scenario_inputs_descriptions.md
-      - Config: config_inputs_descriptions.md
-    - Results:
-      - Outputs: t3co_outputs_descriptions.md
-    - Code Reference:
-      - CodeFlow: CodeFlow.md      
-      - T3CO Modules: 
-        - Sweep: sweep.md  
-        - Run Modules:
-          - Run Scenario: run_scenario.md
-          - Generate Inputs: generateinputs.md
-          - Global Variables: Global.md        
-        - TCO Modules:
-          - Opportunity Costs: opportunity_cost.md
-          - TCO Calculations: tcocalc.md
-          - TCO Analysis: tco_analysis.md
-          - TCO Stock and Emissions: tco_stock_emissions.md
-        - Multi Objective Optimization Module:
-          - MOO: moo.md
-        - Objectives Modules: 
-          - Acceleration Test: accel.md
-          - Gradeability Test: gradeability.md
-          - Fuel Economy: fueleconomy.md
-        - Visualization Module:
-          - Charts: charts.md
+      - Vehicle: pages/vehicle_inputs_descriptions.md
+      - Scenario: pages/scenario_inputs_descriptions.md
+      - Config: pages/config_inputs_descriptions.md
+    - Outputs:
+      - Ledger: pages/ledger_outputs_descriptions.md
+    - API Reference: 
+      - Input Data SubModules:
+        - Vehicle: pages/vehicle.md
+        - Scenario: pages/scenario.md
+        - Config: pages/config.md  
+      - Energy SubModules:
+        - Energy: pages/energy.md
+        - FASTSim Wrapper: pages/fastsim_wrapper.md
+      - Cost SubModules:
+        - Capital Costs: pages/capital_costs.md
+        - Operating Costs: pages/operating_costs.md
+        - Opportunity Costs: pages/opportunity_costs.md
+      - TCO SubModules:
+        - TCO Calc Per Year: pages/tcocalc.md
+        - Ledger: pages/ledger.md
+      - CLI SubModules:
+        - Sweep: pages/sweep.md
+      - Utility SubModules:
+        - Demo Files Installer: pages/demo_files_installer.md
+        - Print Class Objects: pages/print_class_objects.md

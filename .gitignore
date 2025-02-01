@@ -6,6 +6,7 @@
 *.docx
 *.pdf
 *.svg
+!docs/images/*.svg
 !docs/t3co_logo.svg
 *.csv
 !src/t3co/resources/*.csv

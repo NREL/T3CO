@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import json
 from pathlib import Path
 from typing import List, Union
@@ -119,7 +120,18 @@ def to_flat_dict(
         else:
             flat_dict[current_prefix[:-1]] = item
 
-    flatten(json.loads(json.dumps(obj, default=custom_default)), prefix)
+    cls = obj.__class__
+    field_order = list(cls.__annotations__.keys())
+
+    flatten(
+        json.loads(
+            json.dumps(
+                OrderedDict((field, getattr(obj, field)) for field in field_order),
+                default=custom_default,
+            )
+        ),
+        prefix,
+    )
 
     return flat_dict
 
