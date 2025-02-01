@@ -9,9 +9,9 @@
 
 This repo houses T3CO (Transportation Technology Total Cost of Ownership), software for modeling total cost of ownership for commercial vehicles with advanced powertrains.
 
-To get started, read the [Quick Start Guide](https://github.com/NREL/T3CO/blob/main/docs/quick_start.md)
+To get started, read the [Quick Start Guide](./docs/quick_start.md)
 
-For information on the T3CO models, go to the [Overview](https://github.com/NREL/T3CO/blob/main/docs/T3CO_Overview.md)
+For information on the T3CO models, go to the [Overview](./docs/T3CO_Overview.md)
 
 ## Usage
 
@@ -32,6 +32,11 @@ First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](
 git clone https://github.com/NREL/T3CO.git T3CO
 ```
 
+To access the `t3co-2.0` branch,
+```bash
+git checkout t3co-2.0
+```
+
 From within the [Python environment](./docs/installation.md#setting-up-env), navigate to the parent directory containing the T3CO repository (e.g. `cd GitHub/T3CO/`) and run:
 ```bash
 pip install -e .
@@ -39,24 +44,24 @@ pip install -e .
 This installs the local version of the T3CO clone along with all its [dependencies](https://github.com/NREL/T3CO/blob/main/requirements.txt).
 
 ### Copying the Demo Input Files
-The [`t3co.resources`](https://github.com/NREL/T3CO/tree/main/t3co/resources) folder contains all the necessary input files needed for running T3CO. To get an offline copy of this folder in your preferred directory, run:
+The [`t3co.resources`](./src/t3co/resources) module folder contains all the necessary input files needed for running T3CO. To get an offline copy of this folder in your preferred directory, run:
 ```bash
 install_t3co_demo_inputs
 ```
 
-More information on the demo input files can be found in the [Installation Guide](https://github.com/NREL/T3CO/blob/main/docs/installation.md#copy-demo-inputs)
+More information on the demo input files can be found in the [Installation Guide](./docs/installation.md#copy-demo-inputs)
 
 
 ## Running T3CO
-T3CO needs three main input files (*Vehicles*, *Scenarios*, and *Config*) to run an analysis. The analysis settings, file paths to main and auxiliary input files, and other parameter overrides are saved as an entry on the *Config* file. The user is provided with 500+ *Vehicle-Scenario* pairs inputs and four *Config* sample analyses to choose from to modify parameters and/or run their first T3CO analysis. The main module for T3CO,`t3co.sweep`, can be run using:
+T3CO needs three main input files (*Vehicles*, *Scenarios*, and *Config*) to run an analysis. The analysis settings, file paths to main and auxiliary input files, and other parameter overrides are saved as an entry on the *Config* file. The user is provided with 500+ *Vehicle-Scenario* pairs inputs and four *Config* sample analyses to choose from to modify parameters and/or run their first T3CO analysis. The main module for T3CO,`t3co.cli.sweep`, can be run using:
 
 ```bash
-python -m t3co.sweep --analysis-id=0 --config=<path/to/T3COConfig.csv>
+python -m t3co.cli.sweep --analysis-id=0 --config=<path/to/T3COConfig.csv>
 ```
 
 Point the `--config` argument to the `T3COConfig.csv` file path (either the t3co/resource/T3COConfig.csv file in a repo clone or the demo_inputs/T3COConfig.csv file after copying the demo input files. This parameter defaults to the T3COConfig.csv file in the t3co.resources module) and `--analysis-id` to the desired `config.analysis_id` (either an existing row or a newly added "Analysis" row in the `T3COConfig.csv` file. Default = `0`).
 
-Additional information on the inputs, the Batch Mode feature, other CLI arguments, and description of T3CO results are mentioned in the [Quick Start Guide](https://github.com/NREL/T3CO/blob/main/docs/quick_start.md)
+Additional information on the inputs, the Batch Mode feature, other CLI arguments, and description of T3CO results are mentioned in the [Quick Start Guide](./docs/quick_start.md)
 
 ## Acknowledgements
 This tool was developed with funding support from the US Department of Energy's Office of Energy Efficiency and Renewable Energy (EERE)'s Vehicle Technology Office.
