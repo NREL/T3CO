@@ -67,7 +67,7 @@ nav:
     - Quick Start: quick_start.md
     - Overview: T3CO_Overview.md
     - Inputs: 
-      - Vehicle: vehicle_inputs_descriptions.md
+      - Vehicle: pages/vehicle_inputs_descriptions.md
       - Scenario: pages/scenario_inputs_descriptions.md
       - Config: config_inputs_descriptions.md
     - Results:
