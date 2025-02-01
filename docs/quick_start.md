@@ -49,6 +49,9 @@ The Batch Mode allows T3CO to run parallel analyses utilizing multiple processor
 
 When a folder path is provided in the T3COConfig.csv file (`config.drive_cycle`) containing "n" number of valid drivecycles, T3CO generates "n" scenarios for each *Vehicle* selections mentioned in `config.selections` with the `scenario.drive_cycle` populated with each of the "n" drivecycles. For Vehicle selection "1" in config.selections, the generated selection numbers are denoted by "1_000" for the first drivecycle, "1_001" for the second drivecycle, and so on.
 
+## Running T3CO Demo
+T3CO presents a demo file (`src/demos/demo.py`) for generating a `TCOCalc` for a specific year and a `Ledger` object for a given vehicle, scenario, and energy inputs. It showcases the modularity of the tool and allows the user to also download the results as a JSON or CSV file.
+
 ## Other Command Line Interface arguments
 Use the command below to get a list of all CLI arguments:
 ```bash
