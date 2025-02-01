@@ -48,16 +48,16 @@ First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](
 git clone https://github.com/NREL/T3CO.git T3CO
 ```
 
+To access the `t3co-2.0` branch, 
+```bash
+git checkout t3co-2.0
+```
+
 From within the [Python environment](#setting-up-env) Navigate to the parent directory containing the T3CO repository e.g. `cd GitHub/T3CO/` and run:
 ```bash
 pip install -e .
 ```
 This installs the local version of the T3CO clone along with all its [dependencies](https://github.com/NREL/T3CO/blob/29b0e848360b3b2de84b555bf52c52bf6e76134e/requirements.txt).
-
-FASTSim is installed along with other library dependancies. In case of `ModuleNotFoundError: No module named 'fastsim'` error:
-```bash
-pip install fastsim==2.1.1
-```
 
 Check that the right version of T3CO is installed in your environment:
 ```bash
