@@ -70,8 +70,8 @@ nav:
       - Vehicle: pages/vehicle_inputs_descriptions.md
       - Scenario: pages/scenario_inputs_descriptions.md
       - Config: pages/config_inputs_descriptions.md
-    - Results:
-      - Outputs: t3co_outputs_descriptions.md
+    - Outputs:
+      - Ledger: pages/ledger_outputs_descriptions.md
     - API Reference: 
       - Input Data SubModules:
         - Vehicle: pages/vehicle.md

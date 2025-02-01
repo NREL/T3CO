@@ -21,13 +21,14 @@ from t3co.utils.print_class_objects import (
 class Ledger:
     selection: Union[int, str] = None
     scenario_name: str = ""
-    discounted_tco_dol: float = None
+    model_year: int = None
     vehicle_life_yr: int = None
     tco_method: str = "DIRECT"
     tco_per_year: list[TCOCalc] = []
     discounted_total_cap_cost_dol: float = 0.0
     discounted_total_oper_cost_dol: float = 0.0
     discounted_downtime_oppy_cost_dol: float = 0.0
+    discounted_tco_dol: float = None
     cumu_disc_tco_dol_per_yr: list[float] = []
     cumu_tco_dol_per_mi: list[float] = []
     cumu_levelized_tco_dol_per_mi: list[float] = []
@@ -100,6 +101,7 @@ class Ledger:
         self.vehicle = vehicle
         self.selection = scenario.selection
         self.scenario_name = scenario.scenario_name
+        self.model_year = scenario.model_year
 
         self.tco_per_year = []
         if config:
