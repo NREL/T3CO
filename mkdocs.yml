@@ -69,7 +69,7 @@ nav:
     - Inputs: 
       - Vehicle: pages/vehicle_inputs_descriptions.md
       - Scenario: pages/scenario_inputs_descriptions.md
-      - Config: config_inputs_descriptions.md
+      - Config: pages/config_inputs_descriptions.md
     - Results:
       - Outputs: t3co_outputs_descriptions.md
     - API Reference: 
