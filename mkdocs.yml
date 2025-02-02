@@ -65,11 +65,12 @@ nav:
     - Home: index.md
     - Installation: installation.md
     - Quick Start: quick_start.md
-    - Overview: T3CO_Overview.md
+    - Overview: t3co_overview.md
     - Inputs: 
       - Vehicle: pages/vehicle_inputs_descriptions.md
       - Scenario: pages/scenario_inputs_descriptions.md
       - Config: pages/config_inputs_descriptions.md
+    - Costs and Features: t3co_features.md
     - Outputs:
       - Ledger: pages/ledger_outputs_descriptions.md
     - API Reference: 
