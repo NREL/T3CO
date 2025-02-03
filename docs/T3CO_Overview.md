@@ -8,9 +8,9 @@
 
 Generally speaking, T3CO can be used in two ways:
 
-- The first option generates total cost of ownership (TCO) and performance metrics for a pre-defined vehicle.
+- The first option generates total cost of ownership (TCO) and performance metrics for a pre-defined vehicle simulation model
 
-- The second option optimizes a vehicle's component specifications to achieve the lowest total cost of ownership possible while meeting performance objectives. Since optimization requires gathering TCO and performance metrics during each step of optimization, it essentially is an expansion of the first option for using T3CO.
+- The second option begins with a pre-defined vehicle model and [optimizes](#optimization-flow) the component specifications to achieve the lowest total cost of ownership possible while meeting performance objectives. Since optimization requires gathering TCO and performance metrics during each step of optimization, it essentially is an expansion of the first option for using T3CO.
 
 ## Generating TCO and performance <a name="generating-tco-and-performance"></a>
 
@@ -31,7 +31,7 @@ T3CO provides some example Vehicle and Scenario models to assist the user in get
 
 ## Optimization Flow <a name="optimization-flow"></a>
 
-The TCO & [Performance metric targets](#performance-constraints) described below are the core of the optimization loop. T3CO has the capability to take vehicle specifications, such as engine size, motor size, battery size, coefficient of aerodynamic drag, vehicle weight, etc. and modify them in order to find the set of specifications that yields the lowest TCO while still meeting minimum performance requirements in acceleration, grade and range. Adjusting these vehicle specifications impacts the vehicle’s MSRP and also, by changing its energy consumption per mile, its operating costs. If including engine efficiency, aerodynamic drag, and light-weighting in the optimization, [additional input files](https://github.com/NREL/T3CO/tree/main/t3co/resources/auxiliary) are required to specify the cost of improving these features.
+The TCO & [Performance metric targets](#performance-constraints) described below are the core of the optimization loop. T3CO has the capability to modify certain vehicle component specifications, to find the set that yields the lowest TCO while still meeting minimum performance requirements in acceleration, grade, and range. Component specifications that can be optimized include engine size and efficiency, motor size, battery size, coefficient of aerodynamic drag, and glider light-weighting. Adjusting these vehicle specifications impacts the vehicle’s MSRP and also, by changing its energy consumption per mile, its operating costs. If including engine efficiency, aerodynamic drag, and light-weighting in the optimization, [additional input files](https://github.com/NREL/T3CO/tree/main/t3co/resources/auxiliary) are required to specify the cost of improving these features.
 
 Optimization is handled in the [optimization module](moo.md), inheriting from the [PyMOO](https://pymoo.org/index.html) module.
 
