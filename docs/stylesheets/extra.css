@@ -1,32 +1,57 @@
-.md-grid {
-    max-width: 1540px; 
-  }
-
-/* Style the dropdown filters */
-#unitsFilter, #dataTypeFilter {
-  padding: 5px;
-  margin: 10px;
-  font-size: 14px;
+/* Ensure tables fit within 1600px */
+.table-container {
+  width: 120%;
+  max-width: 1800px;
+  margin: auto;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
-/* Table Borders */
-#vehicleTable {
-  border-collapse: collapse;
+/* Ensure tables fit fully within the page */
+#vehicleTable, #scenarioTable {
   width: 100%;
+  max-width: 1800px;
+  border-collapse: collapse;
+  table-layout: fixed; /* Ensures columns adjust to available space */
 }
 
-#vehicleTable th, #vehicleTable td {
+/* Column styling with min/max width */
+#vehicleTable th, #vehicleTable td, #scenarioTable th, #scenarioTable td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 10px;
   text-align: left;
+  vertical-align: top;
+  white-space: normal; /* Allows text wrapping */
+  word-wrap: break-word;
+  overflow: hidden;
 }
 
-#vehicleTable th {
+/* Adjust column widths to ensure everything fits */
+#vehicleTable th:nth-child(1), #scenarioTable th:nth-child(1) { width: 18%; } /* Input Parameter */
+#vehicleTable th:nth-child(2), #scenarioTable th:nth-child(2) { width: 22%; } /* Full Form */
+#vehicleTable th:nth-child(3), #scenarioTable th:nth-child(3) { width: 10%; } /* Units */
+#vehicleTable th:nth-child(4), #scenarioTable th:nth-child(4) { width: 30%; } /* Description */
+#vehicleTable th:nth-child(5), #scenarioTable th:nth-child(5) { width: 15%; } /* Data Type */
+
+/* Sticky headers to keep column titles visible */
+#vehicleTable th, #scenarioTable th {
   background-color: #f4f4f4;
   cursor: pointer;
+  position: sticky;
+  top: 0;
 }
 
-/* Hover effect */
-#vehicleTable tr:hover {
-  background-color: #f1f1f1;
+/* Ensure proper text wrapping */
+#vehicleTable td:nth-child(4), #scenarioTable td:nth-child(4) {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+/* Center content and ensure proper page width */
+.md-content {
+  max-width: 1800px;
+}
+
+/* Hover effect for better readability */
+#vehicleTable tr:hover, #scenarioTable tr:hover {
+  background-color: #f9f9f9;
 }
