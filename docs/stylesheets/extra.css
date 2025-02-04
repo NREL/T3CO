@@ -1,3 +1,32 @@
 .md-grid {
     max-width: 1540px; 
   }
+
+/* Style the dropdown filters */
+#unitsFilter, #dataTypeFilter {
+  padding: 5px;
+  margin: 10px;
+  font-size: 14px;
+}
+
+/* Table Borders */
+#vehicleTable {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#vehicleTable th, #vehicleTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+#vehicleTable th {
+  background-color: #f4f4f4;
+  cursor: pointer;
+}
+
+/* Hover effect */
+#vehicleTable tr:hover {
+  background-color: #f1f1f1;
+}
