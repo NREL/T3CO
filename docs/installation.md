@@ -1,6 +1,6 @@
 # Installation
 
-## Setting Up a Python Environment <a name="setting-up-env"></a>
+## Setting Up a Python Environment <a name="setting-up-a-python-environment"></a>
 
 T3CO depends on [Python](https://www.python.org/downloads/)>=3.8 and <=3.10. To create an environment containing the appropriate Python version and a built-in `pip`, there are two preferred ways:
 
@@ -60,7 +60,7 @@ pip install t3co==1.0.8
 
 ### Installation Source #1: From [PyPI](https://pypi.org/project/t3co/)
 
-After creating a version-appropriate [Python environment](./docs/installation.md#setting-up-env), the latest release of T3CO can be installed from PyPI using one of the following commands.
+After creating a version-appropriate [Python environment](#setting-up-a-python-environment), the latest release of T3CO can be installed from PyPI using one of the following commands.
 
 For the default option/extra:
 
@@ -98,9 +98,9 @@ To access the `t3co-2.0` branch,
 git checkout t3co-2.0
 ```
 
-[GitHub Desktop](https://desktop.github.com/download/) is an application that provides a GUI for managing git clones. It gives the user a more interactive way of cloning a repo and switching branches.
+[GitHub Desktop](https://desktop.github.com/download/) is an application that provides a GUI for managing git clones. It gives the user a more interactive way of cloning a repo and switching branches. This option negates the need for`git clone` and a `git checkout` commands.
 
-From within the [Python environment](./docs/installation.md#setting-up-env), navigate to the parent directory containing the T3CO repository (run `cd T3CO`) and run one of these three installation options:
+From within the [Python environment](#setting-up-a-python-environment), navigate to the parent directory containing the T3CO repository (run `cd T3CO`) and run one of these three installation options:
 
 For the default option/extra:
 
