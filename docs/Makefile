@@ -13,7 +13,7 @@ generate_pydocs:
 	pydoc-markdown -I ../src -m t3co/input_data/vehicle --render-toc > modules/vehicle.md
 	pydoc-markdown -I ../src -m t3co/tco/ledger --render-toc > modules/ledger.md
 	pydoc-markdown -I ../src -m t3co/tco/tcocalc --render-toc > modules/tcocalc.md
-	pydoc-markdown -I ../src -m t3co/utils/demo_files_installer --render-toc > modules/demo_files_installer.md
+	pydoc-markdown -I ../src -m t3co/utils/demo_inputs_installer --render-toc > modules/demo_inputs_installer.md
 	pydoc-markdown -I ../src -m t3co/utils/print_class_objects --render-toc > modules/print_class_objects.md
 	pydoc-markdown -I ../src -m t3co/visualize/charts --render-toc > modules/charts.md
 	

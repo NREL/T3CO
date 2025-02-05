@@ -90,5 +90,5 @@ nav:
       - CLI SubModules:
         - Sweep: pages/sweep.md
       - Utility SubModules:
-        - Demo Files Installer: pages/demo_files_installer.md
+        - Demo Inputs Installer: pages/demo_inputs_installer.md
         - Print Class Objects: pages/print_class_objects.md
