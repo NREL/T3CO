@@ -2,7 +2,12 @@ import ast
 from dataclasses import dataclass, field
 from pathlib import Path
 import sys
-from typing_extensions import Self
+
+try:
+    from typing import Self  # Python 3.11+
+except ImportError:
+    from typing_extensions import Self  # Older versions of Python
+    
 from typing import Union
 import numpy as np
 import pandas as pd
