@@ -11,6 +11,8 @@ This repo houses T3CO (Transportation Technology Total Cost of Ownership), softw
 
 To get started, read the [Quick Start Guide](./docs/quick_start.md)
 
+For detailed installation instructions, read the [Installation Guide](./docs/installation.md)
+
 For information on the T3CO models, go to the [Overview](./docs/T3CO_Overview.md)
 
 ## Usage
