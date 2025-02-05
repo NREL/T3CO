@@ -5,8 +5,8 @@ Stores paths to directories used for input files, as well as constants reference
 
 from pathlib import Path
 
-from fastsim import vehicle
 import os
+
 
 # ./t3co
 wkdir = Path(__file__).parent.parent
@@ -14,26 +14,10 @@ wkdir = Path(__file__).parent.parent
 SWEEP_PATH = Path(__file__).resolve().parents[1] / "cli" / "sweep.py"
 
 
-CONV = vehicle.CONV
-HEV = vehicle.HEV
+CONV = 'Conv'
+HEV = 'HEV' 
 # PHEV = vehicle.PHEV
-BEV = vehicle.BEV
-PT_TYPES_NUM_TO_STR = {CONV: "Conv", HEV: "HEV", BEV: "BEV"}
-###
-
-FC_EFF_TYPES = {
-    1: "SI",
-    2: "Diesel - ISB280",
-    3: "Diesel",
-    4: "Fuel Cell",
-    5: "Hybrid Diesel",
-    6: "Diesel - HD",
-    7: "Diesel - HDISM Scaled",
-    8: "Diesel - HDISM Scaled",
-    9: "CNG",
-}
-# note that FC_EFF_TYPES comes from fastsim and this here does not seem to override. Need to make sure it matches, or perhaps read it from fastsim.vehicle
-
+BEV = 'BEV'
 
 maxGvwrKg = 0
 evGVWRAllowanceLbs = 0
