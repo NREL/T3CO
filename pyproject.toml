@@ -42,6 +42,7 @@ fastsim = { version = "^2.1", optional = true, python = ">=3.8,<3.11" }
 
 [project.optional-dependencies]
 fastsim = ["fastsim"]
+dev = ["pytest", "pytest-mock", "fastsim"]
 
 [project.scripts]
 install_t3co_demo_inputs = "t3co.utils.demo_inputs_installer:main"
