@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v1
@@ -34,9 +34,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # For Python 3.8, 3.9, and 3.10, install the local package with the fastsim extra.
-      - name: Install local package with fastsim extra (Python 3.8–3.10)
-        if: ${{ matrix.python-version == '3.8' || matrix.python-version == '3.9' || matrix.python-version == '3.10' }}
+      # For Python 3.9, and 3.10, install the local package with the fastsim extra.
+      - name: Install local package with fastsim extra (Python 3.9–3.10)
+        if: ${{ matrix.python-version == '3.9' || matrix.python-version == '3.10' }}
         run: pip install .[fastsim]
 
       # For Python 3.11, 3.12, and 3.13, install the local package without extras.

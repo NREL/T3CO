@@ -27,9 +27,9 @@ T3CO is available on PyPI and as a public access GitHub repository. This gives t
 
 The user can choose one of three installation options or 'extras' of T3CO based on their desired tool capabilities. 
 
-- T3CO as a pure cost estimation tool with exogenous inputs (default version `t3co` - requires Python>=3.8, <=3.13)
-- T3CO integrated with FASTSim for energy simulation (`t3co[fastsim]`, requires Python>=3.8,<=3.10)
-- T3CO for developers and quality testers that includes all capabilities (`t3co[dev]` requires Python>=3.8,<=3.10)
+- T3CO as a pure cost estimation tool with exogenous inputs (default version `t3co` - requires Python>=3.9, <=3.13)
+- T3CO integrated with FASTSim for energy simulation (`t3co[fastsim]`, requires Python>=3.9,<=3.10)
+- T3CO for developers and quality testers that includes all capabilities (`t3co[dev]` requires Python>=3.9,<=3.10)
 The different 'extras' refers to different sets of dependencies that get installed along with T3CO.
 
 

@@ -2,7 +2,7 @@
 
 ## Setting Up a Python Environment <a name="setting-up-a-python-environment"></a>
 
-T3CO depends on [Python](https://www.python.org/downloads/)>=3.8 and <=3.10. To create an environment containing the appropriate Python version and a built-in `pip`, there are two preferred ways:
+T3CO depends on [Python](https://www.python.org/downloads/)>=3.9 and <=3.10. To create an environment containing the appropriate Python version and a built-in `pip`, there are two preferred ways:
 
 1. First option is to use [**conda**](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html):
 
@@ -47,9 +47,9 @@ T3CO is available on PyPI and as a public access GitHub repository. This gives t
 
 The user can choose one of three installation options or 'extras' of T3CO based on their desired tool capabilities. 
 
-- T3CO as a pure cost estimation tool with exogenous inputs for energy terms (default version `t3co` - requires Python>=3.8, <=3.13)
-- T3CO integrated with FASTSim for energy simulation (`t3co[fastsim]`, requires Python>=3.8,<=3.10)
-- T3CO for developers and quality testers that includes all capabilities (`t3co[dev]` requires Python>=3.8,<=3.10)
+- T3CO as a pure cost estimation tool with exogenous inputs for energy terms (default version `t3co` - requires Python>=3.9, <=3.13)
+- T3CO integrated with FASTSim for energy simulation (`t3co[fastsim]`, requires Python>=3.9,<=3.10)
+- T3CO for developers and quality testers that includes all capabilities (`t3co[dev]` requires Python>=3.9,<=3.10)
 
 The different 'extras' refers to different sets of dependencies that get installed along with T3CO when the user runs these commands. Dependencies don't need to be manually installed since [Poetry](https://python-poetry.org/) is used as the dependency manager.
 
