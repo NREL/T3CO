@@ -34,15 +34,15 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # For Python 3.8, 3.9, and 3.10, install the package with the fastsim extra.
-      - name: Install package with fastsim extra (Python 3.8–3.10)
+      # For Python 3.8, 3.9, and 3.10, install the local package with the fastsim extra.
+      - name: Install local package with fastsim extra (Python 3.8–3.10)
         if: ${{ matrix.python-version == '3.8' || matrix.python-version == '3.9' || matrix.python-version == '3.10' }}
-        run: pip install "${{ env.PROJECT_NAME }}[fastsim]"
+        run: pip install .[fastsim]
 
-      # For Python 3.11 and 3.12, install the package without extras.
-      - name: Install package without extras (Python 3.11–3.13)
+      # For Python 3.11, 3.12, and 3.13, install the local package without extras.
+      - name: Install local package without extras (Python 3.11–3.13)
         if: ${{ matrix.python-version == '3.11' || matrix.python-version == '3.12' || matrix.python-version == '3.13' }}
-        run: pip install "${{ env.PROJECT_NAME }}"
+        run: pip install .
 
       - name: Install pytest
         run: pip install pytest pytest-mock
@@ -90,6 +90,11 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.test_pypi_password }}
+
+      - name: Install t3co from Test PyPI and run tests
+        run: |
+          pip install --upgrade --no-cache-dir --index-url https://test.pypi.org/simple/ t3co[dev]
+          pytest
 
       - name: Publish distribution 📦 to PyPI
         run: twine upload -r pypi dist/*
