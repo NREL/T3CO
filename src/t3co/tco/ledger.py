@@ -29,6 +29,7 @@ class Ledger:
     discounted_total_oper_cost_dol: float = 0.0
     discounted_downtime_oppy_cost_dol: float = 0.0
     discounted_tco_dol: float = None
+    undiscounted_tco_dol: float = None
     cumu_disc_tco_dol_per_yr: list[float] = []
     cumu_tco_dol_per_mi: list[float] = []
     cumu_levelized_tco_dol_per_mi: list[float] = []
@@ -59,6 +60,7 @@ class Ledger:
 
     total_fuel_used_gal_ge: float = 0.0
     total_fuel_used_gal_de: float = 0.0
+    total_energy_used_kwh: float = 0.0
     mpgge: float = 0.0
     grid_mpgge: float = 0.0
     mpgde: float = 0.0
@@ -377,7 +379,7 @@ class Ledger:
             self.config.delete_dataframes()
 
         if flatten:
-            t3co_dict = to_flat_dict(self, include_predix=include_prefix, delimiter="_")
+            t3co_dict = to_flat_dict(self, include_prefix=include_prefix, delimiter="_")
         else:
             cls = self.__class__
             field_order = list(cls.__annotations__.keys())

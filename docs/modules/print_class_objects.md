@@ -77,7 +77,7 @@ Custom default function for JSON serialization.
 
 ```python
 def to_flat_dict(obj: object,
-                 include_predix: bool = True,
+                 include_prefix: bool = True,
                  prefix: str = "",
                  delimiter: str = "_") -> dict
 ```
@@ -87,7 +87,7 @@ Flattens a nested object into a dictionary.
 **Arguments**:
 
 - `obj` _object_ - The object to flatten.
-- `include_predix` _bool, optional_ - Whether to include the prefix in the keys. Defaults to True.
+- `include_prefix` _bool, optional_ - Whether to include the prefix in the keys. Defaults to True.
 - `prefix` _str, optional_ - The prefix for the keys. Defaults to "".
 - `delimiter` _str, optional_ - The delimiter for the keys. Defaults to "_".
   

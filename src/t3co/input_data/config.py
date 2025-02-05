@@ -37,7 +37,8 @@ class Config:
     plf_weight_dist_file: str = None
 
     TCO_method: str = "DIRECT"
-
+    purchasing_method: str = "cash"
+    
     # Optimization
     algorithms: str = ""
     lw_imp_curves: str = ""
