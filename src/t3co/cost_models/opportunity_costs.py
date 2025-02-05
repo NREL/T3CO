@@ -188,7 +188,7 @@ class OpportunityCosts:
             estimated_lost_payload_per_bin_kg = p_of_weights_normalized[
                 minidx:maxidx
             ] * (vehicle_weights_bins_kg[minidx:maxidx] - new_cargo_cieling_kg)
-            estimated_lost_payload_kg = np.trapezoid(estimated_lost_payload_per_bin_kg)
+            estimated_lost_payload_kg = np.trapz(estimated_lost_payload_per_bin_kg)
 
             # payload cost multiplier
             self.payload_cap_cost_multiplier = 1 + estimated_lost_payload_kg / (
