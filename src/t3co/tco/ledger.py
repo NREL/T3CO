@@ -412,7 +412,7 @@ class Ledger:
             if not filepath.parent.exists():
                 filepath.parent.mkdir()
             with open(filepath, "w") as f:
-                json.dump(handle_nan(t3co_dict), f, indent=4)
+                json.dump(handle_nan(t3co_dict), f, indent=4, default=custom_default)
                 print(f"Saved to {str(filepath.resolve())}")
         else:
             raise Exception("Filepath must be provided.")
