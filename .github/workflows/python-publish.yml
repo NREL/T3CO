@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v1
@@ -40,8 +40,8 @@ jobs:
         run: pip install "${{ env.PROJECT_NAME }}[fastsim]"
 
       # For Python 3.11 and 3.12, install the package without extras.
-      - name: Install package without extras (Python 3.11–3.12)
-        if: ${{ matrix.python-version == '3.11' || matrix.python-version == '3.12' }}
+      - name: Install package without extras (Python 3.11–3.13)
+        if: ${{ matrix.python-version == '3.11' || matrix.python-version == '3.12' || matrix.python-version == '3.13' }}
         run: pip install "${{ env.PROJECT_NAME }}"
 
       - name: Install pytest
