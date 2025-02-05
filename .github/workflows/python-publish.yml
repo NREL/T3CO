@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v1
@@ -34,33 +34,37 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+      # For Python 3.9, and 3.10, install the local package with the fastsim extra.
+      - name: Install local package with fastsim extra (Python 3.9–3.10)
+        if: ${{ matrix.python-version == '3.9' || matrix.python-version == '3.10' }}
+        run: pip install .[fastsim]
+
+      # For Python 3.11, 3.12, and 3.13, install the local package without extras.
+      - name: Install local package without extras (Python 3.11–3.13)
+        if: ${{ matrix.python-version == '3.11' || matrix.python-version == '3.12' || matrix.python-version == '3.13' }}
+        run: pip install .
 
       - name: Install pytest
-        run: |
-          pip install pytest pytest-mock
+        run: pip install pytest pytest-mock
 
       - name: Run tests
-        run: |
-          pytest
+        run: pytest
 
+      # Build the distribution only on Python 3.10.
       - name: Install distribution dependencies
-        run: |
-          pip install build
-        if: matrix.python-version == 3.10
+        if: ${{ matrix.python-version == '3.10' }}
+        run: pip install build
 
       - name: Create distribution package
+        if: ${{ matrix.python-version == '3.10' }}
         run: python -m build
-        if: matrix.python-version == 3.10
 
       - name: Upload distribution package
+        if: ${{ matrix.python-version == '3.10' }}
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
-        if: matrix.python-version == 3.10
   
   publish:
     runs-on: ubuntu-latest
@@ -79,19 +83,21 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: |
-          pip install twine
+        run: pip install twine
 
       - name: Publish distribution 📦 to Test PyPI
-        run: |
-          twine upload -r testpypi dist/*
+        run: twine upload -r testpypi dist/*
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.test_pypi_password }}
 
-      - name: Publish distribution 📦 to PyPI
+      - name: Install t3co from Test PyPI and run tests
         run: |
-          twine upload -r pypi dist/*
+          pip install --upgrade --no-cache-dir --index-url https://test.pypi.org/simple/ t3co[dev]
+          pytest
+
+      - name: Publish distribution 📦 to PyPI
+        run: twine upload -r pypi dist/*
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.pypi_password }}

@@ -2,7 +2,12 @@ import ast
 from dataclasses import dataclass, field
 from pathlib import Path
 import sys
-from typing_extensions import Self
+
+try:
+    from typing import Self  # Python 3.11+
+except ImportError:
+    from typing_extensions import Self  # Older versions of Python
+    
 from typing import Union
 import numpy as np
 import pandas as pd
@@ -37,7 +42,8 @@ class Config:
     plf_weight_dist_file: str = None
 
     TCO_method: str = "DIRECT"
-
+    purchasing_method: str = "cash"
+    
     # Optimization
     algorithms: str = ""
     lw_imp_curves: str = ""

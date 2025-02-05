@@ -55,10 +55,7 @@ def scenario(config):
 
 @pytest.fixture
 def energy(scenario, config):
-    energy = Energy()
-    energy.run_fastsim_model(
-        veh_no=1, vehicle_file=config.vehicle_file, scenario=scenario
-    )
+    energy = Energy(mpgge=6.03, primary_fuel_range_mi=2035.70)
     return energy
 
 
