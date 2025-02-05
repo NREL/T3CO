@@ -57,19 +57,22 @@ pip install t3co[dev]
 
 T3CO can also be installed from a clone of the GitHub repository.
 
-First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](https://github.com/NREL/T3CO) from your desired directory:
+First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](https://github.com/NREL/T3CO) from your desired directory (eg., /Users/Projects/):
 
 ```bash
 git clone https://github.com/NREL/T3CO.git T3CO
 ```
 
-To access the `t3co-2.0` branch after cloning the repository,
+This creates a git compliant folder 'T3CO' (i.e., a '/Users/Projects/T3CO' folder)
+
+To access the `t3co-2.0` branch,
 
 ```bash
 git checkout t3co-2.0
 ```
 
-From within the [Python environment](./docs/installation.md#setting-up-env), navigate to the parent directory containing the T3CO repository (e.g. `cd GitHub/T3CO/`) and run one of these three installation options:
+From within the [Python environment](./docs/installation.md#setting-up-env), navigate to the parent directory containing the T3CO repository (`cd T3CO`) and run one of these three installation options:
+
 
 For the default option/extra:
 
@@ -105,7 +108,7 @@ T3CO needs three main input files (*Vehicles*, *Scenarios*, and *Config*) to run
 python -m t3co.cli.sweep --analysis-id=0 --config=<path/to/T3COConfig.csv>
 ```
 
-Point the `--config` argument to the `T3COConfig.csv` file path (either the t3co/resource/T3COConfig.csv file in a repo clone or the demo_inputs/T3COConfig.csv file after copying the demo input files. This parameter defaults to the T3COConfig.csv file in the t3co.resources module) and `--analysis-id` to the desired `config.analysis_id` (either an existing row or a newly added "Analysis" row in the `T3COConfig.csv` file. Default = `0`).
+Point the `--config` argument to the `T3COConfig.csv` file path (either the src/t3co/resource/T3COConfig.csv file in a repo clone or the demo_inputs/T3COConfig.csv file after copying the demo input files. This parameter defaults to the T3COConfig.csv file in the t3co.resources module) and `--analysis-id` to the desired `config.analysis_id` (either an existing row or a newly added "Analysis" row in the `T3COConfig.csv` file. Default = `0`).
 
 Additional information on the inputs, the Batch Mode feature, other CLI arguments, and description of T3CO results are mentioned in the [Quick Start Guide](./docs/quick_start.md)
 

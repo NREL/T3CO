@@ -84,11 +84,13 @@ pip install t3co[dev]
 
 T3CO can also be installed from a clone of the GitHub repository.
 
-First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](https://github.com/NREL/T3CO) from your desired directory:
+First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](https://github.com/NREL/T3CO) from your desired directory (eg., /Users/Projects/):
 
 ```bash
 git clone https://github.com/NREL/T3CO.git T3CO
 ```
+
+This creates a git compliant folder 'T3CO' (i.e., a '/Users/Projects/T3CO' folder)
 
 To access the `t3co-2.0` branch,
 
@@ -96,7 +98,9 @@ To access the `t3co-2.0` branch,
 git checkout t3co-2.0
 ```
 
-From within the [Python environment](./docs/installation.md#setting-up-env), navigate to the parent directory containing the T3CO repository (e.g. `cd GitHub/T3CO/`) and run one of these three installation options:
+[GitHub Desktop](https://desktop.github.com/download/) is an application that provides a GUI for managing git clones. It gives the user a more interactive way of cloning a repo and switching branches.
+
+From within the [Python environment](./docs/installation.md#setting-up-env), navigate to the parent directory containing the T3CO repository (run `cd T3CO`) and run one of these three installation options:
 
 For the default option/extra:
 
