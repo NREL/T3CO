@@ -17,7 +17,7 @@
 
 ```python
 def obj_to_string(obj: Union[object, List[object]],
-                  extra: str = "    ") -> str
+                  indent: str = "    ") -> str
 ```
 
 Converts an object or list of objects to a formatted string representation.
@@ -25,7 +25,7 @@ Converts an object or list of objects to a formatted string representation.
 **Arguments**:
 
 - `obj` _Union[object, List[object]]_ - The object or list of objects to convert.
-- `extra` _str, optional_ - Indentation string for nested objects. Defaults to "    ".
+- `indent` _str, optional_ - Indentation string for nested objects. Defaults to "    ".
   
 
 **Returns**:
@@ -38,33 +38,34 @@ Converts an object or list of objects to a formatted string representation.
 
 ```python
 def handle_nan(
-        obj: Union[float, dict, list]) -> Union[None, dict, list, float]
+        obj: Union[float, dict, list,
+                   Any]) -> Union[None, dict, list, float, Any]
 ```
 
 Replaces NaN values in an object with None.
 
 **Arguments**:
 
-- `obj` _Union[float, dict, list]_ - The object to process.
+- `obj` _Union[float, dict, list, Any]_ - The object to process.
   
 
 **Returns**:
 
-  Union[None, dict, list, float]: The processed object with NaN values replaced by None.
+  Union[None, dict, list, float, Any]: The processed object with NaN values replaced by None.
 
 <a id="t3co/utils/print_class_objects.custom_default"></a>
 
 #### custom\_default
 
 ```python
-def custom_default(obj: object) -> Union[None, dict, str]
+def custom_default(obj: Any) -> Union[None, dict, str]
 ```
 
 Custom default function for JSON serialization.
 
 **Arguments**:
 
-- `obj` _object_ - The object to serialize.
+- `obj` _Any_ - The object to serialize.
   
 
 **Returns**:
@@ -82,7 +83,7 @@ def to_flat_dict(obj: object,
                  delimiter: str = "_") -> dict
 ```
 
-Flattens a nested object into a dictionary.
+Flattens a nested object into a dictionary while preserving the order of declared attributes.
 
 **Arguments**:
 
@@ -104,7 +105,7 @@ Flattens a nested object into a dictionary.
 def remove_df_attrs(obj: object) -> None
 ```
 
-Removes DataFrame attributes from an object.
+Removes attributes from an object if they are DataFrame instances.
 
 **Arguments**:
 
