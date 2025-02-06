@@ -1,21 +1,21 @@
 /* Ensure tables fit within 1600px */
 .table-container {
   width: 120%;
-  max-width: 1800px;
+  max-width: 1850px;
   margin: auto;
   overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 /* Ensure tables fit fully within the page */
-#vehicleTable, #scenarioTable {
+#vehicleTable, #scenarioTable, #ledgerTable {
   width: 100%;
-  max-width: 1800px;
+  max-width: 1850px;
   border-collapse: collapse;
   table-layout: fixed; /* Ensures columns adjust to available space */
 }
 
 /* Column styling with min/max width */
-#vehicleTable th, #vehicleTable td, #scenarioTable th, #scenarioTable td {
+#vehicleTable th, #vehicleTable td, #scenarioTable th, #scenarioTable td, #ledgerTable th, #ledgerTable td {
   border: 1px solid #ddd;
   padding: 10px;
   text-align: left;
@@ -26,14 +26,15 @@
 }
 
 /* Adjust column widths to ensure everything fits */
-#vehicleTable th:nth-child(1), #scenarioTable th:nth-child(1) { width: 18%; } /* Input Parameter */
-#vehicleTable th:nth-child(2), #scenarioTable th:nth-child(2) { width: 22%; } /* Full Form */
-#vehicleTable th:nth-child(3), #scenarioTable th:nth-child(3) { width: 10%; } /* Units */
-#vehicleTable th:nth-child(4), #scenarioTable th:nth-child(4) { width: 30%; } /* Description */
-#vehicleTable th:nth-child(5), #scenarioTable th:nth-child(5) { width: 15%; } /* Data Type */
+#vehicleTable th:nth-child(1), #scenarioTable th:nth-child(1), #ledgerTable th:nth-child(1) { width: 18%; } /* Input Parameter */
+#vehicleTable th:nth-child(2), #scenarioTable th:nth-child(2), #ledgerTable th:nth-child(3) { width: 22%; } /* Full Form */
+#vehicleTable th:nth-child(3), #scenarioTable th:nth-child(3), #ledgerTable th:nth-child(4) { width: 10%; } /* Units */
+#vehicleTable th:nth-child(4), #scenarioTable th:nth-child(4), #ledgerTable th:nth-child(5) { width: 30%; } /* Description */
+#vehicleTable th:nth-child(5), #scenarioTable th:nth-child(5), #ledgerTable th:nth-child(6) { width: 15%; } /* Data Type */
+#ledgerTable th:nth-child(2) { width: 15%; } /* Extra column for ledgerTable */
 
 /* Sticky headers to keep column titles visible */
-#vehicleTable th, #scenarioTable th {
+#vehicleTable th, #scenarioTable th, #ledgerTable th {
   background-color: #f4f4f4;
   cursor: pointer;
   position: sticky;
@@ -41,17 +42,17 @@
 }
 
 /* Ensure proper text wrapping */
-#vehicleTable td:nth-child(4), #scenarioTable td:nth-child(4) {
+#vehicleTable td:nth-child(4), #scenarioTable td:nth-child(4), #ledgerTable td:nth-child(4) {
   word-wrap: break-word;
   white-space: normal;
 }
 
 /* Center content and ensure proper page width */
 .md-content {
-  max-width: 1800px;
+  max-width: 1850px;
 }
 
 /* Hover effect for better readability */
-#vehicleTable tr:hover, #scenarioTable tr:hover {
+#vehicleTable tr:hover, #scenarioTable tr:hover, #ledgerTable tr:hover {
   background-color: #f9f9f9;
 }
