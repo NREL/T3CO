@@ -26,12 +26,12 @@
 }
 
 /* Adjust column widths to ensure everything fits */
-#vehicleTable th:nth-child(1), #scenarioTable th:nth-child(1), #ledgerTable th:nth-child(1), #configTable th:nth-child(1) { width: 20%; } /* Input Parameter */
-#vehicleTable th:nth-child(2), #scenarioTable th:nth-child(2), #ledgerTable th:nth-child(3), #configTable th:nth-child(2) { width: 25%; } /* Full Form */
-#vehicleTable th:nth-child(3), #scenarioTable th:nth-child(3), #ledgerTable th:nth-child(4), #configTable th:nth-child(3) { width: 8%; } /* Units */
+#vehicleTable th:nth-child(1), #scenarioTable th:nth-child(1), #ledgerTable th:nth-child(1), #configTable th:nth-child(1) { width: 18%; } /* Input Parameter */
+#vehicleTable th:nth-child(2), #scenarioTable th:nth-child(2), #ledgerTable th:nth-child(3), #configTable th:nth-child(2) { width: 22%; } /* Full Form */
+#vehicleTable th:nth-child(3), #scenarioTable th:nth-child(3), #ledgerTable th:nth-child(4), #configTable th:nth-child(3) { width: 10%; } /* Units */
 #vehicleTable th:nth-child(4), #scenarioTable th:nth-child(4), #ledgerTable th:nth-child(5), #configTable th:nth-child(4) { width: 30%; } /* Description */
-#vehicleTable th:nth-child(5), #scenarioTable th:nth-child(5), #ledgerTable th:nth-child(6), #configTable th:nth-child(5) { width: 10%; } /* Data Type */
-#ledgerTable th:nth-child(2) { width: 15%; } /* Extra column for ledgerTable */
+#vehicleTable th:nth-child(5) { width: 15%; } /* Powertrain */
+#vehicleTable th:nth-child(6), #scenarioTable th:nth-child(5), #ledgerTable th:nth-child(6), #configTable th:nth-child(5) { width: 10%; } /* Data Type */
 
 /* Sticky headers to keep column titles visible */
 #vehicleTable th, #scenarioTable th, #ledgerTable th, #configTable th {
