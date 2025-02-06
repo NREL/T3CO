@@ -58,16 +58,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Initialize the vehicle parameters table
     if (document.getElementById("vehicleTable")) {
-        setupDataTable("vehicleTable", "unitsFilter", "dataTypeFilter", 2, 3, 5);
+        setupDataTable("vehicleTable", "unitsFilter", "datatypeFilter", 2, 3, 5);
     }
 
     // Initialize the scenario parameters table
     if (document.getElementById("scenarioTable")) {
-        setupDataTable("scenarioTable", "scenarioUnitsFilter", "scenarioDataTypeFilter", 2, 3, 5);
+        setupDataTable("scenarioTable", "scenarioUnitsFilter", "scenariodatatypeFilter", 2, 3, 5);
     }
 
     // Initialize the ledger parameters table
     if (document.getElementById("ledgerTable")) {
         setupDataTable("ledgerTable", "ledgercategoryFilter", "ledgerUnitsFilter", "ledgerdatatypeFilter", 2, 4, 6);
+    }
+
+    // Initialize the scenario parameters table
+    if (document.getElementById("configTable")) {
+        setupDataTable("configTable", "configUnitsFilter", "configdatatypeFilter", 2, 3, 5);
     }
 });

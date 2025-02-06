@@ -1,7 +1,7 @@
 # Vehicle Input Descriptions
 **Filter Options:**
 - **Units:** <select id="unitsFilter"><option value="">All</option></select>
-- **Data Type:** <select id="dataTypeFilter"><option value="">All</option></select>
+- **Data Type:** <select id="datatypeFilter"><option value="">All</option></select>
 
 <div class="table-container">
     <table id="vehicleTable">

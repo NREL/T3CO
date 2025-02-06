@@ -3,7 +3,7 @@
 
 **Filter Options:**
 - **Units:** <select id="scenarioUnitsFilter"><option value="">All</option></select>
-- **Data Type:** <select id="scenarioDataTypeFilter"><option value="">All</option></select>
+- **Data Type:** <select id="scenariodatatypeFilter"><option value="">All</option></select>
 <div class="table-container">
     <table id="scenarioTable">
         <thead>
@@ -12,7 +12,7 @@
                 <th>Full Form</th>
                 <th>Units</th>
                 <th>Description</th>
-                <th>data_type</th>
+                <th>Data Type</th>
             </tr>
         </thead>
         <tbody>
