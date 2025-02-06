@@ -1,14 +1,13 @@
 # Vehicle Input Descriptions
 **Filter Options:**
 - **Units:** <select id="unitsFilter"><option value="">All</option></select>
-- **Data Type:** <select id="datatypeFilter"><option value="">All</option></select>
 - **Powertrain:** <select id="powertrainFilter">
     <option value="">All</option>
     <option value="Conv">Conv</option>
     <option value="BEV">BEV</option>
     <option value="HEV">HEV</option>
-    <option value="FCEV">FCEV</option>
-</select>
+    <option value="FCEV">FCEV</option></select>
+- **Data Type:** <select id="datatypeFilter"><option value="">All</option></select>
 
 <div class="table-container">
     <table id="vehicleTable">

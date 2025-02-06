@@ -1,7 +1,8 @@
+
 /* Ensure tables fit within 1600px */
 .table-container {
-  width: 120%;
-  max-width: 1850px;
+  width: 150%;
+  max-width: 2100px;
   margin: auto;
   overflow-x: hidden; /* Prevent horizontal scrolling */
 }
@@ -9,7 +10,7 @@
 /* Ensure tables fit fully within the page */
 #vehicleTable, #scenarioTable, #ledgerTable, #configTable {
   width: 100%;
-  max-width: 1850px;
+  max-width: 2100px;
   border-collapse: collapse;
   table-layout: fixed; /* Ensures columns adjust to available space */
 }
@@ -30,8 +31,10 @@
 #vehicleTable th:nth-child(2), #scenarioTable th:nth-child(2), #ledgerTable th:nth-child(3), #configTable th:nth-child(2) { width: 22%; } /* Full Form */
 #vehicleTable th:nth-child(3), #scenarioTable th:nth-child(3), #ledgerTable th:nth-child(4), #configTable th:nth-child(3) { width: 10%; } /* Units */
 #vehicleTable th:nth-child(4), #scenarioTable th:nth-child(4), #ledgerTable th:nth-child(5), #configTable th:nth-child(4) { width: 30%; } /* Description */
-#vehicleTable th:nth-child(5) { width: 15%; } /* Powertrain */
-#vehicleTable th:nth-child(6), #scenarioTable th:nth-child(5), #ledgerTable th:nth-child(6), #configTable th:nth-child(5) { width: 10%; } /* Data Type */
+#vehicleTable th:nth-child(5), #scenarioTable th:nth-child(5) { width: 10%; } /* Powertrain */
+#vehicleTable th:nth-child(6), #scenarioTable th:nth-child(6), #ledgerTable th:nth-child(6), #configTable th:nth-child(5) { width: 10%; } /* Data Type */
+#scenarioTable th:nth-child(7) { width: 10%; } /* T3CO Component */
+#ledgerTable th:nth-child(2) { width: 15%; } /* T3CO Component */
 
 /* Sticky headers to keep column titles visible */
 #vehicleTable th, #scenarioTable th, #ledgerTable th, #configTable th {
@@ -49,7 +52,7 @@
 
 /* Center content and ensure proper page width */
 .md-content {
-  max-width: 1850px;
+  max-width: 2100px;
 }
 
 /* Hover effect for better readability */
