@@ -1,6 +1,6 @@
 # Quick Start Guide to T3CO
 
-A total-cost analysis is only as good as its inputs. Generating T3CO results requires equal parts of investment in inputs gathering as it is in running the tool. To make things easier, we provide 500+ demo scenario templates for the user to get started running T3CO. Users are encouraged to examine and edit these inputs as necessary to align with their own assumptions and not take them as defaults.
+A total-cost analysis is only as good as its inputs. Generating T3CO results requires equal parts of investment in inputs gathering as it is in running the tool. To make things easier, we provide 500+ demo scenario templates for the user to get started running T3CO. Users are encouraged to examine and edit these inputs as necessary to align with their own assumptions and not take them as defaults. To get a local copy of the demo input files that can be easily edited, run the[`install_t3co_demo_inputs`](./installation.md#copy-demo-inputs) command.
 
 ## Inputs
 
@@ -12,7 +12,7 @@ The main input files are the [***Vehicle***](vehicle_inputs_descriptions.md), [*
 
 - [***Vehicle***](vehicle_inputs_descriptions.md) contains sets of FASTSim vehicle input parameters that define the powertrain and vehicle dynamics of the selected *Vehicle-Scenario* pair. Each entry in the ***Vehicle*** file is called a "Vehicle Model" and is referenced using `vehicle.selection` as a key. [[Demo Vehicles](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/inputs/demo/Demo_FY22_vehicle_model_assumptions.csv)]
 - [***Scenario***](scenario_inputs_descriptions.md) contains cost, infrastructure, and optimization related input parameters that define a certain scenario. Each entry in the Scenario file is called a "Scenario Model" and is referenced using `scenario.selection` as a key. [[Demo Scenarios](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/inputs/demo/Demo_FY22_scenario_assumptions.csv)]
-- [***Config***](config_inputs_descriptions.md) contains easy ways to manage T3CO model settings and to save the inputs needed to run a set of selections of *Vehicle-Scenario* pairs. It also contains paths to various input files and some Scenario parameter overrides to be used globally on all selections. Users can also specify a path to the output directory in which T3CO results need to be saved. Each entry in the ***Config*** file refers to an "Analysis" and is accessed using `config.analysis_id` [[Demo Analyses](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/T3COConfig.csv)]
+- [***Config***](config_inputs_descriptions.md) is used to manage T3CO model settings that would otherwise have to be provided through the command line. It contains the inputs needed to run a set of selections of *Vehicle-Scenario* pairs. It also contains paths to various input files and some Scenario parameter overrides to be used globally on all selections. Users can also specify a path to the output directory in which T3CO results need to be saved. Each entry in the ***Config*** file defines an "Analysis" and is referred to using `config.analysis_id` as a key.[[Demo Analyses](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/T3COConfig.csv)]
 
 Note that `scenario.selection` and `vehicle.selection` are expected by the tool to be the same for a chosen *Vehicle-Scenario* pair, i.e., a row on the ***Scenario*** file has a corresponding row on the ***Vehicle*** file with the same `selection` key. The `config.selections` attribute accepts a list of "selection" (that refers to both `scenario.selection` and `vehicle.selection`) and is used to fetch the desired set of inputs to run.
 
@@ -38,16 +38,21 @@ For running `config.analysis_id`=0 (or a user desired "Analysis") from the [Demo
 python -m t3co.sweep --analysis-id=0
 ```
 
-## Running T3CO in Batch Mode (using multiprocessing)
-The user can run T3CO in a "Batch Mode", which may be useful when running a large number of *Vehicle-Scenario* pairs or a large number of drivecycles or both. T3CO provides a demo analysis (`config.analysis_id`=3 in the sample T3COConfig.csv file) that runs the Batch Mode for a folder of multiple input drivecycles. 
+## Running T3CO with Multiprocessing
+
+The user can run T3CO utilizing multiprocessing by adding a command line argument (`--run-multi`).
+The multiprocessing option allows T3CO to run parallel analyses utilizing multiple processors (or CPU cores) which can be provided in the command line argument `--n-processors`(defaults to 9). Adjust this number accordingly. To get the fastest run time, close other processor intensive programs running on your computer and assign `--n-processors` as one or two less than the max number of cores.
+
+
+## Running T3CO in Drivecycle Batch Mode
+
+The user can run T3CO in a "Drivecycle Batch Mode", which may be useful when running a large number of drivecycles. T3CO provides a demo analysis (`config.analysis_id`=3 in the sample T3COConfig.csv file) that runs the Drivecycle Batch Mode for a folder of multiple input drivecycles. The Drivecycle Batch Mode gets triggered when the config file (`config.drive_cycle`) contains a path to a folder instead of a path to a CSV file or a blank. This is a special case of using the config file to overwrite the `scenario.drive_cycle` and automatically create many scenarios from one vehicle-scenario pair 
 
 ```bash
-python -m t3co.sweep --analysis-id=3 --run-multi
+python -m t3co.sweep --analysis-id=3 
 ```
 
-The Batch Mode allows T3CO to run parallel analyses utilizing multiple processors (or CPU cores) denoted by CLI argument `--n-processors`(defaults to 9). Adjust this number accordingly. To get the fastest run time, close other processor intensive programs running on your computer and assign `--n-processors` as one or two less than the max number of cores.
-
-When a folder path is provided in the T3COConfig.csv file (`config.drive_cycle`) containing "n" number of valid drivecycles, T3CO generates "n" scenarios for each *Vehicle* selections mentioned in `config.selections` with the `scenario.drive_cycle` populated with each of the "n" drivecycles. For Vehicle selection "1" in config.selections, the generated selection numbers are denoted by "1_000" for the first drivecycle, "1_001" for the second drivecycle, and so on.
+When the drivecycle folder contains "n" valid drivecycles, T3CO generates "n" scenarios for each of the *Vehicle* selections mentioned in `config.selections`. For Vehicle selection "1" in config.selections, the generated selection numbers are denoted by "1_000" for the first drivecycle, "1_001" for the second drivecycle, and so on.
 
 ## Other Command Line Interface arguments
 Use the command below to get a list of all CLI arguments:
