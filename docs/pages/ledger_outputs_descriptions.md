@@ -5,8 +5,8 @@
 - **Category:** <select id="ledgercategoryFilter"><option value="">All</option></select>
 - **Units:** <select id="ledgerUnitsFilter"><option value="">All</option></select>
 - **Data Type:** <select id="ledgerdatatypeFilter"><option value="">All</option></select>
-<div class="table-container">
 
+<div class="table-container">
 <table id="ledgerTable">
     <thead>
         <tr>

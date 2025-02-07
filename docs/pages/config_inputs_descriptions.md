@@ -1,9 +1,14 @@
 # Config Input Parameters
 
-**Filter Options:**
-- **Units:** <select id="configUnitsFilter"><option value="">All</option></select>
-- **Data Type:** <select id="configdatatypeFilter"><option value="">All</option></select>
-
+<div class="filter-container">
+    <span><strong>Filter Options: Units:</strong></span>
+    <select id="configUnitsFilter"><option value="">All</option></select>
+    <span><strong>Data Type:</strong></span>
+    <select id="configdatatypeFilter"><option value="">All</option></select>
+    <div class="button-container">
+        <button id="downloadTemplateBtn">Download Config Template</button>
+    </div>
+</div>
 <div class="table-container">
     <table id="configTable">
         <thead>

@@ -1,7 +1,6 @@
-
 /* Ensure tables fit within 1600px */
 .table-container {
-  width: 150%;
+  width: 110%;
   max-width: 2100px;
   margin: auto;
   overflow-x: hidden; /* Prevent horizontal scrolling */
@@ -58,4 +57,69 @@
 /* Hover effect for better readability */
 #vehicleTable tr:hover, #scenarioTable tr:hover, #ledgerTable tr:hover, #configTable tr:hover {
   background-color: #f9f9f9;
+}
+
+/* Button container styling */
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+/* Button styling */
+#downloadTemplateBtn {
+  background-color: #3F51B5; /* MkDocs Material indigo color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#downloadTemplateBtn:hover {
+  background-color: #303F9F; /* Darker shade for hover effect */
+}
+
+/* Styling for t3coComponentFilter dropdown */
+#t3coComponentFilter {
+  width: 200px;
+  height: auto;
+  font-size: 14px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  z-index: 1;
+  overflow-y: auto; /* Add scroll if there are many options */
+  max-height: 150px; /* Adjust as needed */
+}
+
+#t3coComponentFilter option {
+  padding: 5px;
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0px;
+}
+
+.filter-container span {
+  margin-right: 10px;
+}
+
+#unitsFilter, #powertrainFilter, #datatypeFilter {
+  margin-right: 20px; /* Add space after each dropdown */
+}
+
+#configUnitsFilter, #configdatatypeFilter {
+  margin-right: 20px; /* Add space after each dropdown */
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
 }

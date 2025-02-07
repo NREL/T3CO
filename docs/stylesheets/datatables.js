@@ -30,12 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (dataTypeFilterId) {
             populateDropdown(dataTypeColumn, dataTypeFilterId);  // Data Type column
         }
-        // if (powertrainFilterId) {
-        //     populateDropdown(powertrainColumn, powertrainFilterId);  // Powertrain column
-        // }
-        // if (t3coComponentFilterId) {
-        //     populateDropdown(t3coComponentColumn, t3coComponentFilterId);  // T3CO Component column
-        // }
         if (categoryFilterId) {
             populateDropdown(categoryColumn, categoryFilterId);  // Category column
         }
@@ -45,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let unitsValue = unitsFilterId ? document.getElementById(unitsFilterId).value.toLowerCase() : "";
             let dataTypeValue = dataTypeFilterId ? document.getElementById(dataTypeFilterId).value.toLowerCase() : "";
             let powertrainValue = powertrainFilterId ? document.getElementById(powertrainFilterId).value.toLowerCase() : "";
-            let t3coComponentValue = t3coComponentFilterId ? document.getElementById(t3coComponentFilterId).value.toLowerCase() : "";
+            let t3coComponentValues = t3coComponentFilterId ? Array.from(document.getElementById(t3coComponentFilterId).selectedOptions).map(option => option.value.toLowerCase()) : [];
             let categoryValue = categoryFilterId ? document.getElementById(categoryFilterId).value.toLowerCase() : "";
 
             table.rows().every(function () {
@@ -59,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 let matchUnits = unitsValue === "" || rowUnits === unitsValue;
                 let matchDataType = dataTypeValue === "" || rowDataType === dataTypeValue;
                 let matchPowertrain = powertrainValue === "" || rowPowertrain.includes(powertrainValue);
-                let matchT3coComponent = t3coComponentValue === "" || rowT3coComponent.includes(t3coComponentValue);
+                let matchT3coComponent = t3coComponentValues.length === 0 || t3coComponentValues.some(value => rowT3coComponent.includes(value));
                 let matchCategory = categoryValue === "" || rowCategory === categoryValue;
 
                 if (matchUnits && matchDataType && matchPowertrain && matchT3coComponent && matchCategory) {
@@ -85,6 +79,37 @@ document.addEventListener("DOMContentLoaded", function () {
         if (categoryFilterId) {
             document.getElementById(categoryFilterId).addEventListener("change", filterTable);
         }
+
+        // Download CSV functionality for filtered rows
+        function downloadCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            let InputParameters = [];
+
+            // Loop through all rows in the tbody and include only those that are visible.
+            document.querySelectorAll(`#${tableId} tbody tr`).forEach(row => {
+                // If the row is not hidden (using .hide() adds an inline style display: none)
+                if (row.style.display !== "none") {
+                    let InputParameter = row.cells[0].textContent.trim(); // First column assumed to be "Vehicle Input Parameter"
+                    InputParameters.push(InputParameter);
+                }
+            });
+
+            csvContent += InputParameters.join(",") + "\n";
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", tableId + "_input_parameters.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Add the download event listener for the table's download button
+        if (tableId === "vehicleTable" || tableId === "scenarioTable" || tableId === "configTable") {
+            document.getElementById("downloadTemplateBtn").addEventListener("click", function() {
+                downloadCSV();
+            });
+        }
     }
 
     // Initialize the vehicle parameters table
@@ -95,11 +120,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initialize the scenario parameters table
     if (document.getElementById("scenarioTable")) {
         setupDataTable("scenarioTable", "scenarioUnitsFilter", "scenariodatatypeFilter", "powertrainFilter", "t3coComponentFilter", null, 3, 7, 5, 6, null);
-    }
-
-    // Initialize the ledger parameters table
-    if (document.getElementById("ledgerTable")) {
-        setupDataTable("ledgerTable", "ledgerUnitsFilter", "ledgerdatatypeFilter", null, null, "ledgercategoryFilter", 4, 6, null, null, 2);
     }
 
     // Initialize the config parameters table

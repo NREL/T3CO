@@ -79,22 +79,22 @@ nav:
     - Outputs:
       - Ledger: pages/ledger_outputs_descriptions.md
     - API Reference: 
-      - Input Data SubModules:
-        - Vehicle: pages/vehicle.md
-        - Scenario: pages/scenario.md
-        - Config: pages/config.md  
-      - Energy SubModules:
-        - Energy: pages/energy.md
-        - FASTSim Wrapper: pages/fastsim_wrapper.md
-      - Cost SubModules:
-        - Capital Costs: pages/capital_costs.md
-        - Operating Costs: pages/operating_costs.md
-        - Opportunity Costs: pages/opportunity_costs.md
-      - TCO SubModules:
-        - TCO Calc Per Year: pages/tcocalc.md
-        - Ledger: pages/ledger.md
-      - CLI SubModules:
-        - Sweep: pages/sweep.md
-      - Utility SubModules:
-        - Demo Files Installer: pages/demo_files_installer.md
-        - Print Class Objects: pages/print_class_objects.md
+      - Input Data Module:
+        - Vehicle: pages/api_reference/vehicle.md
+        - Scenario: pages/api_reference/scenario.md
+        - Config: pages/api_reference/config.md  
+      - Energy Module:
+        - Energy: pages/api_reference/energy.md
+        - FASTSim Wrapper: pages/api_reference/fastsim_wrapper.md
+      - Cost Module:
+        - Capital Costs: pages/api_reference/capital_costs.md
+        - Operating Costs: pages/api_reference/operating_costs.md
+        - Opportunity Costs: pages/api_reference/opportunity_costs.md
+      - TCO Module:
+        - TCO Calc Per Year: pages/api_reference/tcocalc.md
+        - Ledger: pages/api_reference/ledger.md
+      - CLI Module:
+        - Sweep: pages/api_reference/sweep.md
+      - Utility Module:
+        - Demo Files Installer: pages/api_reference/demo_files_installer.md
+        - Print Class Objects: pages/api_reference/print_class_objects.md

@@ -7,15 +7,22 @@
     <option value="BEV">BEV</option>
     <option value="HEV">HEV</option>
     <option value="FCEV">FCEV</option></select>
-- **T3CO Component:** <select id="t3coComponentFilter">
-    <option value="">All</option>
-    <option value="General">General</option>
-    <option value="TCO">TCO</option>
-    <option value="CapitalCosts">CapitalCosts</option>
-    <option value="OperatingCosts">OperatingCosts</option>
-    <option value="OpportunityCosts">OpportunityCosts</option>
-    <option value="Optimization">Optimization</option></select>
 - **Data Type:** <select id="scenariodatatypeFilter"><option value="">All</option></select>
+
+<div class="filter-container">
+    <span><strong>T3CO Component:  </strong></span>
+    <select id="t3coComponentFilter" multiple size="7">
+        <option value="General">General</option>
+        <option value="TCO">TCO</option>
+        <option value="CapitalCosts">CapitalCosts</option>
+        <option value="OperatingCosts">OperatingCosts</option>
+        <option value="OpportunityCosts">OpportunityCosts</option>
+        <option value="Optimization">Optimization</option>
+    </select>
+    <div class="button-container">
+        <button id="downloadTemplateBtn">Download Scenario Template</button>
+    </div>
+</div>
 
 <div class="table-container">
     <table id="scenarioTable">
