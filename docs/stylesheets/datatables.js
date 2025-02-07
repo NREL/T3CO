@@ -104,6 +104,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Initialize the config parameters table
     if (document.getElementById("configTable")) {
-        setupDataTable("configTable", "configUnitsFilter", "configDataTypeFilter", null, null, null, 3, 5, null, null, null);
+        setupDataTable("configTable", "configUnitsFilter", "configdatatypeFilter", null, null, null, 3, 5, null, null, null);
     }
 });
