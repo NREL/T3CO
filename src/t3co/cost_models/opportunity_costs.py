@@ -51,17 +51,26 @@ class OpportunityCosts:
             scenario (Scenario): The scenario instance containing configuration data.
             energy (Energy): The energy model instance.
         """
-        if year_number == 1 and scenario.activate_tco_payload_cap_cost_multiplier:
+        if year_number == 1 and (
+            scenario.activate_tco_payload_cap_cost_multiplier
+            or scenario.cost_toggles_dict["OpportunityCosts"]["payload_oppy_cost"]
+        ):
             self.set_payload_cap_cost_multiplier(vehicle=vehicle, scenario=scenario)
 
-        if scenario.activate_tco_fueling_dwell_time_cost:
+        if (
+            scenario.activate_tco_fueling_dwell_time_cost
+            or scenario.cost_toggles_dict["OpportunityCosts"]["fueling_dwell_oppy_cost"]
+        ):
             self.set_fueling_dwell_time_cost(
                 year_number=year_number,
                 vehicle=vehicle,
                 scenario=scenario,
                 energy=energy,
             )
-        if scenario.activate_mr_downtime_cost:
+        if (
+            scenario.activate_mr_downtime_cost
+            or scenario.cost_toggles_dict["OpportunityCosts"]["mr_downtime_oppy_cost"]
+        ):
             self.set_mr_downtime_cost(
                 year_number=year_number, vehicle=vehicle, scenario=scenario
             )

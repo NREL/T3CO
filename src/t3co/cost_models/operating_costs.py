@@ -61,25 +61,32 @@ class OperatingCosts:
             self.mpgge = energy.mpgge
         self.distance_traveled_mi_per_yr = scenario.vmt[year_number - 1]
 
-        self.set_fuel_cost(year_number=year_number, vehicle=vehicle, scenario=scenario)
-        self.set_maintenance_oper_cost(
-            year_number=year_number, vehicle=vehicle, scenario=scenario
-        )
-        self.set_insurance_cost(
-            year_number=year_number,
-            cap_cost=cap_costs,
-            vehicle=vehicle,
-            scenario=scenario,
-        )
-
-        if scenario.activate_tco_fueling_dwell_time_cost and oppy_costs:
-            self.set_fueling_dwell_labor_cost(scenario=scenario, oppy_costs=oppy_costs)
-        else:
-            self.fueling_dwell_labor_cost_dol_per_yr = 0.0
-
-        self.set_purchasing_payment_cost(
-            year_number=year_number, scenario=scenario, cap_costs=cap_costs
-        )
+        if scenario.cost_toggles_dict["OperatingCosts"]["fuel_cost"]:
+            self.set_fuel_cost(
+                year_number=year_number, vehicle=vehicle, scenario=scenario
+            )
+        if scenario.cost_toggles_dict["OperatingCosts"]["maintenance_oper_cost"]:
+            self.set_maintenance_oper_cost(
+                year_number=year_number, vehicle=vehicle, scenario=scenario
+            )
+        if scenario.cost_toggles_dict["OperatingCosts"]["insurance_cost"]:
+            self.set_insurance_cost(
+                year_number=year_number,
+                cap_cost=cap_costs,
+                vehicle=vehicle,
+                scenario=scenario,
+            )
+        if scenario.cost_toggles_dict["OperatingCosts"]["fueling_dwell_labor"]:
+            if scenario.activate_tco_fueling_dwell_time_cost and oppy_costs:
+                self.set_fueling_dwell_labor_cost(
+                    scenario=scenario, oppy_costs=oppy_costs
+                )
+            else:
+                self.fueling_dwell_labor_cost_dol_per_yr = 0.0
+        if scenario.cost_toggles_dict["OperatingCosts"]["purchasing_cost"]:
+            self.set_purchasing_payment_cost(
+                year_number=year_number, scenario=scenario, cap_costs=cap_costs
+            )
         self.set_net_oper_cost()
         self.set_disc_oper_cost(year_number=year_number, scenario=scenario)
 

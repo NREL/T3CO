@@ -144,6 +144,8 @@ class Scenario:
     mpgge: float = 0.0
     primary_fuel_range_mi: float = 0.0
 
+    cost_toggles_dict: dict = field(default_factory=dict)
+
     def __new__(cls, *args, **kwargs):
         """
         Creates a new instance of the Scenario class.
@@ -247,6 +249,7 @@ class Scenario:
             "activate_tco_fueling_dwell_time_cost",
             "fdt_frac_full_charge_bounds",
             "activate_mr_downtime_cost",
+            "cost_toggles_dict"
         ]
         try:
             if config.dc_files is None:

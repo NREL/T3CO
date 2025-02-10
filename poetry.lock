@@ -1383,4 +1383,4 @@ fastsim = ["fastsim"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4"
-content-hash = "bfff9732bacd6d2694828aece60109ebf100ae613039a95ae816b2bd565c3b48"
+content-hash = "59f1556f37f449a9c98c1daa0a3554e91a7ad72e37e8e8e19081c6a0c2504adc"

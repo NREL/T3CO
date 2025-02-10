@@ -1,5 +1,6 @@
 import ast
 from dataclasses import dataclass, field
+import json
 from pathlib import Path
 import sys
 
@@ -71,6 +72,9 @@ class Config:
 
     fuel_prices_df: pd.DataFrame = None
     config_filename: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "T3COConfig.csv"
+
+    cost_toggles_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "cost_toggles.json"
+    cost_toggles_dict: dict = field(default_factory=dict)
 
     def __new__(cls, *args, **kwargs):
         """
@@ -187,7 +191,12 @@ class Config:
             )
         )
         self.fuel_prices_df.set_index("Fuel", inplace=True)
-
+        
+        with open(self.cost_toggles_file, 'r') as f:
+            self.cost_toggles_dict = json.load(f)
+        
+        print(self.cost_toggles_dict)
+        
     def delete_dataframes(self) -> None:
         """
         Deletes DataFrame attributes from the Config instance.
