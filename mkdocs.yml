@@ -4,42 +4,25 @@ repo_url: https://github.com/NREL/T3CO
 edit_uri: https://github.com/NREL/T3CO/tree/main/docs
 site_author: Harish Panneer Selvam 
 
-extra_css:
-  - stylesheets/extra.css
-plugins:
-  - search
-  - mkdocstrings:
-      handlers:
-        python:
-          options:
-            show_if_no_docstring: true
-            docstring_options:
-              ignore_init_summary: false
-            merge_init_into_class: false
-            heading_level: 2
-            show_root_heading: true
-            show_symbol_type_heading: true
-            show_symbol_type_toc: true
-            show_root_toc_entry: true 
-            annotations_path: source
-            show_signature: true
-            separate_signature: false
-            show_signature_annotations: true
-            unwrap_annotated: true
-
-markdown_extensions:
-  - toc:
-      permalink: true
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-      use_pygments: true
-      auto_title: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
-
+extra:
+  analytics:
+    provider: google
+    property: G-QDQ7VBSCE0
+  feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >- 
+            Thanks for your feedback! Help us improve this page by
+            using our <a href="..." target="_blank" rel="noopener">feedback form</a>.
+  generator: false
 
 theme:
   name: material
@@ -55,12 +38,17 @@ theme:
     - content.code.copy
     - navigation.path
     - content.tooltips
+    - navigation.path
+    - navigation.sections
+    - toc.integrate 
+    - navigation.top
+    - header.autohide
 
   icon:
     repo: fontawesome/brands/github
     edit: material/pencil 
     view: material/eye
-
+    
 nav:
     - Home: index.md
     - Installation: installation.md
@@ -73,22 +61,22 @@ nav:
     - Outputs:
       - Ledger: pages/ledger_outputs_descriptions.md
     - API Reference: 
-      - Input Data SubModules:
-        - Vehicle: pages/vehicle.md
-        - Scenario: pages/scenario.md
-        - Config: pages/config.md  
-      - Energy SubModules:
-        - Energy: pages/energy.md
-        - FASTSim Wrapper: pages/fastsim_wrapper.md
-      - Cost SubModules:
-        - Capital Costs: pages/capital_costs.md
-        - Operating Costs: pages/operating_costs.md
-        - Opportunity Costs: pages/opportunity_costs.md
-      - TCO SubModules:
-        - TCO Calc Per Year: pages/tcocalc.md
-        - Ledger: pages/ledger.md
-      - CLI SubModules:
-        - Sweep: pages/sweep.md
-      - Utility SubModules:
-        - Demo Inputs Installer: pages/demo_inputs_installer.md
-        - Print Class Objects: pages/print_class_objects.md
+      - Input Data Module:
+        - Vehicle: pages/api_reference/vehicle.md
+        - Scenario: pages/api_reference/scenario.md
+        - Config: pages/api_reference/config.md  
+      - Energy Module:
+        - Energy: pages/api_reference/energy.md
+        - FASTSim Wrapper: pages/api_reference/fastsim_wrapper.md
+      - Cost Module:
+        - Capital Costs: pages/api_reference/capital_costs.md
+        - Operating Costs: pages/api_reference/operating_costs.md
+        - Opportunity Costs: pages/api_reference/opportunity_costs.md
+      - TCO Module:
+        - TCO Calc Per Year: pages/api_reference/tcocalc.md
+        - Ledger: pages/api_reference/ledger.md
+      - CLI Module:
+        - Sweep: pages/api_reference/sweep.md
+      - Utility Module:
+        - Demo Files Installer: pages/api_reference/demo_files_installer.md
+        - Print Class Objects: pages/api_reference/print_class_objects.md
