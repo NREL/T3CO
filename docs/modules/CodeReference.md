@@ -59,9 +59,9 @@
   * [custom\_default](#t3co.utils.print_class_objects.custom_default)
   * [to\_flat\_dict](#t3co.utils.print_class_objects.to_flat_dict)
   * [remove\_df\_attrs](#t3co.utils.print_class_objects.remove_df_attrs)
-* [t3co.utils.demo\_files\_installer](#t3co.utils.demo_files_installer)
-  * [main](#t3co.utils.demo_files_installer.main)
-  * [copy\_demo\_input\_files](#t3co.utils.demo_files_installer.copy_demo_input_files)
+* [t3co.utils.demo\_inputs\_installer](#t3co.utils.demo_inputs_installer)
+  * [main](#t3co.utils.demo_inputs_installer.main)
+  * [copy\_demo\_input\_files](#t3co.utils.demo_inputs_installer.copy_demo_input_files)
 * [t3co.input\_data.config](#t3co.input_data.config)
   * [Config](#t3co.input_data.config.Config)
     * [\_\_new\_\_](#t3co.input_data.config.Config.__new__)
@@ -765,7 +765,7 @@ Calculates the range of the vehicle based on its type and energy storage.
 
 ```python
 def obj_to_string(obj: Union[object, List[object]],
-                  extra: str = "    ") -> str
+                  indent: str = "    ") -> str
 ```
 
 Converts an object or list of objects to a formatted string representation.
@@ -773,7 +773,7 @@ Converts an object or list of objects to a formatted string representation.
 **Arguments**:
 
 - `obj` _Union[object, List[object]]_ - The object or list of objects to convert.
-- `extra` _str, optional_ - Indentation string for nested objects. Defaults to "    ".
+- `indent` _str, optional_ - Indentation string for nested objects. Defaults to "    ".
   
 
 **Returns**:
@@ -786,33 +786,34 @@ Converts an object or list of objects to a formatted string representation.
 
 ```python
 def handle_nan(
-        obj: Union[float, dict, list]) -> Union[None, dict, list, float]
+        obj: Union[float, dict, list,
+                   Any]) -> Union[None, dict, list, float, Any]
 ```
 
 Replaces NaN values in an object with None.
 
 **Arguments**:
 
-- `obj` _Union[float, dict, list]_ - The object to process.
+- `obj` _Union[float, dict, list, Any]_ - The object to process.
   
 
 **Returns**:
 
-  Union[None, dict, list, float]: The processed object with NaN values replaced by None.
+  Union[None, dict, list, float, Any]: The processed object with NaN values replaced by None.
 
 <a id="t3co.utils.print_class_objects.custom_default"></a>
 
 #### custom\_default
 
 ```python
-def custom_default(obj: object) -> Union[None, dict, str]
+def custom_default(obj: Any) -> Union[None, dict, str]
 ```
 
 Custom default function for JSON serialization.
 
 **Arguments**:
 
-- `obj` _object_ - The object to serialize.
+- `obj` _Any_ - The object to serialize.
   
 
 **Returns**:
@@ -825,17 +826,17 @@ Custom default function for JSON serialization.
 
 ```python
 def to_flat_dict(obj: object,
-                 include_predix: bool = True,
+                 include_prefix: bool = True,
                  prefix: str = "",
                  delimiter: str = "_") -> dict
 ```
 
-Flattens a nested object into a dictionary.
+Flattens a nested object into a dictionary while preserving the order of declared attributes.
 
 **Arguments**:
 
 - `obj` _object_ - The object to flatten.
-- `include_predix` _bool, optional_ - Whether to include the prefix in the keys. Defaults to True.
+- `include_prefix` _bool, optional_ - Whether to include the prefix in the keys. Defaults to True.
 - `prefix` _str, optional_ - The prefix for the keys. Defaults to "".
 - `delimiter` _str, optional_ - The delimiter for the keys. Defaults to "_".
   
@@ -852,17 +853,17 @@ Flattens a nested object into a dictionary.
 def remove_df_attrs(obj: object) -> None
 ```
 
-Removes DataFrame attributes from an object.
+Removes attributes from an object if they are DataFrame instances.
 
 **Arguments**:
 
 - `obj` _object_ - The object to process.
 
-<a id="t3co.utils.demo_files_installer"></a>
+<a id="t3co.utils.demo_inputs_installer"></a>
 
-# t3co.utils.demo\_files\_installer
+# t3co.utils.demo\_inputs\_installer
 
-<a id="t3co.utils.demo_files_installer.main"></a>
+<a id="t3co.utils.demo_inputs_installer.main"></a>
 
 #### main
 
@@ -872,7 +873,7 @@ def main()
 
 Requests user inputs for whether and where to copy t3co demo input files from the t3co.resources folder. Calls the copy_demo_input_files function.
 
-<a id="t3co.utils.demo_files_installer.copy_demo_input_files"></a>
+<a id="t3co.utils.demo_inputs_installer.copy_demo_input_files"></a>
 
 #### copy\_demo\_input\_files
 

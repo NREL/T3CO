@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy.stats import gaussian_kde
-
+from scipy.integrate import trapezoid
 from t3co.constants import Global as gl
 from t3co.energy_models.energy import Energy
 from t3co.input_data.scenario import Scenario
@@ -188,7 +188,7 @@ class OpportunityCosts:
             estimated_lost_payload_per_bin_kg = p_of_weights_normalized[
                 minidx:maxidx
             ] * (vehicle_weights_bins_kg[minidx:maxidx] - new_cargo_cieling_kg)
-            estimated_lost_payload_kg = np.trapz(estimated_lost_payload_per_bin_kg)
+            estimated_lost_payload_kg = trapezoid(estimated_lost_payload_per_bin_kg)
 
             # payload cost multiplier
             self.payload_cap_cost_multiplier = 1 + estimated_lost_payload_kg / (

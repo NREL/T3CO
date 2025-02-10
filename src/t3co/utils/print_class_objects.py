@@ -1,105 +1,85 @@
 from collections import OrderedDict
-import json
 from pathlib import Path
-from typing import List, Union
-
+from typing import List, Union, Any
+import json
 import pandas as pd
 
 
-def obj_to_string(obj: Union[object, List[object]], extra: str = "    ") -> str:
+def obj_to_string(obj: Union[object, List[object]], indent: str = "    ") -> str:
     """
     Converts an object or list of objects to a formatted string representation.
 
     Args:
         obj (Union[object, List[object]]): The object or list of objects to convert.
-        extra (str, optional): Indentation string for nested objects. Defaults to "    ".
+        indent (str, optional): Indentation string for nested objects. Defaults to "    ".
 
     Returns:
         str: Formatted string representation of the object.
     """
-    if isinstance(obj, list) or isinstance(obj, List):
-        return (
-            "[\n"
-            + ",\n".join(
-                extra + obj_to_string(item, extra + "    ")
-                if hasattr(item, "__dict__")
-                else extra + str(item)
-                for item in obj
-            )
-            + "\n"
-            + extra[:-4]
-            + "]"
-        )
+    if isinstance(obj, list):
+        return "[\n" + ",\n".join(
+            indent + obj_to_string(item, indent + "    ") if hasattr(item, "__dict__") else indent + str(item)
+            for item in obj
+        ) + "\n" + indent[:-4] + "]"
 
     elif hasattr(obj, "__dict__"):
-        return (
-            str(obj.__class__)
-            + "\n"
-            + "\n".join(
-                (
-                    extra
-                    + (
-                        str(item)
-                        + " = "
-                        + obj_to_string(obj.__dict__[item], extra + "    ")
-                    )
-                )
-                for item in sorted(obj.__dict__)
-            )
+        return f"{obj.__class__.__name__}\n" + "\n".join(
+            f"{indent}{attr} = {obj_to_string(value, indent + '    ')}"
+            for attr, value in sorted(vars(obj).items())
         )
-    else:
-        return str(obj)
+
+    return str(obj)
 
 
-def handle_nan(obj: Union[float, dict, list]) -> Union[None, dict, list, float]:
+def handle_nan(obj: Union[float, dict, list, Any]) -> Union[None, dict, list, float, Any]:
     """
     Replaces NaN values in an object with None.
 
     Args:
-        obj (Union[float, dict, list]): The object to process.
+        obj (Union[float, dict, list, Any]): The object to process.
 
     Returns:
-        Union[None, dict, list, float]: The processed object with NaN values replaced by None.
+        Union[None, dict, list, float, Any]: The processed object with NaN values replaced by None.
     """
-    if isinstance(obj, float) and obj != obj:
+    if isinstance(obj, float) and pd.isna(obj):
         return None
     elif isinstance(obj, dict):
         return {k: handle_nan(v) for k, v in obj.items()}
     elif isinstance(obj, list):
         return [handle_nan(v) for v in obj]
-    else:
-        return obj
+    return obj
 
 
-def custom_default(obj: object) -> Union[None, dict, str]:
+def custom_default(obj: Any) -> Union[None, dict, str]:
     """
     Custom default function for JSON serialization.
 
     Args:
-        obj (object): The object to serialize.
+        obj (Any): The object to serialize.
 
     Returns:
         Union[None, dict, str]: The serialized object.
     """
-    if isinstance(obj, float) and obj != obj:
+    if isinstance(obj, float) and pd.isna(obj):
         return None
     elif isinstance(obj, Path):
         return str(obj)
     elif isinstance(obj, pd.DataFrame):
         return None
-    else:
-        return obj.__dict__
+    elif hasattr(obj, "__dict__"):
+        return vars(obj)
+    return str(obj)
 
 
 def to_flat_dict(
-    obj: object, include_predix: bool = True, prefix: str = "", delimiter: str = "_"
+    obj: object, include_prefix: bool = True, prefix: str = "", delimiter: str = "_"
 ) -> dict:
     """
-    Flattens a nested object into a dictionary.
+    Flattens a nested object into a dictionary while preserving the order of declared attributes.
 
     Args:
         obj (object): The object to flatten.
-        include_predix (bool, optional): Whether to include the prefix in the keys. Defaults to True.
+        include_prefix (bool, optional): Whether to include the prefix in the keys. Defaults to True.
         prefix (str, optional): The prefix for the keys. Defaults to "".
         delimiter (str, optional): The delimiter for the keys. Defaults to "_".
 
@@ -109,40 +89,40 @@ def to_flat_dict(
     flat_dict = {}
 
     def flatten(item, current_prefix):
+        """Recursively flattens attributes."""
         if isinstance(item, dict):
             for key, value in item.items():
-                flatten(
-                    value,
-                    f"{current_prefix}{(key if include_predix else '')}{delimiter}",
-                )
+                new_key = f"{current_prefix}{delimiter}{key}" if current_prefix else key
+                flatten(value, new_key)
         elif hasattr(item, "__dict__"):
-            flatten(item.__dict__, current_prefix)
+            flatten(vars(item), current_prefix)
         else:
-            flat_dict[current_prefix[:-1]] = item
+            flat_dict[current_prefix] = item
 
+    # Extract attributes in the order they were declared
     cls = obj.__class__
-    field_order = list(cls.__annotations__.keys())
+    declared_attributes = list(getattr(cls, "__annotations__", {}).keys())
+    instance_attributes = list(vars(obj).keys())
 
-    flatten(
-        json.loads(
-            json.dumps(
-                OrderedDict((field, getattr(obj, field)) for field in field_order),
-                default=custom_default,
-            )
-        ),
-        prefix,
-    )
+    # Maintain order: declared first, then dynamically assigned attributes
+    ordered_fields = OrderedDict.fromkeys(declared_attributes + instance_attributes)
+
+    # Create ordered dictionary of attributes
+    ordered_obj = OrderedDict((field, getattr(obj, field, None)) for field in ordered_fields)
+
+    # Flatten the object
+    flatten(ordered_obj, prefix if include_prefix else "")
 
     return flat_dict
 
 
 def remove_df_attrs(obj: object) -> None:
     """
-    Removes DataFrame attributes from an object.
+    Removes attributes from an object if they are DataFrame instances.
 
     Args:
         obj (object): The object to process.
     """
-    for attr_name in dir(obj):
-        if isinstance(getattr(obj, attr_name), pd.DataFrame):
-            delattr(obj, attr_name)
+    for attr in list(vars(obj).keys()):  # Use `list()` to avoid modification issues
+        if isinstance(getattr(obj, attr), pd.DataFrame):
+            delattr(obj, attr)
