@@ -1,8 +1,11 @@
+import json
 from collections import OrderedDict
 from pathlib import Path
-from typing import List, Union, Any
-import json
+from typing import Any, List, Union
+
 import pandas as pd
+
+import t3co.constants.Global as gl
 
 
 def obj_to_string(obj: Union[object, List[object]], indent: str = "    ") -> str:
@@ -17,10 +20,18 @@ def obj_to_string(obj: Union[object, List[object]], indent: str = "    ") -> str
         str: Formatted string representation of the object.
     """
     if isinstance(obj, list):
-        return "[\n" + ",\n".join(
-            indent + obj_to_string(item, indent + "    ") if hasattr(item, "__dict__") else indent + str(item)
-            for item in obj
-        ) + "\n" + indent[:-4] + "]"
+        return (
+            "[\n"
+            + ",\n".join(
+                indent + obj_to_string(item, indent + "    ")
+                if hasattr(item, "__dict__")
+                else indent + str(item)
+                for item in obj
+            )
+            + "\n"
+            + indent[:-4]
+            + "]"
+        )
 
     elif hasattr(obj, "__dict__"):
         return f"{obj.__class__.__name__}\n" + "\n".join(
@@ -31,7 +42,9 @@ def obj_to_string(obj: Union[object, List[object]], indent: str = "    ") -> str
     return str(obj)
 
 
-def handle_nan(obj: Union[float, dict, list, Any]) -> Union[None, dict, list, float, Any]:
+def handle_nan(
+    obj: Union[float, dict, list, Any],
+) -> Union[None, dict, list, float, Any]:
     """
     Replaces NaN values in an object with None.
 
@@ -93,25 +106,31 @@ def to_flat_dict(
         if isinstance(item, dict):
             for key, value in item.items():
                 new_key = f"{current_prefix}{delimiter}{key}" if current_prefix else key
-                flatten(value, new_key)
+                flatten(value, (new_key if include_prefix else key))
         elif hasattr(item, "__dict__"):
             flatten(vars(item), current_prefix)
         else:
             flat_dict[current_prefix] = item
 
-    # Extract attributes in the order they were declared
-    cls = obj.__class__
-    declared_attributes = list(getattr(cls, "__annotations__", {}).keys())
-    instance_attributes = list(vars(obj).keys())
+    if hasattr(obj, "__dict__"):
+        # Extract attributes in the order they were declared
+        cls = obj.__class__
+        declared_attributes = list(getattr(cls, "__annotations__", {}).keys())
+        instance_attributes = list(vars(obj).keys())
 
-    # Maintain order: declared first, then dynamically assigned attributes
-    ordered_fields = OrderedDict.fromkeys(declared_attributes + instance_attributes)
+        # Maintain order: declared first, then dynamically assigned attributes
+        ordered_fields = OrderedDict.fromkeys(declared_attributes + instance_attributes)
 
-    # Create ordered dictionary of attributes
-    ordered_obj = OrderedDict((field, getattr(obj, field, None)) for field in ordered_fields)
+        # Create ordered dictionary of attributes
+        ordered_obj = OrderedDict(
+            (field, getattr(obj, field, None)) for field in ordered_fields
+        )
 
-    # Flatten the object
-    flatten(ordered_obj, prefix if include_prefix else "")
+        # Flatten the object
+        flatten(ordered_obj, prefix if include_prefix else "")
+    else:
+        print(f'it is dict: {include_prefix}')
+        flatten(obj, current_prefix= (prefix if include_prefix else ""))
 
     return flat_dict
 
@@ -126,3 +145,11 @@ def remove_df_attrs(obj: object) -> None:
     for attr in list(vars(obj).keys()):  # Use `list()` to avoid modification issues
         if isinstance(getattr(obj, attr), pd.DataFrame):
             delattr(obj, attr)
+
+
+def get_path_object(filename: str) -> Path:
+    return (
+        Path(filename).resolve(strict=True)
+        if Path(filename).is_absolute()
+        else gl.RESOURCES_FOLDERPATH / filename
+    )
