@@ -9,7 +9,7 @@ from t3co.cost_models.opportunity_costs import OpportunityCosts
 from t3co.energy_models.energy import Energy
 from t3co.input_data.scenario import Scenario
 from t3co.input_data.vehicle import Vehicle
-from t3co.utils.print_class_objects import obj_to_string
+from t3co.utils.print_class_objects import obj_to_string, get_path_object
 
 
 class OperatingCosts:
@@ -61,29 +61,29 @@ class OperatingCosts:
             self.mpgge = energy.mpgge
         self.distance_traveled_mi_per_yr = scenario.vmt[year_number - 1]
 
-        if scenario.cost_toggles_dict["OperatingCosts"]["fuel_cost"]:
+        if scenario.cost_toggles.fuel_cost:
             self.set_fuel_cost(
                 year_number=year_number, vehicle=vehicle, scenario=scenario
             )
-        if scenario.cost_toggles_dict["OperatingCosts"]["maintenance_oper_cost"]:
+        if scenario.cost_toggles.maintenance_oper_cost:
             self.set_maintenance_oper_cost(
                 year_number=year_number, vehicle=vehicle, scenario=scenario
             )
-        if scenario.cost_toggles_dict["OperatingCosts"]["insurance_cost"]:
+        if scenario.cost_toggles.insurance_cost:
             self.set_insurance_cost(
                 year_number=year_number,
                 cap_cost=cap_costs,
                 vehicle=vehicle,
                 scenario=scenario,
             )
-        if scenario.cost_toggles_dict["OperatingCosts"]["fueling_dwell_labor"]:
+        if scenario.cost_toggles.fueling_dwell_labor:
             if scenario.activate_tco_fueling_dwell_time_cost and oppy_costs:
                 self.set_fueling_dwell_labor_cost(
                     scenario=scenario, oppy_costs=oppy_costs
                 )
             else:
                 self.fueling_dwell_labor_cost_dol_per_yr = 0.0
-        if scenario.cost_toggles_dict["OperatingCosts"]["purchasing_cost"]:
+        if scenario.cost_toggles.purchasing_cost:
             self.set_purchasing_payment_cost(
                 year_number=year_number, scenario=scenario, cap_costs=cap_costs
             )
@@ -120,12 +120,7 @@ class OperatingCosts:
             scenario (Scenario): The scenario instance containing configuration data.
         """
         if scenario.fuel_prices_df is None:
-            scenario.fuel_prices_df = pd.read_csv(
-                (
-                    Path(scenario.fuel_prices_file).resolve(strict=True)
-                    if Path(scenario.fuel_prices_file).is_absolute()
-                    else gl.RESOURCES_FOLDERPATH / scenario.fuel_prices_file
-                )
+            scenario.fuel_prices_df = pd.read_csv(get_path_object(scenario.fuel_prices_file),
             )
             scenario.fuel_prices_df.set_index("Fuel", inplace=True)
 

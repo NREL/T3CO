@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import sys
 
+from t3co.input_data.toggles import Toggles
+
 try:
     from typing import Self  # Python 3.11+
 except ImportError:
@@ -13,7 +15,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 import t3co.constants.Global as gl
-from t3co.utils.print_class_objects import remove_df_attrs
+from t3co.utils.print_class_objects import get_path_object, remove_df_attrs
 
 
 @dataclass
@@ -74,7 +76,7 @@ class Config:
     config_filename: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "T3COConfig.csv"
 
     cost_toggles_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "cost_toggles.json"
-    cost_toggles_dict: dict = field(default_factory=dict)
+    cost_toggles: Toggles = None
 
     def __new__(cls, *args, **kwargs):
         """
@@ -159,11 +161,8 @@ class Config:
         Checks if the config.drive_cycle input is a file or a folder. If a folder is provided, creates a list of all selections for each drive cycle in the folder as config.dc_files.
         """
         if self.drive_cycle:
-            self.drive_cycle = (
-                Path(self.drive_cycle).resolve(strict=True)
-                if Path(self.drive_cycle).is_absolute()
-                else Path(self.config_filename).parents[0] / self.drive_cycle
-            )
+            self.drive_cycle = get_path_object(self.drive_cycle)
+            
             if Path(self.drive_cycle).is_dir():
                 self.dc_files = [
                     p.absolute() for p in Path(self.drive_cycle).rglob("*.csv")
@@ -183,19 +182,9 @@ class Config:
         """
         Reads auxiliary files such as fuel prices and residual rates.
         """
-        self.fuel_prices_df = pd.read_csv(
-            (
-                Path(self.fuel_prices_file).resolve(strict=True)
-                if Path(self.fuel_prices_file).is_absolute()
-                else gl.RESOURCES_FOLDERPATH / self.fuel_prices_file
-            )
-        )
+        self.fuel_prices_df = pd.read_csv(get_path_object(self.fuel_prices_file))
         self.fuel_prices_df.set_index("Fuel", inplace=True)
-        
-        with open(self.cost_toggles_file, 'r') as f:
-            self.cost_toggles_dict = json.load(f)
-        
-        print(self.cost_toggles_dict)
+        self.cost_toggles = Toggles.from_json(get_path_object(self.cost_toggles_file))
         
     def delete_dataframes(self) -> None:
         """

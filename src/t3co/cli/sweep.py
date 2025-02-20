@@ -14,6 +14,7 @@ from t3co.input_data.config import Config
 from t3co.input_data.scenario import Scenario
 from t3co.input_data.vehicle import Vehicle
 from t3co.tco.ledger import Ledger
+from t3co.utils.print_class_objects import get_path_object
 
 
 def load_vehicle_scenario_energy(
@@ -115,11 +116,7 @@ def create_results_filepath(config: Config) -> Path:
             .replace(",", "-")
         )
         result_filename = f"results_{ts}_sel_{selections_string[:20]}.csv".strip("_")
-    output_path = (
-        (Path(config.dst_dir) / result_filename).resolve(strict=True)
-        if Path(config.dst_dir).is_absolute()
-        else gl.RESOURCES_FOLDERPATH / config.dst_dir / result_filename
-    )
+    output_path = get_path_object(config.dst_dir)/result_filename
 
     if not output_path.exists():
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -424,31 +421,11 @@ if __name__ == "__main__":
         config.check_drivecycles_and_create_selections()
         config.read_auxiliary_files()
         gl.RESOURCES_FOLDERPATH = Path(args.config).parent
-        config.vehicle_file = (
-            Path(config.vehicle_file).resolve(strict=True)
-            if Path(config.vehicle_file).is_absolute()
-            else gl.RESOURCES_FOLDERPATH / config.vehicle_file
-        )
-        config.scenario_file = (
-            Path(config.scenario_file).resolve(strict=True)
-            if Path(config.scenario_file).is_absolute()
-            else gl.RESOURCES_FOLDERPATH / config.scenario_file
-        )
-        config.eng_eff_imp_curves = (
-            Path(config.eng_eff_imp_curves).resolve(strict=True)
-            if Path(config.eng_eff_imp_curves).is_absolute()
-            else gl.RESOURCES_FOLDERPATH / config.eng_eff_imp_curves
-        )
-        config.lw_imp_curves = (
-            Path(config.lw_imp_curves).resolve(strict=True)
-            if Path(config.lw_imp_curves).is_absolute()
-            else gl.RESOURCES_FOLDERPATH / config.lw_imp_curves
-        )
-        config.aero_drag_imp_curves = (
-            Path(config.aero_drag_imp_curves).resolve(strict=True)
-            if Path(config.aero_drag_imp_curves).is_absolute()
-            else gl.RESOURCES_FOLDERPATH / config.aero_drag_imp_curves
-        )
+        config.vehicle_file = get_path_object(config.vehicle_file)
+        config.scenario_file = get_path_object(config.scenario_file)
+        config.eng_eff_imp_curves = get_path_object(config.eng_eff_imp_curves)
+        config.lw_imp_curves = get_path_object(config.lw_imp_curves)
+        config.aero_drag_imp_curves = get_path_object(config.aero_drag_imp_curves)
 
     print(f"Selection List: {config.selections_list}")
 

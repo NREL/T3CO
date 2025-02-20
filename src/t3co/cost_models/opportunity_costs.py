@@ -12,7 +12,7 @@ from t3co.constants import Global as gl
 from t3co.energy_models.energy import Energy
 from t3co.input_data.scenario import Scenario
 from t3co.input_data.vehicle import Vehicle
-from t3co.utils.print_class_objects import obj_to_string
+from t3co.utils.print_class_objects import get_path_object, obj_to_string
 
 
 class OpportunityCosts:
@@ -53,13 +53,13 @@ class OpportunityCosts:
         """
         if year_number == 1 and (
             scenario.activate_tco_payload_cap_cost_multiplier
-            or scenario.cost_toggles_dict["OpportunityCosts"]["payload_oppy_cost"]
+            or scenario.cost_toggles.payload_oppy_cost
         ):
             self.set_payload_cap_cost_multiplier(vehicle=vehicle, scenario=scenario)
 
         if (
             scenario.activate_tco_fueling_dwell_time_cost
-            or scenario.cost_toggles_dict["OpportunityCosts"]["fueling_dwell_oppy_cost"]
+            or scenario.cost_toggles.fueling_dwell_oppy_cost
         ):
             self.set_fueling_dwell_time_cost(
                 year_number=year_number,
@@ -69,7 +69,7 @@ class OpportunityCosts:
             )
         if (
             scenario.activate_mr_downtime_cost
-            or scenario.cost_toggles_dict["OpportunityCosts"]["mr_downtime_oppy_cost"]
+            or scenario.cost_toggles.mr_downtime_oppy_cost
         ):
             self.set_mr_downtime_cost(
                 year_number=year_number, vehicle=vehicle, scenario=scenario
@@ -103,12 +103,7 @@ class OpportunityCosts:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data.
         """
-        df_veh_wt = pd.read_csv(
-            (
-                Path(scenario.plf_weight_distribution_file).resolve(strict=True)
-                if Path(scenario.plf_weight_distribution_file).is_absolute()
-                else gl.RESOURCES_FOLDERPATH / scenario.plf_weight_distribution_file
-            ),
+        df_veh_wt = pd.read_csv(get_path_object(scenario.plf_weight_distribution_file),
             index_col=0,
         )
 
@@ -155,12 +150,7 @@ class OpportunityCosts:
             ).T
             if verbose:
                 probability_payload.to_csv(
-                    (
-                        Path(scenario.plf_weight_distribution_file).resolve(strict=True)
-                        if Path(scenario.plf_weight_distribution_file).is_absolute()
-                        else gl.RESOURCES_FOLDERPATH
-                        / scenario.plf_weight_distribution_file
-                    ).parents[0]
+                    get_path_object(scenario.plf_weight_distribution_file).parents[0]
                     / "payload_pdf.csv"
                 )
             normalization_factor = probability_payload[

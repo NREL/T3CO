@@ -41,7 +41,7 @@ class CapitalCosts:
             scenario (Scenario): The scenario instance containing configuration data.
             msrp_total_dol (float, optional): MSRP in dollars as input
         """
-        if scenario.cost_toggles_dict["CapitalCosts"]["msrp"]:
+        if scenario.cost_toggles.msrp:
             if not msrp_total_dol and vehicle:
                 self.set_glider_cost(scenario=scenario)
                 self.set_fuel_converter_cost_dol(vehicle=vehicle, scenario=scenario)
@@ -55,11 +55,11 @@ class CapitalCosts:
             else:
                 self.msrp_total_dol = msrp_total_dol
 
-        if scenario.cost_toggles_dict["CapitalCosts"]["purchase_tax"]:
+        if scenario.cost_toggles.purchase_tax:
             self.set_purchase_tax(scenario=scenario)
-        if scenario.cost_toggles_dict["CapitalCosts"]["purchasing_downpayment"]:
+        if scenario.cost_toggles.purchasing_downpayment:
             self.set_downpayment(scenario=scenario)
-        if scenario.cost_toggles_dict["CapitalCosts"]["residual_cost"]:
+        if scenario.cost_toggles.residual_cost:
             self.set_residual_cost(scenario=scenario)
             self.set_disc_residual_cost(scenario=scenario)
 
