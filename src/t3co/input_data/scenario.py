@@ -4,8 +4,11 @@ from pathlib import Path
 
 import pandas as pd
 from typing import List, Union
-from typing_extensions import Self
-
+try:
+    from typing import Self  # Python 3.11+
+except ImportError:
+    from typing_extensions import Self  # Older versions of Python
+    
 from t3co.input_data.config import Config
 from t3co.utils.print_class_objects import handle_nan, remove_df_attrs
 from t3co.constants import Global as gl

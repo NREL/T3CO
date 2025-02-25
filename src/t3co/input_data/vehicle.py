@@ -1,8 +1,11 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Union
-from typing_extensions import Self
-
+try:
+    from typing import Self  # Python 3.11+
+except ImportError:
+    from typing_extensions import Self  # Older versions of Python
+    
 import pandas as pd
 
 from t3co.input_data.config import Config

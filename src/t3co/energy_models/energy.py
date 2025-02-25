@@ -2,7 +2,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Union
 
-from t3co.energy_models.fastsim_model.fastsim_wrapper import RunFastsim
+try:
+    from t3co.energy_models.fastsim_model.fastsim_wrapper import RunFastsim
+    fastsim_installed = True
+except ImportError:
+    fastsim_installed = False
+except AttributeError:
+    fastsim_installed = False
+
 from t3co.input_data.scenario import Scenario
 from t3co.constants import Global as gl
 
