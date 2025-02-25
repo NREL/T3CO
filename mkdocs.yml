@@ -53,7 +53,8 @@ nav:
     - Home: index.md
     - Installation: installation.md
     - Quick Start: quick_start.md
-    - Overview: T3CO_Overview.md
+    - Overview: t3co_overview.md
+    - Costs and Features: pages/cost_and_tool_features.md
     - Inputs: 
       - Vehicle: pages/vehicle_inputs_descriptions.md
       - Scenario: pages/scenario_inputs_descriptions.md
@@ -62,21 +63,22 @@ nav:
       - Ledger: pages/ledger_outputs_descriptions.md
     - API Reference: 
       - Input Data Module:
-        - Vehicle: pages/api_reference/vehicle.md
-        - Scenario: pages/api_reference/scenario.md
-        - Config: pages/api_reference/config.md  
+        - Vehicle: pages/api/vehicle.md
+        - Scenario: pages/api/scenario.md
+        - Config: pages/api/config.md  
       - Energy Module:
-        - Energy: pages/api_reference/energy.md
-        - FASTSim Wrapper: pages/api_reference/fastsim_wrapper.md
+        - Energy: pages/api/energy.md
+        - FASTSim Wrapper: pages/api/fastsim_wrapper.md
       - Cost Module:
-        - Capital Costs: pages/api_reference/capital_costs.md
-        - Operating Costs: pages/api_reference/operating_costs.md
-        - Opportunity Costs: pages/api_reference/opportunity_costs.md
+        - Capital Costs: pages/api/capital_costs.md
+        - Operating Costs: pages/api/operating_costs.md
+        - Opportunity Costs: pages/api/opportunity_costs.md
       - TCO Module:
-        - TCO Calc Per Year: pages/api_reference/tcocalc.md
-        - Ledger: pages/api_reference/ledger.md
+        - TCO Calc Per Year: pages/api/tcocalc.md
+        - Ledger: pages/api/ledger.md
       - CLI Module:
-        - Sweep: pages/api_reference/sweep.md
+        - Sweep: pages/api/sweep.md
       - Utility Module:
-        - Demo Files Installer: pages/api_reference/demo_files_installer.md
-        - Print Class Objects: pages/api_reference/print_class_objects.md
+        - Demo Files Installer: pages/api/demo_files_installer.md
+        - Print Class Objects: pages/api/print_class_objects.md
+
