@@ -55,6 +55,11 @@ theme:
     - content.code.copy
     - navigation.path
     - content.tooltips
+    - navigation.path
+    - navigation.sections
+    - toc.integrate 
+    - navigation.top
+    - header.autohide
 
   icon:
     repo: fontawesome/brands/github
@@ -66,30 +71,30 @@ nav:
     - Installation: installation.md
     - Quick Start: quick_start.md
     - Overview: t3co_overview.md
+    - Costs and Features: pages/cost_and_tool_features.md
     - Inputs: 
       - Vehicle: pages/vehicle_inputs_descriptions.md
       - Scenario: pages/scenario_inputs_descriptions.md
       - Config: pages/config_inputs_descriptions.md
-    - Costs and Features: t3co_features.md
     - Outputs:
       - Ledger: pages/ledger_outputs_descriptions.md
     - API Reference: 
-      - Input Data SubModules:
-        - Vehicle: pages/vehicle.md
-        - Scenario: pages/scenario.md
-        - Config: pages/config.md  
-      - Energy SubModules:
-        - Energy: pages/energy.md
-        - FASTSim Wrapper: pages/fastsim_wrapper.md
-      - Cost SubModules:
-        - Capital Costs: pages/capital_costs.md
-        - Operating Costs: pages/operating_costs.md
-        - Opportunity Costs: pages/opportunity_costs.md
-      - TCO SubModules:
-        - TCO Calc Per Year: pages/tcocalc.md
-        - Ledger: pages/ledger.md
-      - CLI SubModules:
-        - Sweep: pages/sweep.md
-      - Utility SubModules:
-        - Demo Files Installer: pages/demo_files_installer.md
-        - Print Class Objects: pages/print_class_objects.md
+      - Input Data Module:
+        - Vehicle: pages/api/vehicle.md
+        - Scenario: pages/api/scenario.md
+        - Config: pages/api/config.md  
+      - Energy Module:
+        - Energy: pages/api/energy.md
+        - FASTSim Wrapper: pages/api/fastsim_wrapper.md
+      - Cost Module:
+        - Capital Costs: pages/api/capital_costs.md
+        - Operating Costs: pages/api/operating_costs.md
+        - Opportunity Costs: pages/api/opportunity_costs.md
+      - TCO Module:
+        - TCO Calc Per Year: pages/api/tcocalc.md
+        - Ledger: pages/api/ledger.md
+      - CLI Module:
+        - Sweep: pages/api/sweep.md
+      - Utility Module:
+        - Demo Files Installer: pages/api/demo_files_installer.md
+        - Print Class Objects: pages/api/print_class_objects.md
