@@ -2,17 +2,17 @@ from __future__ import annotations
 
 import ast
 from math import ceil
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from scipy.stats import gaussian_kde
 from scipy.integrate import trapezoid
+from scipy.stats import gaussian_kde
+
 from t3co.constants import Global as gl
 from t3co.energy_models.energy import Energy
 from t3co.input_data.scenario import Scenario
 from t3co.input_data.vehicle import Vehicle
-from t3co.utils.print_class_objects import obj_to_string
+from t3co.utils.print_class_objects import get_path_object, obj_to_string
 
 
 class OpportunityCosts:
@@ -51,17 +51,27 @@ class OpportunityCosts:
             scenario (Scenario): The scenario instance containing configuration data.
             energy (Energy): The energy model instance.
         """
-        if year_number == 1 and scenario.activate_tco_payload_cap_cost_multiplier:
+        if year_number == 1 and (
+            scenario.activate_tco_payload_cap_cost_multiplier
+            or scenario.cost_toggles.payload_oppy_cost
+        ):
             self.set_payload_cap_cost_multiplier(vehicle=vehicle, scenario=scenario)
 
-        if scenario.activate_tco_fueling_dwell_time_cost:
+        if (
+            scenario.activate_tco_fueling_dwell_time_cost
+            or scenario.cost_toggles.fueling_dwell_oppy_cost
+            or scenario.cost_toggles.fueling_dwell_labor
+        ):
             self.set_fueling_dwell_time_cost(
                 year_number=year_number,
                 vehicle=vehicle,
                 scenario=scenario,
                 energy=energy,
             )
-        if scenario.activate_mr_downtime_cost:
+        if (
+            scenario.activate_mr_downtime_cost
+            or scenario.cost_toggles.mr_downtime_oppy_cost
+        ):
             self.set_mr_downtime_cost(
                 year_number=year_number, vehicle=vehicle, scenario=scenario
             )
@@ -95,11 +105,7 @@ class OpportunityCosts:
             scenario (Scenario): The scenario instance containing configuration data.
         """
         df_veh_wt = pd.read_csv(
-            (
-                Path(scenario.plf_weight_distribution_file).resolve(strict=True)
-                if Path(scenario.plf_weight_distribution_file).is_absolute()
-                else gl.RESOURCES_FOLDERPATH / scenario.plf_weight_distribution_file
-            ),
+            get_path_object(scenario.plf_weight_distribution_file),
             index_col=0,
         )
 
@@ -146,12 +152,7 @@ class OpportunityCosts:
             ).T
             if verbose:
                 probability_payload.to_csv(
-                    (
-                        Path(scenario.plf_weight_distribution_file).resolve(strict=True)
-                        if Path(scenario.plf_weight_distribution_file).is_absolute()
-                        else gl.RESOURCES_FOLDERPATH
-                        / scenario.plf_weight_distribution_file
-                    ).parents[0]
+                    get_path_object(scenario.plf_weight_distribution_file).parents[0]
                     / "payload_pdf.csv"
                 )
             normalization_factor = probability_payload[
@@ -264,15 +265,6 @@ class OpportunityCosts:
             )
         else:
             self.shifts_per_year = scenario.shifts_per_year[year_number - 1]
-
-        # dwellparams = np.array(
-        #     [
-        #         scenario.fdt_dwpt_fraction_power_pct,
-        #         scenario.fdt_frac_full_charge_bounds,
-        #         scenario.fdt_avg_overhead_hr_per_dwell_hr,
-        #         scenario.downtime_oppy_cost_dol_per_hr,
-        #     ]
-        # )
 
         if vehicle.veh_pt_type in ["BEV"]:
             self.fdt_full_dwell_hr = (1 - scenario.fdt_dwpt_fraction_power_pct) * (

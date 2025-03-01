@@ -1,11 +1,17 @@
+import os
+
+import pandas as pd
 import pytest
-from t3co.cost_models.operating_costs import OperatingCosts
+
 from t3co.cost_models.capital_costs import CapitalCosts
+from t3co.cost_models.operating_costs import OperatingCosts
 from t3co.cost_models.opportunity_costs import OpportunityCosts
 from t3co.energy_models.energy import Energy
-from t3co.input_data.vehicle import Vehicle
 from t3co.input_data.scenario import Scenario
-import pandas as pd
+from t3co.input_data.toggles import Toggles
+from t3co.input_data.vehicle import Vehicle
+
+os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
 
 
 @pytest.fixture
@@ -23,7 +29,27 @@ def vehicle():
 
 
 @pytest.fixture
-def scenario():
+def toggles():
+    return Toggles(
+        msrp=True,
+        purchase_tax=True,
+        purchasing_downpayment=True,
+        mark_up=True,
+        residual_cost=True,
+        fuel_cost=True,
+        maintenance_oper_cost=True,
+        insurance_cost=True,
+        purchasing_cost=True,
+        fueling_dwell_labor=True,
+        payload_oppy_cost=False,
+        fueling_dwell_oppy_cost=False,
+        mr_downtime_oppy_cost=False,
+        run_fastsim=True,
+    )
+
+
+@pytest.fixture
+def scenario(toggles):
     return Scenario(
         vehicle_glider_cost_dol=10000.0,
         fc_fuelcell_cost_dol_per_kw=200.0,
@@ -78,6 +104,7 @@ def scenario():
                 "2029": [0.1],
             }
         ),
+        cost_toggles=toggles,
     )
 
 
@@ -111,6 +138,7 @@ def test_operating_costs_initialization(
 ):
     scenario.fuel_prices_df.set_index("Fuel", inplace=True)
 
+    print(f"scenario.cost_toggles: {scenario.cost_toggles}")
     operating_costs = OperatingCosts(
         year_number=1,
         cap_costs=cap_costs,
@@ -269,6 +297,7 @@ def test_set_purchasing_payment_cost_lease(scenario, cap_costs):
 
 def test_set_net_oper_cost(vehicle, scenario, energy, cap_costs, oppy_costs):
     scenario.fuel_prices_df.set_index("Fuel", inplace=True)
+
     operating_costs = OperatingCosts.__new__(
         OperatingCosts,
         year_number=1,

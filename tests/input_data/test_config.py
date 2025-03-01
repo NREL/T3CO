@@ -1,7 +1,7 @@
-import pytest
-from t3co.input_data.config import Config
-from pathlib import Path
 import pandas as pd
+import pytest
+
+from t3co.input_data.config import Config
 
 
 @pytest.fixture

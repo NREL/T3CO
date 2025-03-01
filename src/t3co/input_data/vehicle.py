@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Union
@@ -9,7 +11,7 @@ except ImportError:
 import pandas as pd
 
 from t3co.input_data.config import Config
-from t3co.utils.print_class_objects import handle_nan, remove_df_attrs
+from t3co.utils.print_class_objects import get_path_object, handle_nan, remove_df_attrs
 
 
 @dataclass
@@ -36,7 +38,7 @@ class Vehicle:
 
     def __new__(cls, *args, **kwargs):
         """
-        Creates a new instance of the OpportunityCosts class.
+        Creates a new instance of the Vehicle class.
         """
         instance = super(Vehicle, cls).__new__(cls)
         return instance
@@ -67,12 +69,7 @@ class Vehicle:
         Returns:
             Self: An instance of the Vehicle class.
         """
-        vehicle_db_df = pd.read_csv(
-            (
-                Path(vehicle_db_file).resolve(strict=True)
-                if Path(vehicle_db_file).is_absolute()
-                else Path(__file__).parents[1] / "resources" / vehicle_db_file
-            ),
+        vehicle_db_df = pd.read_csv(get_path_object(vehicle_db_file),
             usecols=lambda x: x in cls.__annotations__.keys(),
         )
         vehicle_dict = vehicle_db_df.loc[

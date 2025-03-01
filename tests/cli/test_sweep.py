@@ -1,21 +1,21 @@
-import pytest
 from pathlib import Path
+
+import pandas as pd
+import pytest
+
 from t3co.cli.sweep import (
-    load_vehicle_scenario_energy,
-    generate_ledger,
     create_results_filepath,
     export_results_to_csv,
+    generate_ledger,
+    load_vehicle_scenario_energy,
     run_t3co,
 )
-from t3co.input_data.config import Config
-from t3co.input_data.vehicle import Vehicle
-from t3co.input_data.scenario import Scenario
-from t3co.energy_models.energy import Energy
-from t3co.tco.ledger import Ledger
-import pandas as pd
-import time
-import json
 from t3co.constants import Global as gl
+from t3co.energy_models.energy import Energy
+from t3co.input_data.config import Config
+from t3co.input_data.scenario import Scenario
+from t3co.input_data.toggles import Toggles
+from t3co.input_data.vehicle import Vehicle
 
 
 @pytest.fixture
@@ -26,7 +26,27 @@ def vehicle(config):
 
 
 @pytest.fixture
-def scenario(config):
+def toggles():
+    return Toggles(
+        msrp=True,
+        purchase_tax=True,
+        purchasing_downpayment=True,
+        mark_up=True,
+        residual_cost=True,
+        fuel_cost=True,
+        maintenance_oper_cost=True,
+        insurance_cost=True,
+        purchasing_cost=True,
+        fueling_dwell_labor=True,
+        payload_oppy_cost=True,
+        fueling_dwell_oppy_cost=True,
+        mr_downtime_oppy_cost=True,
+        run_fastsim=False,
+    )
+
+
+@pytest.fixture
+def scenario(config, toggles):
     scenario = Scenario.from_file(selection=1)
 
     scenario.fuel_prices_df = pd.DataFrame(
@@ -50,6 +70,7 @@ def scenario(config):
     # scenario.override_from_config(config=config)
     scenario.vehicle_life_yr = 4
     scenario.fuel_prices_df.set_index("Fuel", inplace=True)
+    scenario.cost_toggles = toggles
     return scenario
 
 
@@ -60,7 +81,7 @@ def energy(scenario, config):
 
 
 @pytest.fixture
-def config():
+def config(toggles):
     config = Config()
     config.from_file()
     config.check_drivecycles_and_create_selections()
@@ -72,6 +93,7 @@ def config():
     config.aero_drag_imp_curves = gl.RESOURCES_FOLDERPATH / config.aero_drag_imp_curves
     config.resfile_suffix = "_test_suffix"
     config.selections_list = [1]
+    config.cost_toggles = toggles
     return config
 
 

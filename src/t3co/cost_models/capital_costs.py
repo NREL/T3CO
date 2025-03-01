@@ -1,7 +1,4 @@
-from pathlib import Path
-
 import numpy as np
-import pandas as pd
 
 from t3co.constants import Global as gl
 from t3co.input_data.scenario import Scenario
@@ -39,23 +36,30 @@ class CapitalCosts:
         Args:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data.
-            msrp_total_dol (float, optional): MSRP in dollars as input
+            msrp_total_dol (float, optional): MSRP in dollars as input.
         """
-        if not msrp_total_dol and vehicle:
-            self.set_glider_cost(scenario=scenario)
-            self.set_fuel_converter_cost_dol(vehicle=vehicle, scenario=scenario)
-            self.set_fuel_storage_cost(vehicle=vehicle, scenario=scenario)
-            self.set_motor_control_power_elecs_cost(vehicle=vehicle, scenario=scenario)
-            self.set_plug_cost(vehicle=vehicle, scenario=scenario)
-            self.set_battery_cost(vehicle=vehicle, scenario=scenario)
-            self.set_msrp()
-        else:
-            self.msrp_total_dol = msrp_total_dol
+        if scenario.cost_toggles.msrp:
+            if not msrp_total_dol and vehicle:
+                self.set_glider_cost(scenario=scenario)
+                self.set_fuel_converter_cost_dol(vehicle=vehicle, scenario=scenario)
+                self.set_fuel_storage_cost(vehicle=vehicle, scenario=scenario)
+                self.set_motor_control_power_elecs_cost(
+                    vehicle=vehicle, scenario=scenario
+                )
+                self.set_plug_cost(vehicle=vehicle, scenario=scenario)
+                self.set_battery_cost(vehicle=vehicle, scenario=scenario)
+                self.set_msrp()
+            else:
+                self.msrp_total_dol = msrp_total_dol
 
-        self.set_purchase_tax(scenario=scenario)
-        self.set_downpayment(scenario=scenario)
-        self.set_residual_cost(scenario=scenario)
-        self.set_disc_residual_cost(scenario=scenario)
+        if scenario.cost_toggles.purchase_tax:
+            self.set_purchase_tax(scenario=scenario)
+        if scenario.cost_toggles.purchasing_downpayment:
+            self.set_downpayment(scenario=scenario)
+        if scenario.cost_toggles.residual_cost:
+            self.set_residual_cost(scenario=scenario)
+            self.set_disc_residual_cost(scenario=scenario)
+
         self.set_net_capital_cost()
 
     def set_glider_cost(self, scenario: Scenario) -> None:

@@ -1,18 +1,16 @@
-import pytest
-from pathlib import Path
-import os
 import shutil
-from t3co.utils.demo_inputs_installer import main, copy_demo_input_files
-import tempfile
 import subprocess
+import tempfile
+from pathlib import Path
+
+from t3co.utils.demo_inputs_installer import copy_demo_input_files, main
+
 
 def test_install_t3co_demo_inputs():
     # Create a temporary directory to act as the destination for demo input files
     with tempfile.TemporaryDirectory() as temp_dir:
         # Define the command to run the script
-        command = [
-            "install_t3co_demo_inputs"
-        ]
+        command = ["install_t3co_demo_inputs"]
 
         # Use subprocess to run the command
         process = subprocess.Popen(
@@ -20,14 +18,17 @@ def test_install_t3co_demo_inputs():
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True
+            text=True,
         )
 
         # Simulate user input for the script
         stdout, stderr = process.communicate(input=f"y\n{temp_dir}\n")
 
         # Check the output and error streams
-        assert "Do you want to copy the t3co demo input files? (y/n): Enter the path where you want to copy demo input files: " in stdout
+        assert (
+            "Do you want to copy the t3co demo input files? (y/n): Enter the path where you want to copy demo input files: "
+            in stdout
+        )
         assert process.returncode == 0
 
         # Verify that the demo input files were copied to the temporary directory
@@ -37,6 +38,7 @@ def test_install_t3co_demo_inputs():
 
         # Clean up the temporary directory
         shutil.rmtree(temp_dir)
+
 
 def test_main_copy_files(mocker):
     mocker.patch("builtins.input", side_effect=["y", "/path/to/destination"])

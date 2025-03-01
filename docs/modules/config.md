@@ -111,7 +111,7 @@ Checks if the config.drive_cycle input is a file or a folder. If a folder is pro
 def read_auxiliary_files() -> None
 ```
 
-Reads auxiliary files such as fuel prices and residual rates.
+Reads auxiliary files such as fuel prices and cost toggles
 
 <a id="t3co/input_data/config.Config.delete_dataframes"></a>
 

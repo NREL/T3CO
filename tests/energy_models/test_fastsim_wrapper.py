@@ -1,13 +1,13 @@
-import os
 import pytest
-from pathlib import Path
-from t3co.input_data.scenario import Scenario
-import numpy as np
+
 from t3co.constants import Global as gl
+from t3co.input_data.scenario import Scenario
 
 try:
     import fastsim
+
     from t3co.energy_models.fastsim_model.fastsim_wrapper import RunFastsim
+
     fastsim_installed = True
 except ImportError:
     fastsim_installed = False
@@ -44,11 +44,9 @@ def scenario():
 
 
 @pytest.fixture
-@pytest.mark.skipif(
-    not fastsim_installed, 
-    reason="fastsim extra not installed"
-)
 def fastsim_vehicle():
+    if not fastsim_installed:
+        pytest.skip("fastsim extra not installed")
     return fastsim.vehicle.Vehicle.from_vehdb(
         1,
         gl.RESOURCES_FOLDERPATH / "inputs" / "Demo_FY22_vehicle_model_assumptions.csv",
@@ -57,20 +55,17 @@ def fastsim_vehicle():
 
 
 @pytest.fixture
-@pytest.mark.skipif(
-    not fastsim_installed, 
-    reason="fastsim extra not installed"
-)
 def fastsim_cycle():
+    if not fastsim_installed:
+        pytest.skip("fastsim extra not installed")
     return fastsim.cycle.Cycle.from_file(
         gl.RESOURCES_FOLDERPATH / "cycles" / "EPA_Ph2_urban_highway_55mph.csv"
     )
 
-@pytest.mark.skipif(
-    not fastsim_installed, 
-    reason="fastsim extra not installed"
-)
+
 def test_run_fastsim_initialization(scenario, fastsim_vehicle, fastsim_cycle, mocker):
+    if not fastsim_installed:
+        pytest.skip("fastsim extra not installed")
     mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
     mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
 
@@ -79,11 +74,10 @@ def test_run_fastsim_initialization(scenario, fastsim_vehicle, fastsim_cycle, mo
     assert run_fastsim.cycles == fastsim_cycle
     # assert run_fastsim.mpgge == pytest.approx(fastsim_cycle.mpgge, 0.01)
 
-@pytest.mark.skipif(
-    not fastsim_installed, 
-    reason="fastsim extra not installed"
-)
+
 def test_load_vehicle(scenario, fastsim_vehicle, mocker):
+    if not fastsim_installed:
+        pytest.skip("fastsim extra not installed")
     mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
 
     run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
@@ -96,11 +90,10 @@ def test_load_vehicle(scenario, fastsim_vehicle, mocker):
     )
     assert run_fastsim.vehicle == fastsim_vehicle
 
-@pytest.mark.skipif(
-    not fastsim_installed, 
-    reason="fastsim extra not installed"
-)
+
 def test_load_design_cycle_from_scenario(scenario, fastsim_cycle, mocker):
+    if not fastsim_installed:
+        pytest.skip("fastsim extra not installed")
     mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
 
     run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
@@ -109,11 +102,10 @@ def test_load_design_cycle_from_scenario(scenario, fastsim_cycle, mocker):
     )
     assert cycles == fastsim_cycle
 
-@pytest.mark.skipif(
-    not fastsim_installed, 
-    reason="fastsim extra not installed"
-)
+
 def test_get_simdrive(scenario, fastsim_vehicle, fastsim_cycle, mocker):
+    if not fastsim_installed:
+        pytest.skip("fastsim extra not installed")
     mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
     mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
 
@@ -121,11 +113,10 @@ def test_get_simdrive(scenario, fastsim_vehicle, fastsim_cycle, mocker):
     simdrive = run_fastsim.get_simdrive(cycle=fastsim_cycle)
     assert isinstance(simdrive, fastsim.fastsimrust.RustSimDrive)
 
-@pytest.mark.skipif(
-    not fastsim_installed, 
-    reason="fastsim extra not installed"
-)
+
 def test_get_range(scenario, fastsim_vehicle, fastsim_cycle, mocker):
+    if not fastsim_installed:
+        pytest.skip("fastsim extra not installed")
     mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
     mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
 

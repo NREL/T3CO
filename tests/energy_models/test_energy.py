@@ -1,4 +1,5 @@
 import pytest
+
 from t3co.energy_models.energy import Energy
 
 

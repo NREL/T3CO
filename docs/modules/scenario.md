@@ -4,6 +4,7 @@
   * [Scenario](#t3co/input_data/scenario.Scenario)
     * [\_\_new\_\_](#t3co/input_data/scenario.Scenario.__new__)
     * [from\_file](#t3co/input_data/scenario.Scenario.from_file)
+    * [from\_dict](#t3co/input_data/scenario.Scenario.from_dict)
     * [override\_from\_config](#t3co/input_data/scenario.Scenario.override_from_config)
     * [get\_discounted\_value](#t3co/input_data/scenario.Scenario.get_discounted_value)
     * [delete\_dataframes](#t3co/input_data/scenario.Scenario.delete_dataframes)
@@ -54,6 +55,25 @@ Creates a Scenario instance from a CSV file.
 
 - `selection` _int_ - The selection index to filter the scenario data.
 - `scenario_file` _Union[str, Path]_ - Path to the scenario CSV file.
+  
+
+**Returns**:
+
+- `Scenario` - An instance of the Scenario class.
+
+<a id="t3co/input_data/scenario.Scenario.from_dict"></a>
+
+#### from\_dict
+
+```python
+def from_dict(cls, scenario_dict: dict)
+```
+
+Creates a Scenario instance from a dictionary.
+
+**Arguments**:
+
+- `scenario_dict` _dict_ - Dictionary containing scenario data.
   
 
 **Returns**:

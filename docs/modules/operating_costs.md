@@ -56,8 +56,8 @@ Initializes the OperatingCosts instance.
 - `cap_costs` _CapitalCosts_ - The capital costs associated with the vehicle.
 - `vehicle` _Vehicle_ - The vehicle instance.
 - `scenario` _Scenario_ - The scenario instance containing configuration data.
-- `energy` _Energy_ - The energy model instance.
-- `oppy_costs` _OpportunityCosts_ - The opportunity costs associated with the vehicle.
+- `energy` _Energy, optional_ - The energy model instance. Defaults to None.
+- `oppy_costs` _OpportunityCosts, optional_ - The opportunity costs associated with the vehicle. Defaults to None.
 
 <a id="t3co/cost_models/operating_costs.OperatingCosts.set_fuel_cost"></a>
 

@@ -1,30 +1,17 @@
-import json
-from collections import OrderedDict
 from pathlib import Path
-from typing import List
 
 import pandas as pd
-import pytest
 
-from t3co.utils.print_class_objects import custom_default, handle_nan, obj_to_string, remove_df_attrs, to_flat_dict
-
-# Import the functions from your module. Adjust the import path as needed.
-# For example, if your module is named `utilities.py`:
-# from utilities import (
-#     obj_to_string,
-#     handle_nan,
-#     custom_default,
-#     to_flat_dict,
-#     remove_df_attrs,
-# )
-
-# For demonstration purposes, we assume the functions are defined in this file.
-# (Replace the definitions below with your actual module imports.)
-# -----------------------------------------------------------------------------
-# (Place your utility functions here or import them as shown above.)
-# -----------------------------------------------------------------------------
+from t3co.utils.print_class_objects import (
+    custom_default,
+    handle_nan,
+    obj_to_string,
+    remove_df_attrs,
+    to_flat_dict,
+)
 
 # Create some dummy classes to test object serialization and flattening.
+
 
 class SimpleObject:
     a: int
@@ -59,6 +46,7 @@ class OuterObject:
 # Tests for obj_to_string
 # ============================
 
+
 def test_obj_to_string_single_object():
     obj = SimpleObject(1, "test")
     result = obj_to_string(obj)
@@ -85,6 +73,7 @@ def test_obj_to_string_list():
 # Tests for handle_nan
 # ============================
 
+
 def test_handle_nan_float():
     nan_val = float("nan")
     result = handle_nan(nan_val)
@@ -109,6 +98,7 @@ def test_handle_nan_list():
 # ============================
 # Tests for custom_default
 # ============================
+
 
 def test_custom_default_path(tmp_path: Path):
     # tmp_path is a built-in pytest fixture that gives a temporary directory as a Path object.
@@ -138,6 +128,7 @@ def test_custom_default_object():
 # Tests for to_flat_dict
 # ============================
 
+
 def test_to_flat_dict_with_nested_object():
     nested = NestedObject(100, "hello")
     outer = OuterObject(nested, 42)
@@ -163,8 +154,8 @@ def test_to_flat_dict_without_prefix():
     outer = OuterObject(nested, 99)
     flat = to_flat_dict(outer, include_prefix=False)
     expected = {
-        "nested_x": 5,
-        "nested_y": "test",
+        "x": 5,
+        "y": "test",
         "c": 99,
         "dynamic": "extra",
     }
@@ -176,6 +167,7 @@ def test_to_flat_dict_without_prefix():
 # ============================
 # Tests for remove_df_attrs
 # ============================
+
 
 def test_remove_df_attrs():
     class DataHolder:

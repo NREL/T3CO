@@ -1,10 +1,9 @@
 import ast
-import sys
 from pathlib import Path
+from typing import List, Union
 
 import fastsim
 import numpy as np
-from typing import List, Union
 
 from t3co.constants import Global as gl
 from t3co.input_data.scenario import Scenario
