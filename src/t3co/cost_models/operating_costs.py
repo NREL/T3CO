@@ -1,5 +1,4 @@
 import ast
-from pathlib import Path
 
 import pandas as pd
 
@@ -9,7 +8,7 @@ from t3co.cost_models.opportunity_costs import OpportunityCosts
 from t3co.energy_models.energy import Energy
 from t3co.input_data.scenario import Scenario
 from t3co.input_data.vehicle import Vehicle
-from t3co.utils.print_class_objects import obj_to_string, get_path_object
+from t3co.utils.print_class_objects import get_path_object, obj_to_string
 
 
 class OperatingCosts:
@@ -120,7 +119,9 @@ class OperatingCosts:
             scenario (Scenario): The scenario instance containing configuration data.
         """
         if scenario.fuel_prices_df is None:
-            scenario.fuel_prices_df = pd.read_csv(get_path_object(scenario.fuel_prices_file))
+            scenario.fuel_prices_df = pd.read_csv(
+                get_path_object(scenario.fuel_prices_file)
+            )
             scenario.fuel_prices_df.set_index("Fuel", inplace=True)
 
         scenario.fuel_prices_df = scenario.fuel_prices_df[

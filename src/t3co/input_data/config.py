@@ -1,8 +1,7 @@
 import ast
-from dataclasses import dataclass, field
-import json
-from pathlib import Path
 import sys
+from dataclasses import dataclass, field
+from pathlib import Path
 
 from t3co.input_data.toggles import Toggles
 
@@ -10,10 +9,12 @@ try:
     from typing import Self  # Python 3.11+
 except ImportError:
     from typing_extensions import Self  # Older versions of Python
-    
+
 from typing import Union
+
 import numpy as np
 import pandas as pd
+
 import t3co.constants.Global as gl
 from t3co.utils.print_class_objects import get_path_object, remove_df_attrs
 
@@ -46,7 +47,7 @@ class Config:
 
     TCO_method: str = "DIRECT"
     purchasing_method: str = "cash"
-    
+
     # Optimization
     algorithms: str = ""
     lw_imp_curves: str = ""
@@ -162,7 +163,7 @@ class Config:
         """
         if self.drive_cycle:
             self.drive_cycle = get_path_object(self.drive_cycle)
-            
+
             if Path(self.drive_cycle).is_dir():
                 self.dc_files = [
                     p.absolute() for p in Path(self.drive_cycle).rglob("*.csv")
@@ -185,7 +186,7 @@ class Config:
         self.fuel_prices_df = pd.read_csv(get_path_object(self.fuel_prices_file))
         self.fuel_prices_df.set_index("Fuel", inplace=True)
         self.cost_toggles = Toggles.from_json(get_path_object(self.cost_toggles_file))
-        
+
     def delete_dataframes(self) -> None:
         """
         Deletes DataFrame attributes from the Config instance.

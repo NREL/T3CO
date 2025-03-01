@@ -1,6 +1,8 @@
+from pathlib import Path
+
 import pandas as pd
 import pytest
-from pathlib import Path
+
 from t3co.input_data.config import Config
 from t3co.input_data.vehicle import Vehicle
 

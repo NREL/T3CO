@@ -1,14 +1,17 @@
-import json
-from collections import OrderedDict
 from pathlib import Path
-from typing import List
 
 import pandas as pd
-import pytest
 
-from t3co.utils.print_class_objects import custom_default, handle_nan, obj_to_string, remove_df_attrs, to_flat_dict
+from t3co.utils.print_class_objects import (
+    custom_default,
+    handle_nan,
+    obj_to_string,
+    remove_df_attrs,
+    to_flat_dict,
+)
 
 # Create some dummy classes to test object serialization and flattening.
+
 
 class SimpleObject:
     a: int
@@ -43,6 +46,7 @@ class OuterObject:
 # Tests for obj_to_string
 # ============================
 
+
 def test_obj_to_string_single_object():
     obj = SimpleObject(1, "test")
     result = obj_to_string(obj)
@@ -69,6 +73,7 @@ def test_obj_to_string_list():
 # Tests for handle_nan
 # ============================
 
+
 def test_handle_nan_float():
     nan_val = float("nan")
     result = handle_nan(nan_val)
@@ -93,6 +98,7 @@ def test_handle_nan_list():
 # ============================
 # Tests for custom_default
 # ============================
+
 
 def test_custom_default_path(tmp_path: Path):
     # tmp_path is a built-in pytest fixture that gives a temporary directory as a Path object.
@@ -121,6 +127,7 @@ def test_custom_default_object():
 # ============================
 # Tests for to_flat_dict
 # ============================
+
 
 def test_to_flat_dict_with_nested_object():
     nested = NestedObject(100, "hello")
@@ -160,6 +167,7 @@ def test_to_flat_dict_without_prefix():
 # ============================
 # Tests for remove_df_attrs
 # ============================
+
 
 def test_remove_df_attrs():
     class DataHolder:

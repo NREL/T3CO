@@ -1,17 +1,15 @@
-import pytest
-from t3co.input_data.toggles import Toggles
-from t3co.tco.ledger import Ledger
-from t3co.cost_models.capital_costs import CapitalCosts
-from t3co.cost_models.operating_costs import OperatingCosts
-from t3co.cost_models.opportunity_costs import OpportunityCosts
-from t3co.energy_models.energy import Energy
-from t3co.input_data.scenario import Scenario
-from t3co.input_data.vehicle import Vehicle
-from t3co.input_data.config import Config
-from t3co.tco.tcocalc import TCOCalc
-from pathlib import Path
 import json
+
 import pandas as pd
+import pytest
+
+from t3co.energy_models.energy import Energy
+from t3co.input_data.config import Config
+from t3co.input_data.scenario import Scenario
+from t3co.input_data.toggles import Toggles
+from t3co.input_data.vehicle import Vehicle
+from t3co.tco.ledger import Ledger
+from t3co.tco.tcocalc import TCOCalc
 
 
 @pytest.fixture
@@ -28,6 +26,7 @@ def vehicle():
     )
     vehicle.set_veh_kg()
     return vehicle
+
 
 @pytest.fixture
 def toggles():
@@ -113,7 +112,7 @@ def scenario(toggles):
                 "2029": [0.1],
             }
         ),
-        cost_toggles=toggles
+        cost_toggles=toggles,
     )
     scenario.fuel_prices_df.set_index("Fuel", inplace=True)
     return scenario

@@ -1,12 +1,14 @@
-import pytest
-from t3co.cost_models.capital_costs import CapitalCosts
-from t3co.input_data.toggles import Toggles
-from t3co.input_data.vehicle import Vehicle
-from t3co.input_data.scenario import Scenario
-import pandas as pd
 import os
 
+import pytest
+
+from t3co.cost_models.capital_costs import CapitalCosts
+from t3co.input_data.scenario import Scenario
+from t3co.input_data.toggles import Toggles
+from t3co.input_data.vehicle import Vehicle
+
 os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
+
 
 @pytest.fixture
 def vehicle():
@@ -18,6 +20,7 @@ def vehicle():
         ess_max_kwh=75.0,
         chg_eff=0.9,
     )
+
 
 @pytest.fixture
 def toggles():
@@ -63,7 +66,7 @@ def scenario(toggles):
         depreciation_rates_pct_per_yr=[0.09] * 10,
         vehicle_life_yr=10,
         discount_rate_pct_per_yr=0.05,
-        cost_toggles=toggles
+        cost_toggles=toggles,
     )
 
 

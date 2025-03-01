@@ -3,10 +3,8 @@ Global constants
 Stores paths to directories used for input files, as well as constants referenced throughout the code base
 """
 
-from pathlib import Path
-
 import os
-
+from pathlib import Path
 
 # ./t3co
 wkdir = Path(__file__).parent.parent
@@ -14,10 +12,10 @@ wkdir = Path(__file__).parent.parent
 SWEEP_PATH = Path(__file__).resolve().parents[1] / "cli" / "sweep.py"
 
 
-CONV = 'Conv'
-HEV = 'HEV' 
+CONV = "Conv"
+HEV = "HEV"
 # PHEV = vehicle.PHEV
-BEV = 'BEV'
+BEV = "BEV"
 
 maxGvwrKg = 0
 evGVWRAllowanceLbs = 0

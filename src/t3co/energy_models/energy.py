@@ -4,14 +4,15 @@ from typing import Union
 
 try:
     from t3co.energy_models.fastsim_model.fastsim_wrapper import RunFastsim
+
     fastsim_installed = True
 except ImportError:
     fastsim_installed = False
 except AttributeError:
     fastsim_installed = False
 
-from t3co.input_data.scenario import Scenario
 from t3co.constants import Global as gl
+from t3co.input_data.scenario import Scenario
 
 
 @dataclass

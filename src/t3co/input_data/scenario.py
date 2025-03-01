@@ -3,19 +3,20 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass, field
 from pathlib import Path
-
-import pandas as pd
 from typing import List, Union
 
+import pandas as pd
+
 from t3co.input_data.toggles import Toggles
+
 try:
     from typing import Self  # Python 3.11+
 except ImportError:
     from typing_extensions import Self  # Older versions of Python
-    
+
+from t3co.constants import Global as gl
 from t3co.input_data.config import Config
 from t3co.utils.print_class_objects import get_path_object, handle_nan, remove_df_attrs
-from t3co.constants import Global as gl
 
 
 @dataclass
@@ -148,7 +149,7 @@ class Scenario:
     mpgge: float = 0.0
     primary_fuel_range_mi: float = 0.0
 
-    cost_toggles_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH/"cost_toggles.json"
+    cost_toggles_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "cost_toggles.json"
     cost_toggles: Toggles = Toggles()
 
     def __new__(cls, *args, **kwargs):
@@ -263,7 +264,7 @@ class Scenario:
             "activate_tco_fueling_dwell_time_cost",
             "fdt_frac_full_charge_bounds",
             "activate_mr_downtime_cost",
-            "cost_toggles_file"
+            "cost_toggles_file",
         ]
         try:
             if config.dc_files is None:
@@ -296,10 +297,12 @@ class Scenario:
             self.purchasing_method = "lease"
         else:
             self.purchasing_method = "cash"
-        
+
         if not config.cost_toggles:
             self.cost_toggles_file = get_path_object(self.cost_toggles_file)
-            self.cost_toggles = Toggles.from_json(cost_toggles_file=gl.RESOURCES_FOLDERPATH/self.cost_toggles_file)
+            self.cost_toggles = Toggles.from_json(
+                cost_toggles_file=gl.RESOURCES_FOLDERPATH / self.cost_toggles_file
+            )
         elif config.cost_toggles_file:
             self.cost_toggles_file = config.cost_toggles_file
             self.cost_toggles = config.cost_toggles

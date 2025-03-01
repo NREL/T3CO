@@ -1,13 +1,13 @@
-import os
 import pytest
-from pathlib import Path
-from t3co.input_data.scenario import Scenario
-import numpy as np
+
 from t3co.constants import Global as gl
+from t3co.input_data.scenario import Scenario
 
 try:
     import fastsim
+
     from t3co.energy_models.fastsim_model.fastsim_wrapper import RunFastsim
+
     fastsim_installed = True
 except ImportError:
     fastsim_installed = False

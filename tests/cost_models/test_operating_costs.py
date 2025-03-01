@@ -1,15 +1,18 @@
-import pytest
-from t3co.cost_models.operating_costs import OperatingCosts
-from t3co.cost_models.capital_costs import CapitalCosts
-from t3co.cost_models.opportunity_costs import OpportunityCosts
-from t3co.energy_models.energy import Energy
-from t3co.input_data.vehicle import Vehicle
-from t3co.input_data.scenario import Scenario
-from t3co.input_data.toggles import Toggles
-import pandas as pd
 import os
 
+import pandas as pd
+import pytest
+
+from t3co.cost_models.capital_costs import CapitalCosts
+from t3co.cost_models.operating_costs import OperatingCosts
+from t3co.cost_models.opportunity_costs import OpportunityCosts
+from t3co.energy_models.energy import Energy
+from t3co.input_data.scenario import Scenario
+from t3co.input_data.toggles import Toggles
+from t3co.input_data.vehicle import Vehicle
+
 os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
+
 
 @pytest.fixture
 def vehicle():

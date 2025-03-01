@@ -6,7 +6,7 @@ import time
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
-from typing import Tuple, Union, List, Dict
+from typing import Dict, List, Tuple, Union
 
 import pandas as pd
 
@@ -58,7 +58,11 @@ def load_vehicle_scenario_energy(
 
     if energy:
         input_energy = energy
-    elif input_scenario.mpgge and input_scenario.primary_fuel_range_mi and not input_scenario.cost_toggles.run_fastsim:
+    elif (
+        input_scenario.mpgge
+        and input_scenario.primary_fuel_range_mi
+        and not input_scenario.cost_toggles.run_fastsim
+    ):
         input_energy = Energy(
             mpgge=float(input_scenario.mpgge),
             primary_fuel_range_mi=float(input_scenario.primary_fuel_range_mi),
@@ -118,7 +122,7 @@ def create_results_filepath(config: Config) -> Path:
             .replace(",", "-")
         )
         result_filename = f"results_{ts}_sel_{selections_string[:20]}.csv".strip("_")
-    output_path = get_path_object(config.dst_dir)/result_filename
+    output_path = get_path_object(config.dst_dir) / result_filename
 
     if not output_path.exists():
         output_path.parent.mkdir(parents=True, exist_ok=True)

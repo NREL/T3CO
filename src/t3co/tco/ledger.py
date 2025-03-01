@@ -1,9 +1,10 @@
-from collections import OrderedDict
 import json
+from collections import OrderedDict
 from pathlib import Path
 from typing import Union
-import numpy as np
+
 import pandas as pd
+
 from t3co.constants import Global as gl
 from t3co.energy_models.energy import Energy
 from t3co.input_data.config import Config
@@ -379,7 +380,12 @@ class Ledger:
             self.config.delete_dataframes()
 
         if flatten:
-            t3co_dict = to_flat_dict(self, include_prefix=include_prefix, delimiter="_", nested_attrs=['tco_per_year'])
+            t3co_dict = to_flat_dict(
+                self,
+                include_prefix=include_prefix,
+                delimiter="_",
+                nested_attrs=["tco_per_year"],
+            )
         else:
             cls = self.__class__
             field_order = list(cls.__annotations__.keys())
