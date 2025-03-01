@@ -379,7 +379,7 @@ class Ledger:
             self.config.delete_dataframes()
 
         if flatten:
-            t3co_dict = to_flat_dict(self, include_prefix=include_prefix, delimiter="_")
+            t3co_dict = to_flat_dict(self, include_prefix=include_prefix, delimiter="_", nested_attrs=['tco_per_year'])
         else:
             cls = self.__class__
             field_order = list(cls.__annotations__.keys())

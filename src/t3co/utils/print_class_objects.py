@@ -10,7 +10,8 @@ import t3co.constants.Global as gl
 
 def obj_to_string(obj: Union[object, List[object]], indent: str = "    ") -> str:
     """
-    Converts an object or list of objects to a formatted string representation.
+    Converts an object or list of objects to a formatted string representation
+    using a flattened dictionary view for objects with nested dictionaries.
 
     Args:
         obj (Union[object, List[object]]): The object or list of objects to convert.
@@ -24,21 +25,19 @@ def obj_to_string(obj: Union[object, List[object]], indent: str = "    ") -> str
             "[\n"
             + ",\n".join(
                 indent + obj_to_string(item, indent + "    ")
-                if hasattr(item, "__dict__")
-                else indent + str(item)
                 for item in obj
             )
             + "\n"
             + indent[:-4]
             + "]"
         )
-
+    elif isinstance(obj, dict):
+        # If already a dict, pretty-print it.
+        return json.dumps(obj, indent=4)
     elif hasattr(obj, "__dict__"):
-        return f"{obj.__class__.__name__}\n" + "\n".join(
-            f"{indent}{attr} = {obj_to_string(value, indent + '    ')}"
-            for attr, value in sorted(vars(obj).items())
-        )
-
+        # Use the flattened dict representation instead of pointer location.
+        flat_obj = to_flat_dict(obj)
+        return json.dumps(flat_obj, indent=4)
     return str(obj)
 
 
@@ -85,21 +84,25 @@ def custom_default(obj: Any) -> Union[None, dict, str]:
 
 
 def to_flat_dict(
-    obj: object, include_prefix: bool = True, prefix: str = "", delimiter: str = "_"
+    obj: object, include_prefix: bool = True, prefix: str = "", delimiter: str = "_", nested_attrs: List[str] = None
 ) -> dict:
     """
     Flattens a nested object into a dictionary while preserving the order of declared attributes.
+    Nested dictionaries and list items that are dict-like (or objects with __dict__)
+    are recursively flattened.
 
     Args:
         obj (object): The object to flatten.
         include_prefix (bool, optional): Whether to include the prefix in the keys. Defaults to True.
         prefix (str, optional): The prefix for the keys. Defaults to "".
         delimiter (str, optional): The delimiter for the keys. Defaults to "_".
+        nested_attrs (List[str], optional): List of attribute names to include as nested dictionaries. Defaults to None.
 
     Returns:
         dict: The flattened dictionary.
     """
     flat_dict = {}
+    nested_attrs = nested_attrs or []
 
     def flatten(item, current_prefix):
         """Recursively flattens attributes."""
@@ -107,26 +110,34 @@ def to_flat_dict(
             for key, value in item.items():
                 new_key = f"{current_prefix}{delimiter}{key}" if current_prefix else key
                 flatten(value, new_key if include_prefix else key)
+        elif isinstance(item, list):
+            # For lists, flatten each item if it is dict-like.
+            flat_list = []
+            for sub_item in item:
+                if isinstance(sub_item, dict) or hasattr(sub_item, "__dict__"):
+                    flat_list.append(to_flat_dict(sub_item, include_prefix, "", delimiter, nested_attrs))
+                else:
+                    flat_list.append(sub_item)
+            flat_dict[current_prefix] = flat_list
         elif hasattr(item, "__dict__"):
+            # If the item is an object, flatten its __dict__.
             flatten(vars(item), current_prefix)
         else:
             flat_dict[current_prefix] = item
 
     if hasattr(obj, "__dict__"):
-        # Extract attributes in the order they were declared
+        # Extract attributes in the order they were declared.
         cls = obj.__class__
         declared_attributes = list(getattr(cls, "__annotations__", {}).keys())
         instance_attributes = list(vars(obj).keys())
 
-        # Maintain order: declared first, then dynamically assigned attributes
+        # Maintain order: declared first, then dynamically assigned attributes.
         ordered_fields = OrderedDict.fromkeys(declared_attributes + instance_attributes)
 
-        # Create ordered dictionary of attributes
-        ordered_obj = OrderedDict(
-            (field, getattr(obj, field, None)) for field in ordered_fields
-        )
+        # Create ordered dictionary of attributes.
+        ordered_obj = OrderedDict((field, getattr(obj, field, None)) for field in ordered_fields)
 
-        # Flatten the object
+        # Flatten the ordered object.
         flatten(ordered_obj, prefix if include_prefix else "")
     else:
         flatten(obj, prefix if include_prefix else "")
@@ -141,7 +152,7 @@ def remove_df_attrs(obj: object) -> None:
     Args:
         obj (object): The object to process.
     """
-    for attr in list(vars(obj).keys()):  # Use `list()` to avoid modification issues
+    for attr in list(vars(obj).keys()):  # Use `list()` to avoid modification issues.
         if isinstance(getattr(obj, attr), pd.DataFrame):
             delattr(obj, attr)
 
