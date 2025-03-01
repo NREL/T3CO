@@ -36,7 +36,6 @@
   * [lbs\_to\_kgs](#t3co.constants.Global.lbs_to_kgs)
   * [not\_falsy](#t3co.constants.Global.not_falsy)
 * [t3co.constants](#t3co.constants)
-* [t3co.resources](#t3co.resources)
 * [t3co.energy\_models](#t3co.energy_models)
 * [t3co.energy\_models.energy](#t3co.energy_models.energy)
   * [Energy](#t3co.energy_models.energy.Energy)
@@ -79,10 +78,14 @@
     * [set\_veh\_kg](#t3co.input_data.vehicle.Vehicle.set_veh_kg)
     * [delete\_dataframes](#t3co.input_data.vehicle.Vehicle.delete_dataframes)
 * [t3co.input\_data](#t3co.input_data)
+* [t3co.input\_data.toggles](#t3co.input_data.toggles)
+  * [Toggles](#t3co.input_data.toggles.Toggles)
+    * [from\_json](#t3co.input_data.toggles.Toggles.from_json)
 * [t3co.input\_data.scenario](#t3co.input_data.scenario)
   * [Scenario](#t3co.input_data.scenario.Scenario)
     * [\_\_new\_\_](#t3co.input_data.scenario.Scenario.__new__)
     * [from\_file](#t3co.input_data.scenario.Scenario.from_file)
+    * [from\_dict](#t3co.input_data.scenario.Scenario.from_dict)
     * [override\_from\_config](#t3co.input_data.scenario.Scenario.override_from_config)
     * [get\_discounted\_value](#t3co.input_data.scenario.Scenario.get_discounted_value)
     * [delete\_dataframes](#t3co.input_data.scenario.Scenario.delete_dataframes)
@@ -560,10 +563,6 @@ This function returns True to verify that var is NOT falsy: not in [None, np.nan
 
 # t3co.constants
 
-<a id="t3co.resources"></a>
-
-# t3co.resources
-
 <a id="t3co.energy_models"></a>
 
 # t3co.energy\_models
@@ -988,7 +987,7 @@ Checks if the config.drive_cycle input is a file or a folder. If a folder is pro
 def read_auxiliary_files() -> None
 ```
 
-Reads auxiliary files such as fuel prices and residual rates.
+Reads auxiliary files such as fuel prices and cost toggles
 
 <a id="t3co.input_data.config.Config.delete_dataframes"></a>
 
@@ -1089,6 +1088,45 @@ Deletes DataFrame attributes from the Vehicle instance.
 
 # t3co.input\_data
 
+<a id="t3co.input_data.toggles"></a>
+
+# t3co.input\_data.toggles
+
+<a id="t3co.input_data.toggles.Toggles"></a>
+
+## Toggles Objects
+
+```python
+@dataclass
+class Toggles()
+```
+
+Class object that contains various toggles for TCO calculations.
+
+<a id="t3co.input_data.toggles.Toggles.from_json"></a>
+
+#### from\_json
+
+```python
+@classmethod
+def from_json(
+    cls,
+    cost_toggles_file: Path | str = gl.RESOURCES_FOLDERPATH /
+    "cost_toggles.json"
+) -> Self
+```
+
+Creates a Toggles instance from a JSON file.
+
+**Arguments**:
+
+- `cost_toggles_file` _Union[Path, str]_ - Path to the JSON file containing toggle settings.
+  
+
+**Returns**:
+
+- `Toggles` - An instance of the Toggles class.
+
 <a id="t3co.input_data.scenario"></a>
 
 # t3co.input\_data.scenario
@@ -1135,6 +1173,25 @@ Creates a Scenario instance from a CSV file.
 
 - `selection` _int_ - The selection index to filter the scenario data.
 - `scenario_file` _Union[str, Path]_ - Path to the scenario CSV file.
+  
+
+**Returns**:
+
+- `Scenario` - An instance of the Scenario class.
+
+<a id="t3co.input_data.scenario.Scenario.from_dict"></a>
+
+#### from\_dict
+
+```python
+def from_dict(cls, scenario_dict: dict)
+```
+
+Creates a Scenario instance from a dictionary.
+
+**Arguments**:
+
+- `scenario_dict` _dict_ - Dictionary containing scenario data.
   
 
 **Returns**:
@@ -1360,8 +1417,8 @@ Initializes the OperatingCosts instance.
 - `cap_costs` _CapitalCosts_ - The capital costs associated with the vehicle.
 - `vehicle` _Vehicle_ - The vehicle instance.
 - `scenario` _Scenario_ - The scenario instance containing configuration data.
-- `energy` _Energy_ - The energy model instance.
-- `oppy_costs` _OpportunityCosts_ - The opportunity costs associated with the vehicle.
+- `energy` _Energy, optional_ - The energy model instance. Defaults to None.
+- `oppy_costs` _OpportunityCosts, optional_ - The opportunity costs associated with the vehicle. Defaults to None.
 
 <a id="t3co.cost_models.operating_costs.OperatingCosts.set_fuel_cost"></a>
 
@@ -1831,7 +1888,7 @@ Initializes the CapitalCosts instance.
 
 - `vehicle` _Vehicle_ - The vehicle instance.
 - `scenario` _Scenario_ - The scenario instance containing configuration data.
-- `msrp_total_dol` _float, optional_ - MSRP in dollars as input
+- `msrp_total_dol` _float, optional_ - MSRP in dollars as input.
 
 <a id="t3co.cost_models.capital_costs.CapitalCosts.set_glider_cost"></a>
 

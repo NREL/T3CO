@@ -11,6 +11,7 @@ generate_pydocs:
 	pydoc-markdown -I ../src -m t3co/input_data/config --render-toc > modules/config.md
 	pydoc-markdown -I ../src -m t3co/input_data/scenario --render-toc > modules/scenario.md
 	pydoc-markdown -I ../src -m t3co/input_data/vehicle --render-toc > modules/vehicle.md
+	pydoc-markdown -I ../src -m t3co/input_data/toggles --render-toc > modules/toggles.md
 	pydoc-markdown -I ../src -m t3co/tco/ledger --render-toc > modules/ledger.md
 	pydoc-markdown -I ../src -m t3co/tco/tcocalc --render-toc > modules/tcocalc.md
 	pydoc-markdown -I ../src -m t3co/utils/demo_inputs_installer --render-toc > modules/demo_inputs_installer.md

@@ -56,7 +56,7 @@ Initializes the CapitalCosts instance.
 
 - `vehicle` _Vehicle_ - The vehicle instance.
 - `scenario` _Scenario_ - The scenario instance containing configuration data.
-- `msrp_total_dol` _float, optional_ - MSRP in dollars as input
+- `msrp_total_dol` _float, optional_ - MSRP in dollars as input.
 
 <a id="t3co/cost_models/capital_costs.CapitalCosts.set_glider_cost"></a>
 
