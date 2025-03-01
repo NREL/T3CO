@@ -23,10 +23,7 @@ def obj_to_string(obj: Union[object, List[object]], indent: str = "    ") -> str
     if isinstance(obj, list):
         return (
             "[\n"
-            + ",\n".join(
-                indent + obj_to_string(item, indent + "    ")
-                for item in obj
-            )
+            + ",\n".join(indent + obj_to_string(item, indent + "    ") for item in obj)
             + "\n"
             + indent[:-4]
             + "]"
@@ -35,9 +32,10 @@ def obj_to_string(obj: Union[object, List[object]], indent: str = "    ") -> str
         # If already a dict, pretty-print it.
         return json.dumps(obj, indent=4)
     elif hasattr(obj, "__dict__"):
-        # Use the flattened dict representation instead of pointer location.
-        flat_obj = to_flat_dict(obj)
-        return json.dumps(flat_obj, indent=4)
+        return f"{obj.__class__.__name__}\n" + "\n".join(
+            f"{indent}{attr} = {obj_to_string(value, indent + '    ')}"
+            for attr, value in sorted(vars(obj).items())
+        )
     return str(obj)
 
 
@@ -84,7 +82,11 @@ def custom_default(obj: Any) -> Union[None, dict, str]:
 
 
 def to_flat_dict(
-    obj: object, include_prefix: bool = True, prefix: str = "", delimiter: str = "_", nested_attrs: List[str] = None
+    obj: object,
+    include_prefix: bool = True,
+    prefix: str = "",
+    delimiter: str = "_",
+    nested_attrs: List[str] = None,
 ) -> dict:
     """
     Flattens a nested object into a dictionary while preserving the order of declared attributes.
@@ -115,7 +117,11 @@ def to_flat_dict(
             flat_list = []
             for sub_item in item:
                 if isinstance(sub_item, dict) or hasattr(sub_item, "__dict__"):
-                    flat_list.append(to_flat_dict(sub_item, include_prefix, "", delimiter, nested_attrs))
+                    flat_list.append(
+                        to_flat_dict(
+                            sub_item, include_prefix, "", delimiter, nested_attrs
+                        )
+                    )
                 else:
                     flat_list.append(sub_item)
             flat_dict[current_prefix] = flat_list
@@ -135,7 +141,9 @@ def to_flat_dict(
         ordered_fields = OrderedDict.fromkeys(declared_attributes + instance_attributes)
 
         # Create ordered dictionary of attributes.
-        ordered_obj = OrderedDict((field, getattr(obj, field, None)) for field in ordered_fields)
+        ordered_obj = OrderedDict(
+            (field, getattr(obj, field, None)) for field in ordered_fields
+        )
 
         # Flatten the ordered object.
         flatten(ordered_obj, prefix if include_prefix else "")
