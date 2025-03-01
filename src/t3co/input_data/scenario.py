@@ -150,7 +150,7 @@ class Scenario:
     primary_fuel_range_mi: float = 0.0
 
     cost_toggles_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "cost_toggles.json"
-    cost_toggles: Toggles = Toggles()
+    cost_toggles: Toggles = field(default_factory=Toggles)
 
     def __new__(cls, *args, **kwargs):
         """

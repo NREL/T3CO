@@ -77,7 +77,7 @@ class Config:
     config_filename: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "T3COConfig.csv"
 
     cost_toggles_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "cost_toggles.json"
-    cost_toggles: Toggles = None
+    cost_toggles: Toggles = field(default_factory=Toggles)
 
     def __new__(cls, *args, **kwargs):
         """
