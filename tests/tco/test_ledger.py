@@ -1,4 +1,5 @@
 import pytest
+from t3co.input_data.toggles import Toggles
 from t3co.tco.ledger import Ledger
 from t3co.cost_models.capital_costs import CapitalCosts
 from t3co.cost_models.operating_costs import OperatingCosts
@@ -28,9 +29,28 @@ def vehicle():
     vehicle.set_veh_kg()
     return vehicle
 
+@pytest.fixture
+def toggles():
+    return Toggles(
+        msrp=True,
+        purchase_tax=True,
+        purchasing_downpayment=True,
+        mark_up=True,
+        residual_cost=True,
+        fuel_cost=True,
+        maintenance_oper_cost=True,
+        insurance_cost=True,
+        purchasing_cost=True,
+        fueling_dwell_labor=True,
+        payload_oppy_cost=True,
+        fueling_dwell_oppy_cost=True,
+        mr_downtime_oppy_cost=True,
+        run_fastsim=False,
+    )
+
 
 @pytest.fixture
-def scenario():
+def scenario(toggles):
     scenario = Scenario(
         selection=1,
         # drive_cycle="path/to/drive_cycle.csv",
@@ -93,6 +113,7 @@ def scenario():
                 "2029": [0.1],
             }
         ),
+        cost_toggles=toggles
     )
     scenario.fuel_prices_df.set_index("Fuel", inplace=True)
     return scenario

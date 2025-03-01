@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Union
@@ -36,7 +38,7 @@ class Vehicle:
 
     def __new__(cls, *args, **kwargs):
         """
-        Creates a new instance of the OpportunityCosts class.
+        Creates a new instance of the Vehicle class.
         """
         instance = super(Vehicle, cls).__new__(cls)
         return instance

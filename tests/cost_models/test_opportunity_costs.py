@@ -1,6 +1,7 @@
 import pytest
 from t3co.cost_models.opportunity_costs import OpportunityCosts
 from t3co.energy_models.energy import Energy
+from t3co.input_data.toggles import Toggles
 from t3co.input_data.vehicle import Vehicle
 from t3co.input_data.scenario import Scenario
 import pandas as pd
@@ -21,9 +22,27 @@ def vehicle():
     vehicle.set_veh_kg()
     return vehicle
 
+@pytest.fixture
+def toggles():
+    return Toggles(
+        msrp=True,
+        purchase_tax=True,
+        purchasing_downpayment=True,
+        mark_up=True,
+        residual_cost=True,
+        fuel_cost=True,
+        maintenance_oper_cost=True,
+        insurance_cost=True,
+        purchasing_cost=True,
+        fueling_dwell_labor=True,
+        payload_oppy_cost=True,
+        fueling_dwell_oppy_cost=True,
+        mr_downtime_oppy_cost=True,
+        run_fastsim=False,
+    )
 
 @pytest.fixture
-def scenario():
+def scenario(toggles):
     return Scenario(
         vehicle_glider_cost_dol=10000.0,
         fc_fuelcell_cost_dol_per_kw=200.0,
@@ -85,6 +104,7 @@ def scenario():
         mr_unplanned_downtime_hr_per_mi=[0.01] * 10,
         mr_avg_tire_life_mi=50000.0,
         mr_tire_replace_downtime_hr_per_event=2.0,
+        cost_toggles=toggles
     )
 
 

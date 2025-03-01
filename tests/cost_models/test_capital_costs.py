@@ -1,5 +1,6 @@
 import pytest
 from t3co.cost_models.capital_costs import CapitalCosts
+from t3co.input_data.toggles import Toggles
 from t3co.input_data.vehicle import Vehicle
 from t3co.input_data.scenario import Scenario
 import pandas as pd
@@ -16,9 +17,28 @@ def vehicle():
         chg_eff=0.9,
     )
 
+@pytest.fixture
+def toggles():
+    return Toggles(
+        msrp=True,
+        purchase_tax=True,
+        purchasing_downpayment=True,
+        mark_up=True,
+        residual_cost=True,
+        fuel_cost=True,
+        maintenance_oper_cost=True,
+        insurance_cost=True,
+        purchasing_cost=True,
+        fueling_dwell_labor=True,
+        payload_oppy_cost=True,
+        fueling_dwell_oppy_cost=True,
+        mr_downtime_oppy_cost=True,
+        run_fastsim=False,
+    )
+
 
 @pytest.fixture
-def scenario():
+def scenario(toggles):
     return Scenario(
         vehicle_glider_cost_dol=10000.0,
         fc_fuelcell_cost_dol_per_kw=200.0,
@@ -41,6 +61,7 @@ def scenario():
         depreciation_rates_pct_per_yr=[0.09] * 10,
         vehicle_life_yr=10,
         discount_rate_pct_per_yr=0.05,
+        cost_toggles=toggles
     )
 
 

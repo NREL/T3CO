@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import ast
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -298,7 +300,7 @@ class Scenario:
         if not config.cost_toggles:
             self.cost_toggles_file = get_path_object(self.cost_toggles_file)
             self.cost_toggles = Toggles.from_json(cost_toggles_file=gl.RESOURCES_FOLDERPATH/self.cost_toggles_file)
-        else:
+        elif config.cost_toggles_file:
             self.cost_toggles_file = config.cost_toggles_file
             self.cost_toggles = config.cost_toggles
         self.insurance_rates_file = config.insurance_rates_file

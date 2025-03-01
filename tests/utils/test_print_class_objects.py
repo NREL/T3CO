@@ -8,22 +8,6 @@ import pytest
 
 from t3co.utils.print_class_objects import custom_default, handle_nan, obj_to_string, remove_df_attrs, to_flat_dict
 
-# Import the functions from your module. Adjust the import path as needed.
-# For example, if your module is named `utilities.py`:
-# from utilities import (
-#     obj_to_string,
-#     handle_nan,
-#     custom_default,
-#     to_flat_dict,
-#     remove_df_attrs,
-# )
-
-# For demonstration purposes, we assume the functions are defined in this file.
-# (Replace the definitions below with your actual module imports.)
-# -----------------------------------------------------------------------------
-# (Place your utility functions here or import them as shown above.)
-# -----------------------------------------------------------------------------
-
 # Create some dummy classes to test object serialization and flattening.
 
 class SimpleObject:
@@ -163,8 +147,8 @@ def test_to_flat_dict_without_prefix():
     outer = OuterObject(nested, 99)
     flat = to_flat_dict(outer, include_prefix=False)
     expected = {
-        "nested_x": 5,
-        "nested_y": "test",
+        "x": 5,
+        "y": "test",
         "c": 99,
         "dynamic": "extra",
     }

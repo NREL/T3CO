@@ -6,8 +6,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from scipy.stats import gaussian_kde
 from scipy.integrate import trapezoid
+from scipy.stats import gaussian_kde
+
 from t3co.constants import Global as gl
 from t3co.energy_models.energy import Energy
 from t3co.input_data.scenario import Scenario
@@ -60,6 +61,7 @@ class OpportunityCosts:
         if (
             scenario.activate_tco_fueling_dwell_time_cost
             or scenario.cost_toggles.fueling_dwell_oppy_cost
+            or scenario.cost_toggles.fueling_dwell_labor
         ):
             self.set_fueling_dwell_time_cost(
                 year_number=year_number,
@@ -103,7 +105,8 @@ class OpportunityCosts:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data.
         """
-        df_veh_wt = pd.read_csv(get_path_object(scenario.plf_weight_distribution_file),
+        df_veh_wt = pd.read_csv(
+            get_path_object(scenario.plf_weight_distribution_file),
             index_col=0,
         )
 

@@ -106,7 +106,7 @@ def to_flat_dict(
         if isinstance(item, dict):
             for key, value in item.items():
                 new_key = f"{current_prefix}{delimiter}{key}" if current_prefix else key
-                flatten(value, (new_key if include_prefix else key))
+                flatten(value, new_key if include_prefix else key)
         elif hasattr(item, "__dict__"):
             flatten(vars(item), current_prefix)
         else:
@@ -129,8 +129,7 @@ def to_flat_dict(
         # Flatten the object
         flatten(ordered_obj, prefix if include_prefix else "")
     else:
-        print(f'it is dict: {include_prefix}')
-        flatten(obj, current_prefix= (prefix if include_prefix else ""))
+        flatten(obj, prefix if include_prefix else "")
 
     return flat_dict
 
