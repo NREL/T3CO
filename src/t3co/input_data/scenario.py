@@ -184,6 +184,15 @@ class Scenario:
         return cls.from_dict(cls, scenario_dict=scenario_dict)
 
     def from_dict(cls, scenario_dict: dict):
+        """
+        Creates a Scenario instance from a dictionary.
+
+        Args:
+            scenario_dict (dict): Dictionary containing scenario data.
+
+        Returns:
+            Scenario: An instance of the Scenario class.
+        """
         scenario_dict["vehicle_class"] = " "
         scenario_dict["vehicle_class"] = (
             scenario_dict["vehicle_class"]

@@ -54,8 +54,8 @@ class OperatingCosts:
             cap_costs (CapitalCosts): The capital costs associated with the vehicle.
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data.
-            energy (Energy): The energy model instance.
-            oppy_costs (OpportunityCosts): The opportunity costs associated with the vehicle.
+            energy (Energy, optional): The energy model instance. Defaults to None.
+            oppy_costs (OpportunityCosts, optional): The opportunity costs associated with the vehicle. Defaults to None.
         """
         if energy:
             self.mpgge = energy.mpgge
@@ -120,8 +120,7 @@ class OperatingCosts:
             scenario (Scenario): The scenario instance containing configuration data.
         """
         if scenario.fuel_prices_df is None:
-            scenario.fuel_prices_df = pd.read_csv(get_path_object(scenario.fuel_prices_file),
-            )
+            scenario.fuel_prices_df = pd.read_csv(get_path_object(scenario.fuel_prices_file))
             scenario.fuel_prices_df.set_index("Fuel", inplace=True)
 
         scenario.fuel_prices_df = scenario.fuel_prices_df[

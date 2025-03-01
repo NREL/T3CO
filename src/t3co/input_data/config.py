@@ -180,7 +180,7 @@ class Config:
 
     def read_auxiliary_files(self) -> None:
         """
-        Reads auxiliary files such as fuel prices and residual rates.
+        Reads auxiliary files such as fuel prices and cost toggles
         """
         self.fuel_prices_df = pd.read_csv(get_path_object(self.fuel_prices_file))
         self.fuel_prices_df.set_index("Fuel", inplace=True)

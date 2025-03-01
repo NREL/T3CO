@@ -39,7 +39,7 @@ class CapitalCosts:
         Args:
             vehicle (Vehicle): The vehicle instance.
             scenario (Scenario): The scenario instance containing configuration data.
-            msrp_total_dol (float, optional): MSRP in dollars as input
+            msrp_total_dol (float, optional): MSRP in dollars as input.
         """
         if scenario.cost_toggles.msrp:
             if not msrp_total_dol and vehicle:

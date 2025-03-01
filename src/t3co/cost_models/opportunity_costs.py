@@ -264,15 +264,6 @@ class OpportunityCosts:
         else:
             self.shifts_per_year = scenario.shifts_per_year[year_number - 1]
 
-        # dwellparams = np.array(
-        #     [
-        #         scenario.fdt_dwpt_fraction_power_pct,
-        #         scenario.fdt_frac_full_charge_bounds,
-        #         scenario.fdt_avg_overhead_hr_per_dwell_hr,
-        #         scenario.downtime_oppy_cost_dol_per_hr,
-        #     ]
-        # )
-
         if vehicle.veh_pt_type in ["BEV"]:
             self.fdt_full_dwell_hr = (1 - scenario.fdt_dwpt_fraction_power_pct) * (
                 vehicle.ess_max_kwh / scenario.ess_max_charging_power_kw
