@@ -4,7 +4,9 @@ from t3co.input_data.toggles import Toggles
 from t3co.input_data.vehicle import Vehicle
 from t3co.input_data.scenario import Scenario
 import pandas as pd
+import os
 
+os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
 
 @pytest.fixture
 def vehicle():
