@@ -1,6 +1,7 @@
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Union
 
 try:
     from typing import Self  # Python 3.11+
@@ -35,7 +36,8 @@ class Toggles:
     @classmethod
     def from_json(
         cls,
-        cost_toggles_file: Path | str = gl.RESOURCES_FOLDERPATH / "cost_toggles.json",
+        cost_toggles_file: Union[Path, str] = gl.RESOURCES_FOLDERPATH
+        / "cost_toggles.json",
     ) -> Self:
         """
         Creates a Toggles instance from a JSON file.
