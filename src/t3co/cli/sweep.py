@@ -120,17 +120,20 @@ def run_optimization(vehicle: Vehicle, scenario: Scenario, config: Config):
     res = minimize(
         problem,
         algorithm,
-        termination=("n_gen", 10),
+        termination=("n_gen", 5),
         seed=1,
         verbose=True,
         n_processes=config.n_processes if config.parallel else None,
     )
+    vehicle.fc_max_kw = res.X[0]
     print("Best solution:")
+    print(vehicle)
     # print("  Battery Size (kWh):          {:.2f}".format(res.X[0]))
     # print("  Fuel Converter Peak Power (kW): {:.2f}".format(res.X[1]))
     # print("  Fuel Storage Energy (kWh eq.):  {:.2f}".format(res.X[2]))
     # print("  Motor Peak Power (kW):          {:.2f}".format(res.X[3]))
-    print("Minimum Discounted TCO:           ${:.2f}".format(res.F[0][0]))
+    # print("Minimum Discounted TCO:  {res.F))
+    return vehicle
 
 
 def create_results_filepath(config: Config) -> Path:
