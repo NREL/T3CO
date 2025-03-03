@@ -70,6 +70,9 @@ class Config:
     fdt_frac_full_charge_bounds: list = field(default_factory=list)
     activate_mr_downtime_cost: bool = False
 
+    n_processes: int = 9
+    parallel: bool = True
+
     selections_list: list[str] = None
     dc_files: list[str] = None
 
@@ -183,6 +186,9 @@ class Config:
         """
         Reads auxiliary files such as fuel prices and cost toggles
         """
+        self.vehicle_df = pd.read_csv(get_path_object(self.vehicle_file))
+        self.scenario = pd.read_csv(get_path_object(self.vehicle_file))
+
         self.fuel_prices_df = pd.read_csv(get_path_object(self.fuel_prices_file))
         self.fuel_prices_df.set_index("Fuel", inplace=True)
         self.cost_toggles = Toggles.from_json(get_path_object(self.cost_toggles_file))

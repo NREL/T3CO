@@ -2,6 +2,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Union
 
+import pandas as pd
+
+from t3co.input_data.vehicle import Vehicle
+
 try:
     from t3co.energy_models.fastsim_model.fastsim_wrapper import RunFastsim
 
@@ -43,6 +47,8 @@ class Energy:
         self,
         veh_no: int,
         scenario: Scenario,
+        t3co_vehicle: Vehicle = None,
+        vehicle_df: pd.DataFrame = None,
         vehicle_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH
         / "inputs"
         / "Demo_FY22_vehicle_model_assumptions.csv",
@@ -58,6 +64,8 @@ class Energy:
         fastsim_run = RunFastsim(
             veh_no=veh_no,
             scenario=scenario,
+            t3co_vehicle=t3co_vehicle,
+            vehicle_df=vehicle_df,
             veh_input_path=vehicle_file,
         )
         self.mpgge = fastsim_run.mpgge

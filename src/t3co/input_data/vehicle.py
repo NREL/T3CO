@@ -3,11 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Union
+
 try:
     from typing import Self  # Python 3.11+
 except ImportError:
     from typing_extensions import Self  # Older versions of Python
-    
+
 import pandas as pd
 
 from t3co.input_data.config import Config
@@ -55,10 +56,10 @@ class Vehicle:
         Returns:
             Self: An instance of the Vehicle class.
         """
-        return cls.from_db(selection=selection, vehicle_db_file=config.vehicle_file)
+        return cls.from_csv(selection=selection, vehicle_db_file=config.vehicle_file)
 
     @classmethod
-    def from_db(cls, selection: int, vehicle_db_file: Union[str, Path]) -> Self:
+    def from_csv(cls, selection: int, vehicle_db_file: Union[str, Path]) -> Self:
         """
         Creates a Vehicle instance from the vehicle database file.
 
@@ -69,7 +70,8 @@ class Vehicle:
         Returns:
             Self: An instance of the Vehicle class.
         """
-        vehicle_db_df = pd.read_csv(get_path_object(vehicle_db_file),
+        vehicle_db_df = pd.read_csv(
+            get_path_object(vehicle_db_file),
             usecols=lambda x: x in cls.__annotations__.keys(),
         )
         vehicle_dict = vehicle_db_df.loc[

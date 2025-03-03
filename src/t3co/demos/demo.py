@@ -8,7 +8,7 @@ from t3co.tco import ledger
 from t3co.tco.tcocalc import TCOCalc
 
 start = time.time()
-input_vehicle = vehicle.Vehicle().from_db(
+input_vehicle = vehicle.Vehicle().from_csv(
     selection=1,
     vehicle_db_file=Path(__file__).parents[1]
     / "resources"
