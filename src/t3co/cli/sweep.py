@@ -15,8 +15,14 @@ from t3co.energy_models.energy import Energy
 from t3co.input_data.config import Config
 from t3co.input_data.scenario import Scenario
 from t3co.input_data.vehicle import Vehicle
+from t3co.optimize.optimization import VehicleDesignOpt
 from t3co.tco.ledger import Ledger
 from t3co.utils.print_class_objects import get_path_object
+
+from pymoo.algorithms.soo.nonconvex.ga import GA
+from pymoo.algorithms.moo import nsga2
+
+from pymoo.optimize import minimize
 
 
 def load_vehicle_scenario_energy(
@@ -92,12 +98,39 @@ def generate_ledger(selection: int, config: Config) -> Dict:
     )
     print(f"Running Selection: {selection}")
 
+    if not config.skip_all_opt:
+        optimized_vehicle = run_optimization(
+            vehicle=input_vehicle, scenario=input_scenario, config=config
+        )
+    else:
+        optimized_vehicle = None
+
     return Ledger(
-        vehicle=input_vehicle,
+        vehicle=(input_vehicle if not optimized_vehicle else optimized_vehicle),
         scenario=input_scenario,
         energy=input_energy,
         config=config,
     ).to_dict()
+
+
+def run_optimization(vehicle: Vehicle, scenario: Scenario, config: Config):
+    problem = VehicleDesignOpt(vehicle=vehicle, scenario=scenario, config=config)
+    algorithm = GA(pop_size=100)
+
+    res = minimize(
+        problem,
+        algorithm,
+        termination=("n_gen", 10),
+        seed=1,
+        verbose=True,
+        n_processes=config.n_processes if config.parallel else None,
+    )
+    print("Best solution:")
+    # print("  Battery Size (kWh):          {:.2f}".format(res.X[0]))
+    # print("  Fuel Converter Peak Power (kW): {:.2f}".format(res.X[1]))
+    # print("  Fuel Storage Energy (kWh eq.):  {:.2f}".format(res.X[2]))
+    # print("  Motor Peak Power (kW):          {:.2f}".format(res.X[3]))
+    print("Minimum Discounted TCO:           ${:.2f}".format(res.F[0][0]))
 
 
 def create_results_filepath(config: Config) -> Path:
@@ -178,11 +211,11 @@ def run_t3co(config: Config, save_results: bool = True) -> None:
     reports_list = []
     error_list = []
     for selection in config.selections_list:
-        try:
-            reports_list.append(generate_ledger(selection=selection, config=config))
-        except ValueError:
-            error_list.append(selection)
-            continue
+        # try:
+        reports_list.append(generate_ledger(selection=selection, config=config))
+        # except ValueError:
+        #     error_list.append(selection)
+        #     continue
 
     if save_results:
         output_path, reports_df = export_results_to_csv(
