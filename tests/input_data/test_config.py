@@ -90,8 +90,8 @@ def test_config_initialization():
     assert config.activate_mr_downtime_cost is False
 
 
-def test_config_from_file(mock_config_file):
-    config = Config().from_file(filename=mock_config_file, analysis_id=1)
+def test_config_from_csv(mock_config_file):
+    config = Config().from_csv(filename=mock_config_file, analysis_id=1)
     assert config.analysis_id == 1
     assert config.analysis_name == "Test Analysis"
     assert config.vehicle_file == "vehicle.csv"

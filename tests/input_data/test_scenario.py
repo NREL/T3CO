@@ -65,9 +65,9 @@ def test_scenario_initialization():
     assert scenario.maint_oper_cost_dol_per_mi == [0.05, 0.05, 0.05]
 
 
-def test_scenario_from_file(config, mock_scenario_db):
+def test_scenario_from_csv(config, mock_scenario_db):
     config.scenario_file = mock_scenario_db
-    scenario = Scenario.from_file(selection=1, scenario_file=config.scenario_file)
+    scenario = Scenario.from_csv(selection=1, scenario_file=config.scenario_file)
     assert scenario.selection == 1
     assert scenario.scenario_name == "Scenario1"
     assert scenario.drive_cycle == "cycle1"
@@ -86,7 +86,7 @@ def test_scenario_from_file(config, mock_scenario_db):
 
 def test_scenario_override_from_config(config, mock_scenario_db):
     config.scenario_file = mock_scenario_db
-    scenario = Scenario.from_file(selection=1, scenario_file=config.scenario_file)
+    scenario = Scenario.from_csv(selection=1, scenario_file=config.scenario_file)
     scenario.override_from_config(config=config)
     assert scenario.vehicle_life_yr == config.vehicle_life_yr
     assert scenario.fs_fueling_rate_kg_per_min == config.fs_fueling_rate_kg_per_min
