@@ -3,8 +3,10 @@ Global constants
 Stores paths to directories used for input files, as well as constants referenced throughout the code base
 """
 
-import os
 from pathlib import Path
+
+import os
+
 
 # ./t3co
 wkdir = Path(__file__).parent.parent
@@ -16,6 +18,9 @@ CONV = "Conv"
 HEV = "HEV"
 # PHEV = vehicle.PHEV
 BEV = "BEV"
+
+DIRECT_TCO_METHOD = "DIRECT"
+EFFICIENCY_TCO_METHOD = "EFFICIENCY"
 
 maxGvwrKg = 0
 evGVWRAllowanceLbs = 0

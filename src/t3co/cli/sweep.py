@@ -48,7 +48,7 @@ def load_vehicle_scenario_energy(
     if scenario:
         input_scenario = scenario
     else:
-        input_scenario = Scenario().from_file(
+        input_scenario = Scenario().from_csv(
             selection=selection, scenario_file=config.scenario_file
         )
         input_scenario.override_from_config(config=config)
@@ -456,7 +456,7 @@ if __name__ == "__main__":
         config.aero_drag_imp_curves = Path(args.aero_curves)
     else:
         config = Config()
-        config.from_file(filename=args.config, analysis_id=args.analysis_id)
+        config.from_csv(filename=args.config, analysis_id=args.analysis_id)
         config.check_drivecycles_and_create_selections()
         config.read_auxiliary_files()
         gl.RESOURCES_FOLDERPATH = Path(args.config).parent
