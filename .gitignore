@@ -35,3 +35,4 @@ t3co/resources/T3CO_Config_Local.csv
 /src/results
 /src/t3co/resources/results
 !/src/t3co/resources/cost_toggles.json
+src/t3co/resources/auxiliary/EnergyValues.csv

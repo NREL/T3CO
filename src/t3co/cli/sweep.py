@@ -55,6 +55,12 @@ def load_vehicle_scenario_energy(
 
     if config.dc_files:
         input_scenario.drive_cycle = config.dc_files[int(dc_id)]
+        if config.energy_file:
+            input_scenario.mpgge = config.energy_df.loc[int(dc_id), "mpgge"]
+            input_scenario.primary_fuel_range_mi = config.energy_df.loc[
+                int(dc_id),
+                "primary_fuel_range_mi",
+            ]
 
     if energy:
         input_energy = energy
