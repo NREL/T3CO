@@ -1,0 +1,7 @@
+﻿drive_cycle,mpgge,primary_fuel_range_mi
+resources/cycles/accel.csv,5.456440426,1843.370156
+resources/cycles/EPA_Ph2_rural_interstate_65mph.csv,9.03677977,3052.929902
+resources/cycles/long_haul_cyc.csv,8.648742667,2921.837842
+resources/cycles/EPA_Ph2_transient.csv,4.45587132,1505.344065
+resources/cycles/EPA_Ph2_urban_highway_55mph.csv,9.622890099,3250.937798
+resources/cycles/regional_haul.csv,6.463323741,2183.5294
