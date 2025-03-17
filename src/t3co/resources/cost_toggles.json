@@ -1,22 +1,22 @@
-{   
-    "Energy":{
-        "run_fastsim": true
+{
+    "Energy": {
+        "run_fastsim": false
     },
-    "CapitalCosts":{
+    "CapitalCosts": {
         "msrp": true,
-        "purchase_tax":true,
-        "purchasing_downpayment":true,
+        "purchase_tax": true,
+        "purchasing_downpayment": true,
         "mark_up": true,
         "residual_cost": true
     },
-    "OperatingCosts":{
+    "OperatingCosts": {
         "fuel_cost": true,
         "maintenance_oper_cost": true,
         "insurance_cost": true,
         "purchasing_cost": true,
         "fueling_dwell_labor": true
     },
-    "OpportunityCosts":{
+    "OpportunityCosts": {
         "payload_oppy_cost": true,
         "fueling_dwell_oppy_cost": true,
         "mr_downtime_oppy_cost": true

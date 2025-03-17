@@ -42,6 +42,7 @@ class Config:
     fs_fueling_rate_diesel_gpm: float = 0
 
     insurance_rates_file: str = ""
+    energy_file: str = None
     fuel_prices_file: str = ""
     plf_weight_dist_file: str = None
 
@@ -73,6 +74,7 @@ class Config:
     selections_list: list[str] = None
     dc_files: list[str] = None
 
+    energy_df: pd.DataFrame = None
     fuel_prices_df: pd.DataFrame = None
     config_filename: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "T3COConfig.csv"
 
@@ -174,8 +176,17 @@ class Config:
                         self.selections_list.append(
                             str(selection) + "_" + str(i).zfill(4)
                         )
+
             else:
                 self.selections_list = self.selections
+
+        elif self.energy_file:
+            self.energy_df = pd.read_csv(get_path_object(self.energy_file))
+            self.dc_files = self.energy_df["drive_cycle"].tolist()
+            self.selections_list = []
+            for selection in self.selections:
+                for i in range(len(self.dc_files)):
+                    self.selections_list.append(str(selection) + "_" + str(i).zfill(4))
         else:
             self.selections_list = self.selections
 
