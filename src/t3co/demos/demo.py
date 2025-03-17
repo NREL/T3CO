@@ -16,7 +16,7 @@ input_vehicle = vehicle.Vehicle().from_csv(
     / "Demo_FY22_vehicle_model_assumptions.csv",
 )
 input_vehicle.set_veh_kg()
-input_scenario = scenario.Scenario().from_file(
+input_scenario = scenario.Scenario().from_csv(
     selection=1,
     scenario_file=Path(__file__).parents[1]
     / "resources"

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Union
@@ -12,7 +10,7 @@ except ImportError:
 import pandas as pd
 
 from t3co.input_data.config import Config
-from t3co.utils.print_class_objects import get_path_object, handle_nan, remove_df_attrs
+from t3co.utils.print_class_objects import handle_nan, remove_df_attrs
 
 
 @dataclass
@@ -39,7 +37,7 @@ class Vehicle:
 
     def __new__(cls, *args, **kwargs):
         """
-        Creates a new instance of the Vehicle class.
+        Creates a new instance of the OpportunityCosts class.
         """
         instance = super(Vehicle, cls).__new__(cls)
         return instance
@@ -56,12 +54,36 @@ class Vehicle:
         Returns:
             Self: An instance of the Vehicle class.
         """
-        return cls.from_csv(selection=selection, vehicle_db_file=config.vehicle_file)
+
+        if config.vehicle_df is not None:
+            return cls.from_df(selection=selection, vehicle_df=config.vehicle_df)
+        else:
+            return cls.from_csv(
+                selection=selection, vehicle_db_file=config.vehicle_file
+            )
+
+    @classmethod
+    def from_df(cls, selection: int, vehicle_df: pd.DataFrame) -> Self:
+        """
+        Creates a Vehicle instance from the vehicle dataframe.
+
+        Args:
+            selection (int): The selection index.
+            vehicle_df (pd.DataFrame): The vehicle dataframe
+
+        Returns:
+            Self: An instance of the Vehicle class.
+        """
+
+        vehicle_dict = vehicle_df.loc[
+            vehicle_df["selection"] == selection, list(cls.__annotations__.keys())
+        ].to_dict("records")[0]
+        return cls(**handle_nan(vehicle_dict))
 
     @classmethod
     def from_csv(cls, selection: int, vehicle_db_file: Union[str, Path]) -> Self:
         """
-        Creates a Vehicle instance from the vehicle database file.
+        Creates a Vehicle instance from the vehicle database csv file.
 
         Args:
             selection (int): The selection index.
@@ -71,13 +93,14 @@ class Vehicle:
             Self: An instance of the Vehicle class.
         """
         vehicle_db_df = pd.read_csv(
-            get_path_object(vehicle_db_file),
+            (
+                Path(vehicle_db_file).resolve(strict=True)
+                if Path(vehicle_db_file).is_absolute()
+                else Path(__file__).parents[1] / "resources" / vehicle_db_file
+            ),
             usecols=lambda x: x in cls.__annotations__.keys(),
         )
-        vehicle_dict = vehicle_db_df.loc[
-            vehicle_db_df["selection"] == selection
-        ].to_dict("records")[0]
-        return cls(**handle_nan(vehicle_dict))
+        return cls.from_df(selection=selection, vehicle_df=vehicle_db_df)
 
     def set_veh_kg(self) -> None:
         """

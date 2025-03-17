@@ -47,7 +47,7 @@ def toggles():
 
 @pytest.fixture
 def scenario(config, toggles):
-    scenario = Scenario.from_file(selection=1)
+    scenario = Scenario.from_csv(selection=1)
 
     scenario.fuel_prices_df = pd.DataFrame(
         {
@@ -83,7 +83,7 @@ def energy(scenario, config):
 @pytest.fixture
 def config(toggles):
     config = Config()
-    config.from_file()
+    config.from_csv()
     config.check_drivecycles_and_create_selections()
     config.read_auxiliary_files()
     config.vehicle_file = gl.RESOURCES_FOLDERPATH / config.vehicle_file
@@ -99,7 +99,7 @@ def config(toggles):
 
 def test_load_vehicle_scenario_energy(mocker, config, vehicle, scenario, energy):
     mocker.patch("t3co.input_data.vehicle.Vehicle.from_config", return_value=vehicle)
-    mocker.patch("t3co.input_data.scenario.Scenario.from_file", return_value=scenario)
+    mocker.patch("t3co.input_data.scenario.Scenario.from_csv", return_value=scenario)
     mocker.patch(
         "t3co.energy_models.energy.Energy.run_fastsim_model", return_value=None
     )

@@ -1,9 +1,7 @@
 import ast
-import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-
-from t3co.input_data.toggles import Toggles
+import sys
 
 try:
     from typing import Self  # Python 3.11+
@@ -11,11 +9,9 @@ except ImportError:
     from typing_extensions import Self  # Older versions of Python
 
 from typing import Union
-
 import numpy as np
 import pandas as pd
-
-import t3co.constants.Global as gl
+from t3co.constants import Global as gl
 from t3co.utils.print_class_objects import get_path_object, remove_df_attrs
 
 
@@ -45,7 +41,7 @@ class Config:
     fuel_prices_file: str = ""
     plf_weight_dist_file: str = None
 
-    TCO_method: str = "DIRECT"
+    TCO_method: str = gl.DIRECT_TCO_METHOD
     purchasing_method: str = "cash"
 
     # Optimization
@@ -76,11 +72,10 @@ class Config:
     selections_list: list[str] = None
     dc_files: list[str] = None
 
+    vehicle_df: pd.DataFrame = None
+    scenario_df: pd.DataFrame = None
     fuel_prices_df: pd.DataFrame = None
     config_filename: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "T3COConfig.csv"
-
-    cost_toggles_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "cost_toggles.json"
-    cost_toggles: Toggles = field(default_factory=Toggles)
 
     def __new__(cls, *args, **kwargs):
         """
@@ -89,7 +84,7 @@ class Config:
         instance = super(Config, cls).__new__(cls)
         return instance
 
-    def from_file(
+    def from_csv(
         self,
         analysis_id: int = 0,
         filename: str = gl.RESOURCES_FOLDERPATH / "T3COConfig.csv",
@@ -165,8 +160,11 @@ class Config:
         Checks if the config.drive_cycle input is a file or a folder. If a folder is provided, creates a list of all selections for each drive cycle in the folder as config.dc_files.
         """
         if self.drive_cycle:
-            self.drive_cycle = get_path_object(self.drive_cycle)
-
+            self.drive_cycle = (
+                Path(self.drive_cycle).resolve(strict=True)
+                if Path(self.drive_cycle).is_absolute()
+                else Path(self.config_filename).parents[0] / self.drive_cycle
+            )
             if Path(self.drive_cycle).is_dir():
                 self.dc_files = [
                     p.absolute() for p in Path(self.drive_cycle).rglob("*.csv")
@@ -184,17 +182,20 @@ class Config:
 
     def read_auxiliary_files(self) -> None:
         """
-        Reads auxiliary files such as fuel prices and cost toggles
+        Reads auxiliary files such as fuel prices and residual rates.
         """
-        self.vehicle_df = pd.read_csv(get_path_object(self.vehicle_file))
-        self.scenario = pd.read_csv(get_path_object(self.vehicle_file))
 
+        self.vehicle_df = pd.read_csv(get_path_object(self.vehicle_file))
+        self.scenario_df = pd.read_csv(get_path_object(self.scenario_file))
         self.fuel_prices_df = pd.read_csv(get_path_object(self.fuel_prices_file))
         self.fuel_prices_df.set_index("Fuel", inplace=True)
-        self.cost_toggles = Toggles.from_json(get_path_object(self.cost_toggles_file))
 
     def delete_dataframes(self) -> None:
         """
         Deletes DataFrame attributes from the Config instance.
         """
+        if self.dc_files:
+            delattr(self, "dc_files")
+        if self.selections_list:
+            delattr(self, "selections_list")
         remove_df_attrs(self)

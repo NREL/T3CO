@@ -15,14 +15,22 @@ from t3co.energy_models.energy import Energy
 from t3co.input_data.config import Config
 from t3co.input_data.scenario import Scenario
 from t3co.input_data.vehicle import Vehicle
-from t3co.optimize.optimization import VehicleDesignOpt
 from t3co.tco.ledger import Ledger
 from t3co.utils.print_class_objects import get_path_object
 
-from pymoo.algorithms.soo.nonconvex.ga import GA
-from pymoo.algorithms.moo import nsga2
+try:
+    from pymoo.algorithms.soo.nonconvex.ga import GA
+    from pymoo.algorithms.moo import nsga2
 
-from pymoo.optimize import minimize
+    from pymoo.optimize import minimize
+    from t3co.optimize.optimization import VehicleDesignOpt
+
+    optimization_installed = True
+
+except ImportError:
+    optimization_installed = False
+except AttributeError:
+    optimization_installed = False
 
 
 def load_vehicle_scenario_energy(
@@ -48,7 +56,7 @@ def load_vehicle_scenario_energy(
     if scenario:
         input_scenario = scenario
     else:
-        input_scenario = Scenario().from_file(
+        input_scenario = Scenario().from_csv(
             selection=selection, scenario_file=config.scenario_file
         )
         input_scenario.override_from_config(config=config)
@@ -98,7 +106,7 @@ def generate_ledger(selection: int, config: Config) -> Dict:
     )
     print(f"Running Selection: {selection}")
 
-    if not config.skip_all_opt:
+    if not config.skip_all_opt and optimization_installed:
         optimized_vehicle = run_optimization(
             vehicle=input_vehicle, scenario=input_scenario, config=config
         )
@@ -459,7 +467,7 @@ if __name__ == "__main__":
         config.aero_drag_imp_curves = Path(args.aero_curves)
     else:
         config = Config()
-        config.from_file(filename=args.config, analysis_id=args.analysis_id)
+        config.from_csv(filename=args.config, analysis_id=args.analysis_id)
         config.check_drivecycles_and_create_selections()
         config.read_auxiliary_files()
         gl.RESOURCES_FOLDERPATH = Path(args.config).parent
