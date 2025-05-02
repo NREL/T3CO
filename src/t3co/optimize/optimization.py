@@ -1,5 +1,6 @@
 import numpy as np
 from pymoo.algorithms.soo.nonconvex.ga import GA
+from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.core.problem import ElementwiseProblem
 from pymoo.optimize import minimize
 
@@ -11,6 +12,7 @@ import t3co.constants.Global as gl
 
 # Import Ledger from ledger.py.
 from t3co.tco.ledger import Ledger
+import argparse
 
 
 class VehicleDesignOpt(ElementwiseProblem):
@@ -96,19 +98,30 @@ class VehicleDesignOpt(ElementwiseProblem):
         out["F"] = [ledger.discounted_tco_dol]
 
 
-def main(parallel=True, n_processes=4):
+def run_optimization(selection, parallel=True, n_processes=4):
     # Create default instances for vehicle, scenario, and config
-    vehicle = Vehicle()
-    scenario = Scenario()
     config = Config()
+    config.skip_all_opt = False
+    config.selections = [selection]
+    # print(f"config year: {config.vehicle_life_yr}")
+    vehicle = Vehicle().from_config(selection=selection, config=config)
+    vehicle.set_veh_kg()
+    scenario = Scenario().from_csv(
+        selection=selection, scenario_file=config.scenario_file
+    )
+    config.vehicle_life_yr = scenario.vehicle_life_yr
 
+    # scenario.override_from_config(config=config)
+
+    # print(f"vehicle: {vehicle}")
+    # print(f"scenario: {scenario}")
     problem = VehicleDesignOpt(vehicle, scenario, config)
     algorithm = GA(pop_size=100)
 
     res = minimize(
         problem,
         algorithm,
-        termination=("n_gen", 200),
+        termination=("n_gen", 5),
         seed=1,
         verbose=True,
         n_processes=n_processes if parallel else None,
@@ -129,17 +142,22 @@ def main(parallel=True, n_processes=4):
 
 
 if __name__ == "__main__":
-    import argparse
-
     parser = argparse.ArgumentParser(
         description="Optimize vehicle design parameters for minimum discounted TCO using Ledger and fastsim."
+    )
+    parser.add_argument(
+        "--selection", type=int, default=1, help="Vehicle and Scenario selection number"
     )
     parser.add_argument(
         "--no-parallel", action="store_true", help="Disable parallel evaluation."
     )
     parser.add_argument(
-        "--n-processes", type=int, default=4, help="Number of processes."
+        "--n-processes", type=int, default=9, help="Number of processes."
     )
     args = parser.parse_args()
 
-    main(parallel=not args.no_parallel, n_processes=args.n_processes)
+    run_optimization(
+        selection=args.selection,
+        parallel=not args.no_parallel,
+        n_processes=args.n_processes,
+    )
