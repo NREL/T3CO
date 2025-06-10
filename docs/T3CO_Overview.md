@@ -21,13 +21,11 @@ The performance metrics estimated for the vehicle are: miles of range, accelerat
 
 More details on performance metrics are included below under [optimization flow](#optimization-flow). If the analysis does not include optimization, these metrics are simply reported in the results.
 
-
 ## T3CO Input Files <a name="t3co-input-files)"></a>
 
 There are three main files that form the basis of T3CO TCO calculations and T3CO optimizations. The first is the **Vehicle File** which provides [vehicle model inputs](vehicle_inputs_descriptions.md) for FASTSim simulation. The second type of file is the T3CO input file, or **Scenario File**, which specifies the [cost assumption parameters](scenario_inputs_descriptions.md) for the TCO calculation. These include technology cost assumptions (e.g. $ per kilowatt for engine or motor size), operating conditions, (e.g. annual VMT and geographic region), financial inputs (e.g. operating years and discount rate), analysis option controls (e.g. whether to optimize the vehicle or not), and performance requirements if optimizing (e.g. range, grade and acceleration targets). The third file is the **Config File**, which provides an [easier way to manage analyses](config_inputs_descriptions.md) with minimal command line inputs, containing overrides for major scenario input parameters.
 
-T3CO provides some example Vehicle and Scenario models to assist the user in getting started. There are demo versions of the [Vehicle file](https://github.com/NREL/T3CO/blob/main/t3co/resources/inputs/demo/Demo_FY22_vehicle_model_assumptions.csv) and [Scenario file](https://github.com/NREL/T3CO/blob/main/t3co/resources/inputs/demo/Demo_FY22_scenario_assumptions.csv) available in the `/t3co/resources/inputs/demo/` folder. The [Config file](https://github.com/NREL/T3CO/blob/main/t3co/resources/T3COConfig.csv) is available in the `/t3co/resources/` folder. They are also available in the demo_inputs folder if the [`install_t3co_demo_inputs`](installation.md#copying-t3co-demo-input-files) command is used to copy the required input files to your local directory.
-
+T3CO provides some example Vehicle and Scenario models to assist the user in getting started. There are demo versions of the [Vehicle file](https://github.com/NREL/T3CO/blob/main/t3co/resources/inputs/demo/Demo_FY22_vehicle_model_assumptions.csv) and [Scenario file](https://github.com/NREL/T3CO/blob/main/t3co/resources/inputs/demo/Demo_FY22_scenario_assumptions.csv) available in the `/t3co/resources/inputs/demo/` folder. The [Config file](https://github.com/NREL/T3CO/blob/main/t3co/resources/T3COConfig.csv) is available in the `/t3co/resources/` folder. They are also available in the demo_inputs folder if the [`install_t3co_demo_inputs`](installation.md#copy-demo-inputs) command is used to copy the required input files to your local directory.
 
 ## Optimization Flow <a name="optimization-flow"></a>
 
