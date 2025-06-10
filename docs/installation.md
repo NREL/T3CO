@@ -1,89 +1,200 @@
-# Installation
-## Setting Up a Python Environment <a name="setting-up-env"></a>
-T3CO depends on [Python](https://www.python.org/downloads/)>=3.8 and <=3.10. To create an environment containing the appropriate Python version and a built-in `pip`, there are two preferred ways:
+# Installation Guide
 
-1. First option is to use [**conda**](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html):
+This guide will walk you through installing T3CO step-by-step, even if you have no prior experience with Python.
+
+## Before You Start
+
+T3CO is a Python-based tool that requires:
+
+- Python (version 3.8, 3.9, or 3.10)
+- A terminal or command prompt to run commands
+- A few megabytes of free disk space
+
+If you're new to Python or command-line tools, don't worry! We'll guide you through each step.
+
+## Installing Python (if needed) <a name="installing-python"></a>
+
+If you don't already have Python installed:
+
+1. Visit the [Python downloads page](https://www.python.org/downloads/)
+2. Download the installer for Python 3.10 (recommended) for your operating system
+3. Run the installer
+   - On Windows: Make sure to check "Add Python to PATH" during installation
+   - On macOS: Follow the installer instructions
+   - On Linux: Most distributions come with Python, but you can use your package manager if needed
+
+To verify Python is installed, open a terminal or command prompt and type:
+
+```bash
+python --version
+```
+
+or
+
+```bash
+python3 --version
+```
+
+You should see output like `Python 3.10.x` (where x is any number).
+
+## Setting Up a Python Environment <a name="setting-up-env"></a>
+
+A Python environment is a dedicated space for installing packages without affecting your system Python. This helps avoid conflicts between different projects.
+
+There are two recommended ways to create an environment:
+
+### Option 1: Using Conda (Recommended for Beginners)
+
+1. First, install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) (a lightweight version of Anaconda)
+   - Download the installer for your operating system
+   - Run the installer and follow the prompts
+
+2. Once installed, open a terminal:
+   - On Windows: Open "Anaconda Prompt" from the Start menu
+   - On macOS/Linux: Open your regular terminal
+
+3. Create a new environment for T3CO:
 
     ```bash
     conda create -n t3co python=3.10
+    ```
+
+    This creates a new environment named "t3co" with Python 3.10.
+
+4. Activate the environment:
+
+    ```bash
     conda activate t3co
     ```
 
-2. The other option is using [venv](https://docs.python.org/3/library/venv.html)
+    You'll notice the prompt changing to show `(t3co)` at the beginning, indicating the environment is active.
+
+### Option 2: Using venv (Python's built-in tool)
+
+1. Open a terminal or command prompt
+
+2. Create a new environment:
 
     ```bash
     python3.10 -m venv t3co
     ```
 
-    On macOS/Linux, activate the environment:
+    This creates a new folder named "t3co" containing your environment.
+
+3. Activate the environment:
+
+    On macOS/Linux:
 
     ```bash
     source t3co/bin/activate
     ```
 
-    On Windows Powershell:
-    
+    On Windows (using Command Prompt):
+
     ```bash
-    t3co\Scripts\activate
+    t3co\Scripts\activate.bat
     ```
 
+    On Windows (using PowerShell):
+
+    ```bash
+    t3co\Scripts\Activate.ps1
+    ```
+
+    When activated, you'll see `(t3co)` at the beginning of your command prompt.
+
 ## Installing T3CO Python Package
-T3CO is available on PyPI and as a public access GitHub repository. This gives the user two ways of installing the T3CO Python Package.
-### 1. Installing From [PyPI](https://pypi.org/project/t3co/) <a name=install-from-pypi></a>
-T3CO can be easily installed from PyPI. This is the preferred method for using T3CO to run analysis with input files. To install the latest release:
-```bash
-pip install t3co
-```
 
-To install a specific version (for example T3CO v1.0.8):
-```bash
-pip install t3co==1.0.8
-```
+Now that you have a Python environment set up, you can install T3CO. There are two ways to do this:
 
-### 2. From [GitHub](https://github.com/NREL/T3CO)
-T3CO can also be installed directly from the GitHub repository for accessing demo input files and running T3CO using the Command Line Interface.
+### Option 1: Installing from PyPI (Recommended for Most Users) <a name=install-from-pypi></a>
 
-First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](https://github.com/NREL/T3CO):
-```bash
-git clone https://github.com/NREL/T3CO.git T3CO
-```
+This is the simplest method and recommended for most users who just want to run analyses:
 
-From within the [Python environment](#setting-up-env) Navigate to the parent directory containing the T3CO repository e.g. `cd GitHub/T3CO/` and run:
-```bash
-pip install -e .
-```
-This installs the local version of the T3CO clone along with all its [dependencies](https://github.com/NREL/T3CO/blob/29b0e848360b3b2de84b555bf52c52bf6e76134e/requirements.txt).
+1. With your environment activated (you should see `(t3co)` in your prompt), run:
 
-FASTSim is installed along with other library dependancies. In case of `ModuleNotFoundError: No module named 'fastsim'` error:
+   ```bash
+   pip install t3co
+   ```
+
+2. To verify installation, run:
+
+   ```bash
+   pip show t3co
+   ```
+
+   This should display information about the installed T3CO package.
+
+### Option 2: Installing from GitHub (For Advanced Users)
+
+This method gives you access to the latest code and demo files:
+
+1. First, you need to install Git if you don't have it:
+   - For Windows: Download from [git-scm.com](https://git-scm.com/downloads)
+   - For macOS: Install via [Homebrew](https://brew.sh/) with `brew install git` or download from [git-scm.com](https://git-scm.com/downloads)
+   - For Linux: Use your package manager (e.g., `sudo apt install git` for Ubuntu)
+
+2. Clone (download) the repository:
+
+   ```bash
+   git clone https://github.com/NREL/T3CO.git T3CO
+   ```
+
+   This will create a folder named `T3CO` in your current directory.
+
+3. Navigate to the T3CO folder:
+
+   ```bash
+   cd T3CO
+   ```
+
+4. Install T3CO and its dependencies:
+
+   ```bash
+   pip install -e .
+   ```
+
+   The `-e` flag makes the installation "editable," meaning changes to the code will be reflected without reinstalling.
+
+If you encounter a `ModuleNotFoundError: No module named 'fastsim'` error, you can fix it by running:
+
 ```bash
 pip install fastsim==2.1.1
 ```
 
-Check that the right version of T3CO is installed in your environment:
-```bash
-pip show t3co
-```
+## Getting Demo Input Files <a name=copy-demo-inputs></a>
 
-If there are updates or new releases to T3CO that don't show in the local version, use a `git pull` command the latest version from the `main` branch on the repo:
-```bash
-git pull origin main
-```
+T3CO comes with demo input files that help you get started. To copy these files to a location of your choice:
 
+1. Make sure your T3CO environment is activated
 
-## Copying T3CO Demo Input Files <a name=copy-demo-inputs></a>
-The `t3co.resources` folder contains all the necessary input files needed for running T3CO. However, it sometimes is difficult to navigate to these files when installing. To help with this, run this command on the Command Line Interface.
+2. Run this command:
 
-```bash
-install_t3co_demo_inputs
-```
+   ```bash
+   install_t3co_demo_inputs
+   ```
 
-The user will receive these questions on the command line:
+3. When prompted with `Do you want to copy the T3CO demo input files? (y/n):`, type `y` and press Enter
 
-`Do you want to copy the T3CO demo input files? (y/n):`
+4. When asked `Enter the path where you want to copy demo input files:`:
+   - To copy to your current directory, type `.` (a single period) and press Enter
+   - To copy to a specific folder, type the full path to that folder and press Enter
 
-`Enter the path where you want to copy demo input files:`
+This will create a `demo_inputs` folder with all the files needed to run T3CO.
 
-Choose `y` and provide the desired destination path to get a `demo_inputs` folder containing the `t3co.resources` files copied to your local directory. To copy the folder to the current directory you are on, answer the second question with ".".
+## What's Next?
 
-## Running your first analysis
-To learn about the tool and run your first T3CO analysis, proceed to the [Quick Start Guide](./quick_start.md)
+Now that you have T3CO installed, you can:
+
+1. Proceed to the [Quick Start Guide](./quick_start.md) to learn how to run your first analysis
+2. Explore the demo input files to understand how to configure T3CO
+3. Read the [T3CO Overview](./T3CO_Overview.md) to learn about the tool's capabilities
+
+## Troubleshooting
+
+If you encounter any issues during installation:
+
+- Make sure your Python environment is activated (you should see `(t3co)` in your terminal prompt)
+- Check that you're using a compatible Python version (3.8, 3.9, or 3.10)
+- For permission errors, try adding `--user` to your pip commands (e.g., `pip install --user t3co`)
+- If you're behind a corporate firewall, you might need to configure pip to use a proxy
