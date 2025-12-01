@@ -180,10 +180,15 @@ class Scenario:
         scenario_df = pd.read_csv(
             scenario_file, usecols=lambda x: x in cls.__annotations__.keys()
         )
-        scenario_dict = scenario_df.loc[scenario_df["selection"] == selection].to_dict(
-            "records"
-        )[0]
+        scenario_records = scenario_df.loc[
+            scenario_df["selection"] == int(selection)
+        ].to_dict("records")
+        if not scenario_records:
+            raise IndexError(
+                f"Selection {selection} not found in scenario file: {scenario_file}"
+            )
 
+        scenario_dict = scenario_records[0]
         return cls.from_dict(cls, scenario_dict=scenario_dict)
 
     def from_dict(cls, scenario_dict: dict):
