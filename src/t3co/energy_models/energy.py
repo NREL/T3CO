@@ -55,6 +55,11 @@ class Energy:
             scenario (Scenario): Scenario instance containing configuration data.
             vehicle_file (Union[str, Path], optional): Vehicle model assumptions input CSV file path. Defaults to gl.RESOURCES_FOLDERPATH / "inputs" / "Demo_FY22_vehicle_model_assumptions.csv".
         """
+        if not fastsim_installed:
+            raise ImportError(
+                "FASTSim is not installed or could not be imported. Cannot run FASTSim model."
+            )
+
         fastsim_run = RunFastsim(
             veh_no=veh_no,
             scenario=scenario,

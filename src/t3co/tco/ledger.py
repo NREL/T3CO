@@ -376,6 +376,8 @@ class Ledger:
             dict: The Ledger instance as a dictionary.
         """
         self.scenario.delete_dataframes()
+        if self.config:
+            self.config.delete_dataframes()
 
         if flatten:
             t3co_dict = to_flat_dict(

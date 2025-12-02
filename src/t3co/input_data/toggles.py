@@ -52,5 +52,5 @@ class Toggles:
             toggles_dict = json.load(f)
 
         toggles_dict = to_flat_dict(toggles_dict, include_prefix=False, delimiter="")
-        print(toggles_dict)
+        # print(toggles_dict)
         return cls(**toggles_dict)

@@ -210,8 +210,31 @@ class Config:
         Reads auxiliary files such as fuel prices and cost toggles
         """
         self.fuel_prices_df = pd.read_csv(get_path_object(self.fuel_prices_file))
-        self.fuel_prices_df.set_index("Fuel", inplace=True)
+        self.fuel_prices_df = self.fuel_prices_df.set_index("Fuel")
         self.cost_toggles = Toggles.from_json(get_path_object(self.cost_toggles_file))
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # Remove unpicklable DataFrames
+        keys_to_remove = [
+            "vehicle_db_df",
+            "scenario_df",
+            "energy_df",
+            "fuel_prices_df",
+        ]
+        for key in keys_to_remove:
+            if key in state:
+                del state[key]
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        # Reload DataFrames
+        self.read_vehicle_and_scenario_db_files()
+        self.read_auxiliary_files()
+        # Reload energy_df if needed
+        if self.energy_file:
+            self.energy_df = pd.read_csv(get_path_object(self.energy_file))
 
     def delete_dataframes(self) -> None:
         """
