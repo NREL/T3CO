@@ -3,6 +3,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import sys
 
+from t3co.input_data.toggles import Toggles
+
 try:
     from typing import Self  # Python 3.11+
 except ImportError:
@@ -41,6 +43,7 @@ class Config:
     energy_file: str = None
     fuel_prices_file: str = ""
     plf_weight_dist_file: str = None
+    cost_toggles_file: str = gl.RESOURCES_FOLDERPATH / "inputs" / "cost_toggles.json"
 
     TCO_method: str = gl.DIRECT_TCO_METHOD
     purchasing_method: str = "cash"

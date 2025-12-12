@@ -10,7 +10,7 @@ except ImportError:
 import pandas as pd
 
 from t3co.input_data.config import Config
-from t3co.utils.print_class_objects import handle_nan, remove_df_attrs
+from t3co.utils.print_class_objects import handle_nan, remove_df_attrs, get_path_object
 
 
 @dataclass
@@ -93,15 +93,10 @@ class Vehicle:
             Self: An instance of the Vehicle class.
         """
 
-        if config is not None and config.vehicle_db_df is not None:
-            config.vehicle_db_df = config.vehicle_file
-        else:
-            vehicle_db_df = pd.read_csv(
-                get_path_object(vehicle_db_file),
-                usecols=lambda x: x in cls.__annotations__.keys(),
-            )
-            if config is not None and config.vehicle_db_df is None:
-                config.vehicle_db_df = vehicle_db_df
+        vehicle_db_df = pd.read_csv(
+            get_path_object(vehicle_db_file),
+            usecols=lambda x: x in cls.__annotations__.keys(),
+        )
 
         vehicle_dict = vehicle_db_df.loc[
             vehicle_db_df["selection"] == selection

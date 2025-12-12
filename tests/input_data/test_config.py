@@ -1,14 +1,19 @@
 import pandas as pd
 import pytest
+from pathlib import Path
 
 from t3co.input_data.config import Config
 
 
 @pytest.fixture
 def mock_config_file(tmp_path):
+    # Create dummy vehicle and scenario files
+    (tmp_path / "vehicle.csv").write_text("selection,veh_pt_type\n1,BEV")
+    (tmp_path / "scenario.csv").write_text("selection,scenario_name\n1,Test")
+
     # Create a mock config CSV file
-    data = """analysis_id,analysis_name,vehicle_file,scenario_file,dst_dir,resfile_suffix,selections,vehicle_life_yr,drive_cycle,ess_max_charging_power_kw,fs_fueling_rate_kg_per_min,fs_fueling_rate_gasoline_gpm,fs_fueling_rate_diesel_gpm,insurance_rates_file,fuel_prices_file,plf_weight_dist_file,TCO_method,algorithms,lw_imp_curves,eng_eff_imp_curves,aero_drag_imp_curves,lw_imp_curve_sel,eng_eff_imp_curve_sel,aero_drag_imp_curve_sel,skip_all_opt,constraint_range,constraint_accel,constraint_grade,objective_tco,constraint_c_rate,constraint_trace_miss_dist_percent_on,activate_tco_payload_cap_cost_multiplier,activate_tco_fueling_dwell_time_cost,fdt_frac_full_charge_bounds,activate_mr_downtime_cost
-1,Test Analysis,vehicle.csv,scenario.csv,dst_dir,suffix,"[1, 2, 3]",10,drive_cycle.csv,100,200,300,400,insurance.csv,fuel.csv,weight_dist.csv,DIRECT,algorithms,lw_imp_curves,eng_eff_curves,aero_drag_curves,lw_imp_curve_sel,eng_eff_imp_curve_sel,aero_drag_imp_curve_sel,True,False,False,False,False,False,False,False,False,,False
+    data = f"""analysis_id,analysis_name,vehicle_file,scenario_file,dst_dir,resfile_suffix,selections,vehicle_life_yr,drive_cycle,ess_max_charging_power_kw,fs_fueling_rate_kg_per_min,fs_fueling_rate_gasoline_gpm,fs_fueling_rate_diesel_gpm,insurance_rates_file,fuel_prices_file,plf_weight_dist_file,TCO_method,algorithms,lw_imp_curves,eng_eff_imp_curves,aero_drag_imp_curves,lw_imp_curve_sel,eng_eff_imp_curve_sel,aero_drag_imp_curve_sel,skip_all_opt,constraint_range,constraint_accel,constraint_grade,objective_tco,constraint_c_rate,constraint_trace_miss_dist_percent_on,activate_tco_payload_cap_cost_multiplier,activate_tco_fueling_dwell_time_cost,fdt_frac_full_charge_bounds,activate_mr_downtime_cost
+1,Test Analysis,{tmp_path / "vehicle.csv"},{tmp_path / "scenario.csv"},dst_dir,suffix,"[1, 2, 3]",10,drive_cycle.csv,100,200,300,400,insurance.csv,fuel.csv,weight_dist.csv,DIRECT,algorithms,lw_imp_curves,eng_eff_curves,aero_drag_curves,lw_imp_curve_sel,eng_eff_imp_curve_sel,aero_drag_imp_curve_sel,True,False,False,False,False,False,False,False,False,,False
 """
     mock_file = tmp_path / "mock_config.csv"
     mock_file.write_text(data)
@@ -94,8 +99,8 @@ def test_config_from_csv(mock_config_file):
     config = Config().from_csv(filename=mock_config_file, analysis_id=1)
     assert config.analysis_id == 1
     assert config.analysis_name == "Test Analysis"
-    assert config.vehicle_file == "vehicle.csv"
-    assert config.scenario_file == "scenario.csv"
+    assert Path(config.vehicle_file).name == "vehicle.csv"
+    assert Path(config.scenario_file).name == "scenario.csv"
     assert config.dst_dir == "dst_dir"
     assert config.resfile_suffix == "suffix"
     assert config.selections == [1, 2, 3]
@@ -160,9 +165,15 @@ Diesel,3.0
     fuel_prices_file = tmp_path / "fuel_prices.csv"
     fuel_prices_file.write_text(fuel_prices_data)
 
+    # Create mock cost toggles file
+    cost_toggles_data = "{}"
+    cost_toggles_file = tmp_path / "cost_toggles.json"
+    cost_toggles_file.write_text(cost_toggles_data)
+
     config = Config(
         config_filename=mock_config_file,
         fuel_prices_file=fuel_prices_file,
+        cost_toggles_file=cost_toggles_file,
     )
     config.read_auxiliary_files()
     assert not config.fuel_prices_df.empty
