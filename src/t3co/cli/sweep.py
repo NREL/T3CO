@@ -21,6 +21,7 @@ from t3co.utils.print_class_objects import get_path_object
 try:
     from pymoo.algorithms.soo.nonconvex.ga import GA
     from pymoo.algorithms.moo import nsga2
+    from pymoo.core.problem import StarmapParallelization
 
     from pymoo.optimize import minimize
     from t3co.optimize.optimization import VehicleDesignOpt
@@ -122,25 +123,32 @@ def generate_ledger(selection: int, config: Config) -> Dict:
 
 
 def run_optimization(vehicle: Vehicle, scenario: Scenario, config: Config):
-    problem = VehicleDesignOpt(vehicle=vehicle, scenario=scenario, config=config)
-    algorithm = GA(pop_size=100)
+    pool = None
+    runner = None
+    if config.parallel:
+        pool = Pool(config.n_processes)
+        runner = StarmapParallelization(pool.starmap)
 
-    res = minimize(
-        problem,
-        algorithm,
-        termination=("n_gen", 5),
-        seed=1,
-        verbose=True,
-        n_processes=config.n_processes if config.parallel else None,
-    )
+    try:
+        problem = VehicleDesignOpt(
+            vehicle=vehicle, scenario=scenario, config=config, runner=runner
+        )
+        algorithm = GA(pop_size=100)
+
+        res = minimize(
+            problem,
+            algorithm,
+            termination=("n_gen", 5),
+            seed=1,
+            verbose=True,
+        )
+    finally:
+        if pool:
+            pool.close()
+            pool.join()
+
     vehicle.fc_max_kw = res.X[0]
-    print("Best solution:")
     print(vehicle)
-    # print("  Battery Size (kWh):          {:.2f}".format(res.X[0]))
-    # print("  Fuel Converter Peak Power (kW): {:.2f}".format(res.X[1]))
-    # print("  Fuel Storage Energy (kWh eq.):  {:.2f}".format(res.X[2]))
-    # print("  Motor Peak Power (kW):          {:.2f}".format(res.X[3]))
-    # print("Minimum Discounted TCO:  {res.F))
     return vehicle
 
 
