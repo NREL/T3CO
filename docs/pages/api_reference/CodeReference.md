@@ -44,13 +44,13 @@
     * [\_\_init\_\_](#t3co.energy_models.energy.Energy.__init__)
     * [run\_fastsim\_model](#t3co.energy_models.energy.Energy.run_fastsim_model)
 * [t3co.energy\_models.fastsim\_model.fastsim\_wrapper](#t3co.energy_models.fastsim_model.fastsim_wrapper)
-  * [RunFastsim](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim)
-    * [\_\_new\_\_](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim.__new__)
-    * [load\_vehicle](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim.load_vehicle)
-    * [load\_design\_cycle\_from\_scenario](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim.load_design_cycle_from_scenario)
-    * [load\_design\_cycle\_from\_path](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim.load_design_cycle_from_path)
-    * [get\_simdrive](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim.get_simdrive)
-    * [get\_range](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim.get_range)
+  * [RunFASTSim](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim)
+    * [\_\_new\_\_](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.__new__)
+    * [load\_vehicle](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.load_vehicle)
+    * [load\_design\_cycle\_from\_scenario](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.load_design_cycle_from_scenario)
+    * [load\_design\_cycle\_from\_path](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.load_design_cycle_from_path)
+    * [get\_simdrive](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.get_simdrive)
+    * [get\_range](#t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.get_range)
 * [t3co.energy\_models.fastsim\_model](#t3co.energy_models.fastsim_model)
 * [t3co.utils](#t3co.utils)
 * [t3co.utils.print\_class\_objects](#t3co.utils.print_class_objects)
@@ -631,15 +631,15 @@ Runs the FASTSim model to calculate mpgge and primary fuel range.
 
 # t3co.energy\_models.fastsim\_model.fastsim\_wrapper
 
-<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim"></a>
+<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim"></a>
 
-## RunFastsim Objects
+## RunFASTSim Objects
 
 ```python
-class RunFastsim()
+class RunFASTSim()
 ```
 
-<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim.__new__"></a>
+<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.__new__"></a>
 
 #### \_\_new\_\_
 
@@ -647,9 +647,9 @@ class RunFastsim()
 def __new__(cls, *args, **kwargs)
 ```
 
-Creates a new instance of the RunFastsim class.
+Creates a new instance of the RunFASTSim class.
 
-<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim.load_vehicle"></a>
+<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.load_vehicle"></a>
 
 #### load\_vehicle
 
@@ -671,7 +671,7 @@ Loads vehicle object from vehicle number and input CSV filepath.
 
 - `fastsim.vehicle.Vehicle` - FASTSim vehicle object.
 
-<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim.load_design_cycle_from_scenario"></a>
+<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.load_design_cycle_from_scenario"></a>
 
 #### load\_design\_cycle\_from\_scenario
 
@@ -695,7 +695,7 @@ Loads the design cycle used for mpgge and range determination.
 
   Union[fastsim.cycle.Cycle, List[fastsim.cycle.Cycle]]: FASTSim cycle object for current Scenario object.
 
-<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim.load_design_cycle_from_path"></a>
+<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.load_design_cycle_from_path"></a>
 
 #### load\_design\_cycle\_from\_path
 
@@ -717,7 +717,7 @@ Loads the Cycle object from the drive cycle filepath.
 
 - `fastsim.cycle.Cycle` - FASTSim cycle object for current Scenario object.
 
-<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim.get_simdrive"></a>
+<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.get_simdrive"></a>
 
 #### get\_simdrive
 
@@ -737,7 +737,7 @@ Creates a SimDrive object for the given cycle and vehicle.
 
 - `fastsim.fastsimrust.RustSimDrive` - The RustSimDrive object.
 
-<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFastsim.get_range"></a>
+<a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.get_range"></a>
 
 #### get\_range
 

@@ -6,7 +6,7 @@ from t3co.input_data.scenario import Scenario
 try:
     import fastsim
 
-    from t3co.energy_models.fastsim_model.fastsim_wrapper import RunFastsim
+    from t3co.energy_models.fastsim_model.fastsim_wrapper import RunFASTSim
 
     fastsim_installed = True
 except ImportError:
@@ -69,7 +69,7 @@ def test_run_fastsim_initialization(scenario, fastsim_vehicle, fastsim_cycle, mo
     mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
     mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
 
-    run_fastsim = RunFastsim(veh_no=1, scenario=scenario, use_rust=False)
+    run_fastsim = RunFASTSim(veh_no=1, scenario=scenario, use_rust=False)
     assert run_fastsim.vehicle == fastsim_vehicle
     assert run_fastsim.cycles == fastsim_cycle
     # assert run_fastsim.mpgge == pytest.approx(fastsim_cycle.mpgge, 0.01)
@@ -80,7 +80,7 @@ def test_load_vehicle(scenario, fastsim_vehicle, mocker):
         pytest.skip("fastsim extra not installed")
     mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
 
-    run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
+    run_fastsim = RunFASTSim(veh_no=1, scenario=scenario)
     run_fastsim.load_vehicle(
         veh_no=1,
         veh_input_path=gl.RESOURCES_FOLDERPATH
@@ -96,7 +96,7 @@ def test_load_design_cycle_from_scenario(scenario, fastsim_cycle, mocker):
         pytest.skip("fastsim extra not installed")
     mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
 
-    run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
+    run_fastsim = RunFASTSim(veh_no=1, scenario=scenario)
     cycles = run_fastsim.load_design_cycle_from_scenario(
         scenario=scenario, return_rustcycle=False
     )
@@ -109,7 +109,7 @@ def test_get_simdrive(scenario, fastsim_vehicle, fastsim_cycle, mocker):
     mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
     mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
 
-    run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
+    run_fastsim = RunFASTSim(veh_no=1, scenario=scenario)
     simdrive = run_fastsim.get_simdrive(cycle=fastsim_cycle)
     assert isinstance(simdrive, fastsim.fastsimrust.RustSimDrive)
 
@@ -120,7 +120,7 @@ def test_get_range(scenario, fastsim_vehicle, fastsim_cycle, mocker):
     mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
     mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
 
-    run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
+    run_fastsim = RunFASTSim(veh_no=1, scenario=scenario)
     run_fastsim.get_range()
     if run_fastsim.vehicle.veh_pt_type == gl.BEV:
         expected_range = (

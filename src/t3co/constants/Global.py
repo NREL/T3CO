@@ -16,7 +16,7 @@ SWEEP_PATH = Path(__file__).resolve().parents[1] / "cli" / "sweep.py"
 
 CONV = "Conv"
 HEV = "HEV"
-# PHEV = vehicle.PHEV
+PHEV = "PHEV"
 BEV = "BEV"
 
 DIRECT_TCO_METHOD = "DIRECT"

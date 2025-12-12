@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import List, Union
 
 import fastsim
+from fastsim import parameters as params
 import numpy as np
 import pandas as pd
 
@@ -11,7 +12,7 @@ from t3co.input_data.scenario import Scenario
 from t3co.input_data.vehicle import Vehicle
 
 
-class RunFastsim:
+class RunFASTSim:
     vehicle: fastsim.vehicle.Vehicle = None
     cycles: Union[fastsim.cycle.Cycle, List[fastsim.simdrive.SimDrive]] = None
     simdrives: Union[fastsim.simdrive.SimDrive, List[fastsim.simdrive.SimDrive]] = None
@@ -20,9 +21,9 @@ class RunFastsim:
 
     def __new__(cls, *args, **kwargs):
         """
-        Creates a new instance of the RunFastsim class.
+        Creates a new instance of the RunFASTSim class.
         """
-        instance = super(RunFastsim, cls).__new__(cls)
+        instance = super(RunFASTSim, cls).__new__(cls)
         return instance
 
     def __init__(
@@ -35,6 +36,7 @@ class RunFastsim:
         / "inputs"
         / "Demo_FY22_vehicle_model_assumptions.csv",
         use_rust: bool = True,
+        cycle: fastsim.cycle.Cycle = None,
     ) -> None:
         self.load_vehicle(
             t3co_vehicle=t3co_vehicle,
@@ -43,9 +45,15 @@ class RunFastsim:
             vehicle_df=vehicle_df,
             use_rust=use_rust,
         )
-        self.cycles = self.load_design_cycle_from_scenario(
-            scenario=scenario, return_rustcycle=use_rust
-        )
+
+        if cycle:
+            self.cycles = cycle
+            if use_rust:
+                self.cycles = self.cycles.to_rust()
+        else:
+            self.cycles = self.load_design_cycle_from_scenario(
+                scenario=scenario, return_rustcycle=use_rust
+            )
 
         if isinstance(self.cycles, list):
             self.simdrives, mpgges_list, weights = [], [], []
@@ -260,3 +268,46 @@ class RunFastsim:
             )
             conv_range_mi = (self.vehicle.fs_kwh / gl.KWH_PER_GGE) * self.mpgge
             self.range_mi = elec_range_mi + conv_range_mi
+
+    @staticmethod
+    def get_accel_cycle() -> fastsim.cycle.Cycle:
+        """
+        Creates the acceleration test cycle.
+        """
+        accel_cyc_secs = np.arange(500)
+        cyc_dict = {
+            "cycSecs": accel_cyc_secs,
+            "cycMps": np.append([0], np.ones(len(accel_cyc_secs) - 1) * 44.7),
+            "cycGrade": np.zeros(len(accel_cyc_secs)),
+        }
+        return fastsim.cycle.Cycle.from_dict(cyc_dict)
+
+    @staticmethod
+    def get_grade_cycle(
+        target_grade: float, scenario: Scenario = None
+    ) -> fastsim.cycle.Cycle:
+        """
+        Creates the gradeability test cycle.
+        """
+        CYC_SECONDS = 100
+        CYC_MPH = 90
+        SIX_GRADE = 0.06
+        ONE_POINT_TWENTY_FIVE_GRADE = 0.0125
+
+        first_time_step_mph = 0
+        if scenario is not None:
+            if target_grade == SIX_GRADE:
+                first_time_step_mph = scenario.min_speed_at_6pct_grade_in_5min_mph
+            if target_grade == ONE_POINT_TWENTY_FIVE_GRADE:
+                first_time_step_mph = scenario.min_speed_at_1p25pct_grade_in_5min_mph
+
+        target_grade_cyc_secs = np.arange(CYC_SECONDS)
+        cyc_dict = {
+            "cycSecs": target_grade_cyc_secs,
+            "cycMps": np.append(
+                [first_time_step_mph], np.ones(CYC_SECONDS - 1) * CYC_MPH
+            )
+            / params.MPH_PER_MPS,
+            "cycGrade": np.ones(CYC_SECONDS) * target_grade,
+        }
+        return fastsim.cycle.Cycle.from_dict(cyc_dict)
