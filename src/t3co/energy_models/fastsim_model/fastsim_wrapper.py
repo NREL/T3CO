@@ -155,11 +155,19 @@ class RunFASTSim:
         # print(
         #     f"scenario.drive_cycle : {scenario.drive_cycle} {type(scenario.drive_cycle)}"
         # )
-        drive_cycle = (
-            ast.literal_eval(scenario.drive_cycle)
-            if not Path(scenario.drive_cycle).exists()
-            else scenario.drive_cycle
-        )
+        if isinstance(scenario.drive_cycle, Path):
+            drive_cycle = str(scenario.drive_cycle)
+        elif (
+            isinstance(scenario.drive_cycle, str)
+            and not Path(scenario.drive_cycle).exists()
+        ):
+            try:
+                drive_cycle = ast.literal_eval(scenario.drive_cycle)
+            except (ValueError, SyntaxError):
+                drive_cycle = scenario.drive_cycle
+        else:
+            drive_cycle = scenario.drive_cycle
+
         if isinstance(drive_cycle, list):
             design_cycles = []
             weights = []
@@ -204,7 +212,8 @@ class RunFASTSim:
             print(
                 f"Drive cycle not found in {cyc_file_path}, trying {gl.CYCLES_FOLDER}"
             )
-            finalized_path = Path(gl.CYCLES_FOLDER) / cyc_file_path
+
+            finalized_path = Path(gl.CYCLES_FOLDER) / Path(cyc_file_path).name
 
         else:
             finalized_path = cyc_file_path

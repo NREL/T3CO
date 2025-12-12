@@ -51,7 +51,17 @@ def load_vehicle_scenario_energy(
     Returns:
         Tuple[Vehicle, Scenario, Energy]: The vehicle, scenario, and energy models.
     """
-    if config.dc_files:
+    # Workaround for config.dc_files disappearing
+    if (
+        (not hasattr(config, "dc_files") or config.dc_files is None)
+        and config.drive_cycle
+        and Path(config.drive_cycle).is_dir()
+    ):
+        config.dc_files = [
+            p.absolute() for p in Path(config.drive_cycle).rglob("*.csv")
+        ]
+
+    if isinstance(selection, str) and "_" in selection:
         selection, dc_id = map(int, selection.split("_"))
 
     if scenario:
