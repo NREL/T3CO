@@ -92,15 +92,21 @@ class Vehicle:
         Returns:
             Self: An instance of the Vehicle class.
         """
-        vehicle_db_df = pd.read_csv(
-            (
-                Path(vehicle_db_file).resolve(strict=True)
-                if Path(vehicle_db_file).is_absolute()
-                else Path(__file__).parents[1] / "resources" / vehicle_db_file
-            ),
-            usecols=lambda x: x in cls.__annotations__.keys(),
-        )
-        return cls.from_df(selection=selection, vehicle_df=vehicle_db_df)
+
+        if config is not None and config.vehicle_db_df is not None:
+            config.vehicle_db_df = config.vehicle_file
+        else:
+            vehicle_db_df = pd.read_csv(
+                get_path_object(vehicle_db_file),
+                usecols=lambda x: x in cls.__annotations__.keys(),
+            )
+            if config is not None and config.vehicle_db_df is None:
+                config.vehicle_db_df = vehicle_db_df
+
+        vehicle_dict = vehicle_db_df.loc[
+            vehicle_db_df["selection"] == selection
+        ].to_dict("records")[0]
+        return cls(**handle_nan(vehicle_dict))
 
     def set_veh_kg(self) -> None:
         """

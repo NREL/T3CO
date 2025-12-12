@@ -38,6 +38,7 @@ class Config:
     fs_fueling_rate_diesel_gpm: float = 0
 
     insurance_rates_file: str = ""
+    energy_file: str = None
     fuel_prices_file: str = ""
     plf_weight_dist_file: str = None
 
@@ -74,8 +75,11 @@ class Config:
 
     vehicle_df: pd.DataFrame = None
     scenario_df: pd.DataFrame = None
+    energy_df: pd.DataFrame = None
     fuel_prices_df: pd.DataFrame = None
     config_filename: Union[str, Path] = gl.RESOURCES_FOLDERPATH / "T3COConfig.csv"
+    vehicle_db_df: pd.DataFrame = None
+    scenario_df: pd.DataFrame = None
 
     def __new__(cls, *args, **kwargs):
         """
@@ -121,7 +125,16 @@ class Config:
         except:
             config_dict["selections"] = int(config_dict["selections"])
         self.__dict__.update(config_dict)
+
+        self.read_vehicle_and_scenario_db_files()
         return self
+
+    def read_vehicle_and_scenario_db_files(self) -> None:
+        """
+        Reads vehicle and scenario database files into DataFrame attributes.
+        """
+        self.vehicle_db_df = pd.read_csv(get_path_object(self.vehicle_file))
+        self.scenario_df = pd.read_csv(get_path_object(self.scenario_file))
 
     def validate_analysis_id(self) -> pd.DataFrame:
         """
@@ -175,8 +188,21 @@ class Config:
                         self.selections_list.append(
                             str(selection) + "_" + str(i).zfill(4)
                         )
+
             else:
                 self.selections_list = self.selections
+
+        elif self.energy_file:
+            self.energy_df = pd.read_csv(get_path_object(self.energy_file))
+            self.dc_files = self.energy_df["drive_cycle"].tolist()
+            self.selections_list = []
+            for selection in self.selections:
+                for i in range(len(self.dc_files)):
+                    self.selections_list.append(str(selection) + "_" + str(i).zfill(4))
+        elif (
+            self.selections == -1 or self.selections == [-1]
+        ) and self.vehicle_db_df is not None:
+            self.selections_list = self.vehicle_db_df["selection"].tolist()
         else:
             self.selections_list = self.selections
 
@@ -188,7 +214,32 @@ class Config:
         self.vehicle_df = pd.read_csv(get_path_object(self.vehicle_file))
         self.scenario_df = pd.read_csv(get_path_object(self.scenario_file))
         self.fuel_prices_df = pd.read_csv(get_path_object(self.fuel_prices_file))
-        self.fuel_prices_df.set_index("Fuel", inplace=True)
+
+        self.fuel_prices_df = self.fuel_prices_df.set_index("Fuel")
+        self.cost_toggles = Toggles.from_json(get_path_object(self.cost_toggles_file))
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # Remove unpicklable DataFrames
+        keys_to_remove = [
+            "vehicle_db_df",
+            "scenario_df",
+            "energy_df",
+            "fuel_prices_df",
+        ]
+        for key in keys_to_remove:
+            if key in state:
+                del state[key]
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        # Reload DataFrames
+        self.read_vehicle_and_scenario_db_files()
+        self.read_auxiliary_files()
+        # Reload energy_df if needed
+        if self.energy_file:
+            self.energy_df = pd.read_csv(get_path_object(self.energy_file))
 
     def delete_dataframes(self) -> None:
         """
