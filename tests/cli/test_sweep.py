@@ -47,7 +47,7 @@ def toggles():
 
 @pytest.fixture
 def scenario(config, toggles):
-    scenario = Scenario.from_file(selection=1)
+    scenario = Scenario.from_csv(selection=1)
 
     scenario.fuel_prices_df = pd.DataFrame(
         {
@@ -83,7 +83,7 @@ def energy(scenario, config):
 @pytest.fixture
 def config(toggles):
     config = Config()
-    config.from_file()
+    config.from_csv()
     config.check_drivecycles_and_create_selections()
     config.read_auxiliary_files()
     config.vehicle_file = gl.RESOURCES_FOLDERPATH / config.vehicle_file
@@ -97,31 +97,38 @@ def config(toggles):
     return config
 
 
-def test_load_vehicle_scenario_energy(mocker, config, vehicle, scenario, energy):
-    mocker.patch("t3co.input_data.vehicle.Vehicle.from_config", return_value=vehicle)
-    mocker.patch("t3co.input_data.scenario.Scenario.from_file", return_value=scenario)
-    mocker.patch(
-        "t3co.energy_models.energy.Energy.run_fastsim_model", return_value=None
-    )
-
-    veh, scen, en = load_vehicle_scenario_energy(
-        selection="1", config=config, vehicle=vehicle, scenario=scenario, energy=energy
-    )
-    assert veh == vehicle
-    assert scen == scenario
-    assert en.mpgge == pytest.approx(6.03, 0.01)
-    assert en.primary_fuel_range_mi == pytest.approx(2035.70, 0.01)
+from unittest.mock import patch
 
 
-def test_generate_ledger(mocker, config, vehicle, scenario, energy):
-    mocker.patch(
-        "t3co.cli.sweep.load_vehicle_scenario_energy",
-        return_value=(vehicle, scenario, energy),
-    )
-    mocker.patch("t3co.tco.ledger.Ledger.to_dict", return_value={"key": "value"})
+def test_load_vehicle_scenario_energy(config, vehicle, scenario, energy):
+    with (
+        patch("t3co.input_data.vehicle.Vehicle.from_config", return_value=vehicle),
+        patch("t3co.input_data.scenario.Scenario.from_csv", return_value=scenario),
+        patch("t3co.energy_models.energy.Energy.run_fastsim_model", return_value=None),
+    ):
+        veh, scen, en = load_vehicle_scenario_energy(
+            selection="1",
+            config=config,
+            vehicle=vehicle,
+            scenario=scenario,
+            energy=energy,
+        )
+        assert veh == vehicle
+        assert scen == scenario
+        assert en.mpgge == pytest.approx(6.03, 0.01)
+        assert en.primary_fuel_range_mi == pytest.approx(2035.70, 0.01)
 
-    result = generate_ledger(selection=1, config=config)
-    assert result == {"key": "value"}
+
+def test_generate_ledger(config, vehicle, scenario, energy):
+    with (
+        patch(
+            "t3co.cli.sweep.load_vehicle_scenario_energy",
+            return_value=(vehicle, scenario, energy),
+        ),
+        patch("t3co.tco.ledger.Ledger.to_dict", return_value={"key": "value"}),
+    ):
+        result = generate_ledger(selection=1, config=config)
+        assert result == {"key": "value"}
 
 
 def test_create_results_filepath(config):
@@ -147,19 +154,21 @@ def test_export_results_to_csv(config):
     assert reports_df.iloc[1]["value"] == pytest.approx(200, 0.01)
 
 
-def test_run_t3co(mocker, config):
-    mocker.patch(
-        "t3co.cli.sweep.generate_ledger", return_value={"selection": 1, "value": 100}
-    )
-    mocker.patch(
-        "t3co.cli.sweep.export_results_to_csv",
-        return_value=(
-            Path("results.csv"),
-            pd.DataFrame([{"selection": 1, "value": 100}]),
-        ),
-    )
-    mocker.patch("builtins.print")
-
-    run_t3co(config=config, save_results=True)
-    assert mocker.patch("t3co.cli.sweep.generate_ledger").called != None
-    assert mocker.patch("t3co.cli.sweep.export_results_to_csv").called != None
+def test_run_t3co(config):
+    with (
+        patch(
+            "t3co.cli.sweep.generate_ledger",
+            return_value={"selection": 1, "value": 100},
+        ) as mock_generate_ledger,
+        patch(
+            "t3co.cli.sweep.export_results_to_csv",
+            return_value=(
+                Path("results.csv"),
+                pd.DataFrame([{"selection": 1, "value": 100}]),
+            ),
+        ) as mock_export,
+        patch("builtins.print"),
+    ):
+        run_t3co(config=config, save_results=True)
+        assert mock_generate_ledger.called
+        assert mock_export.called

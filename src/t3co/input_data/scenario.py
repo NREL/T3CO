@@ -1,11 +1,10 @@
 from __future__ import annotations
-
 import ast
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Union
 
 import pandas as pd
+from typing import List, Union
 
 from t3co.input_data.toggles import Toggles
 
@@ -14,13 +13,13 @@ try:
 except ImportError:
     from typing_extensions import Self  # Older versions of Python
 
-from t3co.constants import Global as gl
 from t3co.input_data.config import Config
-from t3co.utils.print_class_objects import get_path_object, handle_nan, remove_df_attrs
+from t3co.utils.print_class_objects import handle_nan, remove_df_attrs
+from t3co.constants import Global as gl
 
 
 @dataclass
-class Scenario:
+class Scenario(object):
     """
     Class object that contains all TCO parameters and performance target (range, grade, accel) information
     for a vehicle such that performance and TCO can be computed during optimization.
@@ -28,6 +27,7 @@ class Scenario:
 
     selection: int = None
     scenario_name: str = ""
+    veh_year: int = 0
     drive_cycle: str = ""
     use_config: bool = True
     vmt: list = field(default_factory=str)
@@ -93,14 +93,14 @@ class Scenario:
     time_dilation_tol: float = -1
 
     skip_opt: bool = False
-    knob_min_ess_kwh: List[float] = field(default_factory=list)
-    knob_max_ess_kwh: List[float] = field(default_factory=list)
-    knob_min_motor_kw: List[float] = field(default_factory=list)
-    knob_max_motor_kw: List[float] = field(default_factory=list)
-    knob_min_fc_kw: List[float] = field(default_factory=list)
-    knob_max_fc_kw: List[float] = field(default_factory=list)
-    knob_min_fs_kwh: List[float] = field(default_factory=list)
-    knob_max_fs_kwh: List[float] = field(default_factory=list)
+    knob_min_ess_kwh: float = None
+    knob_max_ess_kwh: float = None
+    knob_min_motor_kw: float = None
+    knob_max_motor_kw: float = None
+    knob_min_fc_kw: float = None
+    knob_max_fc_kw: float = None
+    knob_min_fs_kwh: float = None
+    knob_max_fs_kwh: float = None
     constraint_c_rate: bool = False
     constraint_range: bool = False
     constraint_accel: bool = False
@@ -160,7 +160,24 @@ class Scenario:
         return instance
 
     @classmethod
-    def from_file(
+    def from_config(cls, selection: int, config: Config) -> Self:
+        """
+        Creates a Scenario instance from the configuration.
+
+        Args:
+            selection (int): The selection index.
+            config (Config): The configuration instance.
+
+        Returns:
+            Self: An instance of the Scenario class.
+        """
+        if config.scenario_df is not None:
+            return cls.from_df(selection=selection, scenario_df=config.scenario_df)
+        else:
+            return cls.from_csv(selection=selection, scenario_file=config.scenario_file)
+
+    @classmethod
+    def from_csv(
         cls,
         selection: int,
         scenario_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH
@@ -180,23 +197,36 @@ class Scenario:
         scenario_df = pd.read_csv(
             scenario_file, usecols=lambda x: x in cls.__annotations__.keys()
         )
-        scenario_records = scenario_df.loc[
-            scenario_df["selection"] == int(selection)
-        ].to_dict("records")
-        if not scenario_records:
-            raise IndexError(
-                f"Selection {selection} not found in scenario file: {scenario_file}"
-            )
+        return cls.from_df(
+            selection=selection,
+            scenario_df=scenario_df,
+        )
 
-        scenario_dict = scenario_records[0]
-        return cls.from_dict(cls, scenario_dict=scenario_dict)
+    @classmethod
+    def from_df(cls, selection: int, scenario_df: pd.DataFrame) -> Self:
+        """
+        Creates a Scenario instance from a DataFrame.
 
-    def from_dict(cls, scenario_dict: dict):
+        Args:
+            selection (int): The selection index to filter the scenario data.
+            scenario_df (pd.DataFrame): The scenario DataFrame.
+
+        Returns:
+            Scenario: An instance of the Scenario class.
+        """
+        scenario_dict = scenario_df.loc[scenario_df["selection"] == selection].to_dict(
+            "records"
+        )[0]
+
+        return cls.from_dict(scenario_dict=scenario_dict)
+
+    @classmethod
+    def from_dict(cls, scenario_dict: dict) -> Self:
         """
         Creates a Scenario instance from a dictionary.
 
         Args:
-            scenario_dict (dict): Dictionary containing scenario data.
+            scenario_dict (dict): The dictionary containing scenario data.
 
         Returns:
             Scenario: An instance of the Scenario class.
@@ -269,7 +299,6 @@ class Scenario:
             "activate_tco_fueling_dwell_time_cost",
             "fdt_frac_full_charge_bounds",
             "activate_mr_downtime_cost",
-            "cost_toggles_file",
         ]
         try:
             if config.dc_files is None:
@@ -303,14 +332,6 @@ class Scenario:
         else:
             self.purchasing_method = "cash"
 
-        if not config.cost_toggles:
-            self.cost_toggles_file = get_path_object(self.cost_toggles_file)
-            self.cost_toggles = Toggles.from_json(
-                cost_toggles_file=gl.RESOURCES_FOLDERPATH / self.cost_toggles_file
-            )
-        elif config.cost_toggles_file:
-            self.cost_toggles_file = config.cost_toggles_file
-            self.cost_toggles = config.cost_toggles
         self.insurance_rates_file = config.insurance_rates_file
         self.fuel_prices_df = config.fuel_prices_df
 

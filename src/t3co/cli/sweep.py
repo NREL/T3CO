@@ -18,6 +18,21 @@ from t3co.input_data.vehicle import Vehicle
 from t3co.tco.ledger import Ledger
 from t3co.utils.print_class_objects import get_path_object
 
+try:
+    from pymoo.algorithms.soo.nonconvex.ga import GA
+    from pymoo.algorithms.moo import nsga2
+    from pymoo.core.problem import StarmapParallelization
+
+    from pymoo.optimize import minimize
+    from t3co.optimize.optimization import VehicleDesignOpt
+
+    optimization_installed = True
+
+except ImportError:
+    optimization_installed = False
+except AttributeError:
+    optimization_installed = False
+
 
 def load_vehicle_scenario_energy(
     selection: Union[int, str],
@@ -42,7 +57,7 @@ def load_vehicle_scenario_energy(
     if scenario:
         input_scenario = scenario
     else:
-        input_scenario = Scenario().from_file(
+        input_scenario = Scenario().from_csv(
             selection=selection, scenario_file=config.scenario_file
         )
         input_scenario.override_from_config(config=config)
@@ -98,12 +113,49 @@ def generate_ledger(selection: int, config: Config) -> Dict:
     )
     print(f"Running Selection: {selection}")
 
+    if not config.skip_all_opt and optimization_installed:
+        optimized_vehicle = run_optimization(
+            vehicle=input_vehicle, scenario=input_scenario, config=config
+        )
+    else:
+        optimized_vehicle = None
+
     return Ledger(
-        vehicle=input_vehicle,
+        vehicle=(input_vehicle if not optimized_vehicle else optimized_vehicle),
         scenario=input_scenario,
         energy=input_energy,
         config=config,
     ).to_dict()
+
+
+def run_optimization(vehicle: Vehicle, scenario: Scenario, config: Config):
+    pool = None
+    runner = None
+    if config.parallel:
+        pool = Pool(config.n_processes)
+        runner = StarmapParallelization(pool.starmap)
+
+    try:
+        problem = VehicleDesignOpt(
+            vehicle=vehicle, scenario=scenario, config=config, runner=runner
+        )
+        algorithm = GA(pop_size=100)
+
+        res = minimize(
+            problem,
+            algorithm,
+            termination=("n_gen", 5),
+            seed=1,
+            verbose=True,
+        )
+    finally:
+        if pool:
+            pool.close()
+            pool.join()
+
+    vehicle.fc_max_kw = res.X[0]
+    print(vehicle)
+    return vehicle
 
 
 def create_results_filepath(config: Config) -> Path:
@@ -184,11 +236,11 @@ def run_t3co(config: Config, save_results: bool = True) -> None:
     reports_list = []
     error_list = []
     for selection in config.selections_list:
-        try:
-            reports_list.append(generate_ledger(selection=selection, config=config))
-        except ValueError:
-            error_list.append(selection)
-            continue
+        # try:
+        reports_list.append(generate_ledger(selection=selection, config=config))
+        # except ValueError:
+        #     error_list.append(selection)
+        #     continue
 
     if save_results:
         output_path, reports_df = export_results_to_csv(
@@ -429,7 +481,7 @@ if __name__ == "__main__":
         config.aero_drag_imp_curves = Path(args.aero_curves)
     else:
         config = Config()
-        config.from_file(filename=args.config, analysis_id=args.analysis_id)
+        config.from_csv(filename=args.config, analysis_id=args.analysis_id)
         config.check_drivecycles_and_create_selections()
         config.read_auxiliary_files()
         gl.RESOURCES_FOLDERPATH = Path(args.config).parent

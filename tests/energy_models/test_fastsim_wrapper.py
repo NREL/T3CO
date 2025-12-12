@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import patch
 
 from t3co.constants import Global as gl
 from t3co.input_data.scenario import Scenario
@@ -6,7 +7,7 @@ from t3co.input_data.scenario import Scenario
 try:
     import fastsim
 
-    from t3co.energy_models.fastsim_model.fastsim_wrapper import RunFastsim
+    from t3co.energy_models.fastsim_model.fastsim_wrapper import RunFASTSim
 
     fastsim_installed = True
 except ImportError:
@@ -63,86 +64,87 @@ def fastsim_cycle():
     )
 
 
-def test_run_fastsim_initialization(scenario, fastsim_vehicle, fastsim_cycle, mocker):
+def test_run_fastsim_initialization(scenario, fastsim_vehicle, fastsim_cycle):
     if not fastsim_installed:
         pytest.skip("fastsim extra not installed")
-    mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
-    mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
+    with (
+        patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle),
+        patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle),
+    ):
+        run_fastsim = RunFASTSim(veh_no=1, scenario=scenario, use_rust=False)
+        assert run_fastsim.vehicle == fastsim_vehicle
+        assert run_fastsim.cycles == fastsim_cycle
+        # assert run_fastsim.mpgge == pytest.approx(fastsim_cycle.mpgge, 0.01)
 
-    run_fastsim = RunFastsim(veh_no=1, scenario=scenario, use_rust=False)
-    assert run_fastsim.vehicle == fastsim_vehicle
-    assert run_fastsim.cycles == fastsim_cycle
-    # assert run_fastsim.mpgge == pytest.approx(fastsim_cycle.mpgge, 0.01)
 
-
-def test_load_vehicle(scenario, fastsim_vehicle, mocker):
+def test_load_vehicle(scenario, fastsim_vehicle):
     if not fastsim_installed:
         pytest.skip("fastsim extra not installed")
-    mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
-
-    run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
-    run_fastsim.load_vehicle(
-        veh_no=1,
-        veh_input_path=gl.RESOURCES_FOLDERPATH
-        / "inputs"
-        / "Demo_FY22_vehicle_model_assumptions.csv",
-        use_rust=False,
-    )
-    assert run_fastsim.vehicle == fastsim_vehicle
-
-
-def test_load_design_cycle_from_scenario(scenario, fastsim_cycle, mocker):
-    if not fastsim_installed:
-        pytest.skip("fastsim extra not installed")
-    mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
-
-    run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
-    cycles = run_fastsim.load_design_cycle_from_scenario(
-        scenario=scenario, return_rustcycle=False
-    )
-    assert cycles == fastsim_cycle
-
-
-def test_get_simdrive(scenario, fastsim_vehicle, fastsim_cycle, mocker):
-    if not fastsim_installed:
-        pytest.skip("fastsim extra not installed")
-    mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
-    mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
-
-    run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
-    simdrive = run_fastsim.get_simdrive(cycle=fastsim_cycle)
-    assert isinstance(simdrive, fastsim.fastsimrust.RustSimDrive)
-
-
-def test_get_range(scenario, fastsim_vehicle, fastsim_cycle, mocker):
-    if not fastsim_installed:
-        pytest.skip("fastsim extra not installed")
-    mocker.patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle)
-    mocker.patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle)
-
-    run_fastsim = RunFastsim(veh_no=1, scenario=scenario)
-    run_fastsim.get_range()
-    if run_fastsim.vehicle.veh_pt_type == gl.BEV:
-        expected_range = (
-            run_fastsim.vehicle.ess_max_kwh
-            * (run_fastsim.vehicle.max_soc - run_fastsim.vehicle.min_soc)
-            * run_fastsim.mpgge
-            / gl.KWH_PER_GGE
+    with patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle):
+        run_fastsim = RunFASTSim(veh_no=1, scenario=scenario)
+        run_fastsim.load_vehicle(
+            veh_no=1,
+            veh_input_path=gl.RESOURCES_FOLDERPATH
+            / "inputs"
+            / "Demo_FY22_vehicle_model_assumptions.csv",
+            use_rust=False,
         )
-    elif run_fastsim.vehicle.veh_pt_type == gl.CONV:
-        expected_range = (
-            run_fastsim.vehicle.fs_kwh / gl.KWH_PER_GGE
-        ) * run_fastsim.mpgge
-    elif run_fastsim.vehicle.veh_pt_type == gl.HEV:
-        elec_range_mi = (
-            run_fastsim.vehicle.ess_max_kwh
-            * (run_fastsim.vehicle.max_soc - run_fastsim.vehicle.min_soc)
-            * run_fastsim.mpgge
-            / gl.KWH_PER_GGE
-        )
-        conv_range_mi = (
-            run_fastsim.vehicle.fs_kwh / gl.KWH_PER_GGE
-        ) * run_fastsim.mpgge
-        expected_range = elec_range_mi + conv_range_mi
+        assert run_fastsim.vehicle == fastsim_vehicle
 
-    assert run_fastsim.range_mi == pytest.approx(expected_range, 0.01)
+
+def test_load_design_cycle_from_scenario(scenario, fastsim_cycle):
+    if not fastsim_installed:
+        pytest.skip("fastsim extra not installed")
+    with patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle):
+        run_fastsim = RunFASTSim(veh_no=1, scenario=scenario)
+        cycles = run_fastsim.load_design_cycle_from_scenario(
+            scenario=scenario, return_rustcycle=False
+        )
+        assert cycles == fastsim_cycle
+
+
+def test_get_simdrive(scenario, fastsim_vehicle, fastsim_cycle):
+    if not fastsim_installed:
+        pytest.skip("fastsim extra not installed")
+    with (
+        patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle),
+        patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle),
+    ):
+        run_fastsim = RunFASTSim(veh_no=1, scenario=scenario)
+        simdrive = run_fastsim.get_simdrive(cycle=fastsim_cycle)
+        assert isinstance(simdrive, fastsim.fastsimrust.RustSimDrive)
+
+
+def test_get_range(scenario, fastsim_vehicle, fastsim_cycle):
+    if not fastsim_installed:
+        pytest.skip("fastsim extra not installed")
+    with (
+        patch("fastsim.vehicle.Vehicle.from_vehdb", return_value=fastsim_vehicle),
+        patch("fastsim.cycle.Cycle.from_file", return_value=fastsim_cycle),
+    ):
+        run_fastsim = RunFASTSim(veh_no=1, scenario=scenario)
+        run_fastsim.get_range()
+        if run_fastsim.vehicle.veh_pt_type == gl.BEV:
+            expected_range = (
+                run_fastsim.vehicle.ess_max_kwh
+                * (run_fastsim.vehicle.max_soc - run_fastsim.vehicle.min_soc)
+                * run_fastsim.mpgge
+                / gl.KWH_PER_GGE
+            )
+        elif run_fastsim.vehicle.veh_pt_type == gl.CONV:
+            expected_range = (
+                run_fastsim.vehicle.fs_kwh / gl.KWH_PER_GGE
+            ) * run_fastsim.mpgge
+        elif run_fastsim.vehicle.veh_pt_type == gl.HEV:
+            elec_range_mi = (
+                run_fastsim.vehicle.ess_max_kwh
+                * (run_fastsim.vehicle.max_soc - run_fastsim.vehicle.min_soc)
+                * run_fastsim.mpgge
+                / gl.KWH_PER_GGE
+            )
+            conv_range_mi = (
+                run_fastsim.vehicle.fs_kwh / gl.KWH_PER_GGE
+            ) * run_fastsim.mpgge
+            expected_range = elec_range_mi + conv_range_mi
+
+        assert run_fastsim.range_mi == pytest.approx(expected_range, 0.01)
