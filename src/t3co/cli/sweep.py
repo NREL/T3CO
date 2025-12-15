@@ -51,7 +51,17 @@ def load_vehicle_scenario_energy(
     Returns:
         Tuple[Vehicle, Scenario, Energy]: The vehicle, scenario, and energy models.
     """
-    if config.dc_files:
+    # Workaround for config.dc_files disappearing
+    if (
+        (not hasattr(config, "dc_files") or config.dc_files is None)
+        and config.drive_cycle
+        and Path(config.drive_cycle).is_dir()
+    ):
+        config.dc_files = [
+            p.absolute() for p in Path(config.drive_cycle).rglob("*.csv")
+        ]
+
+    if isinstance(selection, str) and "_" in selection:
         selection, dc_id = map(int, selection.split("_"))
 
     if scenario:
@@ -89,10 +99,20 @@ def load_vehicle_scenario_energy(
             primary_fuel_range_mi=float(input_scenario.primary_fuel_range_mi),
         )
     else:
-        input_energy = Energy()
-        input_energy.run_fastsim_model(
-            veh_no=selection, vehicle_file=config.vehicle_file, scenario=input_scenario
-        )
+        if not input_scenario.cost_toggles.run_fastsim:
+            print(
+                f"Warning: run_fastsim is False but mpgge ({input_scenario.mpgge}) "
+                f"or primary_fuel_range_mi ({input_scenario.primary_fuel_range_mi}) are missing. "
+                "Skipping FASTSim run. Energy values will be default (0)."
+            )
+            input_energy = Energy()
+        else:
+            input_energy = Energy()
+            input_energy.run_fastsim_model(
+                veh_no=selection,
+                vehicle_file=config.vehicle_file,
+                scenario=input_scenario,
+            )
 
     return input_vehicle, input_scenario, input_energy
 

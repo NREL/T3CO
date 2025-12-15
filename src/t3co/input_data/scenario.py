@@ -183,6 +183,7 @@ class Scenario(object):
         scenario_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH
         / "inputs"
         / "Demo_FY22_scenario_assumptions.csv",
+        config: Config = None,
     ) -> Self:
         """
         Creates a Scenario instance from a CSV file.
@@ -194,6 +195,9 @@ class Scenario(object):
         Returns:
             Scenario: An instance of the Scenario class.
         """
+        if not scenario_file.absolute():
+            scenario_file = Path(config.config_filename).parent / scenario_file
+
         scenario_df = pd.read_csv(
             scenario_file, usecols=lambda x: x in cls.__annotations__.keys()
         )
@@ -337,6 +341,9 @@ class Scenario(object):
 
         if self.activate_tco_payload_cap_cost_multiplier and config:
             self.plf_weight_distribution_file = config.plf_weight_dist_file
+
+        if config.cost_toggles is not None:
+            self.cost_toggles = config.cost_toggles
 
     def get_discounted_value(self, value: float, year_number: int) -> float:
         """

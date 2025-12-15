@@ -35,11 +35,11 @@ scipy = [
     {version = "^1.11.0", python = ">=3.9,<3.10"},
     {version = "^1.13.0", python = ">=3.10"}
 ]
-fastsim = { version = "^2.1.1", optional = true, python = ">=3.9,<3.11" }
+fastsim = { version = "<3", optional = true }
 
 [project.optional-dependencies]
-fastsim = ["fastsim", "pymoo"]
-dev = ["pytest", "pytest-mock", "fastsim", "pymoo","ruff"]
+fastsim = ["fastsim>=2.1.1", "pymoo>=0.6.0"]
+dev = ["pytest", "pytest-mock", "fastsim>=2.1.1", "pymoo>=0.6.0","ruff"]
 
 [project.scripts]
 install_t3co_demo_inputs = "t3co.utils.demo_inputs_installer:main"

@@ -12,8 +12,10 @@ try:
 
     fastsim_installed = True
 except ImportError:
+    RunFASTSim = None
     fastsim_installed = False
 except AttributeError:
+    RunFASTSim = None
     fastsim_installed = False
 
 from t3co.constants import Global as gl
@@ -66,6 +68,11 @@ class Energy:
             scenario (Scenario): Scenario instance containing configuration data.
             vehicle_file (Union[str, Path], optional): Vehicle model assumptions input CSV file path. Defaults to gl.RESOURCES_FOLDERPATH / "inputs" / "Demo_FY22_vehicle_model_assumptions.csv".
         """
+        if RunFASTSim is None:
+            raise ImportError(
+                "FASTSim is not installed or could not be imported. Cannot run FASTSim model."
+            )
+
         fastsim_run = RunFASTSim(
             veh_no=veh_no,
             scenario=scenario,
@@ -97,6 +104,11 @@ class Energy:
         """
         Runs the acceleration test and updates the energy object with results.
         """
+        if RunFASTSim is None:
+            raise ImportError(
+                "FASTSim is not installed or could not be imported. Cannot run acceleration test."
+            )
+
         if set_weight_to_max_kg:
             vehicle.veh_kg = scenario.gvwr_kg + scenario.gvwr_credit_kg
 
@@ -136,6 +148,11 @@ class Energy:
         """
         Runs the gradeability test and updates the energy object with results.
         """
+        if RunFASTSim is None:
+            raise ImportError(
+                "FASTSim is not installed or could not be imported. Cannot run gradeability test."
+            )
+
         if set_weight_to_max_kg:
             vehicle.veh_kg = scenario.gvwr_kg + scenario.gvwr_credit_kg
 
