@@ -59,7 +59,7 @@ class Vehicle:
             return cls.from_df(selection=selection, vehicle_df=config.vehicle_df)
         else:
             return cls.from_csv(
-                selection=selection, vehicle_db_file=config.vehicle_file
+                selection=selection, vehicle_db_file=config.vehicle_file, config=config
             )
 
     @classmethod
@@ -81,7 +81,9 @@ class Vehicle:
         return cls(**handle_nan(vehicle_dict))
 
     @classmethod
-    def from_csv(cls, selection: int, vehicle_db_file: Union[str, Path]) -> Self:
+    def from_csv(
+        cls, selection: int, vehicle_db_file: Union[str, Path], config: Config = None
+    ) -> Self:
         """
         Creates a Vehicle instance from the vehicle database csv file.
 
@@ -92,6 +94,8 @@ class Vehicle:
         Returns:
             Self: An instance of the Vehicle class.
         """
+        if not Path(vehicle_db_file).is_absolute() and config is not None:
+            vehicle_db_file = Path(config.config_filename).parent / vehicle_db_file
 
         vehicle_db_df = pd.read_csv(
             get_path_object(vehicle_db_file),

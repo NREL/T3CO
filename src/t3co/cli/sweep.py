@@ -99,6 +99,12 @@ def load_vehicle_scenario_energy(
             primary_fuel_range_mi=float(input_scenario.primary_fuel_range_mi),
         )
     else:
+        if not input_scenario.cost_toggles.run_fastsim:
+            print(
+                f"Warning: run_fastsim is False but mpgge ({input_scenario.mpgge}) "
+                f"or primary_fuel_range_mi ({input_scenario.primary_fuel_range_mi}) are missing. "
+                "Attempting to run FASTSim."
+            )
         input_energy = Energy()
         input_energy.run_fastsim_model(
             veh_no=selection, vehicle_file=config.vehicle_file, scenario=input_scenario

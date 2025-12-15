@@ -1,8 +1,12 @@
 import pytest
 from unittest.mock import MagicMock, patch, ANY
 import numpy as np
-from t3co.optimize.optimization import VehicleDesignOpt, run_optimization
 import t3co.constants.Global as gl
+
+# Skip tests if pymoo is not installed (e.g. on Python >= 3.11)
+pytest.importorskip("pymoo")
+
+from t3co.optimize.optimization import VehicleDesignOpt, run_optimization
 
 
 @pytest.fixture

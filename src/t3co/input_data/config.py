@@ -136,6 +136,11 @@ class Config:
         """
         Reads vehicle and scenario database files into DataFrame attributes.
         """
+        if not Path(self.vehicle_file).is_absolute():
+            self.vehicle_file = Path(self.config_filename).parent / self.vehicle_file
+        if not Path(self.scenario_file).is_absolute():
+            self.scenario_file = Path(self.config_filename).parent / self.scenario_file
+
         self.vehicle_db_df = pd.read_csv(get_path_object(self.vehicle_file))
         self.scenario_df = pd.read_csv(get_path_object(self.scenario_file))
 
