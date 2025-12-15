@@ -12,6 +12,7 @@ def config():
     # Create a mock Config object
     config = Config()
     config.scenario_file = Path(__file__).parent / "mock_scenario_db.csv"
+    config.cost_toggles = None
     return config
 
 

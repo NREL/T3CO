@@ -329,3 +329,24 @@ def test_set_disc_oper_cost(vehicle, scenario, energy, cap_costs, oppy_costs):
     operating_costs.net_oper_cost_dol_per_yr = 34003.33
     operating_costs.set_disc_oper_cost(year_number=1, scenario=scenario)
     assert operating_costs.disc_oper_cost_dol_per_yr == pytest.approx(32384.12, 0.01)
+
+def test_set_fuel_cost_zero_mpgge(vehicle, scenario):
+    scenario.fuel_prices_df.set_index("Fuel", inplace=True)
+    
+    # Create an energy object with 0 mpgge
+    energy = Energy(mpgge=0.0, primary_fuel_range_mi=0.0)
+
+    operating_costs = OperatingCosts.__new__(
+        OperatingCosts,
+        year_number=1,
+        cap_costs=None,
+        vehicle=vehicle,
+        scenario=scenario,
+        energy=energy,
+        oppy_costs=None,
+    )
+    operating_costs.mpgge = energy.mpgge
+    operating_costs.distance_traveled_mi_per_yr = scenario.vmt[1 - 1]
+
+    operating_costs.set_fuel_cost(year_number=1, vehicle=vehicle, scenario=scenario)
+    assert operating_costs.fuel_cost_dol_per_yr == 0.0

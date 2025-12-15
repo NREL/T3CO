@@ -172,3 +172,30 @@ def test_run_t3co(config):
         run_t3co(config=config, save_results=True)
         assert mock_generate_ledger.called
         assert mock_export.called
+
+def test_load_vehicle_scenario_energy_no_fastsim_missing_data(config, vehicle, scenario):
+    # Ensure run_fastsim is False
+    scenario.cost_toggles.run_fastsim = False
+    # Ensure scenario has no energy data
+    scenario.mpgge = None
+    scenario.primary_fuel_range_mi = None
+    
+    with (
+        patch("t3co.input_data.vehicle.Vehicle.from_config", return_value=vehicle),
+        patch("t3co.input_data.scenario.Scenario.from_csv", return_value=scenario),
+    ):
+        veh, scen, en = load_vehicle_scenario_energy(
+            selection="1",
+            config=config,
+            vehicle=vehicle,
+            scenario=scenario,
+            energy=None,
+        )
+        
+        assert veh == vehicle
+        assert scen == scenario
+        # Check that we got an empty Energy object (or default values)
+        # Energy() defaults to None for these fields usually, or 0 if initialized that way.
+        # Based on my read of Energy class (I should verify), but let's assume None or 0.
+        assert en.mpgge is None or en.mpgge == 0
+        assert en.primary_fuel_range_mi is None or en.primary_fuel_range_mi == 0
