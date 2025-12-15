@@ -161,13 +161,24 @@ class OperatingCosts:
                 f"Operating Costs calculation: Unknown fuel type {scenario.fuel_type}"
             )
 
-        self.fuel_used_gal_gge_per_yr = self.distance_traveled_mi_per_yr / self.mpgge
-        self.fuel_used_gal_gde_per_yr = self.fuel_used_gal_gge_per_yr / gl.DGE_TO_GGE
-        self.energy_used_kwh_per_yr = self.fuel_used_gal_gge_per_yr * gl.KWH_PER_GGE
+        if self.mpgge and self.mpgge > 0:
+            self.fuel_used_gal_gge_per_yr = (
+                self.distance_traveled_mi_per_yr / self.mpgge
+            )
+            self.fuel_used_gal_gde_per_yr = (
+                self.fuel_used_gal_gge_per_yr / gl.DGE_TO_GGE
+            )
+            self.energy_used_kwh_per_yr = self.fuel_used_gal_gge_per_yr * gl.KWH_PER_GGE
 
-        self.fuel_cost_dol_per_yr = (
-            self.fuel_price_dol_per_gge * self.fuel_used_gal_gge_per_yr
-        )
+            self.fuel_cost_dol_per_yr = (
+                self.fuel_price_dol_per_gge * self.fuel_used_gal_gge_per_yr
+            )
+        else:
+            self.fuel_used_gal_gge_per_yr = 0
+            self.fuel_used_gal_gde_per_yr = 0
+            self.energy_used_kwh_per_yr = 0
+            self.fuel_cost_dol_per_yr = 0
+            # print(f"Warning: mpgge is {self.mpgge}. Fuel cost set to 0.")
 
     def set_maintenance_oper_cost(
         self, year_number: int, vehicle: Vehicle, scenario: Scenario

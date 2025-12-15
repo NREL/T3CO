@@ -12,11 +12,11 @@ try:
 
     fastsim_installed = True
 except ImportError:
-    fastsim_installed = False
     RunFASTSim = None
+    fastsim_installed = False
 except AttributeError:
-    fastsim_installed = False
     RunFASTSim = None
+    fastsim_installed = False
 
 from t3co.constants import Global as gl
 from t3co.input_data.scenario import Scenario
