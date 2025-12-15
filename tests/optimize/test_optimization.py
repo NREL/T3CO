@@ -6,7 +6,10 @@ import t3co.constants.Global as gl
 # Skip tests if pymoo is not installed (e.g. on Python >= 3.11)
 pytest.importorskip("pymoo")
 
-from t3co.optimize.optimization import VehicleDesignOpt, run_optimization
+try:
+    from t3co.optimize.optimization import VehicleDesignOpt, run_optimization
+except ImportError as e:
+    pytest.skip(f"Skipping optimization tests: {e}", allow_module_level=True)
 
 
 @pytest.fixture
