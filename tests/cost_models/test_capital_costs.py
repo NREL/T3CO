@@ -58,7 +58,7 @@ def scenario(toggles):
         plug_base_cost_dol=1000.0,
         ess_base_cost_dol=5000.0,
         ess_cost_dol_per_kwh=200.0,
-        markup_pct=0.1,
+        markup_pct=1.1,
         tax_rate_pct=0.08,
         purchasing_method="loan",
         purchasing_down_payment_pct=0.10,

@@ -65,7 +65,7 @@ def scenario(toggles):
         ess_base_cost_dol=5000.0,
         ess_cost_dol_per_kwh=200.0,
         labor_rate_dol_per_hr=50.0,
-        markup_pct=0.1,
+        markup_pct=1.1,
         tax_rate_pct=0.08,
         vehicle_class="class8",
         vehicle_life_yr=10,
@@ -330,9 +330,10 @@ def test_set_disc_oper_cost(vehicle, scenario, energy, cap_costs, oppy_costs):
     operating_costs.set_disc_oper_cost(year_number=1, scenario=scenario)
     assert operating_costs.disc_oper_cost_dol_per_yr == pytest.approx(32384.12, 0.01)
 
+
 def test_set_fuel_cost_zero_mpgge(vehicle, scenario):
     scenario.fuel_prices_df.set_index("Fuel", inplace=True)
-    
+
     # Create an energy object with 0 mpgge
     energy = Energy(mpgge=0.0, primary_fuel_range_mi=0.0)
 

@@ -412,4 +412,4 @@ class CapitalCosts:
         Returns:
             float: The marked up value.
         """
-        return value * (1 + scenario.markup_pct if scenario.markup_pct else 1)
+        return value * (scenario.markup_pct if scenario.markup_pct else 1)
