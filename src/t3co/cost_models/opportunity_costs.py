@@ -257,9 +257,12 @@ class OpportunityCosts:
             else scenario.fdt_frac_full_charge_bounds
         )
 
+        shifts_arr = np.array(scenario.shifts_per_year)
         if (
-            "0" in str(scenario.shifts_per_year) or np.isnan(scenario.shifts_per_year)
-        ) and scenario.constant_trip_distance_mi:
+            (np.any(shifts_arr == 0) or np.any(pd.isna(shifts_arr)))
+            and scenario.constant_trip_distance_mi is not None
+            and scenario.constant_trip_distance_mi > 0
+        ):
             self.shifts_per_year = round(
                 scenario.vmt[year_number - 1] / scenario.constant_trip_distance_mi
             )
