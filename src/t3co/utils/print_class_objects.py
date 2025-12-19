@@ -87,6 +87,7 @@ def to_flat_dict(
     prefix: str = "",
     delimiter: str = "_",
     nested_attrs: List[str] = None,
+    include_calcs: bool = True,
 ) -> dict:
     """
     Flattens a nested object into a dictionary while preserving the order of declared attributes.
@@ -99,6 +100,7 @@ def to_flat_dict(
         prefix (str, optional): The prefix for the keys. Defaults to "".
         delimiter (str, optional): The delimiter for the keys. Defaults to "_".
         nested_attrs (List[str], optional): List of attribute names to include as nested dictionaries. Defaults to None.
+        include_calcs (bool, optional): Whether to include calculations (e.g. tco_per_year). Defaults to True.
 
     Returns:
         dict: The flattened dictionary.
@@ -119,7 +121,12 @@ def to_flat_dict(
                 if isinstance(sub_item, dict) or hasattr(sub_item, "__dict__"):
                     flat_list.append(
                         to_flat_dict(
-                            sub_item, include_prefix, "", delimiter, nested_attrs
+                            sub_item,
+                            include_prefix,
+                            "",
+                            delimiter,
+                            nested_attrs,
+                            include_calcs,
                         )
                     )
                 else:
@@ -144,6 +151,9 @@ def to_flat_dict(
         ordered_obj = OrderedDict(
             (field, getattr(obj, field, None)) for field in ordered_fields
         )
+
+        if not include_calcs and "tco_per_year" in ordered_obj:
+            del ordered_obj["tco_per_year"]
 
         # Flatten the ordered object.
         flatten(ordered_obj, prefix if include_prefix else "")

@@ -131,7 +131,7 @@ def generate_ledger(selection: int, config: Config) -> Dict:
     input_vehicle, input_scenario, input_energy = load_vehicle_scenario_energy(
         selection=selection, config=config
     )
-    print(f"Running Selection: {selection}")
+    print(f"Running Selection: {selection}: {input_scenario.scenario_name}")
 
     if not config.skip_all_opt and optimization_installed:
         optimized_vehicle = run_optimization(
@@ -145,7 +145,7 @@ def generate_ledger(selection: int, config: Config) -> Dict:
         scenario=input_scenario,
         energy=input_energy,
         config=config,
-    ).to_dict()
+    ).to_dict(include_calcs=config.include_calcs)
 
 
 def run_optimization(vehicle: Vehicle, scenario: Scenario, config: Config):
@@ -236,9 +236,9 @@ def export_results_to_csv(
         output_path = create_results_filepath(config=config)
 
     if sort_values:
-        reports_df.sort_values(by="selection", inplace=True)
+        reports_df = reports_df.sort_values(by="selection").reset_index(drop=True)
 
-    reports_df.to_csv(output_path)
+    reports_df.to_csv(output_path, index=False)
 
     return (output_path if return_filepath else None), (
         reports_df if return_df else None

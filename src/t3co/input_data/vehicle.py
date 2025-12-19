@@ -34,6 +34,8 @@ class Vehicle:
     ess_kg_per_kwh: float = 0.0
     ess_base_kg: float = 0.0
     veh_override_kg: float = 0.0
+    max_soc: float = 0.0
+    min_soc: float = 0.0
 
     def __new__(cls, *args, **kwargs):
         """

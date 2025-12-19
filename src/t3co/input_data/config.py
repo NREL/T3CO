@@ -29,6 +29,7 @@ class Config:
     )
     dst_dir: str = ""
     resfile_suffix: str = None
+    include_calcs: bool = False
     selections: Union[str, list] = ""
     vehicle_life_yr: float = 0
     drive_cycle: str = None

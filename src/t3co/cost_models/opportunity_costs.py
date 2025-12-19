@@ -257,17 +257,17 @@ class OpportunityCosts:
             else scenario.fdt_frac_full_charge_bounds
         )
 
-        shifts_arr = np.array(scenario.shifts_per_year)
         if (
-            (np.any(shifts_arr == 0) or np.any(pd.isna(shifts_arr)))
-            and scenario.constant_trip_distance_mi is not None
-            and scenario.constant_trip_distance_mi > 0
-        ):
+            0 in scenario.shifts_per_year or np.isnan(scenario.shifts_per_year).any()
+        ) and scenario.constant_trip_distance_mi:
             self.shifts_per_year = round(
                 scenario.vmt[year_number - 1] / scenario.constant_trip_distance_mi
             )
+
         else:
             self.shifts_per_year = scenario.shifts_per_year[year_number - 1]
+
+        scenario.shifts_per_year[year_number - 1] = self.shifts_per_year
 
         if vehicle.veh_pt_type in ["BEV"]:
             self.fdt_full_dwell_hr = (1 - scenario.fdt_dwpt_fraction_power_pct) * (
@@ -298,6 +298,8 @@ class OpportunityCosts:
             )
 
         self.trip_distance_mi = scenario.vmt[year_number - 1] / self.shifts_per_year
+        scenario.constant_trip_distance_mi = self.trip_distance_mi
+
         self.fdt_num_of_dwells = max(
             0,
             (
@@ -307,7 +309,8 @@ class OpportunityCosts:
                 - scenario.fdt_num_free_dwell_trips
             ),
         )
-
+        # print(f"self.fdt_num_of_dwells: {self.fdt_num_of_dwells}")
+        # print(f"self.fdt_frac_full_charge_bounds: {self.fdt_frac_full_charge_bounds}")
         if self.fdt_num_of_dwells != 0:
             remaining_dwells = self.fdt_num_of_dwells % 1
             if remaining_dwells < self.fdt_frac_full_charge_bounds[0]:
@@ -322,9 +325,10 @@ class OpportunityCosts:
                 self.fdt_num_of_dwells += 0
             else:
                 self.fdt_num_of_dwells += 1 - remaining_dwells
+        # print(f"self.fdt_num_of_dwells: {self.fdt_num_of_dwells}")
 
         if (self.fdt_num_of_dwells < 1 and not scenario.fdt_num_free_dwell_trips) or (
-            scenario.fuel_type
+            scenario.fuel_type == gl.CONV
         ):
             self.fueling_dwell_time_hr_per_yr = (
                 scenario.vmt[year_number - 1]
@@ -332,6 +336,17 @@ class OpportunityCosts:
                 / energy.primary_fuel_range_mi
                 * (self.fdt_full_dwell_hr + scenario.fdt_avg_overhead_hr_per_dwell_hr)
             )
+            # print(
+            #     f"self.fueling_dwell_time_hr_per_yr: {self.fueling_dwell_time_hr_per_yr}"
+            # )
+            self.charging_energy_kwh_per_yr = (
+                scenario.vmt[year_number - 1]
+                * (1 - scenario.fdt_dwpt_fraction_power_pct)
+                / energy.primary_fuel_range_mi
+                * vehicle.ess_max_kwh
+                * (vehicle.max_soc - vehicle.min_soc)
+            )
+
         else:
             dwell_time_hr = (
                 self.fdt_num_of_dwells * self.fdt_full_dwell_hr
@@ -343,6 +358,14 @@ class OpportunityCosts:
                 (dwell_time_hr - max(0, scenario.fdt_available_freetime_hr)),
             )
 
+            self.charging_energy_kwh_per_yr = (
+                self.shifts_per_year
+                * self.fdt_num_of_dwells
+                * vehicle.ess_max_kwh
+                * (vehicle.max_soc - vehicle.min_soc)
+            )
+
+        self.charging_duration_hr = self.shifts_per_year * self.fdt_num_of_dwells
         self.fueling_downtime_oppy_cost_dol_per_yr = (
             self.fueling_dwell_time_hr_per_yr * scenario.downtime_oppy_cost_dol_per_hr
         )

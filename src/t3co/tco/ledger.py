@@ -66,8 +66,10 @@ class Ledger:
     grid_mpgge: float = 0.0
     mpgde: float = 0.0
     kwh_per_mi: float = 0.0
+    vehicle_range_mi: float = 0.0
 
     payload_cap_cost_multiplier: float = 1.0
+    trip_distance_mi: float = 0.0
     total_fueling_dwell_time_hr: float = 0.0
     total_mr_downtime_hr: float = 0.0
     total_downtime_hr: float = 0.0
@@ -230,6 +232,7 @@ class Ledger:
             self.tco_per_year[year_index].oppy_costs_dol.fueling_dwell_time_hr_per_yr
             for year_index in range(self.vehicle_life_yr)
         )
+        self.trip_distance_mi = self.scenario.constant_trip_distance_mi
         self.total_mr_downtime_hr = sum(
             self.tco_per_year[year_index].oppy_costs_dol.mr_downtime_hr_per_yr
             for year_index in range(self.vehicle_life_yr)
@@ -361,10 +364,20 @@ class Ledger:
         self.grid_mpgge = (
             self.energy.mpgge * self.vehicle.chg_eff if self.vehicle.chg_eff else None
         )
+        self.vehicle_range_mi = (
+            self.energy.primary_fuel_range_mi
+            if self.energy.primary_fuel_range_mi
+            else 0.0
+        )
         self.mpgde = self.energy.mpgge / gl.DGE_TO_GGE
         self.kwh_per_mi = gl.KWH_PER_GGE / self.mpgge if self.mpgge else None
 
-    def to_dict(self, include_prefix: bool = True, flatten: bool = True) -> dict:
+    def to_dict(
+        self,
+        include_prefix: bool = True,
+        flatten: bool = True,
+        include_calcs: bool = False,
+    ) -> dict:
         """
         Exports the Ledger instance to a dictionary.
 
@@ -378,6 +391,9 @@ class Ledger:
         self.scenario.delete_dataframes()
         if self.config:
             self.config.delete_dataframes()
+            # Remove large lists from config to prevent bloating the output
+            if hasattr(self.config, "selections"):
+                delattr(self.config, "selections")
 
         if flatten:
             t3co_dict = to_flat_dict(
@@ -385,6 +401,7 @@ class Ledger:
                 include_prefix=include_prefix,
                 delimiter="_",
                 nested_attrs=["tco_per_year"],
+                include_calcs=include_calcs,
             )
         else:
             cls = self.__class__
@@ -431,10 +448,10 @@ class Ledger:
             pd.DataFrame: The Ledger instance as a DataFrame.
         """
         t3co_dict = self.to_dict(include_prefix=True, flatten=True)
-        t3co_dict.pop("tco_per_year")
+        t3co_dict.pop("tco_per_year", None)
         return pd.DataFrame([t3co_dict])
 
-    def to_csv(self, filepath: Union[str, Path]) -> None:
+    def to_csv(self, filepath: Union[str, Path], include_calcs: bool = False) -> None:
         """
         Saves the Ledger instance to a CSV file.
 
@@ -446,7 +463,14 @@ class Ledger:
             if not filepath.parent.exists():
                 filepath.parent.mkdir()
             print(f"Saved to {str(filepath.resolve())}")
-            self.to_df().to_csv(filepath)
+            if include_calcs:
+                t3co_dict = self.to_dict(
+                    include_prefix=True, flatten=True, include_calcs=include_calcs
+                )
+                df = pd.DataFrame([t3co_dict])
+                df.to_csv(filepath, index=False)
+            else:
+                self.to_df().to_csv(filepath)
         else:
             raise Exception("Filepath must be provided.")
 

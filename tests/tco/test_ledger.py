@@ -284,3 +284,16 @@ def run_tco_per_year(ledger, scenario, vehicle, energy, config):
             )
         )
     return ledger
+
+
+def test_ledger_to_dict_include_calcs(vehicle, scenario, energy):
+    config = Config(include_calcs=False, vehicle_life_yr=10)
+    ledger = Ledger(vehicle, scenario, energy, config)
+
+    # Test with include_calcs=False
+    result_false = ledger.to_dict(include_calcs=False)
+    assert "tco_per_year" not in result_false
+
+    # Test with include_calcs=True
+    result_true = ledger.to_dict(include_calcs=True)
+    assert "tco_per_year" in result_true
