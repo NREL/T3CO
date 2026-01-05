@@ -300,15 +300,19 @@ class OpportunityCosts:
         self.trip_distance_mi = scenario.vmt[year_number - 1] / self.shifts_per_year
         scenario.constant_trip_distance_mi = self.trip_distance_mi
 
-        self.fdt_num_of_dwells = max(
-            0,
-            (
-                (self.trip_distance_mi)
-                * (1 - scenario.fdt_dwpt_fraction_power_pct)
-                / energy.primary_fuel_range_mi
-                - scenario.fdt_num_free_dwell_trips
-            ),
-        )
+        if energy.primary_fuel_range_mi:
+            self.fdt_num_of_dwells = max(
+                0,
+                (
+                    (self.trip_distance_mi)
+                    * (1 - scenario.fdt_dwpt_fraction_power_pct)
+                    / energy.primary_fuel_range_mi
+                    - scenario.fdt_num_free_dwell_trips
+                ),
+            )
+        else:
+            self.fdt_num_of_dwells = 0
+
         # print(f"self.fdt_num_of_dwells: {self.fdt_num_of_dwells}")
         # print(f"self.fdt_frac_full_charge_bounds: {self.fdt_frac_full_charge_bounds}")
         if self.fdt_num_of_dwells != 0:

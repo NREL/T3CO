@@ -88,6 +88,8 @@ def to_flat_dict(
     delimiter: str = "_",
     nested_attrs: List[str] = None,
     include_calcs: bool = True,
+    exclude_list_fields: bool = False,
+    json_lists: bool = True,
 ) -> dict:
     """
     Flattens a nested object into a dictionary while preserving the order of declared attributes.
@@ -101,10 +103,13 @@ def to_flat_dict(
         delimiter (str, optional): The delimiter for the keys. Defaults to "_".
         nested_attrs (List[str], optional): List of attribute names to include as nested dictionaries. Defaults to None.
         include_calcs (bool, optional): Whether to include calculations (e.g. tco_per_year). Defaults to True.
+        exclude_list_fields (bool, optional): Whether to exclude list/array fields to reduce CSV size. Defaults to False.
+        json_lists (bool, optional): Whether to convert lists to JSON strings for CSV compatibility. Defaults to True.
 
     Returns:
         dict: The flattened dictionary.
     """
+
     flat_dict = {}
     nested_attrs = nested_attrs or []
 
@@ -115,6 +120,9 @@ def to_flat_dict(
                 new_key = f"{current_prefix}{delimiter}{key}" if current_prefix else key
                 flatten(value, new_key if include_prefix else key)
         elif isinstance(item, list):
+            # Skip lists if exclude_list_fields is True (reduces CSV file size significantly)
+            if exclude_list_fields:
+                return
             # For lists, flatten each item if it is dict-like.
             flat_list = []
             for sub_item in item:
@@ -127,11 +135,20 @@ def to_flat_dict(
                             delimiter,
                             nested_attrs,
                             include_calcs,
+                            exclude_list_fields,
+                            json_lists,
                         )
                     )
                 else:
                     flat_list.append(sub_item)
-            flat_dict[current_prefix] = flat_list
+            # Convert to JSON string for CSV compatibility if json_lists is True
+            # Ensure no newlines or extra spaces in JSON string
+            # Also handle NaN values to ensure valid JSON
+            if json_lists:
+                flat_list = handle_nan(flat_list)
+                flat_dict[current_prefix] = json.dumps(flat_list, separators=(",", ":"))
+            else:
+                flat_dict[current_prefix] = flat_list
         elif hasattr(item, "__dict__"):
             # If the item is an object, flatten its __dict__.
             flatten(vars(item), current_prefix)

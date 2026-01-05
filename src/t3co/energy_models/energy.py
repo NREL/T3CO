@@ -46,8 +46,9 @@ class Energy:
             mpgge (float, optional): Miles per gallon gasoline equivalent. Defaults to None.
             primary_fuel_range_mi (float, optional): Primary fuel range in miles. Defaults to None.
         """
-        if mpgge and primary_fuel_range_mi:
+        if mpgge is not None:
             self.mpgge = mpgge
+        if primary_fuel_range_mi is not None:
             self.primary_fuel_range_mi = primary_fuel_range_mi
 
     def run_fastsim_model(
