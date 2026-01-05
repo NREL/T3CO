@@ -276,9 +276,7 @@ def sort_csv_file(
         with open(input_path, "r", newline="", encoding="utf-8") as f_in:
             # Use QUOTE_MINIMAL to avoid issues with unquoted booleans (e.g. True)
             # which cause QUOTE_NONNUMERIC to fail
-            reader = csv.reader(
-                f_in, doublequote=True, quoting=csv.QUOTE_MINIMAL
-            )
+            reader = csv.reader(f_in, doublequote=True, quoting=csv.QUOTE_MINIMAL)
             try:
                 header = next(reader)
             except StopIteration:
@@ -351,8 +349,7 @@ def sort_csv_file(
         # Open all chunk files
         files = [open(cf, "r", newline="", encoding="utf-8") for cf in chunk_files]
         readers = [
-            csv.reader(f, doublequote=True, quoting=csv.QUOTE_MINIMAL)
-            for f in files
+            csv.reader(f, doublequote=True, quoting=csv.QUOTE_MINIMAL) for f in files
         ]
 
         # Use heapq.merge
@@ -364,9 +361,7 @@ def sort_csv_file(
                 return str(val)
 
         with open(output_path, "w", newline="", encoding="utf-8") as f_out:
-            writer = csv.writer(
-                f_out, doublequote=True, quoting=csv.QUOTE_ALL
-            )
+            writer = csv.writer(f_out, doublequote=True, quoting=csv.QUOTE_ALL)
             writer.writerow(header)
 
             for row in heapq.merge(*readers, key=key_func):

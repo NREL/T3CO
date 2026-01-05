@@ -112,7 +112,7 @@ class Ledger:
         self.cumu_disc_tco_dol_per_yr = []
         self.cumu_tco_dol_per_mi = []
         self.cumu_levelized_tco_dol_per_mi = []
-        
+
         self.discounted_total_oper_cost_dol = 0.0
         self.discounted_downtime_oppy_cost_dol = 0.0
 
@@ -403,7 +403,10 @@ class Ledger:
             self.config.delete_dataframes()
             # Remove large lists from config to prevent bloating the output
             if hasattr(self.config, "selections"):
-                delattr(self.config, "selections")
+                try:
+                    delattr(self.config, "selections")
+                except AttributeError:
+                    pass
 
         if flatten:
             t3co_dict = to_flat_dict(
