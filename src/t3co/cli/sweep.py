@@ -2,6 +2,11 @@ from __future__ import annotations
 
 import argparse
 import ast
+import csv
+import heapq
+import os
+import shutil
+import tempfile
 import time
 from functools import partial
 from multiprocessing import Pool
@@ -105,7 +110,7 @@ def load_vehicle_scenario_energy(
                 f"or primary_fuel_range_mi ({input_scenario.primary_fuel_range_mi}) are missing. "
                 "Skipping FASTSim run. Energy values will be default (0)."
             )
-            input_energy = Energy()
+            input_energy = Energy(mpgge=0.0, primary_fuel_range_mi=0.0)
         else:
             input_energy = Energy()
             input_energy.run_fastsim_model(
@@ -145,7 +150,10 @@ def generate_ledger(selection: int, config: Config) -> Dict:
         scenario=input_scenario,
         energy=input_energy,
         config=config,
-    ).to_dict(include_calcs=config.include_calcs)
+    ).to_dict(
+        include_calcs=config.include_calcs,
+        exclude_list_fields=config.exclude_list_fields,
+    )
 
 
 def run_optimization(vehicle: Vehicle, scenario: Scenario, config: Config):
@@ -208,6 +216,166 @@ def create_results_filepath(config: Config) -> Path:
     return output_path
 
 
+def append_results_to_csv(
+    reports_list: List[Dict],
+    output_path: Union[str, Path],
+    write_header: bool = False,
+) -> None:
+    """
+    Appends results to a CSV file incrementally to avoid memory issues.
+
+    Args:
+        reports_list (List[Dict]): The list of reports to append.
+        output_path (Union[str, Path]): The output path for the CSV file.
+        write_header (bool, optional): Whether to write the header. Defaults to False.
+    """
+    if not reports_list:
+        return
+
+    reports_df = pd.DataFrame(reports_list)
+    mode = "w" if write_header else "a"
+    reports_df.to_csv(
+        output_path,
+        mode=mode,
+        header=write_header,
+        index=False,
+        doublequote=True,
+        quoting=csv.QUOTE_ALL,
+    )
+
+
+def sort_csv_file(
+    input_path: Union[str, Path],
+    output_path: Union[str, Path] = None,
+    sort_by: str = "selection",
+    chunksize: int = 2000,
+) -> Path:
+    """
+    Sorts a CSV file by a column using external merge sort to handle large files.
+
+    Args:
+        input_path (Union[str, Path]): The input CSV file path.
+        output_path (Union[str, Path], optional): The output path. If None, overwrites input.
+        sort_by (str, optional): Column name to sort by. Defaults to "selection".
+        chunksize (int, optional): Number of rows per chunk. Defaults to 2000.
+
+    Returns:
+        Path: The output file path.
+    """
+    input_path = Path(input_path)
+    if output_path is None:
+        output_path = input_path
+    else:
+        output_path = Path(output_path)
+
+    # Create a temporary directory for sorted chunks
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_dir_path = Path(temp_dir)
+        chunk_files = []
+
+        with open(input_path, "r", newline="", encoding="utf-8") as f_in:
+            # Use QUOTE_MINIMAL to avoid issues with unquoted booleans (e.g. True)
+            # which cause QUOTE_NONNUMERIC to fail
+            reader = csv.reader(f_in, doublequote=True, quoting=csv.QUOTE_MINIMAL)
+            try:
+                header = next(reader)
+            except StopIteration:
+                return output_path  # Empty file
+
+            try:
+                sort_idx = header.index(sort_by)
+            except ValueError:
+                print(f"Warning: Column '{sort_by}' not found. Skipping sort.")
+                if input_path != output_path:
+                    shutil.copy(input_path, output_path)
+                return output_path
+
+            chunk = []
+            chunk_num = 0
+
+            for row in reader:
+                chunk.append(row)
+                if len(chunk) >= chunksize:
+                    # Sort chunk in memory
+                    try:
+                        chunk.sort(key=lambda x: float(x[sort_idx]))
+                    except (ValueError, TypeError):
+                        chunk.sort(key=lambda x: str(x[sort_idx]))
+
+                    chunk_filename = temp_dir_path / f"chunk_{chunk_num}.csv"
+                    with open(
+                        chunk_filename, "w", newline="", encoding="utf-8"
+                    ) as f_out:
+                        writer = csv.writer(
+                            f_out,
+                            doublequote=True,
+                            quoting=csv.QUOTE_ALL,
+                        )
+                        writer.writerows(chunk)
+
+                    chunk_files.append(chunk_filename)
+                    chunk = []
+                    chunk_num += 1
+
+            # Process last chunk
+            if chunk:
+                try:
+                    chunk.sort(key=lambda x: float(x[sort_idx]))
+                except (ValueError, TypeError):
+                    chunk.sort(key=lambda x: str(x[sort_idx]))
+
+                chunk_filename = temp_dir_path / f"chunk_{chunk_num}.csv"
+                with open(chunk_filename, "w", newline="", encoding="utf-8") as f_out:
+                    writer = csv.writer(
+                        f_out,
+                        doublequote=True,
+                        quoting=csv.QUOTE_ALL,
+                    )
+                    writer.writerows(chunk)
+                chunk_files.append(chunk_filename)
+
+        # Merge chunks
+        if not chunk_files:
+            # Only header existed
+            with open(output_path, "w", newline="", encoding="utf-8") as f_out:
+                writer = csv.writer(
+                    f_out,
+                    doublequote=True,
+                    quoting=csv.QUOTE_ALL,
+                )
+                writer.writerow(header)
+            return output_path
+
+        # Open all chunk files
+        files = [open(cf, "r", newline="", encoding="utf-8") for cf in chunk_files]
+        readers = [
+            csv.reader(f, doublequote=True, quoting=csv.QUOTE_MINIMAL) for f in files
+        ]
+
+        # Use heapq.merge
+        def key_func(row):
+            val = row[sort_idx]
+            try:
+                return float(val)
+            except (ValueError, TypeError):
+                return str(val)
+
+        with open(output_path, "w", newline="", encoding="utf-8") as f_out:
+            writer = csv.writer(f_out, doublequote=True, quoting=csv.QUOTE_ALL)
+            writer.writerow(header)
+
+            for row in heapq.merge(*readers, key=key_func):
+                writer.writerow(row)
+
+        # Close files
+        for f in files:
+            f.close()
+
+    return output_path
+
+    return output_path
+
+
 def export_results_to_csv(
     reports_list: List[Dict],
     config: Config,
@@ -238,7 +406,13 @@ def export_results_to_csv(
     if sort_values:
         reports_df = reports_df.sort_values(by="selection").reset_index(drop=True)
 
-    reports_df.to_csv(output_path, index=False)
+    reports_df.to_csv(
+        output_path,
+        index=False,
+        escapechar="\\",
+        doublequote=True,
+        quoting=csv.QUOTE_NONNUMERIC,
+    )
 
     return (output_path if return_filepath else None), (
         reports_df if return_df else None
@@ -516,35 +690,52 @@ if __name__ == "__main__":
     if args.run_multi:
         print("Running multiprocessing version of T3CO")
         result_filepath = create_results_filepath(config=config)
-        reports_list = []
+        buffer = []
+        buffer_size = 50  # Write to disk every 50 results to balance I/O and memory
+        total_written = 0
+
         with Pool(processes=args.n_processors) as pool:
-            for report_i in pool.imap_unordered(
-                partial(generate_ledger, config=config),
-                config.selections_list,
+            for k, report_i in enumerate(
+                pool.imap_unordered(
+                    partial(generate_ledger, config=config),
+                    config.selections_list,
+                ),
+                start=1,
             ):
-                reports_list.append(report_i)
-                k = len(reports_list)
-                if (k % 20 == 0 or k == 4) and (
-                    len(config.selections_list) != 1 and k != 0
-                ):
-                    export_results_to_csv(
-                        reports_list=reports_list,
-                        config=config,
+                buffer.append(report_i)
+
+                # Write buffer to disk when it reaches buffer_size
+                if len(buffer) >= buffer_size:
+                    append_results_to_csv(
+                        reports_list=buffer,
                         output_path=result_filepath,
+                        write_header=(total_written == 0),
                     )
-                    print(f"\nSaving intermediate results to {str(result_filepath)}\n")
+                    total_written += len(buffer)
+                    buffer = []  # Clear buffer to free memory
+                    print(
+                        f"\nSaved {total_written} results to {str(result_filepath)}\n"
+                    )
+
                 print(f"Number of files done: {k}/{len(config.selections_list)}")
+
+            # Write any remaining results in buffer
+            if buffer:
+                append_results_to_csv(
+                    reports_list=buffer,
+                    output_path=result_filepath,
+                    write_header=(total_written == 0),
+                )
+                total_written += len(buffer)
+                print(f"\nSaved final batch. Total: {total_written} results\n")
 
             pool.close()
             pool.join()
 
-            export_results_to_csv(
-                reports_list=reports_list,
-                config=config,
-                output_path=result_filepath,
-                sort_values=True,
-            )
-            print(f"T3CO results saved to: {result_filepath}")
+            # Sort the final file
+            print(f"Sorting results by selection...")
+            sort_csv_file(input_path=result_filepath, sort_by="selection")
+            print(f"T3CO results saved and sorted to: {result_filepath}")
 
     else:
         run_t3co(config=config, save_results=True)

@@ -109,6 +109,13 @@ class Ledger:
         self.model_year = scenario.model_year
 
         self.tco_per_year = []
+        self.cumu_disc_tco_dol_per_yr = []
+        self.cumu_tco_dol_per_mi = []
+        self.cumu_levelized_tco_dol_per_mi = []
+
+        self.discounted_total_oper_cost_dol = 0.0
+        self.discounted_downtime_oppy_cost_dol = 0.0
+
         if config:
             self.config = config
             self.vehicle_life_yr = config.vehicle_life_yr
@@ -377,6 +384,7 @@ class Ledger:
         include_prefix: bool = True,
         flatten: bool = True,
         include_calcs: bool = False,
+        exclude_list_fields: bool = False,
     ) -> dict:
         """
         Exports the Ledger instance to a dictionary.
@@ -384,6 +392,8 @@ class Ledger:
         Args:
             include_prefix (bool, optional): If True, exported column names contain the T3CO submodule names as prefix. Defaults to True.
             flatten (bool, optional): If True, the nested dict output flattens to a single dictionary. Defaults to True.
+            include_calcs (bool, optional): If True, includes tco_per_year calculations. Defaults to False.
+            exclude_list_fields (bool, optional): If True, excludes list/array fields to reduce size. Defaults to True.
 
         Returns:
             dict: The Ledger instance as a dictionary.
@@ -393,7 +403,10 @@ class Ledger:
             self.config.delete_dataframes()
             # Remove large lists from config to prevent bloating the output
             if hasattr(self.config, "selections"):
-                delattr(self.config, "selections")
+                try:
+                    delattr(self.config, "selections")
+                except AttributeError:
+                    pass
 
         if flatten:
             t3co_dict = to_flat_dict(
@@ -402,6 +415,7 @@ class Ledger:
                 delimiter="_",
                 nested_attrs=["tco_per_year"],
                 include_calcs=include_calcs,
+                exclude_list_fields=exclude_list_fields,
             )
         else:
             cls = self.__class__
