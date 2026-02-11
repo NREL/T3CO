@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any, List, Union
 
 import pandas as pd
+import numpy as np
 
 import t3co.constants.Global as gl
 
@@ -121,7 +122,8 @@ def to_flat_dict(
                 flatten(value, new_key if include_prefix else key)
         elif isinstance(item, list):
             # Skip lists if exclude_list_fields is True (reduces CSV file size significantly)
-            if exclude_list_fields:
+            # However, do not exclude if the field is explicitly in nested_attrs (e.g. tco_per_year)
+            if exclude_list_fields and current_prefix not in nested_attrs:
                 return
             # For lists, flatten each item if it is dict-like.
             flat_list = []
@@ -140,7 +142,13 @@ def to_flat_dict(
                         )
                     )
                 else:
-                    flat_list.append(sub_item)
+                    if isinstance(sub_item, (float, np.floating)) and (
+                        "cost" in current_prefix.lower()
+                        or "dol" in current_prefix.lower()
+                    ):
+                        flat_list.append(round(float(sub_item), 2))
+                    else:
+                        flat_list.append(sub_item)
             # Convert to JSON string for CSV compatibility if json_lists is True
             # Ensure no newlines or extra spaces in JSON string
             # Also handle NaN values to ensure valid JSON
@@ -153,7 +161,12 @@ def to_flat_dict(
             # If the item is an object, flatten its __dict__.
             flatten(vars(item), current_prefix)
         else:
-            flat_dict[current_prefix] = item
+            if isinstance(item, (float, np.floating)) and (
+                "cost" in current_prefix.lower() or "dol" in current_prefix.lower()
+            ):
+                flat_dict[current_prefix] = round(float(item), 2)
+            else:
+                flat_dict[current_prefix] = item
 
     if hasattr(obj, "__dict__"):
         # Extract attributes in the order they were declared.

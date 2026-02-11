@@ -129,6 +129,15 @@ class Config:
             config_dict["selections"] = ast.literal_eval(config_dict["selections"])
         except:
             config_dict["selections"] = int(config_dict["selections"])
+
+        for key, val in config_dict.items():
+            if key in self.__annotations__ and self.__annotations__[key] == bool:
+                if isinstance(val, str):
+                    if val.lower() == "true":
+                        config_dict[key] = True
+                    elif val.lower() == "false":
+                        config_dict[key] = False
+
         self.__dict__.update(config_dict)
 
         self.read_vehicle_and_scenario_db_files()
@@ -138,10 +147,20 @@ class Config:
         """
         Reads vehicle and scenario database files into DataFrame attributes.
         """
-        if not Path(self.vehicle_file).is_absolute():
-            self.vehicle_file = Path(self.config_filename).parent / self.vehicle_file
-        if not Path(self.scenario_file).is_absolute():
-            self.scenario_file = Path(self.config_filename).parent / self.scenario_file
+        # Resolve paths relative to config file if they are relative
+        config_parent = Path(self.config_filename).parent.resolve()
+        for attr in [
+            "vehicle_file",
+            "scenario_file",
+            "cost_toggles_file",
+            "fuel_prices_file",
+            "energy_file",
+            "plf_weight_dist_file",
+            "insurance_rates_file",
+        ]:
+            val = getattr(self, attr)
+            if val and not Path(val).is_absolute():
+                setattr(self, attr, config_parent / val)
 
         self.vehicle_db_df = pd.read_csv(get_path_object(self.vehicle_file))
         self.scenario_df = pd.read_csv(get_path_object(self.scenario_file))
