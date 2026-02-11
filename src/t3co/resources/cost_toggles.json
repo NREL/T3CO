@@ -1,6 +1,6 @@
 {
     "Energy": {
-        "run_fastsim": false
+        "run_fastsim": true
     },
     "CapitalCosts": {
         "msrp": true,
