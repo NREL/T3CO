@@ -24,7 +24,10 @@ from t3co.tco.ledger import Ledger
 from t3co.utils.print_class_objects import get_path_object
 
 try:
-    from pymoo.core.problem import StarmapParallelization
+    try:
+        from pymoo.parallelization.starmap import StarmapParallelization
+    except ImportError:
+        from pymoo.core.problem import StarmapParallelization
     from pymoo.optimize import minimize
     from t3co.optimize.optimization import (
         VehicleDesignOpt,
@@ -35,8 +38,6 @@ try:
     optimization_installed = True
 
 except ImportError:
-    optimization_installed = False
-except AttributeError:
     optimization_installed = False
 
 
