@@ -2,14 +2,14 @@
 name = "t3co"
 version = "2.0.0"
 dynamic = ["dependencies"]
-description = "NREL's Transportation Technology Total Cost of Ownership tool"
+description = "NLR's Transportation Technology Total Cost of Ownership tool"
 readme = "README.md"
 license = "BSD-3-Clause"
 authors = [
-    {name = "Harish Panneer Selvam", email = "Harish.PanneerSelvam@nrel.gov"},
-    {name = "Alicia Birky", email = "Alicia.Birky@nrel.gov"},
+    {name = "Harish Panneer Selvam", email = "Harish.PanneerSelvam@nlr.gov"},
+    {name = "Alicia Birky", email = "Alicia.Birky@nlr.gov"},
 ]
-maintainers = [{name = "NREL-AVCI", email = "t3co@nrel.gov"}]
+maintainers = [{name = "NLR-AVCI", email = "t3co@nlr.gov"}]
 keywords = ["tco", "vehicle-cost", "total-cost", "vehicle-simulation", "total-cost-of-ownership"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -54,7 +54,7 @@ build-backend = "poetry.core.masonry.api"
 packages = [{include = "t3co", from = "src"}]
 
 [project.urls]
-Homepage = "https://www.nrel.gov/transportation/t3co.html"
-Documentation = "https://pages.github.nrel.gov/AVCI/T3CO"
-Repository = "https://github.nrel.gov/AVCI/T3CO"
-"Bug Tracker" = "https://github.nrel.gov/AVCI/T3CO/issues"
+Homepage = "https://www.nlr.gov/transportation/t3co.html"
+Documentation = "https://natlabrockies.github.io/T3CO/"
+Repository = "https://github.com/NatLabRockies/T3CO"
+"Bug Tracker" = "https://github.com/NatLabRockies/T3CO/issues"

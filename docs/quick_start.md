@@ -10,15 +10,15 @@ T3CO contains three main input files and several auxiliary files that are refere
 
 The main input files are the [***Vehicle***](./pages/vehicle_inputs_descriptions.md), [***Scenario***](./pages/scenario_inputs_descriptions.md), and [***Config***](./pages/config_inputs_descriptions.md). T3CO provides users with demo input files to get started. One or more *Vehicle-Scenario* pair selections are necessary to run T3CO:
 
-- ***Vehicle*** contains sets of FASTSim vehicle input parameters that define the powertrain and vehicle dynamics of the selected *Vehicle-Scenario* pair. Each entry in the ***Vehicle*** file is called a "Vehicle Model" and is referenced using `vehicle.selection` as a key. [[Demo Vehicles](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/inputs/demo/Demo_FY22_vehicle_model_assumptions.csv)]
-- ***Scenario*** contains cost, infrastructure, and optimization related input parameters that define a certain scenario. Each entry in the Scenario file is called a "Scenario Model" and is referenced using `scenario.selection` as a key. [[Demo Scenarios](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/inputs/demo/Demo_FY22_scenario_assumptions.csv)]
-- ***Config*** contains easy ways to manage T3CO model settings and to save the inputs needed to run a set of selections of *Vehicle-Scenario* pairs. It also contains paths to various input files and some Scenario parameter overrides to be used globally on all selections. Users can also specify a path to the output directory in which T3CO results need to be saved. Each entry in the ***Config*** file refers to an "Analysis" and is accessed using `config.analysis_id` [[Demo Analyses](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/T3COConfig.csv)]
+- ***Vehicle*** contains sets of FASTSim vehicle input parameters that define the powertrain and vehicle dynamics of the selected *Vehicle-Scenario* pair. Each entry in the ***Vehicle*** file is called a "Vehicle Model" and is referenced using `vehicle.selection` as a key. [[Demo Vehicles](https://github.com/NatLabRockies/T3CO/blob/main/src/t3co/resources/inputs/Demo_FY22_vehicle_model_assumptions.csv)]
+- ***Scenario*** contains cost, infrastructure, and optimization related input parameters that define a certain scenario. Each entry in the Scenario file is called a "Scenario Model" and is referenced using `scenario.selection` as a key. [[Demo Scenarios](https://github.com/NatLabRockies/T3CO/blob/main/src/t3co/resources/inputs/Demo_FY22_scenario_assumptions.csv)]
+- ***Config*** contains easy ways to manage T3CO model settings and to save the inputs needed to run a set of selections of *Vehicle-Scenario* pairs. It also contains paths to various input files and some Scenario parameter overrides to be used globally on all selections. Users can also specify a path to the output directory in which T3CO results need to be saved. Each entry in the ***Config*** file refers to an "Analysis" and is accessed using `config.analysis_id` [[Demo Analyses](https://github.com/NatLabRockies/T3CO/blob/main/src/t3co/resources/T3COConfig.csv)]
 
 Note that `scenario.selection` and `vehicle.selection` are expected by the tool to be the same for a chosen *Vehicle-Scenario* pair, i.e., a row on the ***Scenario*** file has a corresponding row on the ***Vehicle*** file with the same `selection` key. The `config.selections` attribute accepts a list of "selection" (that refers to both `scenario.selection` and `vehicle.selection`) and is used to fetch the desired set of inputs to run.
 
 ### Auxiliary Inputs
 
-The auxiliary input files in the [`t3co/resources/auxiliary/`](https://github.com/NREL/T3CO/tree/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/auxiliary) folder include `FuelPrices.csv`, `ResidualValues.csv`, `AeroDragImprovementCostCurve.csv`, `LightweightImprovementCostCurve.csv`, and `EngineEffImprovementCostCurve.csv`. These files contain important cost and model assumptions that are necessary to run different aspects of the T3CO cost models. Users can select the default auxiliary input files and choose the relevant set of assumptions. They can also add new entries to these files, or create their own auxiliary input files and mention the new paths in the ***Config*** file.
+The auxiliary input files in the [`t3co/resources/auxiliary/`](https://github.com/NatLabRockies/T3CO/tree/main/src/t3co/resources/auxiliary) folder include `FuelPrices.csv`, `ResidualValues.csv`, `AeroDragImprovementCostCurve.csv`, `LightweightImprovementCostCurve.csv`, and `EngineEffImprovementCostCurve.csv`. These files contain important cost and model assumptions that are necessary to run different aspects of the T3CO cost models. Users can select the default auxiliary input files and choose the relevant set of assumptions. They can also add new entries to these files, or create their own auxiliary input files and mention the new paths in the ***Config*** file.
 
 ## Running T3CO
 After checking the inputs and creating/modifying an "Analysis" on the ***Config*** file, the next step is to execute the models. The `t3co/cli/sweep.py` module is the main script that needs to be run to perform a TCO analysis. And the most effective way to run the sweep module is to call a specific "Analysis" from the ***Config*** file using the `config.analysis_id` key.
@@ -32,7 +32,7 @@ python -m t3co.cli.sweep --analysis-id=0 --config=<path/to/demo_inputs/T3COConfi
 Point `--config` to the `T3COConfig.csv` file path and `--analysis-id` to the desired `config.analysis_id` (either an existing one or a newly added "Analysis" in the `demo_inputs/T3COConfig.csv` file. Default = `0`).
 
 ### Running Sweep Module from a Cloned Github repo
-For running `config.analysis_id`=0 (or a user desired "Analysis") from the [Demo Config](https://github.com/NREL/T3CO/blob/4aed80f4a2caf65abfc7be176fcf34107621e1fe/t3co/resources/T3COConfig.csv) file on a cloned GitHub repo, run these commands from the parent directory:
+For running `config.analysis_id`=0 (or a user desired "Analysis") from the [Demo Config](https://github.com/NatLabRockies/T3CO/blob/main/src/t3co/resources/T3COConfig.csv) file on a cloned GitHub repo, run these commands from the parent directory:
 
 ```bash
 python -m t3co.cli.sweep --analysis-id=0
@@ -118,20 +118,20 @@ After running the analysis, T3CO stores the results .CSV file in the directory s
 The results file includes a comprehensive list of [***Ledger Outputs***](./pages/ledger_outputs_descriptions.md) that were calculated by the various ***T3CO Modules***. In addition to the T3CO outputs, all the *Vehicle* input parameters (denoted by a prefix: `input_vehicle_value_`), *Scenario* input parameters(denoted by a prefix: `scenario_`), and *Config* parameters (denoted by a prefix: `config_`) are also present in the results file. When the optional optimization module is run, the optimized vehicle parameters are also listed ((denoted by a prefix: `optimized_vehicle_value_`)) instead of NaN values for non-optimization runs.
 
 ## T3CO Visualization
-The [`t3co.visualization.charts`](https://github.com/NREL/T3CO/tree/main/t3co/visualization/charts.py) submodule is used to visualize the results CSV file that is generated after running T3CO. T3CO provides a demo file ([`t3co.demos.visualization_demo`](https://github.com/NREL/T3CO/tree/main/t3co/demos/visualization_demo.py)) to try out the visualization module for a sample analysis. The run_t3co function in the demo exports T3CO results as a pandas dataframe and generates the following visualization plots:
+The [`t3co.visualization.charts`](https://github.com/NatLabRockies/T3CO/tree/main/src/t3co/visualization/charts.py) submodule is used to visualize the results CSV file that is generated after running T3CO. T3CO provides a demo file ([`t3co.demos.visualization_demo`](https://github.com/NatLabRockies/T3CO/tree/main/src/t3co/demos/visualization_demo.py)) to try out the visualization module for a sample analysis. The run_t3co function in the demo exports T3CO results as a pandas dataframe and generates the following visualization plots:
 
 - TCO Breakdown Chart
 
-<img src="https://raw.githubusercontent.com/NREL/T3CO/refs/heads/main/docs/tco_breakdown_sample.png" alt="tcobreakdown" width="650"/>
+<img src="https://raw.githubusercontent.com/NatLabRockies/T3CO/refs/heads/main/docs/tco_breakdown_sample.png" alt="tcobreakdown" width="650"/>
 
 
 - Histogram Plot
 
-<img src="https://raw.githubusercontent.com/NREL/T3CO/refs/heads/main/docs/histogram_sample.png" alt="histogram" width="400"/>
+<img src="https://raw.githubusercontent.com/NatLabRockies/T3CO/refs/heads/main/docs/histogram_sample.png" alt="histogram" width="400"/>
 
 - Violin Plot
 
-<img src="https://raw.githubusercontent.com/NREL/T3CO/refs/heads/main/docs/violinplot_sample.png" alt="violinplot" width="400"/>
+<img src="https://raw.githubusercontent.com/NatLabRockies/T3CO/refs/heads/main/docs/violinplot_sample.png" alt="violinplot" width="400"/>
 
 
 The user can provide other input parameters specific to each visualization method to further customize the plots.

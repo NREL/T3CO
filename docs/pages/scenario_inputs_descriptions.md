@@ -681,7 +681,7 @@
             <td>region</td>
             <td>Fuel Price Region/Model</td>
             <td></td>
-            <td>Region name is used as a key to find the right fuel prices for the analysis. Refer to /t3co/resources/FuelPrices.csv for region name</td>
+            <td>Region name or US zipcode used to look up fuel prices. If set to a 5-digit US zipcode (e.g. 90210) and the Config did not already resolve EIA prices, T3CO fetches region-specific fuel price projections from the EIA AEO API. Otherwise the value is used as a key into FuelPrices.csv.</td>
             <td>Conv, BEV, HEV, FCEV</td>
             <td>OperatingCosts: Fuel</td>
             <td>string</td>

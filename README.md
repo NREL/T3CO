@@ -1,13 +1,15 @@
 
 ![t3co_logo](https://github.com/user-attachments/assets/60623b62-57de-4475-b839-d7eb39405185)
 
-[![homepage](https://img.shields.io/badge/homepage-t3co-blue)](https://www.nrel.gov/transportation/t3co.html) [![github](https://img.shields.io/badge/github-t3co-blue.svg)](https://github.com/NREL/T3CO) [![documentation](https://img.shields.io/badge/documentation-t3co-blue.svg)](https://nrel.github.io/T3CO/) [![PyPI - Version](https://img.shields.io/pypi/v/t3co)](https://pypi.org/project/t3co/) ![GitHub License](https://img.shields.io/github/license/NREL/T3CO) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/t3co) 
+[![homepage](https://img.shields.io/badge/homepage-t3co-blue)](https://www.nlr.gov/transportation/t3co.html) [![github](https://img.shields.io/badge/github-t3co-blue.svg)](https://github.com/NatLabRockies/T3CO) [![documentation](https://img.shields.io/badge/documentation-t3co-blue.svg)](https://NatLabRockies.github.io/T3CO/) [![PyPI - Version](https://img.shields.io/pypi/v/t3co)](https://pypi.org/project/t3co/) ![GitHub License](https://img.shields.io/github/license/NLR/T3CO) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/t3co) 
 
 
 # **T3CO** : Transportation Technology Total Cost of Ownership Tool
 ## Description
 
 This repo houses T3CO (Transportation Technology Total Cost of Ownership), software for modeling total cost of ownership for commercial vehicles with advanced powertrains.
+
+**New to 2.0?** See [What's New in T3CO 2.0](./docs/whats_new.md) for a summary of EIA fuel price integration, expanded optimization algorithms, and other changes.
 
 To get started, read the [Quick Start Guide](./docs/quick_start.md)
 
@@ -55,14 +57,14 @@ For the developer 'extra':
 pip install t3co[dev]
 ```
 
-### Installation Source #2: Cloning the [GitHub Repo](https://github.com/NREL/T3CO)
+### Installation Source #2: Cloning the [GitHub Repo](https://github.com/NatLabRockies/T3CO)
 
 T3CO can also be installed from a clone of the GitHub repository.
 
-First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](https://github.com/NREL/T3CO) from your desired directory (eg., /Users/Projects/):
+First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](https://github.com/NatLabRockies/T3CO) from your desired directory (eg., /Users/Projects/):
 
 ```bash
-git clone https://github.com/NREL/T3CO.git T3CO
+git clone https://github.com/NatLabRockies/T3CO.git T3CO
 ```
 
 This creates a git compliant folder 'T3CO' (i.e., a '/Users/Projects/T3CO' folder)
@@ -147,14 +149,14 @@ Fuel price override workflows that use `--fuel-prices-json` and `--fuel-prices-z
 
 This tool was developed with funding support from the US Department of Energy's Office of Energy Efficiency and Renewable Energy (EERE)'s Vehicle Technology Office.
 
-DOE NREL Software Record: [SWR-21-54](https://doi.org/10.11578/dc.20240806.4)
+DOE NLR Software Record: [SWR-21-54](https://doi.org/10.11578/dc.20240806.4)
 
 ## To cite T3CO
 
-*Lustbader, Jason, Panneer Selvam, Harish, Bennion, Kevin, Payne, Grant, Hunter, Chad, Penev, Michael, Brooker, Aaron, Baker, Chad, Birky, Alicia, Zhang, Chen, and Carow, Kyle. "T3CO (Transportation Technology Total Cost of Ownership) Open Source [SWR-21-54]." Computer software. September 16, 2024. https://github.com/NREL/T3CO. https://doi.org/10.11578/dc.20240806.4.*
+*Lustbader, Jason, Panneer Selvam, Harish, Bennion, Kevin, Payne, Grant, Hunter, Chad, Penev, Michael, Brooker, Aaron, Baker, Chad, Birky, Alicia, Zhang, Chen, and Carow, Kyle. "T3CO (Transportation Technology Total Cost of Ownership) Open Source [SWR-21-54]." Computer software. September 16, 2024. https://github.com/NatLabRockies/T3CO. https://doi.org/10.11578/dc.20240806.4.*
 
 
 ## Contact Us
-To reach out to the NREL developer team with feedback, feature requests, or to explore partnership opportunities, please email at [T3CO@nrel.gov](mailto:T3CO@nrel.gov)
+To reach out to the NLR developer team with feedback, feature requests, or to explore partnership opportunities, please email at [T3CO@nlr.gov](mailto:T3CO@nlr.gov)
 
-This tool is developed and maintained by the Commercial Vehicle Technologies (CVT) team in NREL's Center for Integrated Mobility Sciences.
+This tool is developed and maintained by the Commercial Vehicle Technologies (CVT) team in NLR's Center for Integrated Mobility Sciences.

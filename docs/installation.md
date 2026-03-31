@@ -2,7 +2,7 @@
 
 ## Setting Up a Python Environment <a name="setting-up-a-python-environment"></a>
 
-T3CO depends on [Python](https://www.python.org/downloads/)>=3.9 and <=3.10. To create an environment containing the appropriate Python version and a built-in `pip`, there are two preferred ways:
+T3CO depends on [Python](https://www.python.org/downloads/)>=3.9. The default install supports Python up to 3.13. The FASTSim-integrated extras require Python>=3.9 and <=3.10. To create an environment containing the appropriate Python version and a built-in `pip`, there are two preferred ways:
 
 1. First option is to use [**conda**](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html):
 
@@ -80,14 +80,14 @@ For the developer 'extra':
 pip install t3co[dev]
 ```
 
-### Installation Source #2: Cloning the [GitHub Repo](https://github.com/NREL/T3CO)
+### Installation Source #2: Cloning the [GitHub Repo](https://github.com/NatLabRockies/T3CO)
 
 T3CO can also be installed from a clone of the GitHub repository.
 
-First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](https://github.com/NREL/T3CO) from your desired directory (eg., /Users/Projects/):
+First, [clone](https://git-scm.com/docs/git-clone) the repository from [GitHub](https://github.com/NatLabRockies/T3CO) from your desired directory (eg., /Users/Projects/):
 
 ```bash
-git clone https://github.com/NREL/T3CO.git T3CO
+git clone https://github.com/NatLabRockies/T3CO.git T3CO
 ```
 
 This creates a git compliant folder 'T3CO' (i.e., a '/Users/Projects/T3CO' folder)
@@ -152,6 +152,36 @@ The user will receive these questions on the command line:
 `Enter the path where you want to copy demo input files:`
 
 Choose `y` and provide the desired destination path to get a `demo_inputs` folder containing the `t3co.resources` module files copied to your local directory. To copy the folder to the current directory you are on, answer the second question with ".".
+
+## Setting Up Environment Variables (Optional) <a name="env-setup"></a>
+
+T3CO can fetch live fuel price projections from the EIA Annual Energy Outlook API when a US zipcode is provided in the Config `region` column. This feature requires a free API key.
+
+**Step 1:** Register for a free API key at [eia.gov/opendata/register.php](https://www.eia.gov/opendata/register.php).
+
+**Step 2:** Copy the example environment file to create your own `.env`:
+
+```bash
+cp .env.example .env
+```
+
+If you installed T3CO from PyPI (not a git clone), create a `.env` file manually in the directory where you run T3CO.
+
+**Step 3:** Open `.env` and replace the placeholder with your actual API key:
+
+```
+T3CO_EIA_API_KEY=your_actual_api_key_here
+```
+
+If you are behind a corporate proxy with SSL inspection, you can also uncomment and set:
+
+```
+T3CO_SSL_VERIFY=false
+```
+
+The `.env` file is listed in `.gitignore` and will not be committed to version control. Never share your API key publicly.
+
+If you don't set up a `.env` file, T3CO works normally using static fuel price data from `FuelPrices.csv`. The EIA integration is only activated when a zipcode is provided in the Config and the API key is available.
 
 ## Running your first analysis
 

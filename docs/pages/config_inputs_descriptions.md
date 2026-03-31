@@ -102,8 +102,36 @@
             <td>algorithms</td>
             <td>Optimization Algorithms</td>
             <td></td>
-            <td>Algorithm for pymoo   optimization. Select from    [&quot;NSGA2&quot;, &quot;PatternSearch&quot;]</td>
+            <td>Algorithm for pymoo   optimization. Select from    [&quot;NSGA2&quot;, &quot;PatternSearch&quot;, &quot;NelderMead&quot;, &quot;PSO&quot;]</td>
             <td>string</td>
+        </tr>
+        <tr>
+            <td>pop_size</td>
+            <td>Population Size</td>
+            <td></td>
+            <td>Population size for the NSGA2 algorithm. Default: 25.</td>
+            <td>int</td>
+        </tr>
+        <tr>
+            <td>x_tol</td>
+            <td>Design Space Tolerance</td>
+            <td></td>
+            <td>Convergence tolerance on design variables for optimization termination. Default: 0.001.</td>
+            <td>float</td>
+        </tr>
+        <tr>
+            <td>f_tol</td>
+            <td>Objective Tolerance</td>
+            <td></td>
+            <td>Convergence tolerance on objective function values for optimization termination. Default: 0.001.</td>
+            <td>float</td>
+        </tr>
+        <tr>
+            <td>n_max_gen</td>
+            <td>Maximum Generations</td>
+            <td></td>
+            <td>Maximum number of generations before optimization terminates. Default: 1000.</td>
+            <td>int</td>
         </tr>
         <tr>
             <td>lw_imp_curves</td>
@@ -223,6 +251,34 @@
             <td></td>
             <td>Override boolean switch for   maintenance and repair downtime opportunity cost calculations- if left blank,   T3CO uses selection specific switch</td>
             <td>bool</td>
+        </tr>
+        <tr>
+            <td>drive_cycle</td>
+            <td>Drive Cycle</td>
+            <td></td>
+            <td>Path to a single drive cycle file or a folder of drive cycle files (for Batch Mode). Either absolute or relative to /resources/ folder. If left blank, T3CO uses the scenario-level drive cycle.</td>
+            <td>string</td>
+        </tr>
+        <tr>
+            <td>cost_toggles_file</td>
+            <td>Cost Toggles Filepath</td>
+            <td></td>
+            <td>Filepath to a JSON file containing cost model toggles (e.g. <code>eia_fuel_prices</code>). Defaults to <code>resources/inputs/cost_toggles.json</code>.</td>
+            <td>string</td>
+        </tr>
+        <tr>
+            <td>TCO_method</td>
+            <td>TCO Calculation Method</td>
+            <td></td>
+            <td>Method for computing discounted TCO. Accepted values: <code>DIRECT</code> (default) or <code>EFFICIENCY</code>.</td>
+            <td>string</td>
+        </tr>
+        <tr>
+            <td>purchasing_method</td>
+            <td>Purchasing Method</td>
+            <td></td>
+            <td>Vehicle purchasing method. Accepted values: <code>cash</code> (default), <code>loan</code>, or <code>lease</code>.</td>
+            <td>string</td>
         </tr>
         <tr>
             <td>fuel_prices_file</td>

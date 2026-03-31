@@ -44,13 +44,14 @@ When a US zipcode is provided in the Config or Scenario `region` field, T3CO can
 - BatchMode to run a folder of drivecycles through FASTSim and generate multiple scenarios per selection
 - Multiprocessing/Parallelization to reduce runtime for large selections. Can be clubbed with BatchMode to run 1000s of drivecycles on a local machine
 - Dynamic Wireless Power Transfer - Analyze on-road charging technologies and its impact on cost
+- Optimization Toolbox with NSGA2, PatternSearch, NelderMead, and PSO algorithms for vehicle sizing and TCO minimization
+- Regionalized fuel prices via EIA AEO API with automatic zipcode-to-census-division resolution
+- Charts Module to visualize Ledgers and large sets of T3CO results
 
 ## Features Roadmap
 
-- Charts Module to visualize Ledgers and large sets of T3CO results
-- Optimization Toolbox to size the future or advanced vehicle parameters for minimizing TCO and other objectives
 - Labor Cost as an operating cost component
 - Grants incentives, registration, title, and recurring fees added as Capital and Operating Cost components
 - Battery replacement and battery degradation accounted for in Operating Costs and Energy calculations
-- ~~Regionalized fuel, registration, and labor cost inputs~~ (fuel prices: available via EIA API integration)
+- Regionalized registration and labor cost inputs
 - Option to run RouteE for Energy calculations
