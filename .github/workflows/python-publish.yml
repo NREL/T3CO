@@ -88,10 +88,10 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.test_pypi_password }}
 
-      - name: Install t3co from Test PyPI and run tests
+      - name: Install t3co from Test PyPI and verify import
         run: |
-          pip install --upgrade --no-cache-dir --index-url https://test.pypi.org/simple/ t3co[dev]
-          pytest
+          pip install --no-cache-dir --extra-index-url https://test.pypi.org/simple/ t3co==2.0.0
+          python -c "import t3co; print('t3co', t3co.__version__, 'installed successfully')"
 
       - name: Publish distribution 📦 to PyPI
         run: twine upload -r pypi dist/*

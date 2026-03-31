@@ -1,7 +1,7 @@
 
 ![t3co_logo](https://github.com/user-attachments/assets/60623b62-57de-4475-b839-d7eb39405185)
 
-[![homepage](https://img.shields.io/badge/homepage-t3co-blue)](https://www.nlr.gov/transportation/t3co.html) [![github](https://img.shields.io/badge/github-t3co-blue.svg)](https://github.com/NatLabRockies/T3CO) [![documentation](https://img.shields.io/badge/documentation-t3co-blue.svg)](https://NatLabRockies.github.io/T3CO/) [![PyPI - Version](https://img.shields.io/pypi/v/t3co)](https://pypi.org/project/t3co/) ![GitHub License](https://img.shields.io/github/license/NLR/T3CO) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/t3co) 
+[![homepage](https://img.shields.io/badge/homepage-t3co-blue)](https://www.nlr.gov/transportation/t3co.html) [![github](https://img.shields.io/badge/github-t3co-blue.svg)](https://github.com/NatLabRockies/T3CO) [![documentation](https://img.shields.io/badge/documentation-t3co-blue.svg)](https://NatLabRockies.github.io/T3CO/) [![PyPI - Version](https://img.shields.io/pypi/v/t3co)](https://pypi.org/project/t3co/) ![GitHub License](https://img.shields.io/github/license/NatLabRockies/T3CO) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/t3co) 
 
 
 # **T3CO** : Transportation Technology Total Cost of Ownership Tool
@@ -9,13 +9,13 @@
 
 This repo houses T3CO (Transportation Technology Total Cost of Ownership), software for modeling total cost of ownership for commercial vehicles with advanced powertrains.
 
-**New to 2.0?** See [What's New in T3CO 2.0](./docs/whats_new.md) for a summary of EIA fuel price integration, expanded optimization algorithms, and other changes.
+**New to 2.0?** See [What's New in T3CO 2.0](https://natlabrockies.github.io/T3CO/whats_new/) for a summary of EIA fuel price integration, expanded optimization algorithms, and other changes.
 
-To get started, read the [Quick Start Guide](./docs/quick_start.md)
+To get started, read the [Quick Start Guide](https://natlabrockies.github.io/T3CO/quick_start/)
 
-For detailed installation instructions, read the [Installation Guide](./docs/installation.md)
+For detailed installation instructions, read the [Installation Guide](https://natlabrockies.github.io/T3CO/installation/)
 
-For information on the T3CO models, go to the [Overview](./docs/T3CO_Overview.md)
+For information on the T3CO models, go to the [Overview](https://natlabrockies.github.io/T3CO/T3CO_Overview)
 
 ## Usage
 
@@ -37,7 +37,7 @@ The different 'extras' refers to different sets of dependencies that get install
 
 ### Installation Source #1: From [PyPI](https://pypi.org/project/t3co/)
 
-After creating a version-appropriate [Python environment](./docs/installation.md#setting-up-env), the latest release of T3CO can be installed from PyPI using one of the following commands.
+After creating a version-appropriate [Python environment](https://natlabrockies.github.io/T3CO/installation/#setting-up-a-python-environment), the latest release of T3CO can be installed from PyPI using one of the following commands.
 
 For the default option/extra:
 
@@ -75,7 +75,7 @@ To access the `t3co-2.0` branch,
 git checkout t3co-2.0
 ```
 
-From within the [Python environment](./docs/installation.md#setting-up-env), navigate to the parent directory containing the T3CO repository (`cd T3CO`) and run one of these three installation options:
+From within the [Python environment](https://natlabrockies.github.io/T3CO/installation/#setting-up-a-python-environment), navigate to the parent directory containing the T3CO repository (`cd T3CO`) and run one of these three installation options:
 
 
 For the default option/extra:
@@ -102,7 +102,7 @@ The [`t3co.resources`](./src/t3co/resources) module folder contains all the nece
 install_t3co_demo_inputs
 ```
 
-More information on the demo input files can be found in the [Installation Guide](./docs/installation.md#copy-demo-inputs)
+More information on the demo input files can be found in the [Installation Guide](https://natlabrockies.github.io/T3CO/installation/#copying-t3co-demo-input-files)
 
 
 ## Running T3CO
@@ -114,7 +114,7 @@ python -m t3co.cli.sweep --analysis-id=0 --config=<path/to/T3COConfig.csv>
 
 Point the `--config` argument to the `T3COConfig.csv` file path (either the src/t3co/resource/T3COConfig.csv file in a repo clone or the demo_inputs/T3COConfig.csv file after copying the demo input files. This parameter defaults to the T3COConfig.csv file in the t3co.resources module) and `--analysis-id` to the desired `config.analysis_id` (either an existing row or a newly added "Analysis" row in the `T3COConfig.csv` file. Default = `0`).
 
-Additional information on the inputs, the Batch Mode feature, other CLI arguments, and description of T3CO results are mentioned in the [Quick Start Guide](./docs/quick_start.md)
+Additional information on the inputs, the Batch Mode feature, other CLI arguments, and description of T3CO results are mentioned in the [Quick Start Guide](https://natlabrockies.github.io/T3CO/quick_start/)
 
 ### EIA Fuel Price Projections
 

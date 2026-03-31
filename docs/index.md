@@ -9,7 +9,7 @@ This repo houses T3CO (Transportation Technology Total Cost of Ownership), softw
 
 **New to 2.0?** See [What's New in T3CO 2.0](./whats_new.md) for a summary of EIA fuel price integration, expanded optimization algorithms, and other changes.
 
-To learn about the models, go to the [Overview](./t3co_overview.md)
+To learn about the models, go to the [Overview](./T3CO_Overview.md)
 
 To get started with the tool, go to the [Installation Guide](./installation.md)
 

@@ -24,6 +24,23 @@ extra:
             using our <a href="..." target="_blank" rel="noopener">feedback form</a>.
   generator: false
 
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+            heading_level: 2
+            members_order: source
+            docstring_style: google
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
 theme:
   name: material
   favicon: t3co_logo.svg
@@ -54,7 +71,7 @@ nav:
     - What's New in 2.0: whats_new.md
     - Installation: installation.md
     - Quick Start: quick_start.md
-    - Overview: t3co_overview.md
+    - Overview: T3CO_Overview.md
     - Costs and Features: pages/cost_and_tool_features.md
     - Inputs: 
       - Vehicle: pages/vehicle_inputs_descriptions.md

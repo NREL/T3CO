@@ -118,20 +118,20 @@ After running the analysis, T3CO stores the results .CSV file in the directory s
 The results file includes a comprehensive list of [***Ledger Outputs***](./pages/ledger_outputs_descriptions.md) that were calculated by the various ***T3CO Modules***. In addition to the T3CO outputs, all the *Vehicle* input parameters (denoted by a prefix: `input_vehicle_value_`), *Scenario* input parameters(denoted by a prefix: `scenario_`), and *Config* parameters (denoted by a prefix: `config_`) are also present in the results file. When the optional optimization module is run, the optimized vehicle parameters are also listed ((denoted by a prefix: `optimized_vehicle_value_`)) instead of NaN values for non-optimization runs.
 
 ## T3CO Visualization
-The [`t3co.visualization.charts`](https://github.com/NatLabRockies/T3CO/tree/main/src/t3co/visualization/charts.py) submodule is used to visualize the results CSV file that is generated after running T3CO. T3CO provides a demo file ([`t3co.demos.visualization_demo`](https://github.com/NatLabRockies/T3CO/tree/main/src/t3co/demos/visualization_demo.py)) to try out the visualization module for a sample analysis. The run_t3co function in the demo exports T3CO results as a pandas dataframe and generates the following visualization plots:
+T3CO provides a demo file ([`t3co.demos.demo`](https://github.com/NatLabRockies/T3CO/tree/main/src/t3co/demos/demo.py)) for generating a `TCOCalc` for a specific year and a `Ledger` object for a given vehicle, scenario, and energy inputs. It showcases the modularity of the tool and allows the user to also download the results as a JSON or CSV file. The following visualization plots can be generated from T3CO results:
 
 - TCO Breakdown Chart
 
-<img src="https://raw.githubusercontent.com/NatLabRockies/T3CO/refs/heads/main/docs/tco_breakdown_sample.png" alt="tcobreakdown" width="650"/>
+<img src="https://raw.githubusercontent.com/NatLabRockies/T3CO/refs/heads/main/docs/images/tco_breakdown_sample.png" alt="tcobreakdown" width="650"/>
 
 
 - Histogram Plot
 
-<img src="https://raw.githubusercontent.com/NatLabRockies/T3CO/refs/heads/main/docs/histogram_sample.png" alt="histogram" width="400"/>
+<img src="https://raw.githubusercontent.com/NatLabRockies/T3CO/refs/heads/main/docs/images/histogram_sample.png" alt="histogram" width="400"/>
 
 - Violin Plot
 
-<img src="https://raw.githubusercontent.com/NatLabRockies/T3CO/refs/heads/main/docs/violinplot_sample.png" alt="violinplot" width="400"/>
+<img src="https://raw.githubusercontent.com/NatLabRockies/T3CO/refs/heads/main/docs/images/violinplot_sample.png" alt="violinplot" width="400"/>
 
 
 The user can provide other input parameters specific to each visualization method to further customize the plots.
