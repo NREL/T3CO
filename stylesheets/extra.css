@@ -1,0 +1,125 @@
+/* Ensure tables fit within 1600px */
+.table-container {
+  width: 110%;
+  max-width: 2100px;
+  margin: auto;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Ensure tables fit fully within the page */
+#vehicleTable, #scenarioTable, #ledgerTable, #configTable {
+  width: 100%;
+  max-width: 2100px;
+  border-collapse: collapse;
+  table-layout: fixed; /* Ensures columns adjust to available space */
+}
+
+/* Column styling with min/max width */
+#vehicleTable th, #vehicleTable td, #scenarioTable th, #scenarioTable td, #ledgerTable th, #ledgerTable td, #configTable th, #configTable td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+  white-space: normal; /* Allows text wrapping */
+  word-wrap: break-word;
+  overflow: hidden;
+}
+
+/* Adjust column widths to ensure everything fits */
+#vehicleTable th:nth-child(1), #scenarioTable th:nth-child(1), #ledgerTable th:nth-child(1), #configTable th:nth-child(1) { width: 18%; } /* Input Parameter */
+#vehicleTable th:nth-child(2), #scenarioTable th:nth-child(2), #ledgerTable th:nth-child(3), #configTable th:nth-child(2) { width: 22%; } /* Full Form */
+#vehicleTable th:nth-child(3), #scenarioTable th:nth-child(3), #ledgerTable th:nth-child(4), #configTable th:nth-child(3) { width: 10%; } /* Units */
+#vehicleTable th:nth-child(4), #scenarioTable th:nth-child(4), #ledgerTable th:nth-child(5), #configTable th:nth-child(4) { width: 30%; } /* Description */
+#vehicleTable th:nth-child(5), #scenarioTable th:nth-child(5) { width: 10%; } /* Powertrain */
+#vehicleTable th:nth-child(6), #scenarioTable th:nth-child(6), #ledgerTable th:nth-child(6), #configTable th:nth-child(5) { width: 10%; } /* Data Type */
+#scenarioTable th:nth-child(7) { width: 10%; } /* T3CO Component */
+#ledgerTable th:nth-child(2) { width: 15%; } /* T3CO Component */
+
+/* Sticky headers to keep column titles visible */
+#vehicleTable th, #scenarioTable th, #ledgerTable th, #configTable th {
+  background-color: #f4f4f4;
+  cursor: pointer;
+  position: sticky;
+  top: 0;
+}
+
+/* Ensure proper text wrapping */
+#vehicleTable td:nth-child(4), #scenarioTable td:nth-child(4), #ledgerTable td:nth-child(4), #configTable td:nth-child(4) {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+/* Center content and ensure proper page width */
+.md-content {
+  max-width: 2100px;
+}
+
+/* Hover effect for better readability */
+#vehicleTable tr:hover, #scenarioTable tr:hover, #ledgerTable tr:hover, #configTable tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Button container styling */
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+/* Button styling */
+#downloadTemplateBtn {
+  background-color: #3F51B5; /* MkDocs Material indigo color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#downloadTemplateBtn:hover {
+  background-color: #303F9F; /* Darker shade for hover effect */
+}
+
+/* Styling for t3coComponentFilter dropdown */
+#t3coComponentFilter {
+  width: 200px;
+  height: auto;
+  font-size: 14px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  z-index: 1;
+  overflow-y: auto; /* Add scroll if there are many options */
+  max-height: 150px; /* Adjust as needed */
+}
+
+#t3coComponentFilter option {
+  padding: 5px;
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0px;
+}
+
+.filter-container span {
+  margin-right: 10px;
+}
+
+#unitsFilter, #powertrainFilter, #datatypeFilter {
+  margin-right: 20px; /* Add space after each dropdown */
+}
+
+#configUnitsFilter, #configdatatypeFilter {
+  margin-right: 20px; /* Add space after each dropdown */
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
+}
