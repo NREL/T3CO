@@ -90,7 +90,7 @@ def scenario(toggles):
         activate_mr_downtime_cost=False,
         fuel_prices_df=pd.DataFrame(
             {
-                "Fuel": ["dolPerKwh"],
+                "Fuel": ["electricity_dol_per_kwh"],
                 "Region": ["US"],
                 "2020": [0.1],
                 "2021": [0.1],
@@ -268,6 +268,29 @@ def test_set_purchasing_payment_cost_loan(scenario, cap_costs):
     assert operating_costs.purchasing_cost_dol_per_yr == pytest.approx(4547.56, 0.01)
 
 
+def test_set_purchasing_payment_cost_loan_with_missing_terms(scenario, cap_costs):
+    scenario.purchasing_method = "loan"
+    scenario.purchasing_interest_apr_pct_per_yr = 0.05
+    scenario.purchasing_payment_frequency_months = 0
+    scenario.purchasing_term_yr = 0
+    operating_costs = OperatingCosts.__new__(
+        OperatingCosts,
+        year_number=1,
+        cap_costs=cap_costs,
+        vehicle=None,
+        scenario=scenario,
+        energy=None,
+        oppy_costs=None,
+    )
+
+    operating_costs.set_purchasing_payment_cost(
+        year_number=1, scenario=scenario, cap_costs=cap_costs
+    )
+
+    assert operating_costs.purchasing_payment_dol_per_yr == pytest.approx(0.0, 0.01)
+    assert operating_costs.purchasing_cost_dol_per_yr == pytest.approx(0.0, 0.01)
+
+
 def test_set_purchasing_payment_cost_lease(scenario, cap_costs):
     scenario.purchasing_method = "lease"
     scenario.purchasing_term_yr = 3
@@ -293,6 +316,31 @@ def test_set_purchasing_payment_cost_lease(scenario, cap_costs):
         18465.77, 0.01
     )
     assert operating_costs.purchasing_cost_dol_per_yr == pytest.approx(700.60, 0.01)
+
+
+def test_set_purchasing_payment_cost_lease_with_missing_term(scenario, cap_costs):
+    scenario.purchasing_method = "lease"
+    scenario.purchasing_term_yr = 0
+    scenario.leasing_money_factor = 0.002
+    operating_costs = OperatingCosts.__new__(
+        OperatingCosts,
+        year_number=1,
+        cap_costs=cap_costs,
+        vehicle=None,
+        scenario=scenario,
+        energy=None,
+        oppy_costs=None,
+    )
+
+    operating_costs.set_purchasing_payment_cost(
+        year_number=1, scenario=scenario, cap_costs=cap_costs
+    )
+
+    assert operating_costs.purchasing_payment_dol_per_yr == pytest.approx(0.0, 0.01)
+    assert operating_costs.purchasing_cost_dol_per_yr == pytest.approx(0.0, 0.01)
+    assert operating_costs.purchasing_tax_amount_dol_per_year == pytest.approx(
+        0.0, 0.01
+    )
 
 
 def test_set_net_oper_cost(vehicle, scenario, energy, cap_costs, oppy_costs):

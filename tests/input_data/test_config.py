@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 from pathlib import Path
 
+from t3co import utils
 from t3co.input_data.config import Config
 
 
@@ -110,9 +111,9 @@ def test_config_from_csv(mock_config_file):
     assert config.fs_fueling_rate_kg_per_min == 200
     assert config.fs_fueling_rate_gasoline_gpm == 300
     assert config.fs_fueling_rate_diesel_gpm == 400
-    assert config.insurance_rates_file == "insurance.csv"
-    assert config.fuel_prices_file == "fuel.csv"
-    assert config.plf_weight_dist_file == "weight_dist.csv"
+    assert Path(config.insurance_rates_file).name == "insurance.csv"
+    assert Path(config.fuel_prices_file).name == "fuel.csv"
+    assert Path(config.plf_weight_dist_file).name == "weight_dist.csv"
     assert config.TCO_method == "DIRECT"
     assert config.algorithms == "algorithms"
     assert config.lw_imp_curves == "lw_imp_curves"
@@ -177,6 +178,108 @@ Diesel,3.0
     )
     config.read_auxiliary_files()
     assert not config.fuel_prices_df.empty
+
+
+def test_read_auxiliary_files_creates_temp_region_from_json(mock_config_file, tmp_path):
+    fuel_prices_data = """Region,Fuel,2020,2021
+Mountain,diesel_dol_per_gal,3.0,3.1
+Mountain,electricity_dol_per_kwh,0.12,0.13
+"""
+    fuel_prices_file = tmp_path / "fuel_prices.csv"
+    fuel_prices_file.write_text(fuel_prices_data)
+
+    cost_toggles_file = tmp_path / "cost_toggles.json"
+    cost_toggles_file.write_text("{}")
+
+    config = Config(
+        config_filename=mock_config_file,
+        fuel_prices_file=fuel_prices_file,
+        cost_toggles_file=cost_toggles_file,
+        fuel_prices_json={
+            "zipcode": "80302",
+            "fuel_prices": {
+                "diesel_dol_per_gal": {"2021": 4.25},
+                "electricity_dol_per_kwh": {"2020": 0.2},
+            },
+        },
+    )
+    original_lookup = utils.lookup_zipcode
+    utils.lookup_zipcode = lambda zipcode: {"zip_code": zipcode, "state": "CO"}
+
+    try:
+        config.read_auxiliary_files()
+    finally:
+        utils.lookup_zipcode = original_lookup
+
+    assert config.fuel_prices_source_region == "Mountain"
+    assert config.fuel_prices_region.startswith("zip_80302_")
+    assert config.fuel_prices_file != fuel_prices_file
+    assert Path(config.fuel_prices_file).exists()
+    temp_region_rows = config.fuel_prices_df[
+        config.fuel_prices_df["Region"] == config.fuel_prices_region
+    ]
+    assert temp_region_rows.loc["diesel_dol_per_gal", "2021"] == pytest.approx(4.25)
+    assert temp_region_rows.loc["electricity_dol_per_kwh", "2020"] == pytest.approx(0.2)
+
+    Path(config.fuel_prices_file).unlink(missing_ok=True)
+
+
+def test_read_auxiliary_files_rejects_invalid_fuel_price_payload(
+    mock_config_file, tmp_path
+):
+    fuel_prices_data = """Region,Fuel,2025
+Mountain,diesel_dol_per_gal,3.0
+"""
+    fuel_prices_file = tmp_path / "fuel_prices.csv"
+    fuel_prices_file.write_text(fuel_prices_data)
+
+    cost_toggles_file = tmp_path / "cost_toggles.json"
+    cost_toggles_file.write_text("{}")
+
+    config = Config(
+        config_filename=mock_config_file,
+        fuel_prices_file=fuel_prices_file,
+        cost_toggles_file=cost_toggles_file,
+        fuel_prices_json={
+            "zipcode": "80A02",
+            "region": "should_not_be_allowed",
+            "fuel_prices": {"diesel_dol_per_gal": {"2025": 4.25}},
+        },
+    )
+
+    with pytest.raises(ValueError):
+        config.read_auxiliary_files()
+
+
+def test_read_auxiliary_files_rejects_unknown_zipcode_dataset_result(
+    mock_config_file, tmp_path
+):
+    fuel_prices_data = """Region,Fuel,2025
+Mountain,diesel_dol_per_gal,3.0
+"""
+    fuel_prices_file = tmp_path / "fuel_prices.csv"
+    fuel_prices_file.write_text(fuel_prices_data)
+
+    cost_toggles_file = tmp_path / "cost_toggles.json"
+    cost_toggles_file.write_text("{}")
+
+    config = Config(
+        config_filename=mock_config_file,
+        fuel_prices_file=fuel_prices_file,
+        cost_toggles_file=cost_toggles_file,
+        fuel_prices_json={
+            "zipcode": "80302",
+            "fuel_prices": {"diesel_dol_per_gal": {"2025": 4.25}},
+        },
+    )
+    original_lookup = utils.lookup_zipcode
+    utils.lookup_zipcode = lambda zipcode: {"zip_code": zipcode, "state": "PR"}
+
+    try:
+        with pytest.raises(ValueError, match="unsupported state 'PR'"):
+            config.read_auxiliary_files()
+    finally:
+        utils.lookup_zipcode = original_lookup
 
 
 def test_delete_dataframes():

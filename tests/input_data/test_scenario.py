@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from t3co import utils
 from t3co.input_data.config import Config
 from t3co.input_data.scenario import Scenario
 
@@ -91,6 +92,86 @@ def test_scenario_override_from_config(config, mock_scenario_db):
     scenario.override_from_config(config=config)
     assert scenario.vehicle_life_yr == config.vehicle_life_yr
     assert scenario.fs_fueling_rate_kg_per_min == config.fs_fueling_rate_kg_per_min
+
+
+def test_scenario_from_dict_uses_defaults_for_missing_fields():
+    scenario = Scenario.from_dict(
+        {
+            "selection": 1,
+            "scenario_name": "Legacy Scenario",
+            "vehicle_life_yr": 2,
+            "vmt": "[10000, 9000]",
+            "shifts_per_year": "[250, 250]",
+            "mr_unplanned_downtime_hr_per_mi": "[0.01, 0.01]",
+            "maint_oper_cost_dol_per_mi": "[0.2, 0.2]",
+        }
+    )
+
+    assert scenario.depreciation_rates_pct_per_yr == [0.0, 0.0]
+    assert scenario.fuel_prices_file == "./auxiliary/FuelPrices.csv"
+    assert scenario.mpgge == 0.0
+    assert scenario.primary_fuel_range_mi == 0.0
+
+
+@pytest.mark.parametrize("analysis_id", [0, 1, 2, 3, 4, 5])
+def test_demo_analysis_ids_use_temp_fuel_price_region(analysis_id):
+    config = Config().from_csv(analysis_id=analysis_id)
+    config.fuel_prices_json = {
+        "zipcode": "80302",
+        "fuel_prices": {"diesel_dol_per_gal": {"2025": 9.99}},
+    }
+    original_lookup = utils.lookup_zipcode
+    utils.lookup_zipcode = lambda zipcode: {"zip_code": zipcode, "state": "CO"}
+
+    try:
+        config.read_auxiliary_files()
+    finally:
+        utils.lookup_zipcode = original_lookup
+
+    selection = (
+        config.selections[0]
+        if isinstance(config.selections, list)
+        else config.selections
+    )
+    scenario = Scenario.from_csv(
+        selection=selection, scenario_file=config.scenario_file
+    )
+    scenario.override_from_config(config=config)
+
+    assert config.fuel_prices_source_region == "Mountain"
+    assert scenario.region.startswith("zip_80302_")
+    temp_region_rows = scenario.fuel_prices_df[
+        scenario.fuel_prices_df["Region"] == scenario.region
+    ]
+    assert temp_region_rows.loc["diesel_dol_per_gal", "2025"] == pytest.approx(9.99)
+
+    Path(config.fuel_prices_file).unlink(missing_ok=True)
+
+
+def test_demo_analysis_id_5_uses_eia_region():
+    """Analysis 5 has region=90210 which should trigger EIA and resolve to Pacific."""
+    config = Config().from_csv(analysis_id=5)
+
+    original_lookup = utils.lookup_zipcode
+    utils.lookup_zipcode = lambda zipcode: {"zip_code": zipcode, "state": "CA"}
+    try:
+        config.read_auxiliary_files()
+    finally:
+        utils.lookup_zipcode = original_lookup
+
+    selection = (
+        config.selections[0]
+        if isinstance(config.selections, list)
+        else config.selections
+    )
+    scenario = Scenario.from_csv(
+        selection=selection, scenario_file=config.scenario_file
+    )
+    scenario.override_from_config(config=config)
+
+    assert selection == 12
+    assert config.fuel_prices_region == "Pacific"
+    assert scenario.region == "Pacific"
 
 
 def test_get_discounted_value():

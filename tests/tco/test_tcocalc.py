@@ -95,7 +95,7 @@ def scenario(toggles):
         maint_oper_cost_dol_per_mi=[0.05] * 10,
         fuel_prices_df=pd.DataFrame(
             {
-                "Fuel": ["dolPerKwh"],
+                "Fuel": ["electricity_dol_per_kwh"],
                 "Region": ["US"],
                 "2020": [0.1],
                 "2021": [0.1],
