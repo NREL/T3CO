@@ -1,9 +1,9 @@
 import numpy as np
 from multiprocessing import Pool
-from pymoo.algorithms.soo.nonconvex.ga import GA
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.core.problem import ElementwiseProblem, StarmapParallelization
 from pymoo.optimize import minimize
+from pymoo.termination.default import DefaultSingleObjectiveTermination
 
 from t3co.energy_models.energy import Energy
 from t3co.input_data.config import Config
@@ -130,41 +130,49 @@ class VehicleDesignOpt(ElementwiseProblem):
             elementwise_runner=runner,
         )
 
-    def _evaluate(self, x, out, *args, **kwargs):
-        # Update vehicle attributes based on decision variables
-        if self.vehicle.veh_pt_type == gl.CONV:
-            self.vehicle.fc_max_kw = x[0]
-            if len(x) > 1:
-                self.vehicle.fs_kwh = x[1]
-        elif self.vehicle.veh_pt_type == gl.BEV:
-            self.vehicle.ess_max_kwh = x[0]
-            self.vehicle.mc_max_kw = x[1]
-        elif self.vehicle.veh_pt_type == gl.HEV:
-            self.vehicle.ess_max_kwh = x[0]
-            self.vehicle.fc_max_kw = x[1]
-            self.vehicle.fs_kwh = x[2]
-            self.vehicle.mc_max_kw = x[3]
+    def apply_design_variables(self, x, vehicle=None):
+        target_vehicle = self.vehicle if vehicle is None else vehicle
 
-        # Initialize Energy and run fastsim model
+        if target_vehicle.veh_pt_type == gl.CONV:
+            target_vehicle.fc_max_kw = x[0]
+            if len(x) > 1:
+                target_vehicle.fs_kwh = x[1]
+        elif target_vehicle.veh_pt_type == gl.BEV:
+            target_vehicle.ess_max_kwh = x[0]
+            target_vehicle.mc_max_kw = x[1]
+        elif target_vehicle.veh_pt_type == gl.HEV:
+            target_vehicle.ess_max_kwh = x[0]
+            target_vehicle.fc_max_kw = x[1]
+            target_vehicle.fs_kwh = x[2]
+            target_vehicle.mc_max_kw = x[3]
+        else:
+            raise ValueError(f"Unknown vehicle type: {target_vehicle.veh_pt_type}")
+
+        return target_vehicle
+
+    def evaluate_solution(self, x):
+        vehicle = self.apply_design_variables(x)
+
         energy = Energy()
         energy.run_fastsim_model(
-            veh_no=self.vehicle.selection,
+            veh_no=vehicle.selection,
             scenario=self.scenario,
             vehicle_df=self.config.vehicle_df,
-            t3co_vehicle=self.vehicle,
+            t3co_vehicle=vehicle,
         )
 
-        # Run performance tests if needed for constraints
         if self.scenario.constraint_accel:
-            energy.run_acceleration_test(self.vehicle, self.scenario)
+            energy.run_acceleration_test(vehicle, self.scenario)
         if self.scenario.constraint_grade:
-            energy.run_gradeability_test(self.vehicle, self.scenario)
-
+            energy.run_gradeability_test(vehicle, self.scenario)
         if self.scenario.constraint_range:
-            energy.run_range_test(self.vehicle, self.scenario)
+            energy.run_range_test(vehicle, self.scenario)
 
-        # Instantiate Ledger, which will calculate the operating costs using Energy
-        ledger = Ledger(self.vehicle, self.scenario, energy, self.config)
+        ledger = Ledger(vehicle, self.scenario, energy, self.config)
+        return vehicle, energy, ledger
+
+    def _evaluate(self, x, out, *args, **kwargs):
+        vehicle, energy, ledger = self.evaluate_solution(x)
 
         # Objective: minimize the discounted total cost of ownership
         out["F"] = [ledger.discounted_tco_dol]
@@ -238,12 +246,17 @@ def run_optimization(selection, parallel=True, n_processes=4):
 
     try:
         problem = VehicleDesignOpt(vehicle, scenario, config, runner=runner)
-        algorithm = GA(pop_size=100)
+        algorithm = NSGA2(pop_size=config.pop_size, eliminate_duplicates=True)
 
         res = minimize(
             problem,
             algorithm,
-            termination=("n_gen", 5),
+            termination=DefaultSingleObjectiveTermination(
+                xtol=config.x_tol,
+                ftol=config.f_tol,
+                period=max(config.nth_gen, config.n_last),
+                n_max_gen=config.n_max_gen,
+            ),
             seed=1,
             verbose=True,
         )
@@ -251,6 +264,8 @@ def run_optimization(selection, parallel=True, n_processes=4):
         if pool:
             pool.close()
             pool.join()
+
+    vehicle, energy, ledger = problem.evaluate_solution(res.X)
 
     print("Best solution:")
     if vehicle.veh_pt_type == gl.CONV:
@@ -266,7 +281,7 @@ def run_optimization(selection, parallel=True, n_processes=4):
         print("  Fuel Converter Peak Power (kW): {:.2f}".format(res.X[1]))
         print("  Fuel Storage Energy (kWh eq.):  {:.2f}".format(res.X[2]))
         print("  Motor Peak Power (kW):          {:.2f}".format(res.X[3]))
-    print("Minimum Discounted TCO:           ${:.2f}".format(res.F[0]))
+    print("Minimum Discounted TCO:           ${:.2f}".format(ledger.discounted_tco_dol))
 
 
 if __name__ == "__main__":

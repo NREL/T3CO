@@ -25,8 +25,9 @@ from t3co.utils.print_class_objects import get_path_object
 
 try:
     from pymoo.algorithms.soo.nonconvex.ga import GA
-    from pymoo.algorithms.moo import nsga2
+    from pymoo.algorithms.moo.nsga2 import NSGA2
     from pymoo.core.problem import StarmapParallelization
+    from pymoo.termination.default import DefaultSingleObjectiveTermination
 
     from pymoo.optimize import minimize
     from t3co.optimize.optimization import VehicleDesignOpt
@@ -37,6 +38,102 @@ except ImportError:
     optimization_installed = False
 except AttributeError:
     optimization_installed = False
+
+
+def _normalize_selections_arg(selections) -> list | None:
+    if not selections:
+        return None
+
+    if len(selections) == 1 and isinstance(selections[0], list):
+        return selections[0]
+
+    return list(selections)
+
+
+def _normalize_drive_cycle_arg(drive_cycle):
+    if not drive_cycle:
+        return None
+
+    if len(drive_cycle) == 1:
+        return drive_cycle[0]
+
+    return drive_cycle
+
+
+def _argument_was_provided(argv: list[str], *flags: str) -> bool:
+    return any(flag in argv for flag in flags)
+
+
+def apply_cli_overrides(config: Config, args, argv: list[str] | None = None) -> Config:
+    argv = [] if argv is None else argv
+
+    override_specs = [
+        (("--vehicles",), "vehicle_file", args.vehicles),
+        (("--scenarios",), "scenario_file", args.scenarios),
+        (("--eng-curves",), "eng_eff_imp_curves", args.eng_curves),
+        (("--lw-curves",), "lw_imp_curves", args.lw_curves),
+        (("--aero-curves",), "aero_drag_imp_curves", args.aero_curves),
+        (("--dst-dir",), "dst_dir", args.dst_dir),
+        (("--algorithms", "--algos", "--algo"), "algorithms", args.algorithms),
+        (("--x-tol",), "x_tol", args.x_tol),
+        (("--f-tol",), "f_tol", args.f_tol),
+        (("--n-max-gen",), "n_max_gen", int(args.n_max_gen)),
+        (("--pop-size",), "pop_size", int(args.pop_size)),
+        (("--nth-gen",), "nth_gen", args.nth_gen),
+        (("--n-last",), "n_last", args.n_last),
+    ]
+
+    for flags, attr_name, value in override_specs:
+        if _argument_was_provided(argv, *flags):
+            setattr(config, attr_name, value)
+
+    if _argument_was_provided(argv, "--selections"):
+        config.selections = _normalize_selections_arg(args.selections)
+
+    if _argument_was_provided(argv, "--drive-cycle"):
+        config.drive_cycle = _normalize_drive_cycle_arg(args.drive_cycle)
+
+    if _argument_was_provided(argv, "--skip-all-opt", "--skopt"):
+        config.skip_all_opt = True
+
+    return config
+
+
+def _get_primary_algorithm(config: Config) -> str:
+    algorithms = config.algorithms
+    if isinstance(algorithms, list):
+        return str(algorithms[0])
+
+    if isinstance(algorithms, str):
+        algorithms = algorithms.strip()
+        if not algorithms:
+            return "NSGA2"
+        if algorithms.startswith("["):
+            parsed_algorithms = ast.literal_eval(algorithms)
+            if isinstance(parsed_algorithms, list) and parsed_algorithms:
+                return str(parsed_algorithms[0])
+        return algorithms
+
+    return "NSGA2"
+
+
+def _build_optimization_algorithm(config: Config):
+    algorithm_name = _get_primary_algorithm(config).upper()
+    if algorithm_name == "NSGA2":
+        return NSGA2(pop_size=int(config.pop_size), eliminate_duplicates=True)
+    if algorithm_name == "GA":
+        return GA(pop_size=int(config.pop_size), eliminate_duplicates=True)
+
+    raise ValueError(f"Unsupported optimization algorithm '{algorithm_name}'")
+
+
+def _build_optimization_termination(config: Config):
+    return DefaultSingleObjectiveTermination(
+        xtol=config.x_tol,
+        ftol=config.f_tol,
+        period=max(int(config.nth_gen), int(config.n_last)),
+        n_max_gen=int(config.n_max_gen),
+    )
 
 
 def load_vehicle_scenario_energy(
@@ -139,16 +236,17 @@ def generate_ledger(selection: int, config: Config) -> Dict:
     print(f"Running Selection: {selection}: {input_scenario.scenario_name}")
 
     if not config.skip_all_opt and optimization_installed:
-        optimized_vehicle = run_optimization(
+        optimized_vehicle, optimized_energy = run_optimization(
             vehicle=input_vehicle, scenario=input_scenario, config=config
         )
     else:
         optimized_vehicle = None
+        optimized_energy = None
 
     return Ledger(
         vehicle=(input_vehicle if not optimized_vehicle else optimized_vehicle),
         scenario=input_scenario,
-        energy=input_energy,
+        energy=(input_energy if optimized_energy is None else optimized_energy),
         config=config,
     ).to_dict(
         include_calcs=config.include_calcs,
@@ -167,12 +265,12 @@ def run_optimization(vehicle: Vehicle, scenario: Scenario, config: Config):
         problem = VehicleDesignOpt(
             vehicle=vehicle, scenario=scenario, config=config, runner=runner
         )
-        algorithm = GA(pop_size=100)
+        algorithm = _build_optimization_algorithm(config)
 
         res = minimize(
             problem,
             algorithm,
-            termination=("n_gen", 5),
+            termination=_build_optimization_termination(config),
             seed=1,
             verbose=True,
         )
@@ -181,9 +279,9 @@ def run_optimization(vehicle: Vehicle, scenario: Scenario, config: Config):
             pool.close()
             pool.join()
 
-    vehicle.fc_max_kw = res.X[0]
-    print(vehicle)
-    return vehicle
+    optimized_vehicle, optimized_energy, _ = problem.evaluate_solution(res.X)
+    print(optimized_vehicle)
+    return optimized_vehicle, optimized_energy
 
 
 def create_results_filepath(config: Config) -> Path:
@@ -451,6 +549,7 @@ def run_t3co(config: Config, save_results: bool = True) -> None:
 
 if __name__ == "__main__":
     start = time.time()
+    raw_argv = os.sys.argv[1:]
 
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -655,19 +754,43 @@ if __name__ == "__main__":
         help="Number of processors to use for multiprocessing",
         default=9,
     )
+    parser.add_argument(
+        "--fuel-prices-json",
+        default=None,
+        type=str,
+        help="Fuel price override JSON string or path. Payload supports only 'zipcode' and 'fuel_prices'.",
+    )
+    parser.add_argument(
+        "--fuel-prices-zipcode",
+        default=None,
+        type=str,
+        help="US zipcode used to resolve the source fuel price region when applying overrides.",
+    )
+    parser.add_argument(
+        "--eia-api-key",
+        default=None,
+        type=str,
+        help="EIA API key (prefer setting T3CO_EIA_API_KEY in .env file instead).",
+    )
+    parser.add_argument(
+        "--eia-aeo-year",
+        default=None,
+        type=str,
+        help="AEO publication year to query (e.g. '2023', '2025'). Default: auto-discover latest.",
+    )
+    parser.add_argument(
+        "--eia-aeo-case",
+        default=None,
+        type=str,
+        help="AEO scenario case ID (e.g. 'aeo2023ref'). Default: auto-discover reference case.",
+    )
 
     args = parser.parse_args()
 
     if args.config is None or args.config == "None":
         config = Config()
-        config.selections = (
-            args.selections[0]
-            if isinstance(args.selections[0], list)
-            else [args.selections]
-        )
-        config.drive_cycle = args.drive_cycle
-        config.check_drivecycles_and_create_selections()
-        config.read_auxiliary_files()
+        config.selections = _normalize_selections_arg(args.selections)
+        config.drive_cycle = _normalize_drive_cycle_arg(args.drive_cycle)
         config.vehicle_file = Path(args.vehicles)
         config.scenario_file = Path(args.scenarios)
         config.eng_eff_imp_curves = Path(args.eng_curves)
@@ -676,8 +799,21 @@ if __name__ == "__main__":
     else:
         config = Config()
         config.from_csv(filename=args.config, analysis_id=args.analysis_id)
-        config.check_drivecycles_and_create_selections()
-        config.read_auxiliary_files()
+
+    apply_cli_overrides(config=config, args=args, argv=raw_argv)
+    config.fuel_prices_json = args.fuel_prices_json
+    config.fuel_prices_zipcode = args.fuel_prices_zipcode
+    if args.eia_api_key is not None:
+        os.environ["T3CO_EIA_API_KEY"] = args.eia_api_key
+    if args.eia_aeo_year is not None:
+        config.eia_aeo_year = args.eia_aeo_year
+    if args.eia_aeo_case is not None:
+        config.eia_aeo_case = args.eia_aeo_case
+
+    config.check_drivecycles_and_create_selections()
+    config.read_auxiliary_files()
+
+    if args.config is not None and args.config != "None":
         gl.RESOURCES_FOLDERPATH = Path(args.config).parent
         config.vehicle_file = get_path_object(config.vehicle_file)
         config.scenario_file = get_path_object(config.scenario_file)
@@ -733,7 +869,7 @@ if __name__ == "__main__":
             pool.join()
 
             # Sort the final file
-            print(f"Sorting results by selection...")
+            print("Sorting results by selection...")
             sort_csv_file(input_path=result_filepath, sort_by="selection")
             print(f"T3CO results saved and sorted to: {result_filepath}")
 
