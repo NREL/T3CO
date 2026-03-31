@@ -58,73 +58,58 @@ Use the command below to get a list of all CLI arguments:
 python -m t3co.cli.sweep --help
 ```
 
+### EIA Fuel Price Projections
+
+T3CO can fetch fuel price projections directly from the EIA Annual Energy Outlook (AEO) API. This replaces the static `FuelPrices.csv` data with the latest AEO projections for a region matching the provided US zipcode.
+
+**Setup:**
+1. Get a free EIA API key from [eia.gov/opendata/register.php](https://www.eia.gov/opendata/register.php)
+2. Add it to a `.env` file in your project root:
+   ```
+   T3CO_EIA_API_KEY=your_api_key_here
+   ```
+
+**Usage:** Set the `region` column in `T3COConfig.csv` to a 5-digit US zipcode. T3CO will auto-discover the latest AEO year, resolve the zipcode to a US Census division, and fetch fuel prices for that region.
+
+```bash
+python -m t3co.cli.sweep --analysis-id=5
 ```
-$ python -m t3co.cli.sweep --help
-usage: SWEEP [-h] [--config CONFIG] [--analysis-id ANALYSIS_ID] [--vehicles VEHICLES] [--scenarios SCENARIOS] [--selections [SELECTIONS ...]] [--drive-cycle [DRIVE_CYCLE ...]]
-             [--eng-curves ENG_CURVES] [--lw-curves LW_CURVES] [--aero-curves AERO_CURVES] [--look-for LOOK_FOR] [--skip-all-opt] [--skip-input-validation] [--exclude [EXCLUDE ...]]
-             [--algorithms [ALGORITHMS ...]] [--dst-dir DST_DIR] [--dir-mark DIR_MARK] [--file-mark FILE_MARK] [--skip-save-veh] [--x-tol X_TOL] [--f-tol F_TOL] [--n-max-gen N_MAX_GEN]
-             [--pop-size POP_SIZE] [--nth-gen NTH_GEN] [--n-last N_LAST] [--range-overshoot-tol RANGE_OVERSHOOT_TOL] [---missed-trace-correction] [--max-time-dilation MAX_TIME_DILATION]
-             [--min-time-dilation MIN_TIME_DILATION] [--time-dilation-tol TIME_DILATION_TOL] [--write-tsv WRITE_TSV] [--run-multi] [--n-processors N_PROCESSORS]
 
-The sweep.py module is the main script to run T3CO
+The same zipcode-based resolution also works at the Scenario level — if a scenario's `region` field contains a zipcode and the config didn't already resolve one, T3CO fetches EIA data for that scenario.
 
-options:
-  -h, --help            show this help message and exit
-  --config CONFIG       Input Config file (default: ./src/t3co/resources/T3COConfig.csv)
-  --analysis-id ANALYSIS_ID
-                        Analysis key from input Config file - 'config.analysis_id' (default: 0)
-  --vehicles VEHICLES   Input file for Vehicle models (default: ./src/t3co/resources/inputs/Demo_FY22_vehicle_model_assumptions.csv)
-  --scenarios SCENARIOS
-                        Input file for Scenario models (default: ./src/t3co/resources/inputs/Demo_FY22_scenario_assumptions.csv)
-  --selections [SELECTIONS ...]
-                        Selections desired to run. Selections can be an int, or list of ints, or range expression. Ex: --selections 234 or --selections "[234,236,238]" or --selections
-                        "range(234, 150, 2)" (default: None)
-  --drive-cycle [DRIVE_CYCLE ...]
-                        Override drive_cycle from scenario with a composite cycle, or an individual cycle, or a folder of cycles. File paths should be relative to the resources folder (default:
-                        None)
-  --eng-curves ENG_CURVES
-                        Input file for engine efficiency improvement cost curves (default: ./src/t3co/resources/auxiliary/EngineEffImprovementCostCurve.csv)
-  --lw-curves LW_CURVES
-                        Input file for lightweighting improvement cost curves (default: ./src/t3co/resources/auxiliary/LightweightImprovementCostCurve.csv)
-  --aero-curves AERO_CURVES
-                        Input file for aerodynamics improvement curves (default: ./src/t3co/resources/auxiliary/AeroDragImprovementCostCurve.csv)
-  --look-for LOOK_FOR   A string for string matching, example --look_for 'FCEV' or -look_for '["FCEV", "HEV"]' (default: )
-  --skip-all-opt, --skopt
-                        If --skip_all_opt used, all runs skip optimization (default: False)
-  --skip-input-validation, --skiv
-                        If --skip_input_validation used, no pre-validation of inputs is run before sweep commences (default: True)
-  --exclude [EXCLUDE ...]
-                        Overrides -look_for. a string for string matching to exclude runs, example -exclude 'FCEV' or -look_for '["FCEV", "HEV"]' (default: >{-<>-}<)
-  --algorithms [ALGORITHMS ...], --algos [ALGORITHMS ...], --algo [ALGORITHMS ...]
-                        Enter algorithm or list of algorithms, or "ensemble" to use all, to use for optimization: ex: -algos PatternSearch | -algos '["PatternSearch", "NSGA2"]' | -algos
-                        "ensemble" (default: NSGA2)
-  --dst-dir DST_DIR     Directory to store T3CO results (default: ./src/results)
-  --dir-mark DIR_MARK   Name for results directory in addition to timestamp (default: )
-  --file-mark FILE_MARK
-                        Prefix to add to the result file names (default: )
-  --skip-save-veh       Toggle result vehicle model YAML file saving off (default: False)
-  --x-tol X_TOL         Parameter space tolerance for optimization (default: 0.001)
-  --f-tol F_TOL         Objective space tolerance for optimization (default: 0.001)
-  --n-max-gen N_MAX_GEN
-                        Max number of optimizer iterations regardless of algorithm (default: 1000)
-  --pop-size POP_SIZE   population of each generation (default: 25)
-  --nth-gen NTH_GEN     Period of generations in which to evaluate if convergence happens during optimization (default: 1)
-  --n-last N_LAST       Number of generations to look back for establishing convergence during optimization (default: 5)
-  --range-overshoot-tol RANGE_OVERSHOOT_TOL
-                        Range overshoot tolerance, example '0.20' allows 20% range overshoot. Default of 'None' does not constrain overshoot. (default: None)
-  ---missed-trace-correction
-                        Activate FASTSim time-dilation to correct missed trace (default: False)
-  --max-time-dilation MAX_TIME_DILATION
-                        Maximum time dilation factor to 'catch up' with trace (default: 10)
-  --min-time-dilation MIN_TIME_DILATION
-                        Minimum time dilation to let trace 'catch up' (default: 0.1)
-  --time-dilation-tol TIME_DILATION_TOL
-                        Convergence criteria for time dilation (default: 0.001)
-  --write-tsv WRITE_TSV
-                        Boolean toggle to save intermediary .TSV cost results files (default: False)
-  --run-multi           Boolean switch to select multiprocessing version (default: False)
-  --n-processors N_PROCESSORS
-                        Number of processors to use for multiprocessing (default: 9)
+To override the AEO year or scenario (instead of using the latest):
+```bash
+python -m t3co.cli.sweep --analysis-id=5 --eia-aeo-year=2023 --eia-aeo-case=aeo2022ref
+```
+
+The `eia_fuel_prices` toggle in `cost_toggles.json` controls whether EIA lookups are enabled (default: `true`). If the toggle is `false` or no zipcode is provided, T3CO falls back to the static `FuelPrices.csv`.
+
+### Fuel Price Overrides
+
+For fuel-price sensitivity work, `--fuel-prices-json` accepts a JSON string or file path with `zipcode` and `fuel_prices` keys. T3CO uses the installed `zipcodes` package to resolve that ZIP code into the base fuel-price region before cloning and overriding the matching rows in `FuelPrices.csv`.
+
+```bash
+python -m t3co.cli.sweep \
+  --analysis-id=0 \
+  --fuel-prices-json='{"zipcode":"80302","fuel_prices":{"diesel_dol_per_gal":{"2025":4.25}}}'
+```
+
+Selected CLI arguments related to EIA fuel price data fetching:
+
+```
+  --eia-api-key EIA_API_KEY
+                        EIA API key (prefer setting T3CO_EIA_API_KEY in .env file instead).
+  --eia-aeo-year EIA_AEO_YEAR
+                        AEO publication year to query (e.g. '2023', '2025').
+                        Default: auto-discover latest.
+  --eia-aeo-case EIA_AEO_CASE
+                        AEO scenario case ID (e.g. 'aeo2023ref').
+                        Default: auto-discover reference case.
+```
+
+For the full list of CLI arguments, run:
+```bash
+python -m t3co.cli.sweep --help
 ```
 
 ## T3CO Results

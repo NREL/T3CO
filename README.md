@@ -114,6 +114,35 @@ Point the `--config` argument to the `T3COConfig.csv` file path (either the src/
 
 Additional information on the inputs, the Batch Mode feature, other CLI arguments, and description of T3CO results are mentioned in the [Quick Start Guide](./docs/quick_start.md)
 
+### EIA Fuel Price Projections
+
+T3CO can fetch fuel price projections directly from the [EIA Annual Energy Outlook (AEO)](https://www.eia.gov/outlooks/aeo/) API instead of relying on the static `FuelPrices.csv` file. When a US zipcode is provided in the `region` column of the Config file (or in the Scenario file), T3CO automatically:
+
+1. Discovers the **latest** AEO publication year available from the EIA API (e.g. AEO 2025)
+2. Identifies the **reference case** scenario for that year
+3. Resolves the zipcode to the corresponding **US Census division** (e.g. `90210` → Pacific)
+4. Fetches region-specific fuel price projections for diesel, gasoline, electricity, and CNG
+5. Falls back to `FuelPrices.csv` for hydrogen (not available in AEO)
+
+To enable this feature:
+
+1. Register for a free API key at [eia.gov/opendata/register.php](https://www.eia.gov/opendata/register.php)
+2. Create a `.env` file in your project root (see `.env.example`):
+   ```
+   T3CO_EIA_API_KEY=your_api_key_here
+   ```
+3. Set the `region` column in `T3COConfig.csv` to a US zipcode (e.g. `90210`)
+4. Ensure the `eia_fuel_prices` toggle is enabled in `cost_toggles.json` (default: `true`)
+
+To pin a specific AEO year instead of using the latest, set `eia_aeo_year` and `eia_aeo_case` in the Config CSV or via CLI:
+```bash
+python -m t3co.cli.sweep --analysis-id=5 --eia-aeo-year=2023 --eia-aeo-case=aeo2022ref
+```
+
+If no zipcode is provided or the toggle is disabled, T3CO uses the static `FuelPrices.csv` as before.
+
+Fuel price override workflows that use `--fuel-prices-json` and `--fuel-prices-zipcode` resolve the source fuel-price region from the installed `zipcodes` dependency instead of repository-maintained ZIP range tables.
+
 ## Acknowledgements
 
 This tool was developed with funding support from the US Department of Energy's Office of Energy Efficiency and Renewable Energy (EERE)'s Vehicle Technology Office.

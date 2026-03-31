@@ -224,6 +224,34 @@
             <td>Override boolean switch for   maintenance and repair downtime opportunity cost calculations- if left blank,   T3CO uses selection specific switch</td>
             <td>bool</td>
         </tr>
+        <tr>
+            <td>fuel_prices_file</td>
+            <td>Fuel Prices Filepath</td>
+            <td></td>
+            <td>Filepath to auxiliary fuel prices CSV file, either absolute or relative to /resources/ folder</td>
+            <td>string</td>
+        </tr>
+        <tr>
+            <td>region</td>
+            <td>Fuel Price Region or Zipcode</td>
+            <td></td>
+            <td>Region identifier for fuel prices. If set to a 5-digit US zipcode (e.g. 90210) and the <code>eia_fuel_prices</code> toggle is enabled, T3CO fetches fuel price projections from the EIA AEO API for the corresponding census division. If left blank, T3CO uses the scenario-level region to look up prices from the static FuelPrices.csv file.</td>
+            <td>string/int</td>
+        </tr>
+        <tr>
+            <td>eia_aeo_year</td>
+            <td>EIA AEO Publication Year</td>
+            <td></td>
+            <td>AEO publication year to query from the EIA API (e.g. &quot;2023&quot;, &quot;2025&quot;). If left blank, T3CO auto-discovers the latest available AEO year.</td>
+            <td>string</td>
+        </tr>
+        <tr>
+            <td>eia_aeo_case</td>
+            <td>EIA AEO Scenario Case</td>
+            <td></td>
+            <td>AEO scenario case ID to query (e.g. &quot;aeo2023ref&quot;). If left blank, T3CO auto-discovers the reference case for the resolved AEO year.</td>
+            <td>string</td>
+        </tr>
     </tbody>
 </table>
 </div>
