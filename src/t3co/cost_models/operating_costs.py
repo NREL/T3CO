@@ -132,30 +132,30 @@ class OperatingCosts:
             "diesel" in scenario.fuel_type.lower()
             and "bio" not in scenario.fuel_type.lower()
         ):
-            dieselDolPerGal = scenario.fuel_prices_df.loc[
-                "dieselDolPerGal", str(scenario.model_year + year_number - 1)
+            diesel_dol_per_gal = scenario.fuel_prices_df.loc[
+                "diesel_dol_per_gal", str(scenario.model_year + year_number - 1)
             ]
-            self.fuel_price_dol_per_gge = dieselDolPerGal * gl.DGE_TO_GGE
+            self.fuel_price_dol_per_gge = diesel_dol_per_gal * gl.DGE_TO_GGE
         elif "gasoline" in scenario.fuel_type.lower():
-            gasolineDolPerGal = scenario.fuel_prices_df.loc[
-                "gasolineDolPerGal", str(scenario.model_year + year_number - 1)
+            gasoline_dol_per_gal = scenario.fuel_prices_df.loc[
+                "gasoline_dol_per_gal", str(scenario.model_year + year_number - 1)
             ]
-            self.fuel_price_dol_per_gge = gasolineDolPerGal
+            self.fuel_price_dol_per_gge = gasoline_dol_per_gal
         elif "electricity" in scenario.fuel_type.lower():
-            dolPerKwh = scenario.fuel_prices_df.loc[
-                "dolPerKwh", str(scenario.model_year + year_number - 1)
+            electricity_dol_per_kwh = scenario.fuel_prices_df.loc[
+                "electricity_dol_per_kwh", str(scenario.model_year + year_number - 1)
             ]
-            self.fuel_price_dol_per_gge = dolPerKwh * gl.KWH_PER_GGE
+            self.fuel_price_dol_per_gge = electricity_dol_per_kwh * gl.KWH_PER_GGE
         elif scenario.fuel_type.lower() == "cng":
-            CNGDolPerGge = scenario.fuel_prices_df.loc[
-                "CNGDolPerGge", str(scenario.model_year + year_number - 1)
+            cng_dol_per_gge = scenario.fuel_prices_df.loc[
+                "cng_dol_per_gge", str(scenario.model_year + year_number - 1)
             ]
-            self.fuel_price_dol_per_gge = CNGDolPerGge
+            self.fuel_price_dol_per_gge = cng_dol_per_gge
         elif scenario.fuel_type.lower() == "hydrogen":
-            hydrogenDolPerGGE = scenario.fuel_prices_df.loc[
-                "hydrogenDolPerGGE", str(scenario.model_year + year_number - 1)
+            hydrogen_dol_per_gge = scenario.fuel_prices_df.loc[
+                "hydrogen_dol_per_gge", str(scenario.model_year + year_number - 1)
             ]
-            self.fuel_price_dol_per_gge = hydrogenDolPerGGE
+            self.fuel_price_dol_per_gge = hydrogen_dol_per_gge
         else:
             raise Exception(
                 f"Operating Costs calculation: Unknown fuel type {scenario.fuel_type}"
@@ -285,6 +285,15 @@ class OperatingCosts:
             self.purchasing_cost_dol_per_yr = 0
 
         elif scenario.purchasing_method == "loan":
+            if (
+                scenario.purchasing_term_yr <= 0
+                or scenario.purchasing_payment_frequency_months <= 0
+            ):
+                self.purchasing_payment_dol_per_yr = 0
+                self.purchasing_cost_dol_per_yr = 0
+                self.purchasing_remaining_principal_dol = 0
+                return
+
             interest_rate_pct_per_frequency = (
                 scenario.purchasing_interest_apr_pct_per_yr
                 / 12
@@ -337,6 +346,12 @@ class OperatingCosts:
             )
 
         elif scenario.purchasing_method == "lease":
+            if scenario.purchasing_term_yr <= 0:
+                self.purchasing_payment_dol_per_yr = 0
+                self.purchasing_cost_dol_per_yr = 0
+                self.purchasing_tax_amount_dol_per_year = 0
+                return
+
             adjusted_cap_cost_dol = (
                 cap_costs.msrp_total_dol
                 + cap_costs.purchase_tax_dol

@@ -11,6 +11,7 @@
     },
     "OperatingCosts": {
         "fuel_cost": true,
+        "eia_fuel_prices": true,
         "maintenance_oper_cost": true,
         "insurance_cost": true,
         "purchasing_cost": true,

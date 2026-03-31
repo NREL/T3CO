@@ -24,6 +24,7 @@ class Toggles:
     mark_up: bool = True
     residual_cost: bool = True
     fuel_cost: bool = True
+    eia_fuel_prices: bool = True
     maintenance_oper_cost: bool = True
     insurance_cost: bool = True
     purchasing_cost: bool = True

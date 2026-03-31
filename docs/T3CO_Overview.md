@@ -16,7 +16,8 @@ Generally speaking, T3CO can be used in two ways:
 
 There are a few main components of a vehicle's total cost of ownership: MSRP (the cost of the vehicle at time of purchase), fuel costs (based on $ per gallon of gasoline equivalent for every operational year's fuel used, other operating costs maintenance [\$/mile\]), fueling dwell time labor [\$/hr], opportunity cost for payload loss and downtime, and resale value at end of ownership.
 
-Fuel costs are computed after determining the vehicle energy efficiency (e.g. miles per gallon of fuel) and factoring in the annual miles driven and the fuel price for each year and region where the vehicle operates.
+Fuel costs are computed after determining the vehicle energy efficiency (e.g. miles per gallon of fuel) and factoring in the annual miles driven and the fuel price for each year and region where the vehicle operates. Fuel prices can be sourced from a static CSV file or fetched dynamically from the [EIA Annual Energy Outlook (AEO)](https://www.eia.gov/outlooks/aeo/) API when a US zipcode is provided in the Config or Scenario `region` field. When using the EIA API, T3CO auto-discovers the latest AEO publication year and retrieves region-specific price projections for diesel, gasoline, electricity, and CNG.
+
 The performance metrics estimated for the vehicle are: miles of range, acceleration time, and gradeability.
 
 More details on performance metrics are included below under [optimization flow](#optimization-flow). If the analysis does not include optimization, these metrics are simply reported in the results.

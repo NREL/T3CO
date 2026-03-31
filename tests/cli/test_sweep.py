@@ -1,9 +1,14 @@
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 import pandas as pd
 import pytest
 
 from t3co.cli.sweep import (
+    _build_optimization_algorithm,
+    _build_optimization_termination,
+    apply_cli_overrides,
     create_results_filepath,
     export_results_to_csv,
     generate_ledger,
@@ -51,7 +56,7 @@ def scenario(config, toggles):
 
     scenario.fuel_prices_df = pd.DataFrame(
         {
-            "Fuel": ["dieselDolPerGal"],
+            "Fuel": ["diesel_dol_per_gal"],
             "Region": ["US"],
             "2020": [0.1],
             "2021": [0.1],
@@ -97,9 +102,6 @@ def config(toggles):
     return config
 
 
-from unittest.mock import patch
-
-
 def test_load_vehicle_scenario_energy(config, vehicle, scenario, energy):
     with (
         patch("t3co.input_data.vehicle.Vehicle.from_config", return_value=vehicle),
@@ -120,14 +122,27 @@ def test_load_vehicle_scenario_energy(config, vehicle, scenario, energy):
 
 
 def test_generate_ledger(config, vehicle, scenario, energy):
+    config.skip_all_opt = False
+    optimized_vehicle = Vehicle()
+    optimized_energy = Energy(mpgge=8.5, primary_fuel_range_mi=2500.0)
+
     with (
         patch(
             "t3co.cli.sweep.load_vehicle_scenario_energy",
             return_value=(vehicle, scenario, energy),
         ),
-        patch("t3co.tco.ledger.Ledger.to_dict", return_value={"key": "value"}),
+        patch(
+            "t3co.cli.sweep.run_optimization",
+            return_value=(optimized_vehicle, optimized_energy),
+        ),
+        patch("t3co.cli.sweep.Ledger") as mock_ledger,
     ):
+        mock_ledger.return_value.to_dict.return_value = {"key": "value"}
         result = generate_ledger(selection=1, config=config)
+
+        ledger_kwargs = mock_ledger.call_args.kwargs
+        assert ledger_kwargs["vehicle"] is optimized_vehicle
+        assert ledger_kwargs["energy"] is optimized_energy
         assert result == {"key": "value"}
 
 
@@ -173,13 +188,90 @@ def test_run_t3co(config):
         assert mock_generate_ledger.called
         assert mock_export.called
 
-def test_load_vehicle_scenario_energy_no_fastsim_missing_data(config, vehicle, scenario):
+
+def test_apply_cli_overrides_updates_explicit_runtime_args(config):
+    args = SimpleNamespace(
+        vehicles="/tmp/vehicle.csv",
+        scenarios="/tmp/scenario.csv",
+        eng_curves="/tmp/eng.csv",
+        lw_curves="/tmp/lw.csv",
+        aero_curves="/tmp/aero.csv",
+        dst_dir="/tmp/results",
+        algorithms=["NSGA2"],
+        x_tol=0.01,
+        f_tol=0.02,
+        n_max_gen=12,
+        pop_size=44,
+        nth_gen=3,
+        n_last=7,
+        selections=[[99]],
+        drive_cycle=["/tmp/cycle.csv"],
+        skip_all_opt=True,
+    )
+
+    apply_cli_overrides(
+        config=config,
+        args=args,
+        argv=[
+            "--vehicles",
+            "--scenarios",
+            "--dst-dir",
+            "--algorithms",
+            "--x-tol",
+            "--f-tol",
+            "--n-max-gen",
+            "--pop-size",
+            "--nth-gen",
+            "--n-last",
+            "--selections",
+            "--drive-cycle",
+            "--skip-all-opt",
+        ],
+    )
+
+    assert config.vehicle_file == "/tmp/vehicle.csv"
+    assert config.scenario_file == "/tmp/scenario.csv"
+    assert config.dst_dir == "/tmp/results"
+    assert config.algorithms == ["NSGA2"]
+    assert config.x_tol == pytest.approx(0.01)
+    assert config.f_tol == pytest.approx(0.02)
+    assert config.n_max_gen == 12
+    assert config.pop_size == 44
+    assert config.nth_gen == 3
+    assert config.n_last == 7
+    assert config.selections == [99]
+    assert config.drive_cycle == "/tmp/cycle.csv"
+    assert config.skip_all_opt is True
+
+
+def test_build_optimization_settings_use_config_values(config):
+    config.algorithms = ["NSGA2"]
+    config.pop_size = 17
+    config.x_tol = 0.015
+    config.f_tol = 0.025
+    config.nth_gen = 2
+    config.n_last = 6
+    config.n_max_gen = 33
+
+    algorithm = _build_optimization_algorithm(config)
+    termination = _build_optimization_termination(config)
+
+    assert algorithm.__class__.__name__ == "NSGA2"
+    assert algorithm.pop_size == 17
+    assert termination.criteria[0].termination.tol == pytest.approx(0.015)
+    assert termination.criteria[2].termination.tol == pytest.approx(0.025)
+    assert termination.max_gen.n_max_gen == 33
+
+
+def test_load_vehicle_scenario_energy_no_fastsim_missing_data(
+    config, vehicle, scenario
+):
     # Ensure run_fastsim is False
     scenario.cost_toggles.run_fastsim = False
     # Ensure scenario has no energy data
     scenario.mpgge = None
     scenario.primary_fuel_range_mi = None
-    
+
     with (
         patch("t3co.input_data.vehicle.Vehicle.from_config", return_value=vehicle),
         patch("t3co.input_data.scenario.Scenario.from_csv", return_value=scenario),
@@ -191,7 +283,7 @@ def test_load_vehicle_scenario_energy_no_fastsim_missing_data(config, vehicle, s
             scenario=scenario,
             energy=None,
         )
-        
+
         assert veh == vehicle
         assert scen == scenario
         # Check that we got an empty Energy object (or default values)

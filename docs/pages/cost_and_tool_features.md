@@ -18,6 +18,10 @@
 - *Fueling Dwell Labor cost*
 - All operating costs are discounted year over year to account for time value of money
 
+#### EIA Fuel Price Projections
+
+When a US zipcode is provided in the Config or Scenario `region` field, T3CO can fetch fuel price projections from the EIA Annual Energy Outlook (AEO) API. The system auto-discovers the latest AEO publication year and reference scenario, resolves the zipcode to a US Census division, and retrieves region-specific nominal prices for diesel, gasoline, electricity, and CNG. Hydrogen prices fall back to the static `FuelPrices.csv`. This feature requires a free EIA API key and is controlled by the `eia_fuel_prices` toggle in `cost_toggles.json`.
+
 ### Opportunity Cost Components
 
 - *Lost Payload Capacity Cost*: Cost of fractionally additional advanced powertrain vehicles needed to carry the same payload as a conventional one (only for Class 8)
@@ -48,5 +52,5 @@
 - Labor Cost as an operating cost component
 - Grants incentives, registration, title, and recurring fees added as Capital and Operating Cost components
 - Battery replacement and battery degradation accounted for in Operating Costs and Energy calculations
-- Regionalized fuel, registration, and labor cost inputs
+- ~~Regionalized fuel, registration, and labor cost inputs~~ (fuel prices: available via EIA API integration)
 - Option to run RouteE for Energy calculations

@@ -14,6 +14,7 @@ except ImportError:
     from typing_extensions import Self  # Older versions of Python
 
 from t3co.input_data.config import Config
+from t3co.utils import resolve_fuel_price_region_from_zipcode
 from t3co.utils.print_class_objects import handle_nan, remove_df_attrs
 from t3co.constants import Global as gl
 
@@ -235,38 +236,45 @@ class Scenario(object):
         Returns:
             Scenario: An instance of the Scenario class.
         """
+        default_scenario = cls()
+        for field_name in cls.__annotations__:
+            scenario_dict.setdefault(field_name, getattr(default_scenario, field_name))
+
+        def _parse_life_year_series(
+            field_name: str, fallback_value: float
+        ) -> list[float]:
+            raw_value = scenario_dict.get(field_name)
+            if raw_value in (None, ""):
+                return [fallback_value] * int(scenario_dict["vehicle_life_yr"])
+
+            if isinstance(raw_value, str):
+                parsed_value = ast.literal_eval(raw_value)
+            else:
+                parsed_value = raw_value
+
+            if isinstance(parsed_value, (list, tuple)):
+                return list(parsed_value)[: int(scenario_dict["vehicle_life_yr"])]
+
+            return [parsed_value] * int(scenario_dict["vehicle_life_yr"])
+
         scenario_dict["vehicle_class"] = " "
         scenario_dict["vehicle_class"] = (
             scenario_dict["vehicle_class"]
             .join(scenario_dict["scenario_name"].split()[:3])
             .lower()
         )
-        scenario_dict["vmt"] = ast.literal_eval(scenario_dict["vmt"])[
-            : scenario_dict["vehicle_life_yr"]
-        ]
-        scenario_dict["shifts_per_year"] = ast.literal_eval(
-            scenario_dict["shifts_per_year"]
-        )[: scenario_dict["vehicle_life_yr"]]
-        scenario_dict["mr_unplanned_downtime_hr_per_mi"] = (
-            ast.literal_eval(scenario_dict["mr_unplanned_downtime_hr_per_mi"])[
-                : scenario_dict["vehicle_life_yr"]
-            ]
-            if scenario_dict["mr_unplanned_downtime_hr_per_mi"]
-            else 0
+        scenario_dict["vmt"] = _parse_life_year_series("vmt", 0.0)
+        scenario_dict["shifts_per_year"] = _parse_life_year_series(
+            "shifts_per_year", 0.0
         )
-        scenario_dict["depreciation_rates_pct_per_yr"] = (
-            ast.literal_eval(scenario_dict["depreciation_rates_pct_per_yr"])[
-                : scenario_dict["vehicle_life_yr"]
-            ]
-            if scenario_dict["depreciation_rates_pct_per_yr"]
-            else 0
+        scenario_dict["mr_unplanned_downtime_hr_per_mi"] = _parse_life_year_series(
+            "mr_unplanned_downtime_hr_per_mi", 0.0
         )
-        scenario_dict["maint_oper_cost_dol_per_mi"] = (
-            ast.literal_eval(scenario_dict["maint_oper_cost_dol_per_mi"])[
-                : scenario_dict["vehicle_life_yr"]
-            ]
-            if scenario_dict["maint_oper_cost_dol_per_mi"]
-            else -1
+        scenario_dict["depreciation_rates_pct_per_yr"] = _parse_life_year_series(
+            "depreciation_rates_pct_per_yr", 0.0
+        )
+        scenario_dict["maint_oper_cost_dol_per_mi"] = _parse_life_year_series(
+            "maint_oper_cost_dol_per_mi", -1.0
         )
 
         return cls(**handle_nan(scenario_dict))
@@ -337,13 +345,79 @@ class Scenario(object):
             self.purchasing_method = "cash"
 
         self.insurance_rates_file = config.insurance_rates_file
+        self.fuel_prices_file = config.fuel_prices_file
         self.fuel_prices_df = config.fuel_prices_df
+        if config.fuel_prices_region:
+            self.region = config.fuel_prices_region
 
         if self.activate_tco_payload_cap_cost_multiplier and config:
             self.plf_weight_distribution_file = config.plf_weight_dist_file
 
         if config.cost_toggles is not None:
             self.cost_toggles = config.cost_toggles
+
+        self._resolve_zipcode_region(config)
+
+    def _resolve_zipcode_region(self, config: Config) -> None:
+        """If ``self.region`` is a US zipcode and the ``eia_fuel_prices``
+        toggle is enabled, resolves it to the corresponding census division
+        and fetches EIA fuel prices for that region.
+
+        If the config already resolved a zipcode (``config.fuel_prices_region``
+        is set), this method is a no-op.
+        """
+        if config.fuel_prices_region:
+            return
+        if not Config._is_zipcode(self.region):
+            return
+        if not getattr(self, "cost_toggles", None):
+            return
+        if not self.cost_toggles.eia_fuel_prices:
+            return
+
+        import os
+        from t3co.data_fetching.eia_client import (
+            T3CO_TO_AEO_REGION_ID,
+            build_fuel_prices_df_from_eia,
+        )
+
+        Config._load_dotenv()
+
+        region_val = self.region
+        if isinstance(region_val, float) and region_val == int(region_val):
+            region_val = int(region_val)
+        zipcode = str(region_val).strip()
+        region_name = resolve_fuel_price_region_from_zipcode(zipcode)
+        aeo_region_id = T3CO_TO_AEO_REGION_ID.get(region_name)
+        if not aeo_region_id:
+            return
+
+        api_key = os.environ.get("T3CO_EIA_API_KEY", "")
+        if not api_key:
+            return
+
+        hydrogen_fallback_df = None
+        if self.fuel_prices_file:
+            try:
+                from t3co.utils.print_class_objects import get_path_object
+                hydrogen_fallback_df = pd.read_csv(
+                    get_path_object(self.fuel_prices_file)
+                )
+            except Exception:
+                pass
+
+        self.fuel_prices_df = build_fuel_prices_df_from_eia(
+            api_key=api_key,
+            aeo_year=config.eia_aeo_year or None,
+            scenario=config.eia_aeo_case or None,
+            hydrogen_fallback_df=hydrogen_fallback_df,
+            region_ids=[aeo_region_id],
+        )
+        self.fuel_prices_df = self.fuel_prices_df.set_index("Fuel")
+        self.region = region_name
+        print(
+            f"Scenario zipcode {zipcode} resolved to EIA region: {region_name}"
+        )
 
     def get_discounted_value(self, value: float, year_number: int) -> float:
         """
