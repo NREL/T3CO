@@ -1,0 +1,25 @@
+{
+    "Energy": {
+        "run_fastsim": true
+    },
+    "CapitalCosts": {
+        "msrp": true,
+        "purchase_tax": true,
+        "purchasing_downpayment": true,
+        "mark_up": true,
+        "residual_cost": true
+    },
+    "OperatingCosts": {
+        "fuel_cost": true,
+        "eia_fuel_prices": true,
+        "maintenance_oper_cost": true,
+        "insurance_cost": true,
+        "purchasing_cost": true,
+        "fueling_dwell_labor": true
+    },
+    "OpportunityCosts": {
+        "payload_oppy_cost": true,
+        "fueling_dwell_oppy_cost": true,
+        "mr_downtime_oppy_cost": true
+    }
+}

@@ -6,10 +6,11 @@
 *.docx
 *.pdf
 *.svg
+!docs/images/*.svg
 !docs/t3co_logo.svg
 *.csv
-!t3co/resources/inputs/**/*.csv
-!t3co/**/*.csv
+!src/t3co/resources/*.csv
+!src/t3co/**/*.csv
 *.xlsx
 *.json
 *.txt
@@ -27,6 +28,11 @@
 *.Rhistory
 *venv*
 *.DS_Store
+.env
+t3co/resources/T3CO_Config_Local.csv
 /site
-/t3co/resources/auxiliary/payload_pdf.csv
-/t3co/tco_results
+/tco_results
+/src/t3co/resources/auxiliary/payload_pdf.csv
+/src/results
+/src/t3co/resources/results
+!/src/t3co/resources/cost_toggles.json

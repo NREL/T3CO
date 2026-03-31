@@ -1,1 +1,0 @@
-"""Sub-package contaning modules that calculate optimization objectives."""

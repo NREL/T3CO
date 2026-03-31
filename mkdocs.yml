@@ -1,43 +1,28 @@
 site_name: T3CO 
 site_description: Transportation Technology Total Cost of Ownership
-repo_url: https://github.com/NREL/T3CO
-edit_uri: https://github.com/NREL/T3CO/tree/main/docs
+repo_url: https://github.com/NatLabRockies/T3CO
+edit_uri: https://github.com/NatLabRockies/T3CO/tree/main/docs
 site_author: Harish Panneer Selvam 
 
-plugins:
-  - search
-  - mkdocstrings:
-      handlers:
-        python:
-          options:
-            show_if_no_docstring: true
-            docstring_options:
-              ignore_init_summary: false
-            merge_init_into_class: false
-            heading_level: 2
-            show_root_heading: true
-            show_symbol_type_heading: true
-            show_symbol_type_toc: true
-            show_root_toc_entry: true 
-            annotations_path: source
-            show_signature: true
-            separate_signature: false
-            show_signature_annotations: true
-            unwrap_annotated: true
-
-markdown_extensions:
-  - toc:
-      permalink: true
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-      use_pygments: true
-      auto_title: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
-
+extra:
+  analytics:
+    provider: google
+    property: G-QDQ7VBSCE0
+  feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >- 
+            Thanks for your feedback! Help us improve this page by
+            using our <a href="..." target="_blank" rel="noopener">feedback form</a>.
+  generator: false
 
 theme:
   name: material
@@ -53,41 +38,48 @@ theme:
     - content.code.copy
     - navigation.path
     - content.tooltips
+    - navigation.path
+    - navigation.sections
+    - toc.integrate 
+    - navigation.top
+    - header.autohide
 
   icon:
     repo: fontawesome/brands/github
     edit: material/pencil 
     view: material/eye
-
+    
 nav:
     - Home: index.md
+    - What's New in 2.0: whats_new.md
     - Installation: installation.md
     - Quick Start: quick_start.md
-    - Overview: T3CO_Overview.md
+    - Overview: t3co_overview.md
+    - Costs and Features: pages/cost_and_tool_features.md
     - Inputs: 
-      - Vehicle: vehicle_inputs_descriptions.md
-      - Scenario: scenario_inputs_descriptions.md
-      - Config: config_inputs_descriptions.md
-    - Results:
-      - Outputs: t3co_outputs_descriptions.md
-    - Code Reference:
-      - CodeFlow: CodeFlow.md      
-      - T3CO Modules: 
-        - Sweep: sweep.md  
-        - Run Modules:
-          - Run Scenario: run_scenario.md
-          - Generate Inputs: generateinputs.md
-          - Global Variables: Global.md        
-        - TCO Modules:
-          - Opportunity Costs: opportunity_cost.md
-          - TCO Calculations: tcocalc.md
-          - TCO Analysis: tco_analysis.md
-          - TCO Stock and Emissions: tco_stock_emissions.md
-        - Multi Objective Optimization Module:
-          - MOO: moo.md
-        - Objectives Modules: 
-          - Acceleration Test: accel.md
-          - Gradeability Test: gradeability.md
-          - Fuel Economy: fueleconomy.md
-        - Visualization Module:
-          - Charts: charts.md
+      - Vehicle: pages/vehicle_inputs_descriptions.md
+      - Scenario: pages/scenario_inputs_descriptions.md
+      - Config: pages/config_inputs_descriptions.md
+    - Outputs:
+      - Ledger: pages/ledger_outputs_descriptions.md
+    - API Reference: 
+      - Input Data Module:
+        - Vehicle: pages/api/vehicle.md
+        - Scenario: pages/api/scenario.md
+        - Config: pages/api/config.md  
+      - Energy Module:
+        - Energy: pages/api/energy.md
+        - FASTSim Wrapper: pages/api/fastsim_wrapper.md
+      - Cost Module:
+        - Capital Costs: pages/api/capital_costs.md
+        - Operating Costs: pages/api/operating_costs.md
+        - Opportunity Costs: pages/api/opportunity_costs.md
+      - TCO Module:
+        - TCO Calc Per Year: pages/api/tcocalc.md
+        - Ledger: pages/api/ledger.md
+      - CLI Module:
+        - Sweep: pages/api/sweep.md
+      - Utility Module:
+        - Demo Files Installer: pages/api/demo_files_installer.md
+        - Print Class Objects: pages/api/print_class_objects.md
+
