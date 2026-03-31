@@ -24,13 +24,13 @@ from t3co.tco.ledger import Ledger
 from t3co.utils.print_class_objects import get_path_object
 
 try:
-    from pymoo.algorithms.soo.nonconvex.ga import GA
-    from pymoo.algorithms.moo.nsga2 import NSGA2
     from pymoo.core.problem import StarmapParallelization
-    from pymoo.termination.default import DefaultSingleObjectiveTermination
-
     from pymoo.optimize import minimize
-    from t3co.optimize.optimization import VehicleDesignOpt
+    from t3co.optimize.optimization import (
+        VehicleDesignOpt,
+        build_algorithm,
+        build_termination,
+    )
 
     optimization_installed = True
 
@@ -118,20 +118,15 @@ def _get_primary_algorithm(config: Config) -> str:
 
 
 def _build_optimization_algorithm(config: Config):
-    algorithm_name = _get_primary_algorithm(config).upper()
-    if algorithm_name == "NSGA2":
-        return NSGA2(pop_size=int(config.pop_size), eliminate_duplicates=True)
-    if algorithm_name == "GA":
-        return GA(pop_size=int(config.pop_size), eliminate_duplicates=True)
-
-    raise ValueError(f"Unsupported optimization algorithm '{algorithm_name}'")
+    return build_algorithm(
+        _get_primary_algorithm(config), pop_size=int(config.pop_size)
+    )
 
 
 def _build_optimization_termination(config: Config):
-    return DefaultSingleObjectiveTermination(
-        xtol=config.x_tol,
-        ftol=config.f_tol,
-        period=max(int(config.nth_gen), int(config.n_last)),
+    return build_termination(
+        x_tol=float(config.x_tol),
+        f_tol=float(config.f_tol),
         n_max_gen=int(config.n_max_gen),
     )
 

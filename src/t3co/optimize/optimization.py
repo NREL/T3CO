@@ -1,19 +1,28 @@
+import argparse
+
 import numpy as np
 from multiprocessing import Pool
 from pymoo.algorithms.moo.nsga2 import NSGA2
+from pymoo.algorithms.soo.nonconvex.nelder import NelderMead
+from pymoo.algorithms.soo.nonconvex.pattern import PatternSearch
+from pymoo.algorithms.soo.nonconvex.pso import PSO
 from pymoo.core.problem import ElementwiseProblem, StarmapParallelization
 from pymoo.optimize import minimize
-from pymoo.termination.default import DefaultSingleObjectiveTermination
+from pymoo.termination.default import DefaultMultiObjectiveTermination as MODT
 
 from t3co.energy_models.energy import Energy
 from t3co.input_data.config import Config
 from t3co.input_data.scenario import Scenario
 from t3co.input_data.vehicle import Vehicle
 import t3co.constants.Global as gl
-
-# Import Ledger from ledger.py.
 from t3co.tco.ledger import Ledger
-import argparse
+
+ALGO_NSGA2 = "NSGA2"
+ALGO_NelderMead = "NelderMead"
+ALGO_PatternSearch = "PatternSearch"
+ALGO_PSO = "PSO"
+
+ALGORITHMS = [ALGO_NSGA2, ALGO_NelderMead, ALGO_PatternSearch, ALGO_PSO]
 
 
 class VehicleDesignOpt(ElementwiseProblem):
@@ -220,23 +229,53 @@ class VehicleDesignOpt(ElementwiseProblem):
             out["G"] = g
 
 
+def build_algorithm(algo: str, pop_size: int = 25):
+    """Build a pymoo algorithm by name.
+
+    Supported algorithms mirror T3CO 1.x: NSGA2, PatternSearch,
+    NelderMead, and PSO.
+    """
+    name = algo.upper() if algo else "NSGA2"
+    if name == "NSGA2":
+        return NSGA2(pop_size=pop_size, eliminate_duplicates=True)
+    if name == "PATTERNSEARCH":
+        return PatternSearch()
+    if name == "NELDERMEAD":
+        return NelderMead()
+    if name == "PSO":
+        return PSO()
+    raise ValueError(
+        f"Unsupported optimization algorithm '{algo}'. "
+        f"Choose from: {ALGORITHMS}"
+    )
+
+
+def build_termination(
+    x_tol: float = 0.001,
+    f_tol: float = 0.001,
+    n_max_gen: int = 1000,
+    n_max_evals: int = None,
+):
+    """Build termination using ``MODT`` (pymoo multi-objective default
+    termination), matching the T3CO 1.x approach."""
+    return MODT(
+        xtol=x_tol,
+        ftol=f_tol,
+        n_max_gen=n_max_gen,
+        n_max_evals=n_max_evals,
+    )
+
+
 def run_optimization(selection, parallel=True, n_processes=4):
-    # Create default instances for vehicle, scenario, and config
     config = Config()
     config.skip_all_opt = False
     config.selections = [selection]
-    # print(f"config year: {config.vehicle_life_yr}")
     vehicle = Vehicle().from_config(selection=selection, config=config)
     vehicle.set_veh_kg()
     scenario = Scenario().from_csv(
         selection=selection, scenario_file=config.scenario_file
     )
     config.vehicle_life_yr = scenario.vehicle_life_yr
-
-    # scenario.override_from_config(config=config)
-
-    # print(f"vehicle: {vehicle}")
-    # print(f"scenario: {scenario}")
 
     pool = None
     runner = None
@@ -246,17 +285,19 @@ def run_optimization(selection, parallel=True, n_processes=4):
 
     try:
         problem = VehicleDesignOpt(vehicle, scenario, config, runner=runner)
-        algorithm = NSGA2(pop_size=config.pop_size, eliminate_duplicates=True)
+        algorithm = build_algorithm(
+            config.algorithms, pop_size=int(config.pop_size)
+        )
+        termination = build_termination(
+            x_tol=float(config.x_tol),
+            f_tol=float(config.f_tol),
+            n_max_gen=int(config.n_max_gen),
+        )
 
         res = minimize(
             problem,
             algorithm,
-            termination=DefaultSingleObjectiveTermination(
-                xtol=config.x_tol,
-                ftol=config.f_tol,
-                period=max(config.nth_gen, config.n_last),
-                n_max_gen=config.n_max_gen,
-            ),
+            termination=termination,
             seed=1,
             verbose=True,
         )
@@ -272,12 +313,11 @@ def run_optimization(selection, parallel=True, n_processes=4):
         print("  Fuel Converter Peak Power (kW): {:.2f}".format(res.X[0]))
         if len(res.X) > 1:
             print("  Fuel Storage Energy (kWh eq.):  {:.2f}".format(res.X[1]))
-
     elif vehicle.veh_pt_type == gl.BEV:
-        print("  Battery Size (kWh):          {:.2f}".format(res.X[0]))
+        print("  Battery Size (kWh):             {:.2f}".format(res.X[0]))
         print("  Motor Peak Power (kW):          {:.2f}".format(res.X[1]))
     elif vehicle.veh_pt_type == gl.HEV:
-        print("  Battery Size (kWh):          {:.2f}".format(res.X[0]))
+        print("  Battery Size (kWh):             {:.2f}".format(res.X[0]))
         print("  Fuel Converter Peak Power (kW): {:.2f}".format(res.X[1]))
         print("  Fuel Storage Energy (kWh eq.):  {:.2f}".format(res.X[2]))
         print("  Motor Peak Power (kW):          {:.2f}".format(res.X[3]))

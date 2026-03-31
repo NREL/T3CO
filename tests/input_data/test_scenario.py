@@ -1,5 +1,7 @@
 from pathlib import Path
+from unittest.mock import patch
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -113,6 +115,27 @@ def test_scenario_from_dict_uses_defaults_for_missing_fields():
     assert scenario.primary_fuel_range_mi == 0.0
 
 
+def _make_fake_eia_fuel_prices_df(*regions):
+    """Build a minimal DataFrame matching the T3CO FuelPrices.csv schema."""
+    if not regions:
+        regions = ("Pacific",)
+    year_cols = {str(y): 3.0 + y * 0.001 for y in range(2019, 2101)}
+    fuels = [
+        "diesel_dol_per_gal",
+        "gasoline_dol_per_gal",
+        "electricity_dol_per_kwh",
+        "cng_dol_per_gge",
+        "hydrogen_dol_per_gge",
+    ]
+    rows = []
+    for region in regions:
+        for fuel in fuels:
+            row = {"Region": region, "Fuel": fuel}
+            row.update(year_cols)
+            rows.append(row)
+    return pd.DataFrame(rows)
+
+
 @pytest.mark.parametrize("analysis_id", [0, 1, 2, 3, 4, 5])
 def test_demo_analysis_ids_use_temp_fuel_price_region(analysis_id):
     config = Config().from_csv(analysis_id=analysis_id)
@@ -123,8 +146,19 @@ def test_demo_analysis_ids_use_temp_fuel_price_region(analysis_id):
     original_lookup = utils.lookup_zipcode
     utils.lookup_zipcode = lambda zipcode: {"zip_code": zipcode, "state": "CO"}
 
+    def _fake_eia_load(self_inner):
+        self_inner.fuel_prices_df = _make_fake_eia_fuel_prices_df(
+            "Pacific", "Mountain"
+        )
+        self_inner.fuel_prices_region = "Pacific"
+
     try:
-        config.read_auxiliary_files()
+        with patch.object(
+            Config,
+            "_load_fuel_prices_from_eia_for_zipcode",
+            _fake_eia_load,
+        ):
+            config.read_auxiliary_files()
     finally:
         utils.lookup_zipcode = original_lookup
 
@@ -154,8 +188,17 @@ def test_demo_analysis_id_5_uses_eia_region():
 
     original_lookup = utils.lookup_zipcode
     utils.lookup_zipcode = lambda zipcode: {"zip_code": zipcode, "state": "CA"}
+    def _fake_eia_load(self_inner):
+        self_inner.fuel_prices_df = _make_fake_eia_fuel_prices_df("Pacific")
+        self_inner.fuel_prices_region = "Pacific"
+
     try:
-        config.read_auxiliary_files()
+        with patch.object(
+            Config,
+            "_load_fuel_prices_from_eia_for_zipcode",
+            _fake_eia_load,
+        ):
+            config.read_auxiliary_files()
     finally:
         utils.lookup_zipcode = original_lookup
 

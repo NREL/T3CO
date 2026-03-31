@@ -3,7 +3,6 @@ from unittest.mock import MagicMock, patch, ANY
 import numpy as np
 import t3co.constants.Global as gl
 
-# Skip tests if pymoo is not installed (e.g. on Python >= 3.11)
 pytest.importorskip("pymoo")
 
 try:
@@ -40,6 +39,13 @@ def mock_scenario():
 @pytest.fixture
 def mock_config():
     config = MagicMock()
+    config.pop_size = 25
+    config.algorithms = "NSGA2"
+    config.x_tol = 0.001
+    config.f_tol = 0.001
+    config.nth_gen = 1
+    config.n_last = 5
+    config.n_max_gen = 1000
     return config
 
 
@@ -127,6 +133,16 @@ def test_run_optimization():
         patch("t3co.optimize.optimization.minimize") as mock_minimize,
         patch("t3co.optimize.optimization.VehicleDesignOpt") as MockProblem,
     ):
+        mock_config = MockConfig.return_value
+        mock_config.skip_all_opt = False
+        mock_config.pop_size = 25
+        mock_config.algorithms = "NSGA2"
+        mock_config.x_tol = 0.001
+        mock_config.f_tol = 0.001
+        mock_config.nth_gen = 1
+        mock_config.n_last = 5
+        mock_config.n_max_gen = 100
+
         mock_res = MagicMock()
         mock_res.X = [10, 20]
         mock_res.F = [1000]
@@ -135,6 +151,15 @@ def test_run_optimization():
         mock_vehicle_instance = MockVehicle.return_value
         mock_vehicle_instance.from_config.return_value = mock_vehicle_instance
         mock_vehicle_instance.veh_pt_type = gl.BEV
+
+        mock_problem_instance = MockProblem.return_value
+        mock_ledger = MagicMock()
+        mock_ledger.discounted_tco_dol = 50000.0
+        mock_problem_instance.evaluate_solution.return_value = (
+            mock_vehicle_instance,
+            MagicMock(),
+            mock_ledger,
+        )
 
         run_optimization(selection=1, parallel=True, n_processes=2)
 
