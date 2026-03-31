@@ -43,6 +43,8 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -309,7 +311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../t3co_overview.md" class="md-nav__link">
+      <a href="../../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1154,20 +1156,20 @@
 <h1 id="t3coinput_dataconfig">t3co/input_data/config</h1>
 <p><a id="t3co/input_data/config.Config"></a></p>
 <h2 id="config-objects">Config Objects</h2>
-<pre><code class="language-python">@dataclass
-class Config()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Config</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co/input_data/config.Config.__new__"></a></p>
 <h4 id="__new__">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the Config class.</p>
 <p><a id="t3co/input_data/config.Config.from_file"></a></p>
 <h4 id="from_file">from_file</h4>
-<pre><code class="language-python">def from_file(
-        analysis_id: int = 0,
-        filename: str = gl.RESOURCES_FOLDERPATH / &quot;T3COConfig.csv&quot;) -&gt; Self
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span>
+        <span class="n">analysis_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">RESOURCES_FOLDERPATH</span> <span class="o">/</span> <span class="s2">&quot;T3COConfig.csv&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span>
+</code></pre></div>
 <p>Generates a Config dictionary from CSV file and calls Config.from_dict.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1180,8 +1182,8 @@ class Config()
 </ul>
 <p><a id="t3co/input_data/config.Config.from_dict"></a></p>
 <h4 id="from_dict">from_dict</h4>
-<pre><code class="language-python">def from_dict(config_dict: dict) -&gt; Self
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="n">config_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span>
+</code></pre></div>
 <p>Generates a Config instance from config_dict.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1193,8 +1195,8 @@ class Config()
 </ul>
 <p><a id="t3co/input_data/config.Config.validate_analysis_id"></a></p>
 <h4 id="validate_analysis_id">validate_analysis_id</h4>
-<pre><code class="language-python">def validate_analysis_id() -&gt; pd.DataFrame
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">validate_analysis_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+</code></pre></div>
 <p>Validates that the correct analysis ID is input.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
@@ -1206,18 +1208,18 @@ class Config()
 </ul>
 <p><a id="t3co/input_data/config.Config.check_drivecycles_and_create_selections"></a></p>
 <h4 id="check_drivecycles_and_create_selections">check_drivecycles_and_create_selections</h4>
-<pre><code class="language-python">def check_drivecycles_and_create_selections() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">check_drivecycles_and_create_selections</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Checks if the config.drive_cycle input is a file or a folder. If a folder is provided, creates a list of all selections for each drive cycle in the folder as config.dc_files.</p>
 <p><a id="t3co/input_data/config.Config.read_auxiliary_files"></a></p>
 <h4 id="read_auxiliary_files">read_auxiliary_files</h4>
-<pre><code class="language-python">def read_auxiliary_files() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">read_auxiliary_files</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Reads auxiliary files such as fuel prices and cost toggles</p>
 <p><a id="t3co/input_data/config.Config.delete_dataframes"></a></p>
 <h4 id="delete_dataframes">delete_dataframes</h4>
-<pre><code class="language-python">def delete_dataframes() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_dataframes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Deletes DataFrame attributes from the Config instance.</p>
 
 

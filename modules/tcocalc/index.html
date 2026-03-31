@@ -43,6 +43,8 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -309,7 +311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../t3co_overview.md" class="md-nav__link">
+      <a href="../../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1155,22 +1157,22 @@
 <h1 id="t3cotcotcocalc">t3co/tco/tcocalc</h1>
 <p><a id="t3co/tco/tcocalc.TCOCalc"></a></p>
 <h2 id="tcocalc-objects">TCOCalc Objects</h2>
-<pre><code class="language-python">class TCOCalc()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">TCOCalc</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co/tco/tcocalc.TCOCalc.__new__"></a></p>
 <h4 id="__new__">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the TCOCalc class.</p>
 <p><a id="t3co/tco/tcocalc.TCOCalc.__init__"></a></p>
 <h4 id="__init__">__init__</h4>
-<pre><code class="language-python">def __init__(year_index: int,
-             vehicle: Vehicle,
-             scenario: Scenario,
-             energy: Energy,
-             payload_cap_cost_multiplier: float = None,
-             cap_costs: CapitalCosts = None)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">year_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+             <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+             <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+             <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span><span class="p">,</span>
+             <span class="n">payload_cap_cost_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">cap_costs</span><span class="p">:</span> <span class="n">CapitalCosts</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 <p>Initializes the TCOCalc instance.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1183,8 +1185,8 @@
 </ul>
 <p><a id="t3co/tco/tcocalc.TCOCalc.calculate_capital_costs"></a></p>
 <h4 id="calculate_capital_costs">calculate_capital_costs</h4>
-<pre><code class="language-python">def calculate_capital_costs(vehicle: Vehicle, scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">calculate_capital_costs</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the capital costs.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1193,9 +1195,9 @@
 </ul>
 <p><a id="t3co/tco/tcocalc.TCOCalc.calculate_opportunity_costs"></a></p>
 <h4 id="calculate_opportunity_costs">calculate_opportunity_costs</h4>
-<pre><code class="language-python">def calculate_opportunity_costs(vehicle: Vehicle, scenario: Scenario,
-                                energy: Energy) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">calculate_opportunity_costs</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+                                <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the opportunity costs.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1205,9 +1207,9 @@
 </ul>
 <p><a id="t3co/tco/tcocalc.TCOCalc.calculate_operating_costs"></a></p>
 <h4 id="calculate_operating_costs">calculate_operating_costs</h4>
-<pre><code class="language-python">def calculate_operating_costs(vehicle: Vehicle, scenario: Scenario,
-                              energy: Energy) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">calculate_operating_costs</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+                              <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the operating costs.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1217,8 +1219,8 @@
 </ul>
 <p><a id="t3co/tco/tcocalc.TCOCalc.set_total_cost"></a></p>
 <h4 id="set_total_cost">set_total_cost</h4>
-<pre><code class="language-python">def set_total_cost(scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_total_cost</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the total cost for the year.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1226,11 +1228,11 @@
 </ul>
 <p><a id="t3co/tco/tcocalc.TCOCalc.set_disc_total_cost"></a></p>
 <h4 id="set_disc_total_cost">set_disc_total_cost</h4>
-<pre><code class="language-python">def set_disc_total_cost(vehicle: Vehicle,
-                        scenario: Scenario,
-                        payload_cap_cost_multiplier: float = None,
-                        TCO_switch=&quot;DIRECT&quot;) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_disc_total_cost</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                        <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+                        <span class="n">payload_cap_cost_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">TCO_switch</span><span class="o">=</span><span class="s2">&quot;DIRECT&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the discounted total cost for the year.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1241,8 +1243,8 @@
 </ul>
 <p><a id="t3co/tco/tcocalc.TCOCalc.__str__"></a></p>
 <h4 id="__str__">__str__</h4>
-<pre><code class="language-python">def __str__() -&gt; str
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
 <p>Returns a string representation of the TCOCalc instance.</p>
 <p><strong>Returns</strong>:</p>
 <ul>

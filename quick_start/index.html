@@ -16,7 +16,7 @@
         <link rel="prev" href="../installation/">
       
       
-        <link rel="next" href="../pages/cost_and_tool_features/">
+        <link rel="next" href="../T3CO_Overview/">
       
       
       <link rel="icon" href="../t3co_logo.svg">
@@ -46,6 +46,8 @@
         <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
     
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -488,7 +490,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../t3co_overview.md" class="md-nav__link">
+      <a href="../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1333,58 +1335,59 @@
 <p>After checking the inputs and creating/modifying an "Analysis" on the <strong><em>Config</em></strong> file, the next step is to execute the models. The <code>t3co/cli/sweep.py</code> module is the main script that needs to be run to perform a TCO analysis. And the most effective way to run the sweep module is to call a specific "Analysis" from the <strong><em>Config</em></strong> file using the <code>config.analysis_id</code> key.</p>
 <h3 id="running-the-sweep-module-from-a-pypi-installed-t3co">Running the Sweep Module from a PyPI-installed T3CO</h3>
 <p>The easiest way to run the <code>t3co.cli.sweep</code> module is to use a local copy of the demo input files. If the <a href="../installation/#copy-demo-inputs"><code>install_t3co_demo_inputs</code></a> command is used to copy <code>demo_inputs</code> to your local directory after <a href="../installation/#installation-source-1-from-pypi">installing from PyPI</a>, run the <code>t3co.cli.sweep</code> module from any directory. </p>
-<pre><code class="language-bash">python -m t3co.cli.sweep --analysis-id=0 --config=&lt;path/to/demo_inputs/T3COConfig.csv&gt;
-</code></pre>
-<p>Point <code>--config</code> to the <code>T3COConfig.csv</code> file path and <code>--analysis-id</code> to the desired <code>config.analysis_id</code> (either an existing one or a newly added "Analysis" in the <code>demo_inputs/T3COConfig.csv</code> file. Default = <code>0</code>).</p>
+<p><div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>t3co.cli.sweep<span class="w"> </span>--analysis-id<span class="o">=</span><span class="m">0</span><span class="w"> </span>--config<span class="o">=</span>&lt;path/to/demo_inputs/T3COConfig.csv&gt;
+</code></pre></div>
+Point <code>--config</code> to the <code>T3COConfig.csv</code> file path and <code>--analysis-id</code> to the desired <code>config.analysis_id</code> (either an existing one or a newly added "Analysis" in the <code>demo_inputs/T3COConfig.csv</code> file. Default = <code>0</code>).</p>
 <h3 id="running-sweep-module-from-a-cloned-github-repo">Running Sweep Module from a Cloned Github repo</h3>
 <p>For running <code>config.analysis_id</code>=0 (or a user desired "Analysis") from the <a href="https://github.com/NatLabRockies/T3CO/blob/main/src/t3co/resources/T3COConfig.csv">Demo Config</a> file on a cloned GitHub repo, run these commands from the parent directory:</p>
-<pre><code class="language-bash">python -m t3co.cli.sweep --analysis-id=0
-</code></pre>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>t3co.cli.sweep<span class="w"> </span>--analysis-id<span class="o">=</span><span class="m">0</span>
+</code></pre></div>
 <h2 id="running-t3co-in-batch-mode-using-multiprocessing">Running T3CO in Batch Mode (using multiprocessing)</h2>
 <p>The user can run T3CO in a "Batch Mode", which may be useful when running a large number of <em>Vehicle-Scenario</em> pairs or a large number of drivecycles or both. T3CO provides a demo analysis (<code>config.analysis_id</code>=3 in the sample T3COConfig.csv file) that runs the Batch Mode for a folder of multiple input drivecycles.</p>
-<pre><code class="language-bash">python -m t3co.cli.sweep --analysis-id=3 --run-multi
-</code></pre>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>t3co.cli.sweep<span class="w"> </span>--analysis-id<span class="o">=</span><span class="m">3</span><span class="w"> </span>--run-multi
+</code></pre></div>
 <p>The Batch Mode allows T3CO to run parallel analyses utilizing multiple processors (or CPU cores) denoted by CLI argument <code>--n-processors</code>(defaults to 9). Adjust this number accordingly. To get the fastest run time, close other processor intensive programs running on your computer and assign <code>--n-processors</code> as one or two less than the max number of cores.</p>
 <p>When a folder path is provided in the T3COConfig.csv file (<code>config.drive_cycle</code>) containing "n" number of valid drivecycles, T3CO generates "n" scenarios for each <em>Vehicle</em> selections mentioned in <code>config.selections</code> with the <code>scenario.drive_cycle</code> populated with each of the "n" drivecycles. For Vehicle selection "1" in config.selections, the generated selection numbers are denoted by "1_000" for the first drivecycle, "1_001" for the second drivecycle, and so on.</p>
 <h2 id="running-t3co-demo">Running T3CO Demo</h2>
 <p>T3CO presents a demo file (<code>src/t3co/demos/demo.py</code>) for generating a <code>TCOCalc</code> for a specific year and a <code>Ledger</code> object for a given vehicle, scenario, and energy inputs. It showcases the modularity of the tool and allows the user to also download the results as a JSON or CSV file.</p>
 <h2 id="other-command-line-interface-arguments">Other Command Line Interface arguments</h2>
-<p>Use the command below to get a list of all CLI arguments:</p>
-<pre><code class="language-bash">python -m t3co.cli.sweep --help
-</code></pre>
+<p>Use the command below to get a list of all CLI arguments:
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>t3co.cli.sweep<span class="w"> </span>--help
+</code></pre></div></p>
 <h3 id="eia-fuel-price-projections">EIA Fuel Price Projections</h3>
 <p>T3CO can fetch fuel price projections directly from the EIA Annual Energy Outlook (AEO) API. This replaces the static <code>FuelPrices.csv</code> data with the latest AEO projections for a region matching the provided US zipcode.</p>
 <p><strong>Setup:</strong>
 1. Get a free EIA API key from <a href="https://www.eia.gov/opendata/register.php">eia.gov/opendata/register.php</a>
 2. Add it to a <code>.env</code> file in your project root:
-   <code>T3CO_EIA_API_KEY=your_api_key_here</code></p>
+   <div class="highlight"><pre><span></span><code>T3CO_EIA_API_KEY=your_api_key_here
+</code></pre></div></p>
 <p><strong>Usage:</strong> Set the <code>region</code> column in <code>T3COConfig.csv</code> to a 5-digit US zipcode. T3CO will auto-discover the latest AEO year, resolve the zipcode to a US Census division, and fetch fuel prices for that region.</p>
-<pre><code class="language-bash">python -m t3co.cli.sweep --analysis-id=5
-</code></pre>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>t3co.cli.sweep<span class="w"> </span>--analysis-id<span class="o">=</span><span class="m">5</span>
+</code></pre></div>
 <p>The same zipcode-based resolution also works at the Scenario level — if a scenario's <code>region</code> field contains a zipcode and the config didn't already resolve one, T3CO fetches EIA data for that scenario.</p>
-<p>To override the AEO year or scenario (instead of using the latest):</p>
-<pre><code class="language-bash">python -m t3co.cli.sweep --analysis-id=5 --eia-aeo-year=2023 --eia-aeo-case=aeo2022ref
-</code></pre>
+<p>To override the AEO year or scenario (instead of using the latest):
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>t3co.cli.sweep<span class="w"> </span>--analysis-id<span class="o">=</span><span class="m">5</span><span class="w"> </span>--eia-aeo-year<span class="o">=</span><span class="m">2023</span><span class="w"> </span>--eia-aeo-case<span class="o">=</span>aeo2022ref
+</code></pre></div></p>
 <p>The <code>eia_fuel_prices</code> toggle in <code>cost_toggles.json</code> controls whether EIA lookups are enabled (default: <code>true</code>). If the toggle is <code>false</code> or no zipcode is provided, T3CO falls back to the static <code>FuelPrices.csv</code>.</p>
 <h3 id="fuel-price-overrides">Fuel Price Overrides</h3>
 <p>For fuel-price sensitivity work, <code>--fuel-prices-json</code> accepts a JSON string or file path with <code>zipcode</code> and <code>fuel_prices</code> keys. T3CO uses the installed <code>zipcodes</code> package to resolve that ZIP code into the base fuel-price region before cloning and overriding the matching rows in <code>FuelPrices.csv</code>.</p>
-<pre><code class="language-bash">python -m t3co.cli.sweep \
-  --analysis-id=0 \
-  --fuel-prices-json='{&quot;zipcode&quot;:&quot;80302&quot;,&quot;fuel_prices&quot;:{&quot;diesel_dol_per_gal&quot;:{&quot;2025&quot;:4.25}}}'
-</code></pre>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>t3co.cli.sweep<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--analysis-id<span class="o">=</span><span class="m">0</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--fuel-prices-json<span class="o">=</span><span class="s1">&#39;{&quot;zipcode&quot;:&quot;80302&quot;,&quot;fuel_prices&quot;:{&quot;diesel_dol_per_gal&quot;:{&quot;2025&quot;:4.25}}}&#39;</span>
+</code></pre></div>
 <p>Selected CLI arguments related to EIA fuel price data fetching:</p>
-<pre><code>  --eia-api-key EIA_API_KEY
+<div class="highlight"><pre><span></span><code>  --eia-api-key EIA_API_KEY
                         EIA API key (prefer setting T3CO_EIA_API_KEY in .env file instead).
   --eia-aeo-year EIA_AEO_YEAR
-                        AEO publication year to query (e.g. '2023', '2025').
+                        AEO publication year to query (e.g. &#39;2023&#39;, &#39;2025&#39;).
                         Default: auto-discover latest.
   --eia-aeo-case EIA_AEO_CASE
-                        AEO scenario case ID (e.g. 'aeo2023ref').
+                        AEO scenario case ID (e.g. &#39;aeo2023ref&#39;).
                         Default: auto-discover reference case.
-</code></pre>
-<p>For the full list of CLI arguments, run:</p>
-<pre><code class="language-bash">python -m t3co.cli.sweep --help
-</code></pre>
+</code></pre></div>
+<p>For the full list of CLI arguments, run:
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>t3co.cli.sweep<span class="w"> </span>--help
+</code></pre></div></p>
 <h2 id="t3co-results">T3CO Results</h2>
 <p>After running the analysis, T3CO stores the results .CSV file in the directory specified by <code>config.dst_dir</code> (or the CLI argument <code>--dst-dir</code>). </p>
 <p>The results file includes a comprehensive list of <a href="../pages/ledger_outputs_descriptions/"><strong><em>Ledger Outputs</em></strong></a> that were calculated by the various <strong><em>T3CO Modules</em></strong>. In addition to the T3CO outputs, all the <em>Vehicle</em> input parameters (denoted by a prefix: <code>input_vehicle_value_</code>), <em>Scenario</em> input parameters(denoted by a prefix: <code>scenario_</code>), and <em>Config</em> parameters (denoted by a prefix: <code>config_</code>) are also present in the results file. When the optional optimization module is run, the optimized vehicle parameters are also listed ((denoted by a prefix: <code>optimized_vehicle_value_</code>)) instead of NaN values for non-optimization runs.</p>

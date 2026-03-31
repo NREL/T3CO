@@ -43,6 +43,8 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -309,7 +311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../t3co_overview.md" class="md-nav__link">
+      <a href="../../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1149,9 +1151,9 @@
 <h1 id="t3coutilsprint_class_objects">t3co/utils/print_class_objects</h1>
 <p><a id="t3co/utils/print_class_objects.obj_to_string"></a></p>
 <h4 id="obj_to_string">obj_to_string</h4>
-<pre><code class="language-python">def obj_to_string(obj: Union[object, List[object]],
-                  indent: str = &quot;    &quot;) -&gt; str
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">obj_to_string</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]],</span>
+                  <span class="n">indent</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;    &quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
 <p>Converts an object or list of objects to a formatted string representation.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1164,10 +1166,10 @@
 </ul>
 <p><a id="t3co/utils/print_class_objects.handle_nan"></a></p>
 <h4 id="handle_nan">handle_nan</h4>
-<pre><code class="language-python">def handle_nan(
-        obj: Union[float, dict, list,
-                   Any]) -&gt; Union[None, dict, list, float, Any]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">handle_nan</span><span class="p">(</span>
+        <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span>
+                   <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+</code></pre></div>
 <p>Replaces NaN values in an object with None.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1177,8 +1179,8 @@
 <p>Union[None, dict, list, float, Any]: The processed object with NaN values replaced by None.</p>
 <p><a id="t3co/utils/print_class_objects.custom_default"></a></p>
 <h4 id="custom_default">custom_default</h4>
-<pre><code class="language-python">def custom_default(obj: Any) -&gt; Union[None, dict, str]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">custom_default</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
 <p>Custom default function for JSON serialization.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1188,11 +1190,11 @@
 <p>Union[None, dict, str]: The serialized object.</p>
 <p><a id="t3co/utils/print_class_objects.to_flat_dict"></a></p>
 <h4 id="to_flat_dict">to_flat_dict</h4>
-<pre><code class="language-python">def to_flat_dict(obj: object,
-                 include_prefix: bool = True,
-                 prefix: str = &quot;&quot;,
-                 delimiter: str = &quot;_&quot;) -&gt; dict
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_flat_dict</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+                 <span class="n">include_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">delimiter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+</code></pre></div>
 <p>Flattens a nested object into a dictionary while preserving the order of declared attributes.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1207,8 +1209,8 @@
 </ul>
 <p><a id="t3co/utils/print_class_objects.remove_df_attrs"></a></p>
 <h4 id="remove_df_attrs">remove_df_attrs</h4>
-<pre><code class="language-python">def remove_df_attrs(obj: object) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">remove_df_attrs</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Removes attributes from an object if they are DataFrame instances.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>

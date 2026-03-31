@@ -43,6 +43,8 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -309,7 +311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../t3co_overview.md" class="md-nav__link">
+      <a href="../../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1155,18 +1157,18 @@
 <h1 id="t3cocost_modelsopportunity_costs">t3co/cost_models/opportunity_costs</h1>
 <p><a id="t3co/cost_models/opportunity_costs.OpportunityCosts"></a></p>
 <h2 id="opportunitycosts-objects">OpportunityCosts Objects</h2>
-<pre><code class="language-python">class OpportunityCosts()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">OpportunityCosts</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co/cost_models/opportunity_costs.OpportunityCosts.__new__"></a></p>
 <h4 id="__new__">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the OpportunityCosts class.</p>
 <p><a id="t3co/cost_models/opportunity_costs.OpportunityCosts.__init__"></a></p>
 <h4 id="__init__">__init__</h4>
-<pre><code class="language-python">def __init__(year_number: int, vehicle: Vehicle, scenario: Scenario,
-             energy: Energy)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+             <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span><span class="p">)</span>
+</code></pre></div>
 <p>Initializes the OpportunityCosts instance.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1177,9 +1179,9 @@
 </ul>
 <p><a id="t3co/cost_models/opportunity_costs.OpportunityCosts.set_payload_cap_cost_multiplier"></a></p>
 <h4 id="set_payload_cap_cost_multiplier">set_payload_cap_cost_multiplier</h4>
-<pre><code class="language-python">def set_payload_cap_cost_multiplier(vehicle: Vehicle,
-                                    scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_payload_cap_cost_multiplier</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                                    <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the payload capacity cost multiplier for the vehicle.</p>
 <p>This method calculates the payload capacity cost multiplier based on the vehicle's weight and the scenario's weight distribution.</p>
 <p>Inputs from scenario:
@@ -1199,9 +1201,9 @@
 </ul>
 <p><a id="t3co/cost_models/opportunity_costs.OpportunityCosts.set_fueling_dwell_time_cost"></a></p>
 <h4 id="set_fueling_dwell_time_cost">set_fueling_dwell_time_cost</h4>
-<pre><code class="language-python">def set_fueling_dwell_time_cost(year_number: int, vehicle: Vehicle,
-                                scenario: Scenario, energy: Energy) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_fueling_dwell_time_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                                <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span> <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the fueling dwell time cost for a vehicle based on fuel fill rate/charging power and shifts per year.</p>
 <p>Inputs from scenario:
 - fdt_frac_full_charge_bounds
@@ -1239,9 +1241,9 @@
 </ul>
 <p><a id="t3co/cost_models/opportunity_costs.OpportunityCosts.set_mr_downtime_cost"></a></p>
 <h4 id="set_mr_downtime_cost">set_mr_downtime_cost</h4>
-<pre><code class="language-python">def set_mr_downtime_cost(year_number: int, vehicle: Vehicle,
-                         scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_mr_downtime_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                         <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the Maintenance and Repair (M&amp;R) downtime cost based on planned, unplanned, and tire replacement downtime inputs.</p>
 <p>Inputs from scenario:
 - mr_planned_downtime_hr_per_yr
@@ -1264,8 +1266,8 @@
 </ul>
 <p><a id="t3co/cost_models/opportunity_costs.OpportunityCosts.set_net_downtime_oppy_cost"></a></p>
 <h4 id="set_net_downtime_oppy_cost">set_net_downtime_oppy_cost</h4>
-<pre><code class="language-python">def set_net_downtime_oppy_cost() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_net_downtime_oppy_cost</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the net downtime opportunity cost for the vehicle.</p>
 <p>This method calculates the net downtime opportunity cost by summing the fueling downtime and MR downtime opportunity costs.
 The calculation uses the following OpportunityCosts elements:
@@ -1278,8 +1280,8 @@ The calculation uses the following OpportunityCosts elements:
 - net_downtime_hr_per_yr</p>
 <p><a id="t3co/cost_models/opportunity_costs.OpportunityCosts.set_disc_downtime_oppy_cost"></a></p>
 <h4 id="set_disc_downtime_oppy_cost">set_disc_downtime_oppy_cost</h4>
-<pre><code class="language-python">def set_disc_downtime_oppy_cost(year_number: int, scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_disc_downtime_oppy_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the discounted downtime opportunity cost for the given year.</p>
 <p>Inputs from scenario:
 - discount_rate_pct_per_yr</p>
@@ -1292,8 +1294,8 @@ The calculation uses the following OpportunityCosts elements:
 </ul>
 <p><a id="t3co/cost_models/opportunity_costs.OpportunityCosts.__str__"></a></p>
 <h4 id="__str__">__str__</h4>
-<pre><code class="language-python">def __str__() -&gt; str
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
 <p>Returns a string representation of the OpportunityCosts instance.</p>
 <p><strong>Returns</strong>:</p>
 <ul>

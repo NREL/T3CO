@@ -43,6 +43,8 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -309,7 +311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../t3co_overview.md" class="md-nav__link">
+      <a href="../../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1308,20 +1310,20 @@
 <h1 id="t3cotcoledger">t3co.tco.ledger</h1>
 <p><a id="t3co.tco.ledger.Ledger"></a></p>
 <h2 id="ledger-objects">Ledger Objects</h2>
-<pre><code class="language-python">class Ledger()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Ledger</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co.tco.ledger.Ledger.__new__"></a></p>
 <h4 id="__new__">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the Ledger class.</p>
 <p><a id="t3co.tco.ledger.Ledger.__init__"></a></p>
 <h4 id="__init__">__init__</h4>
-<pre><code class="language-python">def __init__(vehicle: Vehicle,
-             scenario: Scenario,
-             energy: Energy = None,
-             config: Config = None)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+             <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+             <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 <p>Initializes the Ledger instance.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1332,23 +1334,23 @@
 </ul>
 <p><a id="t3co.tco.ledger.Ledger.set_discounted_costs"></a></p>
 <h4 id="set_discounted_costs">set_discounted_costs</h4>
-<pre><code class="language-python">def set_discounted_costs()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_discounted_costs</span><span class="p">()</span>
+</code></pre></div>
 <p>Sets the discounted cost components for the Ledger instance.</p>
 <p><a id="t3co.tco.ledger.Ledger.set_discounted_tco"></a></p>
 <h4 id="set_discounted_tco">set_discounted_tco</h4>
-<pre><code class="language-python">def set_discounted_tco()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_discounted_tco</span><span class="p">()</span>
+</code></pre></div>
 <p>Sets the discounted TCO for the Ledger instance.</p>
 <p><a id="t3co.tco.ledger.Ledger.set_cost_components"></a></p>
 <h4 id="set_cost_components">set_cost_components</h4>
-<pre><code class="language-python">def set_cost_components()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_cost_components</span><span class="p">()</span>
+</code></pre></div>
 <p>Sets the cost components for the Ledger instance.</p>
 <p><a id="t3co.tco.ledger.Ledger.to_dict"></a></p>
 <h4 id="to_dict">to_dict</h4>
-<pre><code class="language-python">def to_dict(include_prefix: bool = True, flatten: bool = True) -&gt; dict
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="n">include_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">flatten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+</code></pre></div>
 <p>Exports the Ledger instance to a dictionary.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1361,10 +1363,10 @@
 </ul>
 <p><a id="t3co.tco.ledger.Ledger.to_json"></a></p>
 <h4 id="to_json">to_json</h4>
-<pre><code class="language-python">def to_json(filepath: Union[str, Path],
-            include_prefix: bool = True,
-            flatten: bool = True) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+            <span class="n">include_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">flatten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Saves the Ledger instance to a JSON file.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1374,8 +1376,8 @@
 </ul>
 <p><a id="t3co.tco.ledger.Ledger.to_df"></a></p>
 <h4 id="to_df">to_df</h4>
-<pre><code class="language-python">def to_df() -&gt; pd.DataFrame
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_df</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+</code></pre></div>
 <p>Converts the Ledger instance to a DataFrame.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
@@ -1383,8 +1385,8 @@
 </ul>
 <p><a id="t3co.tco.ledger.Ledger.to_csv"></a></p>
 <h4 id="to_csv">to_csv</h4>
-<pre><code class="language-python">def to_csv(filepath: Union[str, Path]) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Saves the Ledger instance to a CSV file.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1392,8 +1394,8 @@
 </ul>
 <p><a id="t3co.tco.ledger.Ledger.__str__"></a></p>
 <h4 id="__str__">__str__</h4>
-<pre><code class="language-python">def __str__() -&gt; str
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
 <p>Returns a string representation of the Ledger instance.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
@@ -1405,22 +1407,22 @@
 <h1 id="t3cotcotcocalc">t3co.tco.tcocalc</h1>
 <p><a id="t3co.tco.tcocalc.TCOCalc"></a></p>
 <h2 id="tcocalc-objects">TCOCalc Objects</h2>
-<pre><code class="language-python">class TCOCalc()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">TCOCalc</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co.tco.tcocalc.TCOCalc.__new__"></a></p>
 <h4 id="__new___1">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the TCOCalc class.</p>
 <p><a id="t3co.tco.tcocalc.TCOCalc.__init__"></a></p>
 <h4 id="__init___1">__init__</h4>
-<pre><code class="language-python">def __init__(year_index: int,
-             vehicle: Vehicle,
-             scenario: Scenario,
-             energy: Energy,
-             payload_cap_cost_multiplier: float = None,
-             cap_costs: CapitalCosts = None)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">year_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+             <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+             <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+             <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span><span class="p">,</span>
+             <span class="n">payload_cap_cost_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">cap_costs</span><span class="p">:</span> <span class="n">CapitalCosts</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 <p>Initializes the TCOCalc instance.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1433,8 +1435,8 @@
 </ul>
 <p><a id="t3co.tco.tcocalc.TCOCalc.calculate_capital_costs"></a></p>
 <h4 id="calculate_capital_costs">calculate_capital_costs</h4>
-<pre><code class="language-python">def calculate_capital_costs(vehicle: Vehicle, scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">calculate_capital_costs</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the capital costs.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1443,9 +1445,9 @@
 </ul>
 <p><a id="t3co.tco.tcocalc.TCOCalc.calculate_opportunity_costs"></a></p>
 <h4 id="calculate_opportunity_costs">calculate_opportunity_costs</h4>
-<pre><code class="language-python">def calculate_opportunity_costs(vehicle: Vehicle, scenario: Scenario,
-                                energy: Energy) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">calculate_opportunity_costs</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+                                <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the opportunity costs.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1455,9 +1457,9 @@
 </ul>
 <p><a id="t3co.tco.tcocalc.TCOCalc.calculate_operating_costs"></a></p>
 <h4 id="calculate_operating_costs">calculate_operating_costs</h4>
-<pre><code class="language-python">def calculate_operating_costs(vehicle: Vehicle, scenario: Scenario,
-                              energy: Energy) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">calculate_operating_costs</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+                              <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the operating costs.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1467,8 +1469,8 @@
 </ul>
 <p><a id="t3co.tco.tcocalc.TCOCalc.set_total_cost"></a></p>
 <h4 id="set_total_cost">set_total_cost</h4>
-<pre><code class="language-python">def set_total_cost(scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_total_cost</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the total cost for the year.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1476,11 +1478,11 @@
 </ul>
 <p><a id="t3co.tco.tcocalc.TCOCalc.set_disc_total_cost"></a></p>
 <h4 id="set_disc_total_cost">set_disc_total_cost</h4>
-<pre><code class="language-python">def set_disc_total_cost(vehicle: Vehicle,
-                        scenario: Scenario,
-                        payload_cap_cost_multiplier: float = None,
-                        TCO_switch=&quot;DIRECT&quot;) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_disc_total_cost</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                        <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+                        <span class="n">payload_cap_cost_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">TCO_switch</span><span class="o">=</span><span class="s2">&quot;DIRECT&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the discounted total cost for the year.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1491,8 +1493,8 @@
 </ul>
 <p><a id="t3co.tco.tcocalc.TCOCalc.__str__"></a></p>
 <h4 id="__str___1">__str__</h4>
-<pre><code class="language-python">def __str__() -&gt; str
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
 <p>Returns a string representation of the TCOCalc instance.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
@@ -1518,18 +1520,18 @@ Stores paths to directories used for input files, as well as constants reference
 <p>1 m = 0.000621371 mi</p>
 <p><a id="t3co.constants.Global.set_tco_intermediates"></a></p>
 <h4 id="set_tco_intermediates">set_tco_intermediates</h4>
-<pre><code class="language-python">def set_tco_intermediates()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_tco_intermediates</span><span class="p">()</span>
+</code></pre></div>
 <p>This function sets path for TCO_INTERMEDIATES to save tsv files</p>
 <p><a id="t3co.constants.Global.set_tco_results"></a></p>
 <h4 id="set_tco_results">set_tco_results</h4>
-<pre><code class="language-python">def set_tco_results()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_tco_results</span><span class="p">()</span>
+</code></pre></div>
 <p>This function sets path for TCO_RESULTS</p>
 <p><a id="t3co.constants.Global.kg_to_lbs"></a></p>
 <h4 id="kg_to_lbs">kg_to_lbs</h4>
-<pre><code class="language-python">def kg_to_lbs(kgs: float) -&gt; float
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">kg_to_lbs</span><span class="p">(</span><span class="n">kgs</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
+</code></pre></div>
 <p>This function converts kg to lb</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1541,8 +1543,8 @@ Stores paths to directories used for input files, as well as constants reference
 </ul>
 <p><a id="t3co.constants.Global.lbs_to_kgs"></a></p>
 <h4 id="lbs_to_kgs">lbs_to_kgs</h4>
-<pre><code class="language-python">def lbs_to_kgs(lbs: float) -&gt; float
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">lbs_to_kgs</span><span class="p">(</span><span class="n">lbs</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
+</code></pre></div>
 <p>This function converts lb to kg</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1554,8 +1556,8 @@ Stores paths to directories used for input files, as well as constants reference
 </ul>
 <p><a id="t3co.constants.Global.not_falsy"></a></p>
 <h4 id="not_falsy">not_falsy</h4>
-<pre><code class="language-python">def not_falsy(var: float) -&gt; bool
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">not_falsy</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span>
+</code></pre></div>
 <p>This function returns True to verify that var is NOT falsy: not in [None, np.nan, 0, False]</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1573,18 +1575,18 @@ Stores paths to directories used for input files, as well as constants reference
 <h1 id="t3coenergy_modelsenergy">t3co.energy_models.energy</h1>
 <p><a id="t3co.energy_models.energy.Energy"></a></p>
 <h2 id="energy-objects">Energy Objects</h2>
-<pre><code class="language-python">@dataclass
-class Energy()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Energy</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co.energy_models.energy.Energy.__new__"></a></p>
 <h4 id="__new___2">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the Energy class.</p>
 <p><a id="t3co.energy_models.energy.Energy.__init__"></a></p>
 <h4 id="__init___2">__init__</h4>
-<pre><code class="language-python">def __init__(mpgge: float = None, primary_fuel_range_mi: float = None)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">mpgge</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">primary_fuel_range_mi</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 <p>Initializes the Energy instance.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1593,13 +1595,13 @@ class Energy()
 </ul>
 <p><a id="t3co.energy_models.energy.Energy.run_fastsim_model"></a></p>
 <h4 id="run_fastsim_model">run_fastsim_model</h4>
-<pre><code class="language-python">def run_fastsim_model(
-    veh_no: int,
-    scenario: Scenario,
-    vehicle_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH / &quot;inputs&quot; /
-    &quot;Demo_FY22_vehicle_model_assumptions.csv&quot;
-) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">run_fastsim_model</span><span class="p">(</span>
+    <span class="n">veh_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+    <span class="n">vehicle_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">RESOURCES_FOLDERPATH</span> <span class="o">/</span> <span class="s2">&quot;inputs&quot;</span> <span class="o">/</span>
+    <span class="s2">&quot;Demo_FY22_vehicle_model_assumptions.csv&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Runs the FASTSim model to calculate mpgge and primary fuel range.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1611,19 +1613,19 @@ class Energy()
 <h1 id="t3coenergy_modelsfastsim_modelfastsim_wrapper">t3co.energy_models.fastsim_model.fastsim_wrapper</h1>
 <p><a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim"></a></p>
 <h2 id="runfastsim-objects">RunFASTSim Objects</h2>
-<pre><code class="language-python">class RunFASTSim()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunFASTSim</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.__new__"></a></p>
 <h4 id="__new___3">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the RunFASTSim class.</p>
 <p><a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.load_vehicle"></a></p>
 <h4 id="load_vehicle">load_vehicle</h4>
-<pre><code class="language-python">def load_vehicle(veh_no: int,
-                 veh_input_path: Union[str, Path],
-                 use_rust: bool = True) -&gt; fastsim.vehicle.Vehicle
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">load_vehicle</span><span class="p">(</span><span class="n">veh_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">veh_input_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+                 <span class="n">use_rust</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fastsim</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">Vehicle</span>
+</code></pre></div>
 <p>Loads vehicle object from vehicle number and input CSV filepath.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1636,12 +1638,12 @@ class Energy()
 </ul>
 <p><a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.load_design_cycle_from_scenario"></a></p>
 <h4 id="load_design_cycle_from_scenario">load_design_cycle_from_scenario</h4>
-<pre><code class="language-python">def load_design_cycle_from_scenario(
-    scenario: Scenario,
-    cyc_file_path: Union[str, Path] = gl.CYCLES_FOLDER,
-    return_rustcycle: bool = True
-) -&gt; Union[fastsim.cycle.Cycle, List[fastsim.cycle.Cycle]]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">load_design_cycle_from_scenario</span><span class="p">(</span>
+    <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+    <span class="n">cyc_file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">CYCLES_FOLDER</span><span class="p">,</span>
+    <span class="n">return_rustcycle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">fastsim</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">Cycle</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">fastsim</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">Cycle</span><span class="p">]]</span>
+</code></pre></div>
 <p>Loads the design cycle used for mpgge and range determination.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1652,11 +1654,11 @@ class Energy()
 <p>Union[fastsim.cycle.Cycle, List[fastsim.cycle.Cycle]]: FASTSim cycle object for current Scenario object.</p>
 <p><a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.load_design_cycle_from_path"></a></p>
 <h4 id="load_design_cycle_from_path">load_design_cycle_from_path</h4>
-<pre><code class="language-python">def load_design_cycle_from_path(
-    cyc_file_path: Union[str, Path],
-    return_rustcycle: bool = True
-) -&gt; Union[fastsim.cycle.RustCycle, fastsim.cycle.Cycle]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">load_design_cycle_from_path</span><span class="p">(</span>
+    <span class="n">cyc_file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">return_rustcycle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">fastsim</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">RustCycle</span><span class="p">,</span> <span class="n">fastsim</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">Cycle</span><span class="p">]</span>
+</code></pre></div>
 <p>Loads the Cycle object from the drive cycle filepath.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1668,9 +1670,9 @@ class Energy()
 </ul>
 <p><a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.get_simdrive"></a></p>
 <h4 id="get_simdrive">get_simdrive</h4>
-<pre><code class="language-python">def get_simdrive(
-        cycle: fastsim.cycle.Cycle) -&gt; fastsim.fastsimrust.RustSimDrive
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_simdrive</span><span class="p">(</span>
+        <span class="n">cycle</span><span class="p">:</span> <span class="n">fastsim</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">Cycle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fastsim</span><span class="o">.</span><span class="n">fastsimrust</span><span class="o">.</span><span class="n">RustSimDrive</span>
+</code></pre></div>
 <p>Creates a SimDrive object for the given cycle and vehicle.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1682,8 +1684,8 @@ class Energy()
 </ul>
 <p><a id="t3co.energy_models.fastsim_model.fastsim_wrapper.RunFASTSim.get_range"></a></p>
 <h4 id="get_range">get_range</h4>
-<pre><code class="language-python">def get_range() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_range</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the range of the vehicle based on its type and energy storage.</p>
 <p><a id="t3co.energy_models.fastsim_model"></a></p>
 <h1 id="t3coenergy_modelsfastsim_model">t3co.energy_models.fastsim_model</h1>
@@ -1693,9 +1695,9 @@ class Energy()
 <h1 id="t3coutilsprint_class_objects">t3co.utils.print_class_objects</h1>
 <p><a id="t3co.utils.print_class_objects.obj_to_string"></a></p>
 <h4 id="obj_to_string">obj_to_string</h4>
-<pre><code class="language-python">def obj_to_string(obj: Union[object, List[object]],
-                  indent: str = &quot;    &quot;) -&gt; str
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">obj_to_string</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]],</span>
+                  <span class="n">indent</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;    &quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
 <p>Converts an object or list of objects to a formatted string representation.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1708,10 +1710,10 @@ class Energy()
 </ul>
 <p><a id="t3co.utils.print_class_objects.handle_nan"></a></p>
 <h4 id="handle_nan">handle_nan</h4>
-<pre><code class="language-python">def handle_nan(
-        obj: Union[float, dict, list,
-                   Any]) -&gt; Union[None, dict, list, float, Any]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">handle_nan</span><span class="p">(</span>
+        <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span>
+                   <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+</code></pre></div>
 <p>Replaces NaN values in an object with None.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1721,8 +1723,8 @@ class Energy()
 <p>Union[None, dict, list, float, Any]: The processed object with NaN values replaced by None.</p>
 <p><a id="t3co.utils.print_class_objects.custom_default"></a></p>
 <h4 id="custom_default">custom_default</h4>
-<pre><code class="language-python">def custom_default(obj: Any) -&gt; Union[None, dict, str]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">custom_default</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+</code></pre></div>
 <p>Custom default function for JSON serialization.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1732,11 +1734,11 @@ class Energy()
 <p>Union[None, dict, str]: The serialized object.</p>
 <p><a id="t3co.utils.print_class_objects.to_flat_dict"></a></p>
 <h4 id="to_flat_dict">to_flat_dict</h4>
-<pre><code class="language-python">def to_flat_dict(obj: object,
-                 include_prefix: bool = True,
-                 prefix: str = &quot;&quot;,
-                 delimiter: str = &quot;_&quot;) -&gt; dict
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_flat_dict</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+                 <span class="n">include_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">delimiter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+</code></pre></div>
 <p>Flattens a nested object into a dictionary while preserving the order of declared attributes.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1751,8 +1753,8 @@ class Energy()
 </ul>
 <p><a id="t3co.utils.print_class_objects.remove_df_attrs"></a></p>
 <h4 id="remove_df_attrs">remove_df_attrs</h4>
-<pre><code class="language-python">def remove_df_attrs(obj: object) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">remove_df_attrs</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Removes attributes from an object if they are DataFrame instances.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1762,13 +1764,13 @@ class Energy()
 <h1 id="t3coutilsdemo_inputs_installer">t3co.utils.demo_inputs_installer</h1>
 <p><a id="t3co.utils.demo_inputs_installer.main"></a></p>
 <h4 id="main">main</h4>
-<pre><code class="language-python">def main()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">main</span><span class="p">()</span>
+</code></pre></div>
 <p>Requests user inputs for whether and where to copy t3co demo input files from the t3co.resources folder. Calls the copy_demo_input_files function.</p>
 <p><a id="t3co.utils.demo_inputs_installer.copy_demo_input_files"></a></p>
 <h4 id="copy_demo_input_files">copy_demo_input_files</h4>
-<pre><code class="language-python">def copy_demo_input_files(destination_path: Union[str, Path]) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">copy_demo_input_files</span><span class="p">(</span><span class="n">destination_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Copies the t3co.resources folder that includes demo input files to a user input destination_path.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1778,20 +1780,20 @@ class Energy()
 <h1 id="t3coinput_dataconfig">t3co.input_data.config</h1>
 <p><a id="t3co.input_data.config.Config"></a></p>
 <h2 id="config-objects">Config Objects</h2>
-<pre><code class="language-python">@dataclass
-class Config()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Config</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co.input_data.config.Config.__new__"></a></p>
 <h4 id="__new___4">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the Config class.</p>
 <p><a id="t3co.input_data.config.Config.from_file"></a></p>
 <h4 id="from_file">from_file</h4>
-<pre><code class="language-python">def from_file(
-        analysis_id: int = 0,
-        filename: str = gl.RESOURCES_FOLDERPATH / &quot;T3COConfig.csv&quot;) -&gt; Self
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span>
+        <span class="n">analysis_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">RESOURCES_FOLDERPATH</span> <span class="o">/</span> <span class="s2">&quot;T3COConfig.csv&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span>
+</code></pre></div>
 <p>Generates a Config dictionary from CSV file and calls Config.from_dict.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1804,8 +1806,8 @@ class Config()
 </ul>
 <p><a id="t3co.input_data.config.Config.from_dict"></a></p>
 <h4 id="from_dict">from_dict</h4>
-<pre><code class="language-python">def from_dict(config_dict: dict) -&gt; Self
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="n">config_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span>
+</code></pre></div>
 <p>Generates a Config instance from config_dict.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1817,8 +1819,8 @@ class Config()
 </ul>
 <p><a id="t3co.input_data.config.Config.validate_analysis_id"></a></p>
 <h4 id="validate_analysis_id">validate_analysis_id</h4>
-<pre><code class="language-python">def validate_analysis_id() -&gt; pd.DataFrame
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">validate_analysis_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+</code></pre></div>
 <p>Validates that the correct analysis ID is input.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
@@ -1830,36 +1832,36 @@ class Config()
 </ul>
 <p><a id="t3co.input_data.config.Config.check_drivecycles_and_create_selections"></a></p>
 <h4 id="check_drivecycles_and_create_selections">check_drivecycles_and_create_selections</h4>
-<pre><code class="language-python">def check_drivecycles_and_create_selections() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">check_drivecycles_and_create_selections</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Checks if the config.drive_cycle input is a file or a folder. If a folder is provided, creates a list of all selections for each drive cycle in the folder as config.dc_files.</p>
 <p><a id="t3co.input_data.config.Config.read_auxiliary_files"></a></p>
 <h4 id="read_auxiliary_files">read_auxiliary_files</h4>
-<pre><code class="language-python">def read_auxiliary_files() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">read_auxiliary_files</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Reads auxiliary files such as fuel prices and cost toggles</p>
 <p><a id="t3co.input_data.config.Config.delete_dataframes"></a></p>
 <h4 id="delete_dataframes">delete_dataframes</h4>
-<pre><code class="language-python">def delete_dataframes() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_dataframes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Deletes DataFrame attributes from the Config instance.</p>
 <p><a id="t3co.input_data.vehicle"></a></p>
 <h1 id="t3coinput_datavehicle">t3co.input_data.vehicle</h1>
 <p><a id="t3co.input_data.vehicle.Vehicle"></a></p>
 <h2 id="vehicle-objects">Vehicle Objects</h2>
-<pre><code class="language-python">@dataclass
-class Vehicle()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Vehicle</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co.input_data.vehicle.Vehicle.__new__"></a></p>
 <h4 id="__new___5">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the OpportunityCosts class.</p>
 <p><a id="t3co.input_data.vehicle.Vehicle.from_config"></a></p>
 <h4 id="from_config">from_config</h4>
-<pre><code class="language-python">@classmethod
-def from_config(cls, selection: int, config: Config) -&gt; Self
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span>
+</code></pre></div>
 <p>Creates a Vehicle instance from the configuration.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1872,9 +1874,9 @@ def from_config(cls, selection: int, config: Config) -&gt; Self
 </ul>
 <p><a id="t3co.input_data.vehicle.Vehicle.from_db"></a></p>
 <h4 id="from_db">from_db</h4>
-<pre><code class="language-python">@classmethod
-def from_db(cls, selection: int, vehicle_db_file: Union[str, Path]) -&gt; Self
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">from_db</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">selection</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle_db_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Self</span>
+</code></pre></div>
 <p>Creates a Vehicle instance from the vehicle database file.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1887,13 +1889,13 @@ def from_db(cls, selection: int, vehicle_db_file: Union[str, Path]) -&gt; Self
 </ul>
 <p><a id="t3co.input_data.vehicle.Vehicle.set_veh_kg"></a></p>
 <h4 id="set_veh_kg">set_veh_kg</h4>
-<pre><code class="language-python">def set_veh_kg() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_veh_kg</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the vehicle weight in kilograms.</p>
 <p><a id="t3co.input_data.vehicle.Vehicle.delete_dataframes"></a></p>
 <h4 id="delete_dataframes_1">delete_dataframes</h4>
-<pre><code class="language-python">def delete_dataframes() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_dataframes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Deletes DataFrame attributes from the Vehicle instance.</p>
 <p><a id="t3co.input_data"></a></p>
 <h1 id="t3coinput_data">t3co.input_data</h1>
@@ -1901,19 +1903,19 @@ def from_db(cls, selection: int, vehicle_db_file: Union[str, Path]) -&gt; Self
 <h1 id="t3coinput_datatoggles">t3co.input_data.toggles</h1>
 <p><a id="t3co.input_data.toggles.Toggles"></a></p>
 <h2 id="toggles-objects">Toggles Objects</h2>
-<pre><code class="language-python">@dataclass
-class Toggles()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Toggles</span><span class="p">()</span>
+</code></pre></div>
 <p>Class object that contains various toggles for TCO calculations.</p>
 <p><a id="t3co.input_data.toggles.Toggles.from_json"></a></p>
 <h4 id="from_json">from_json</h4>
-<pre><code class="language-python">@classmethod
-def from_json(
-    cls,
-    cost_toggles_file: Path | str = gl.RESOURCES_FOLDERPATH /
-    &quot;cost_toggles.json&quot;
-) -&gt; Self
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span>
+    <span class="n">cost_toggles_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">RESOURCES_FOLDERPATH</span> <span class="o">/</span>
+    <span class="s2">&quot;cost_toggles.json&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span>
+</code></pre></div>
 <p>Creates a Toggles instance from a JSON file.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1927,26 +1929,26 @@ def from_json(
 <h1 id="t3coinput_datascenario">t3co.input_data.scenario</h1>
 <p><a id="t3co.input_data.scenario.Scenario"></a></p>
 <h2 id="scenario-objects">Scenario Objects</h2>
-<pre><code class="language-python">@dataclass
-class Scenario()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Scenario</span><span class="p">()</span>
+</code></pre></div>
 <p>Class object that contains all TCO parameters and performance target (range, grade, accel) information
 for a vehicle such that performance and TCO can be computed during optimization.</p>
 <p><a id="t3co.input_data.scenario.Scenario.__new__"></a></p>
 <h4 id="__new___6">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the Scenario class.</p>
 <p><a id="t3co.input_data.scenario.Scenario.from_file"></a></p>
 <h4 id="from_file_1">from_file</h4>
-<pre><code class="language-python">@classmethod
-def from_file(
-    cls,
-    selection: int,
-    scenario_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH / &quot;inputs&quot; /
-    &quot;Demo_FY22_scenario_assumptions.csv&quot;
-) -&gt; Self
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span>
+    <span class="n">selection</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">scenario_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">RESOURCES_FOLDERPATH</span> <span class="o">/</span> <span class="s2">&quot;inputs&quot;</span> <span class="o">/</span>
+    <span class="s2">&quot;Demo_FY22_scenario_assumptions.csv&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span>
+</code></pre></div>
 <p>Creates a Scenario instance from a CSV file.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1959,8 +1961,8 @@ def from_file(
 </ul>
 <p><a id="t3co.input_data.scenario.Scenario.from_dict"></a></p>
 <h4 id="from_dict_1">from_dict</h4>
-<pre><code class="language-python">def from_dict(cls, scenario_dict: dict)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">scenario_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a Scenario instance from a dictionary.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1972,8 +1974,8 @@ def from_file(
 </ul>
 <p><a id="t3co.input_data.scenario.Scenario.override_from_config"></a></p>
 <h4 id="override_from_config">override_from_config</h4>
-<pre><code class="language-python">def override_from_config(config: Config = None, verbose: bool = False) -&gt; Self
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">override_from_config</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span>
+</code></pre></div>
 <p>Overrides certain scenario fields if use_config is True and config object is not None.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1986,8 +1988,8 @@ def from_file(
 </ul>
 <p><a id="t3co.input_data.scenario.Scenario.get_discounted_value"></a></p>
 <h4 id="get_discounted_value">get_discounted_value</h4>
-<pre><code class="language-python">def get_discounted_value(value: float, year_number: int) -&gt; float
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_discounted_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
+</code></pre></div>
 <p>Calculates the discounted value for a given year.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -2000,8 +2002,8 @@ def from_file(
 </ul>
 <p><a id="t3co.input_data.scenario.Scenario.delete_dataframes"></a></p>
 <h4 id="delete_dataframes_2">delete_dataframes</h4>
-<pre><code class="language-python">def delete_dataframes() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_dataframes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Deletes DataFrame attributes from the Scenario instance.</p>
 <p><a id="t3co.cli"></a></p>
 <h1 id="t3cocli">t3co.cli</h1>
@@ -2009,13 +2011,13 @@ def from_file(
 <h1 id="t3coclisweep">t3co.cli.sweep</h1>
 <p><a id="t3co.cli.sweep.load_vehicle_scenario_energy"></a></p>
 <h4 id="load_vehicle_scenario_energy">load_vehicle_scenario_energy</h4>
-<pre><code class="language-python">def load_vehicle_scenario_energy(
-        selection: Union[int, str],
-        config: Config,
-        vehicle: Vehicle = None,
-        scenario: Scenario = None,
-        energy: Energy = None) -&gt; Tuple[Vehicle, Scenario, Energy]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">load_vehicle_scenario_energy</span><span class="p">(</span>
+        <span class="n">selection</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span>
+        <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Vehicle</span><span class="p">,</span> <span class="n">Scenario</span><span class="p">,</span> <span class="n">Energy</span><span class="p">]</span>
+</code></pre></div>
 <p>Loads the vehicle, scenario, and energy models based on the selection and config.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -2026,8 +2028,8 @@ def from_file(
 <p>Tuple[Vehicle, Scenario, Energy]: The vehicle, scenario, and energy models.</p>
 <p><a id="t3co.cli.sweep.generate_ledger"></a></p>
 <h4 id="generate_ledger">generate_ledger</h4>
-<pre><code class="language-python">def generate_ledger(selection: int, config: Config) -&gt; Dict
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">generate_ledger</span><span class="p">(</span><span class="n">selection</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span>
+</code></pre></div>
 <p>Generates the ledger for the given selection and config.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -2040,8 +2042,8 @@ def from_file(
 </ul>
 <p><a id="t3co.cli.sweep.create_results_filepath"></a></p>
 <h4 id="create_results_filepath">create_results_filepath</h4>
-<pre><code class="language-python">def create_results_filepath(config: Config) -&gt; Path
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_results_filepath</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span>
+</code></pre></div>
 <p>Creates the results file path based on the config.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -2053,15 +2055,15 @@ def from_file(
 </ul>
 <p><a id="t3co.cli.sweep.export_results_to_csv"></a></p>
 <h4 id="export_results_to_csv">export_results_to_csv</h4>
-<pre><code class="language-python">def export_results_to_csv(
-    reports_list: List[Dict],
-    config: Config,
-    output_path: Union[str, Path] = None,
-    return_filepath: bool = True,
-    return_df: bool = False,
-    sort_values: bool = False
-) -&gt; Tuple[Union[Path, None], Union[pd.DataFrame, None]]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">export_results_to_csv</span><span class="p">(</span>
+    <span class="n">reports_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span>
+    <span class="n">output_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_filepath</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">return_df</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">sort_values</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span>
+</code></pre></div>
 <p>Exports the results to a CSV file.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -2076,8 +2078,8 @@ def from_file(
 <p>Tuple[Union[Path, None], Union[pd.DataFrame, None]]: The output path and DataFrame if specified.</p>
 <p><a id="t3co.cli.sweep.run_t3co"></a></p>
 <h4 id="run_t3co">run_t3co</h4>
-<pre><code class="language-python">def run_t3co(config: Config, save_results: bool = True) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">run_t3co</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="n">save_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Runs the T3CO analysis.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -2092,22 +2094,22 @@ def from_file(
 <h1 id="t3cocost_modelsoperating_costs">t3co.cost_models.operating_costs</h1>
 <p><a id="t3co.cost_models.operating_costs.OperatingCosts"></a></p>
 <h2 id="operatingcosts-objects">OperatingCosts Objects</h2>
-<pre><code class="language-python">class OperatingCosts()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">OperatingCosts</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co.cost_models.operating_costs.OperatingCosts.__new__"></a></p>
 <h4 id="__new___7">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the OperatingCosts class.</p>
 <p><a id="t3co.cost_models.operating_costs.OperatingCosts.__init__"></a></p>
 <h4 id="__init___3">__init__</h4>
-<pre><code class="language-python">def __init__(year_number: int,
-             cap_costs: CapitalCosts,
-             vehicle: Vehicle,
-             scenario: Scenario,
-             energy: Energy = None,
-             oppy_costs: OpportunityCosts = None)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+             <span class="n">cap_costs</span><span class="p">:</span> <span class="n">CapitalCosts</span><span class="p">,</span>
+             <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+             <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+             <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">oppy_costs</span><span class="p">:</span> <span class="n">OpportunityCosts</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 <p>Initializes the OperatingCosts instance.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -2120,9 +2122,9 @@ def from_file(
 </ul>
 <p><a id="t3co.cost_models.operating_costs.OperatingCosts.set_fuel_cost"></a></p>
 <h4 id="set_fuel_cost">set_fuel_cost</h4>
-<pre><code class="language-python">def set_fuel_cost(year_number: int, vehicle: Vehicle,
-                  scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_fuel_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                  <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the fuel cost for the given year.</p>
 <p>This method calculates the fuel cost based on the fuel price and the amount of fuel used.
 The calculation uses the following OperatingCosts elements:
@@ -2147,9 +2149,9 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co.cost_models.operating_costs.OperatingCosts.set_maintenance_oper_cost"></a></p>
 <h4 id="set_maintenance_oper_cost">set_maintenance_oper_cost</h4>
-<pre><code class="language-python">def set_maintenance_oper_cost(year_number: int, vehicle: Vehicle,
-                              scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_maintenance_oper_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                              <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the maintenance operating cost for the given year.</p>
 <p>This method calculates the maintenance cost based on the maintenance cost per mile and the distance traveled.</p>
 <p>Inputs from scenario:
@@ -2166,9 +2168,9 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co.cost_models.operating_costs.OperatingCosts.set_insurance_cost"></a></p>
 <h4 id="set_insurance_cost">set_insurance_cost</h4>
-<pre><code class="language-python">def set_insurance_cost(year_number: int, cap_cost: CapitalCosts,
-                       vehicle: Vehicle, scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_insurance_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cap_cost</span><span class="p">:</span> <span class="n">CapitalCosts</span><span class="p">,</span>
+                       <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the insurance cost for the given year.</p>
 <p>This method calculates the insurance cost based on the insurance rate and the total value of the vehicle.</p>
 <p>Inputs from scenario:
@@ -2186,9 +2188,9 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co.cost_models.operating_costs.OperatingCosts.set_purchasing_payment_cost"></a></p>
 <h4 id="set_purchasing_payment_cost">set_purchasing_payment_cost</h4>
-<pre><code class="language-python">def set_purchasing_payment_cost(year_number: int, scenario: Scenario,
-                                cap_costs: CapitalCosts)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_purchasing_payment_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+                                <span class="n">cap_costs</span><span class="p">:</span> <span class="n">CapitalCosts</span><span class="p">)</span>
+</code></pre></div>
 <p>Sets the purchasing payment cost for the given year.</p>
 <p>This method calculates the purchasing payment cost based on the purchasing method specified in the scenario.</p>
 <p>Inputs from scenario:
@@ -2217,9 +2219,9 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co.cost_models.operating_costs.OperatingCosts.set_fueling_dwell_labor_cost"></a></p>
 <h4 id="set_fueling_dwell_labor_cost">set_fueling_dwell_labor_cost</h4>
-<pre><code class="language-python">def set_fueling_dwell_labor_cost(scenario: Scenario,
-                                 oppy_costs: OpportunityCosts) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_fueling_dwell_labor_cost</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+                                 <span class="n">oppy_costs</span><span class="p">:</span> <span class="n">OpportunityCosts</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the fueling dwell labor cost for the given year.</p>
 <p>This method calculates the fueling dwell labor cost based on the fueling dwell time and the labor rate.</p>
 <p>Inputs from scenario:
@@ -2235,8 +2237,8 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co.cost_models.operating_costs.OperatingCosts.set_net_oper_cost"></a></p>
 <h4 id="set_net_oper_cost">set_net_oper_cost</h4>
-<pre><code class="language-python">def set_net_oper_cost() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_net_oper_cost</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the net operating cost for the given year.</p>
 <p>This method calculates the net operating cost by summing the various operating cost components.
 The calculation uses the following OperatingCosts elements:
@@ -2249,8 +2251,8 @@ The calculation uses the following OperatingCosts elements:
 - net_oper_cost_dol_per_yr</p>
 <p><a id="t3co.cost_models.operating_costs.OperatingCosts.set_disc_oper_cost"></a></p>
 <h4 id="set_disc_oper_cost">set_disc_oper_cost</h4>
-<pre><code class="language-python">def set_disc_oper_cost(year_number: int, scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_disc_oper_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the discounted operating cost for the given year.</p>
 <p>This method calculates the discounted operating cost based on the net operating cost and the discount rate.
 The calculation uses the following OperatingCosts elements:
@@ -2266,8 +2268,8 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co.cost_models.operating_costs.OperatingCosts.__str__"></a></p>
 <h4 id="__str___2">__str__</h4>
-<pre><code class="language-python">def __str__() -&gt; str
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
 <p>Returns a string representation of the OperatingCosts instance.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
@@ -2279,18 +2281,18 @@ The calculation uses the following OperatingCosts elements:
 <h1 id="t3cocost_modelsopportunity_costs">t3co.cost_models.opportunity_costs</h1>
 <p><a id="t3co.cost_models.opportunity_costs.OpportunityCosts"></a></p>
 <h2 id="opportunitycosts-objects">OpportunityCosts Objects</h2>
-<pre><code class="language-python">class OpportunityCosts()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">OpportunityCosts</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co.cost_models.opportunity_costs.OpportunityCosts.__new__"></a></p>
 <h4 id="__new___8">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the OpportunityCosts class.</p>
 <p><a id="t3co.cost_models.opportunity_costs.OpportunityCosts.__init__"></a></p>
 <h4 id="__init___4">__init__</h4>
-<pre><code class="language-python">def __init__(year_number: int, vehicle: Vehicle, scenario: Scenario,
-             energy: Energy)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+             <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span><span class="p">)</span>
+</code></pre></div>
 <p>Initializes the OpportunityCosts instance.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -2301,9 +2303,9 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co.cost_models.opportunity_costs.OpportunityCosts.set_payload_cap_cost_multiplier"></a></p>
 <h4 id="set_payload_cap_cost_multiplier">set_payload_cap_cost_multiplier</h4>
-<pre><code class="language-python">def set_payload_cap_cost_multiplier(vehicle: Vehicle,
-                                    scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_payload_cap_cost_multiplier</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                                    <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the payload capacity cost multiplier for the vehicle.</p>
 <p>This method calculates the payload capacity cost multiplier based on the vehicle's weight and the scenario's weight distribution.</p>
 <p>Inputs from scenario:
@@ -2323,9 +2325,9 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co.cost_models.opportunity_costs.OpportunityCosts.set_fueling_dwell_time_cost"></a></p>
 <h4 id="set_fueling_dwell_time_cost">set_fueling_dwell_time_cost</h4>
-<pre><code class="language-python">def set_fueling_dwell_time_cost(year_number: int, vehicle: Vehicle,
-                                scenario: Scenario, energy: Energy) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_fueling_dwell_time_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                                <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span> <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the fueling dwell time cost for a vehicle based on fuel fill rate/charging power and shifts per year.</p>
 <p>Inputs from scenario:
 - fdt_frac_full_charge_bounds
@@ -2363,9 +2365,9 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co.cost_models.opportunity_costs.OpportunityCosts.set_mr_downtime_cost"></a></p>
 <h4 id="set_mr_downtime_cost">set_mr_downtime_cost</h4>
-<pre><code class="language-python">def set_mr_downtime_cost(year_number: int, vehicle: Vehicle,
-                         scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_mr_downtime_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                         <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the Maintenance and Repair (M&amp;R) downtime cost based on planned, unplanned, and tire replacement downtime inputs.</p>
 <p>Inputs from scenario:
 - mr_planned_downtime_hr_per_yr
@@ -2388,8 +2390,8 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co.cost_models.opportunity_costs.OpportunityCosts.set_net_downtime_oppy_cost"></a></p>
 <h4 id="set_net_downtime_oppy_cost">set_net_downtime_oppy_cost</h4>
-<pre><code class="language-python">def set_net_downtime_oppy_cost() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_net_downtime_oppy_cost</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the net downtime opportunity cost for the vehicle.</p>
 <p>This method calculates the net downtime opportunity cost by summing the fueling downtime and MR downtime opportunity costs.
 The calculation uses the following OpportunityCosts elements:
@@ -2402,8 +2404,8 @@ The calculation uses the following OpportunityCosts elements:
 - net_downtime_hr_per_yr</p>
 <p><a id="t3co.cost_models.opportunity_costs.OpportunityCosts.set_disc_downtime_oppy_cost"></a></p>
 <h4 id="set_disc_downtime_oppy_cost">set_disc_downtime_oppy_cost</h4>
-<pre><code class="language-python">def set_disc_downtime_oppy_cost(year_number: int, scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_disc_downtime_oppy_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the discounted downtime opportunity cost for the given year.</p>
 <p>Inputs from scenario:
 - discount_rate_pct_per_yr</p>
@@ -2416,8 +2418,8 @@ The calculation uses the following OpportunityCosts elements:
 </ul>
 <p><a id="t3co.cost_models.opportunity_costs.OpportunityCosts.__str__"></a></p>
 <h4 id="__str___3">__str__</h4>
-<pre><code class="language-python">def __str__() -&gt; str
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
 <p>Returns a string representation of the OpportunityCosts instance.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
@@ -2427,19 +2429,19 @@ The calculation uses the following OpportunityCosts elements:
 <h1 id="t3cocost_modelscapital_costs">t3co.cost_models.capital_costs</h1>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts"></a></p>
 <h2 id="capitalcosts-objects">CapitalCosts Objects</h2>
-<pre><code class="language-python">class CapitalCosts()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">CapitalCosts</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.__new__"></a></p>
 <h4 id="__new___9">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the CapitalCosts class.</p>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.__init__"></a></p>
 <h4 id="__init___5">__init__</h4>
-<pre><code class="language-python">def __init__(vehicle: Vehicle,
-             scenario: Scenario,
-             msrp_total_dol: float = None)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+             <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+             <span class="n">msrp_total_dol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 <p>Initializes the CapitalCosts instance.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -2449,8 +2451,8 @@ The calculation uses the following OpportunityCosts elements:
 </ul>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.set_glider_cost"></a></p>
 <h4 id="set_glider_cost">set_glider_cost</h4>
-<pre><code class="language-python">def set_glider_cost(scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_glider_cost</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the glider cost for the vehicle.</p>
 <p>This method calculates the marked up glider cost based on the vehicle class and the base cost.</p>
 <p>Inputs from scenario:
@@ -2463,8 +2465,8 @@ The calculation uses the following OpportunityCosts elements:
 </ul>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.set_fuel_converter_cost_dol"></a></p>
 <h4 id="set_fuel_converter_cost_dol">set_fuel_converter_cost_dol</h4>
-<pre><code class="language-python">def set_fuel_converter_cost_dol(vehicle: Vehicle, scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_fuel_converter_cost_dol</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the fuel converter cost for the vehicle.</p>
 <p>This method calculates the marked up fuel converter cost based on the vehicle powertrain type and the cost per kW.</p>
 <p>Inputs from vehicle:
@@ -2483,8 +2485,8 @@ The calculation uses the following OpportunityCosts elements:
 </ul>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.set_fuel_storage_cost"></a></p>
 <h4 id="set_fuel_storage_cost">set_fuel_storage_cost</h4>
-<pre><code class="language-python">def set_fuel_storage_cost(vehicle: Vehicle, scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_fuel_storage_cost</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the fuel storage cost for the vehicle.</p>
 <p>This method calculates the marked up fuel storage cost based on the vehicle powertrain type and the cost per kWh.</p>
 <p>Inputs from vehicle:
@@ -2502,9 +2504,9 @@ The calculation uses the following OpportunityCosts elements:
 </ul>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.set_motor_control_power_elecs_cost"></a></p>
 <h4 id="set_motor_control_power_elecs_cost">set_motor_control_power_elecs_cost</h4>
-<pre><code class="language-python">def set_motor_control_power_elecs_cost(vehicle: Vehicle,
-                                       scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_motor_control_power_elecs_cost</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                                       <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the motor control and power electronics cost for the vehicle.</p>
 <p>This method calculates the marked up motor control and power electronics cost based on the vehicle powertrain type and the cost per kW.</p>
 <p>Inputs from vehicle:
@@ -2521,8 +2523,8 @@ The calculation uses the following OpportunityCosts elements:
 </ul>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.set_plug_cost"></a></p>
 <h4 id="set_plug_cost">set_plug_cost</h4>
-<pre><code class="language-python">def set_plug_cost(vehicle: Vehicle, scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_plug_cost</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the plug cost for the vehicle.</p>
 <p>This method calculates the marked up plug cost based on the base cost.</p>
 <p>Inputs from scenario:
@@ -2536,8 +2538,8 @@ The calculation uses the following OpportunityCosts elements:
 </ul>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.set_battery_cost"></a></p>
 <h4 id="set_battery_cost">set_battery_cost</h4>
-<pre><code class="language-python">def set_battery_cost(vehicle: Vehicle, scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_battery_cost</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the battery cost for the vehicle.</p>
 <p>This method calculates the marked up battery cost based on the energy storage system (ESS) capacity and the cost per kWh.</p>
 <p>Inputs from vehicle:
@@ -2554,8 +2556,8 @@ The calculation uses the following OpportunityCosts elements:
 </ul>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.set_msrp"></a></p>
 <h4 id="set_msrp">set_msrp</h4>
-<pre><code class="language-python">def set_msrp() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_msrp</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the total MSRP (Manufacturer's Suggested Retail Price) for the vehicle.</p>
 <p>This method calculates the total MSRP by summing the costs of various components of the vehicle.
 The calculation uses the following CapitalCosts elements:
@@ -2569,8 +2571,8 @@ The calculation uses the following CapitalCosts elements:
 - msrp_total_dol</p>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.set_purchase_tax"></a></p>
 <h4 id="set_purchase_tax">set_purchase_tax</h4>
-<pre><code class="language-python">def set_purchase_tax(scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_purchase_tax</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the purchase tax for the vehicle.</p>
 <p>This method calculates the purchase tax based on the total MSRP (Manufacturer's Suggested Retail Price) of the vehicle components.
 The calculations use the following CapitalCosts elements:
@@ -2585,8 +2587,8 @@ The calculations use the following CapitalCosts elements:
 </ul>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.set_downpayment"></a></p>
 <h4 id="set_downpayment">set_downpayment</h4>
-<pre><code class="language-python">def set_downpayment(scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_downpayment</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the downpayment and initial principal for the vehicle purchase.</p>
 <p>This method calculates the downpayment and initial principal based on the purchasing method specified in the scenario.
 The calculations use the following CapitalCosts elements:
@@ -2605,8 +2607,8 @@ The calculations use the following CapitalCosts elements:
 </ul>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.set_residual_cost"></a></p>
 <h4 id="set_residual_cost">set_residual_cost</h4>
-<pre><code class="language-python">def set_residual_cost(scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_residual_cost</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the residual cost for the vehicle.</p>
 <p>This method calculates the residual cost based on the total MSRP (Manufacturer's Suggested Retail Price) of the vehicle components,
 the depreciation rates per year, and the vehicle's life span. The residual cost is the remaining value of the vehicle after depreciation.
@@ -2625,8 +2627,8 @@ The calculation uses the following CapitalCosts elements:
 </ul>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.set_net_capital_cost"></a></p>
 <h4 id="set_net_capital_cost">set_net_capital_cost</h4>
-<pre><code class="language-python">def set_net_capital_cost() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_net_capital_cost</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the total capital cost for the vehicle.</p>
 <p>This method calculates the total capital cost by summing the costs of various components and applying the purchase tax.
 The calculation uses the following CapitalCosts elements:
@@ -2637,8 +2639,8 @@ The calculation uses the following CapitalCosts elements:
 - net_capital_cost_dol</p>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.set_disc_residual_cost"></a></p>
 <h4 id="set_disc_residual_cost">set_disc_residual_cost</h4>
-<pre><code class="language-python">def set_disc_residual_cost(scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_disc_residual_cost</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the discounted residual cost for the vehicle.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -2646,8 +2648,8 @@ The calculation uses the following CapitalCosts elements:
 </ul>
 <p><a id="t3co.cost_models.capital_costs.CapitalCosts.get_marked_up_value"></a></p>
 <h4 id="get_marked_up_value">get_marked_up_value</h4>
-<pre><code class="language-python">def get_marked_up_value(value: float, scenario: Scenario) -&gt; float
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_marked_up_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
+</code></pre></div>
 <p>Returns the marked up value.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>

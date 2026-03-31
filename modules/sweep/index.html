@@ -43,6 +43,8 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -309,7 +311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../t3co_overview.md" class="md-nav__link">
+      <a href="../../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1149,13 +1151,13 @@
 <h1 id="t3coclisweep">t3co.cli.sweep</h1>
 <p><a id="t3co.cli.sweep.load_vehicle_scenario_energy"></a></p>
 <h4 id="load_vehicle_scenario_energy">load_vehicle_scenario_energy</h4>
-<pre><code class="language-python">def load_vehicle_scenario_energy(
-        selection: Union[int, str],
-        config: Config,
-        vehicle: Vehicle = None,
-        scenario: Scenario = None,
-        energy: Energy = None) -&gt; Tuple[Vehicle, Scenario, Energy]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">load_vehicle_scenario_energy</span><span class="p">(</span>
+        <span class="n">selection</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span>
+        <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Vehicle</span><span class="p">,</span> <span class="n">Scenario</span><span class="p">,</span> <span class="n">Energy</span><span class="p">]</span>
+</code></pre></div>
 <p>Loads the vehicle, scenario, and energy models based on the selection and config.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1166,8 +1168,8 @@
 <p>Tuple[Vehicle, Scenario, Energy]: The vehicle, scenario, and energy models.</p>
 <p><a id="t3co.cli.sweep.generate_ledger"></a></p>
 <h4 id="generate_ledger">generate_ledger</h4>
-<pre><code class="language-python">def generate_ledger(selection: int, config: Config) -&gt; Dict
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">generate_ledger</span><span class="p">(</span><span class="n">selection</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span>
+</code></pre></div>
 <p>Generates the ledger for the given selection and config.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1180,8 +1182,8 @@
 </ul>
 <p><a id="t3co.cli.sweep.create_results_filepath"></a></p>
 <h4 id="create_results_filepath">create_results_filepath</h4>
-<pre><code class="language-python">def create_results_filepath(config: Config) -&gt; Path
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_results_filepath</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span>
+</code></pre></div>
 <p>Creates the results file path based on the config.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1193,15 +1195,15 @@
 </ul>
 <p><a id="t3co.cli.sweep.export_results_to_csv"></a></p>
 <h4 id="export_results_to_csv">export_results_to_csv</h4>
-<pre><code class="language-python">def export_results_to_csv(
-    reports_list: List[Dict],
-    config: Config,
-    output_path: Union[str, Path] = None,
-    return_filepath: bool = True,
-    return_df: bool = False,
-    sort_values: bool = False
-) -&gt; Tuple[Union[Path, None], Union[pd.DataFrame, None]]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">export_results_to_csv</span><span class="p">(</span>
+    <span class="n">reports_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span>
+    <span class="n">output_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_filepath</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">return_df</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">sort_values</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span>
+</code></pre></div>
 <p>Exports the results to a CSV file.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1216,8 +1218,8 @@
 <p>Tuple[Union[Path, None], Union[pd.DataFrame, None]]: The output path and DataFrame if specified.</p>
 <p><a id="t3co.cli.sweep.run_t3co"></a></p>
 <h4 id="run_t3co">run_t3co</h4>
-<pre><code class="language-python">def run_t3co(config: Config, save_results: bool = True) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">run_t3co</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">,</span> <span class="n">save_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Runs the T3CO analysis.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>

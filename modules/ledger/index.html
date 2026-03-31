@@ -43,6 +43,8 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -309,7 +311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../t3co_overview.md" class="md-nav__link">
+      <a href="../../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1157,20 +1159,20 @@
 <h1 id="t3cotcoledger">t3co/tco/ledger</h1>
 <p><a id="t3co/tco/ledger.Ledger"></a></p>
 <h2 id="ledger-objects">Ledger Objects</h2>
-<pre><code class="language-python">class Ledger()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Ledger</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co/tco/ledger.Ledger.__new__"></a></p>
 <h4 id="__new__">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the Ledger class.</p>
 <p><a id="t3co/tco/ledger.Ledger.__init__"></a></p>
 <h4 id="__init__">__init__</h4>
-<pre><code class="language-python">def __init__(vehicle: Vehicle,
-             scenario: Scenario,
-             energy: Energy = None,
-             config: Config = None)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+             <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+             <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 <p>Initializes the Ledger instance.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1181,23 +1183,23 @@
 </ul>
 <p><a id="t3co/tco/ledger.Ledger.set_discounted_costs"></a></p>
 <h4 id="set_discounted_costs">set_discounted_costs</h4>
-<pre><code class="language-python">def set_discounted_costs()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_discounted_costs</span><span class="p">()</span>
+</code></pre></div>
 <p>Sets the discounted cost components for the Ledger instance.</p>
 <p><a id="t3co/tco/ledger.Ledger.set_discounted_tco"></a></p>
 <h4 id="set_discounted_tco">set_discounted_tco</h4>
-<pre><code class="language-python">def set_discounted_tco()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_discounted_tco</span><span class="p">()</span>
+</code></pre></div>
 <p>Sets the discounted TCO for the Ledger instance.</p>
 <p><a id="t3co/tco/ledger.Ledger.set_cost_components"></a></p>
 <h4 id="set_cost_components">set_cost_components</h4>
-<pre><code class="language-python">def set_cost_components()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_cost_components</span><span class="p">()</span>
+</code></pre></div>
 <p>Sets the cost components for the Ledger instance.</p>
 <p><a id="t3co/tco/ledger.Ledger.to_dict"></a></p>
 <h4 id="to_dict">to_dict</h4>
-<pre><code class="language-python">def to_dict(include_prefix: bool = True, flatten: bool = True) -&gt; dict
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="n">include_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">flatten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+</code></pre></div>
 <p>Exports the Ledger instance to a dictionary.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1210,10 +1212,10 @@
 </ul>
 <p><a id="t3co/tco/ledger.Ledger.to_json"></a></p>
 <h4 id="to_json">to_json</h4>
-<pre><code class="language-python">def to_json(filepath: Union[str, Path],
-            include_prefix: bool = True,
-            flatten: bool = True) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+            <span class="n">include_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">flatten</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Saves the Ledger instance to a JSON file.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1223,8 +1225,8 @@
 </ul>
 <p><a id="t3co/tco/ledger.Ledger.to_df"></a></p>
 <h4 id="to_df">to_df</h4>
-<pre><code class="language-python">def to_df() -&gt; pd.DataFrame
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_df</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+</code></pre></div>
 <p>Converts the Ledger instance to a DataFrame.</p>
 <p><strong>Returns</strong>:</p>
 <ul>
@@ -1232,8 +1234,8 @@
 </ul>
 <p><a id="t3co/tco/ledger.Ledger.to_csv"></a></p>
 <h4 id="to_csv">to_csv</h4>
-<pre><code class="language-python">def to_csv(filepath: Union[str, Path]) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Saves the Ledger instance to a CSV file.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1241,8 +1243,8 @@
 </ul>
 <p><a id="t3co/tco/ledger.Ledger.__str__"></a></p>
 <h4 id="__str__">__str__</h4>
-<pre><code class="language-python">def __str__() -&gt; str
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
 <p>Returns a string representation of the Ledger instance.</p>
 <p><strong>Returns</strong>:</p>
 <ul>

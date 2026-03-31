@@ -47,6 +47,8 @@
       
     
     
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -443,7 +445,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../t3co_overview.md" class="md-nav__link">
+      <a href="../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1286,10 +1288,11 @@
 <ol>
 <li>Register for a free API key at <a href="https://www.eia.gov/opendata/register.php">eia.gov/opendata/register.php</a>.</li>
 <li>Create a <code>.env</code> file from the provided <code>.env.example</code> template:
-   <code>bash
-   cp .env.example .env</code></li>
+   <div class="highlight"><pre><span></span><code>cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+</code></pre></div></li>
 <li>Add your key:
-   <code>T3CO_EIA_API_KEY=your_api_key_here</code></li>
+   <div class="highlight"><pre><span></span><code>T3CO_EIA_API_KEY=your_api_key_here
+</code></pre></div></li>
 <li>Set <code>region</code> to a US zipcode in <code>T3COConfig.csv</code> and run T3CO as usual.</li>
 </ol>
 <p>If the <code>eia_fuel_prices</code> toggle in <code>cost_toggles.json</code> is <code>false</code>, or no zipcode is provided, or no API key is set, T3CO falls back to the static <code>FuelPrices.csv</code> just as in 1.x.</p>

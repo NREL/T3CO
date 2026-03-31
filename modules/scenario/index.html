@@ -43,6 +43,8 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -309,7 +311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../t3co_overview.md" class="md-nav__link">
+      <a href="../../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1153,26 +1155,26 @@
 <h1 id="t3coinput_datascenario">t3co/input_data/scenario</h1>
 <p><a id="t3co/input_data/scenario.Scenario"></a></p>
 <h2 id="scenario-objects">Scenario Objects</h2>
-<pre><code class="language-python">@dataclass
-class Scenario()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Scenario</span><span class="p">()</span>
+</code></pre></div>
 <p>Class object that contains all TCO parameters and performance target (range, grade, accel) information
 for a vehicle such that performance and TCO can be computed during optimization.</p>
 <p><a id="t3co/input_data/scenario.Scenario.__new__"></a></p>
 <h4 id="__new__">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the Scenario class.</p>
 <p><a id="t3co/input_data/scenario.Scenario.from_file"></a></p>
 <h4 id="from_file">from_file</h4>
-<pre><code class="language-python">@classmethod
-def from_file(
-    cls,
-    selection: int,
-    scenario_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH / &quot;inputs&quot; /
-    &quot;Demo_FY22_scenario_assumptions.csv&quot;
-) -&gt; Self
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span>
+    <span class="n">selection</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">scenario_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">RESOURCES_FOLDERPATH</span> <span class="o">/</span> <span class="s2">&quot;inputs&quot;</span> <span class="o">/</span>
+    <span class="s2">&quot;Demo_FY22_scenario_assumptions.csv&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span>
+</code></pre></div>
 <p>Creates a Scenario instance from a CSV file.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1185,8 +1187,8 @@ def from_file(
 </ul>
 <p><a id="t3co/input_data/scenario.Scenario.from_dict"></a></p>
 <h4 id="from_dict">from_dict</h4>
-<pre><code class="language-python">def from_dict(cls, scenario_dict: dict)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">scenario_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a Scenario instance from a dictionary.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1198,8 +1200,8 @@ def from_file(
 </ul>
 <p><a id="t3co/input_data/scenario.Scenario.override_from_config"></a></p>
 <h4 id="override_from_config">override_from_config</h4>
-<pre><code class="language-python">def override_from_config(config: Config = None, verbose: bool = False) -&gt; Self
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">override_from_config</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span>
+</code></pre></div>
 <p>Overrides certain scenario fields if use_config is True and config object is not None.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1212,8 +1214,8 @@ def from_file(
 </ul>
 <p><a id="t3co/input_data/scenario.Scenario.get_discounted_value"></a></p>
 <h4 id="get_discounted_value">get_discounted_value</h4>
-<pre><code class="language-python">def get_discounted_value(value: float, year_number: int) -&gt; float
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_discounted_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span>
+</code></pre></div>
 <p>Calculates the discounted value for a given year.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1226,8 +1228,8 @@ def from_file(
 </ul>
 <p><a id="t3co/input_data/scenario.Scenario.delete_dataframes"></a></p>
 <h4 id="delete_dataframes">delete_dataframes</h4>
-<pre><code class="language-python">def delete_dataframes() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_dataframes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Deletes DataFrame attributes from the Scenario instance.</p>
 
 

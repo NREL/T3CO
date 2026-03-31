@@ -47,6 +47,8 @@
       
     
     
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -440,7 +442,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../t3co_overview.md" class="md-nav__link">
+      <a href="../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1274,23 +1276,23 @@
 <li>
 <p>First option is to use <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html"><strong>conda</strong></a>:</p>
 <p>if using Windows PowerShell, run an additional from Anaconda Prompt to enable conda capabilities:</p>
-<p><code>bash
-conda init powershell</code></p>
+<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>init<span class="w"> </span>powershell
+</code></pre></div>
 <p>To create a python environment run,</p>
-<p><code>bash
-conda create -n t3co python=3.10
-conda activate t3co</code></p>
+<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>t3co<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10
+conda<span class="w"> </span>activate<span class="w"> </span>t3co
+</code></pre></div>
 </li>
 <li>
 <p>The other option is using <a href="https://docs.python.org/3/library/venv.html">venv</a></p>
-<p><code>bash
-python3.10 -m venv t3co</code></p>
+<div class="highlight"><pre><span></span><code>python3.10<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>t3co
+</code></pre></div>
 <p>On macOS/Linux, activate the environment:</p>
-<p><code>bash
-source t3co/bin/activate</code></p>
+<div class="highlight"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>t3co/bin/activate
+</code></pre></div>
 <p>On Windows Powershell:</p>
-<p><code>bash
-t3co\Scripts\activate</code></p>
+<div class="highlight"><pre><span></span><code>t3co<span class="se">\S</span>cripts<span class="se">\a</span>ctivate
+</code></pre></div>
 </li>
 </ol>
 <h2 id="installing-t3co-python-package">Installing T3CO Python Package</h2>
@@ -1303,52 +1305,52 @@ t3co\Scripts\activate</code></p>
 <li>T3CO for developers and quality testers that includes all capabilities (<code>t3co[dev]</code> requires Python&gt;=3.9,&lt;=3.10)</li>
 </ul>
 <p>The different 'extras' refers to different sets of dependencies that get installed along with T3CO when the user runs these commands. Dependencies don't need to be manually installed since <a href="https://python-poetry.org/">Poetry</a> is used as the dependency manager.</p>
-<p>To install a specific released version (for example T3CO v1.0.8):</p>
-<pre><code class="language-bash">pip install t3co==1.0.8
-</code></pre>
+<p>To install a specific released version (for example T3CO v1.0.8):
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span><span class="nv">t3co</span><span class="o">==</span><span class="m">1</span>.0.8
+</code></pre></div></p>
 <h3 id="installation-source-1-from-pypi">Installation Source #1: From <a href="https://pypi.org/project/t3co/">PyPI</a></h3>
 <p>After creating a version-appropriate <a href="#setting-up-a-python-environment">Python environment</a>, the latest release of T3CO can be installed from PyPI using one of the following commands.</p>
 <p>For the default option/extra:</p>
-<pre><code class="language-bash">pip install t3co
-</code></pre>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>t3co
+</code></pre></div>
 <p>For the FASTSim-integrated 'extra':</p>
-<pre><code class="language-bash">pip install t3co[fastsim]
-</code></pre>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>t3co<span class="o">[</span>fastsim<span class="o">]</span>
+</code></pre></div>
 <p>For the developer 'extra':</p>
-<pre><code class="language-bash">pip install t3co[dev]
-</code></pre>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>t3co<span class="o">[</span>dev<span class="o">]</span>
+</code></pre></div>
 <h3 id="installation-source-2-cloning-the-github-repo">Installation Source #2: Cloning the <a href="https://github.com/NatLabRockies/T3CO">GitHub Repo</a></h3>
 <p>T3CO can also be installed from a clone of the GitHub repository.</p>
 <p>First, <a href="https://git-scm.com/docs/git-clone">clone</a> the repository from <a href="https://github.com/NatLabRockies/T3CO">GitHub</a> from your desired directory (eg., /Users/Projects/):</p>
-<pre><code class="language-bash">git clone https://github.com/NatLabRockies/T3CO.git T3CO
-</code></pre>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/NatLabRockies/T3CO.git<span class="w"> </span>T3CO
+</code></pre></div>
 <p>This creates a git compliant folder 'T3CO' (i.e., a '/Users/Projects/T3CO' folder)</p>
 <p>To access the <code>t3co-2.0</code> branch,</p>
-<pre><code class="language-bash">git checkout t3co-2.0
-</code></pre>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>checkout<span class="w"> </span>t3co-2.0
+</code></pre></div>
 <p><a href="https://desktop.github.com/download/">GitHub Desktop</a> is an application that provides a GUI for managing git clones. It gives the user a more interactive way of cloning a repo and switching branches. This option negates the need for<code>git clone</code> and a <code>git checkout</code> commands.</p>
 <p>From within the <a href="#setting-up-a-python-environment">Python environment</a>, navigate to the parent directory containing the T3CO repository (run <code>cd T3CO</code>) and run one of these three installation options:</p>
 <p>For the default option/extra:</p>
-<pre><code class="language-bash">pip install -e .
-</code></pre>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</code></pre></div>
 <p>For the FASTSim-integrated 'extra':</p>
-<pre><code class="language-bash">pip install -e .[fastsim]
-</code></pre>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>fastsim<span class="o">]</span>
+</code></pre></div>
 <p>For the developer 'extra':</p>
-<pre><code class="language-bash">pip install -e .[dev]
-</code></pre>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>dev<span class="o">]</span>
+</code></pre></div>
 <h3 id="post-installation-checks">Post-Installation Checks</h3>
 <p>Check that the right version of T3CO is installed in your environment:</p>
-<pre><code class="language-bash">pip show t3co
-</code></pre>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>show<span class="w"> </span>t3co
+</code></pre></div>
 <p>If there are updates or new releases to T3CO that don't show in the local version when installing from a git clone, use a <code>git pull</code> command on the latest version from the <code>main</code> branch on the repo:</p>
-<pre><code class="language-bash">git pull origin main
-</code></pre>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>main
+</code></pre></div>
 <p>Here 'main' can be replaced by the desired branch.</p>
 <h2 id="copying-t3co-demo-input-files">Copying T3CO Demo Input Files <a name=copy-demo-inputs></a></h2>
 <p>The <code>t3co.resources</code> module contains all the necessary input files needed for running T3CO. However, it is sometimes difficult to navigate to these files when installing. To help with this, run this command on the Command Line Interface.</p>
-<pre><code class="language-bash">install_t3co_demo_inputs
-</code></pre>
+<div class="highlight"><pre><span></span><code>install_t3co_demo_inputs
+</code></pre></div>
 <p>The user will receive these questions on the command line:</p>
 <p><code>Do you want to copy the T3CO demo input files? (y/n):</code></p>
 <p><code>Enter the path where you want to copy demo input files:</code></p>
@@ -1357,15 +1359,15 @@ t3co\Scripts\activate</code></p>
 <p>T3CO can fetch live fuel price projections from the EIA Annual Energy Outlook API when a US zipcode is provided in the Config <code>region</code> column. This feature requires a free API key.</p>
 <p><strong>Step 1:</strong> Register for a free API key at <a href="https://www.eia.gov/opendata/register.php">eia.gov/opendata/register.php</a>.</p>
 <p><strong>Step 2:</strong> Copy the example environment file to create your own <code>.env</code>:</p>
-<pre><code class="language-bash">cp .env.example .env
-</code></pre>
+<div class="highlight"><pre><span></span><code>cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+</code></pre></div>
 <p>If you installed T3CO from PyPI (not a git clone), create a <code>.env</code> file manually in the directory where you run T3CO.</p>
 <p><strong>Step 3:</strong> Open <code>.env</code> and replace the placeholder with your actual API key:</p>
-<pre><code>T3CO_EIA_API_KEY=your_actual_api_key_here
-</code></pre>
+<div class="highlight"><pre><span></span><code>T3CO_EIA_API_KEY=your_actual_api_key_here
+</code></pre></div>
 <p>If you are behind a corporate proxy with SSL inspection, you can also uncomment and set:</p>
-<pre><code>T3CO_SSL_VERIFY=false
-</code></pre>
+<div class="highlight"><pre><span></span><code>T3CO_SSL_VERIFY=false
+</code></pre></div>
 <p>The <code>.env</code> file is listed in <code>.gitignore</code> and will not be committed to version control. Never share your API key publicly.</p>
 <p>If you don't set up a <code>.env</code> file, T3CO works normally using static fuel price data from <code>FuelPrices.csv</code>. The EIA integration is only activated when a zipcode is provided in the Config and the API key is available.</p>
 <h2 id="running-your-first-analysis">Running your first analysis</h2>

@@ -43,6 +43,8 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -309,7 +311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../t3co_overview.md" class="md-nav__link">
+      <a href="../../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1157,22 +1159,22 @@
 <h1 id="t3cocost_modelsoperating_costs">t3co/cost_models/operating_costs</h1>
 <p><a id="t3co/cost_models/operating_costs.OperatingCosts"></a></p>
 <h2 id="operatingcosts-objects">OperatingCosts Objects</h2>
-<pre><code class="language-python">class OperatingCosts()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">OperatingCosts</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co/cost_models/operating_costs.OperatingCosts.__new__"></a></p>
 <h4 id="__new__">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the OperatingCosts class.</p>
 <p><a id="t3co/cost_models/operating_costs.OperatingCosts.__init__"></a></p>
 <h4 id="__init__">__init__</h4>
-<pre><code class="language-python">def __init__(year_number: int,
-             cap_costs: CapitalCosts,
-             vehicle: Vehicle,
-             scenario: Scenario,
-             energy: Energy = None,
-             oppy_costs: OpportunityCosts = None)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+             <span class="n">cap_costs</span><span class="p">:</span> <span class="n">CapitalCosts</span><span class="p">,</span>
+             <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+             <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+             <span class="n">energy</span><span class="p">:</span> <span class="n">Energy</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">oppy_costs</span><span class="p">:</span> <span class="n">OpportunityCosts</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 <p>Initializes the OperatingCosts instance.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1185,9 +1187,9 @@
 </ul>
 <p><a id="t3co/cost_models/operating_costs.OperatingCosts.set_fuel_cost"></a></p>
 <h4 id="set_fuel_cost">set_fuel_cost</h4>
-<pre><code class="language-python">def set_fuel_cost(year_number: int, vehicle: Vehicle,
-                  scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_fuel_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                  <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the fuel cost for the given year.</p>
 <p>This method calculates the fuel cost based on the fuel price and the amount of fuel used.
 The calculation uses the following OperatingCosts elements:
@@ -1212,9 +1214,9 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co/cost_models/operating_costs.OperatingCosts.set_maintenance_oper_cost"></a></p>
 <h4 id="set_maintenance_oper_cost">set_maintenance_oper_cost</h4>
-<pre><code class="language-python">def set_maintenance_oper_cost(year_number: int, vehicle: Vehicle,
-                              scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_maintenance_oper_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span>
+                              <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the maintenance operating cost for the given year.</p>
 <p>This method calculates the maintenance cost based on the maintenance cost per mile and the distance traveled.</p>
 <p>Inputs from scenario:
@@ -1231,9 +1233,9 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co/cost_models/operating_costs.OperatingCosts.set_insurance_cost"></a></p>
 <h4 id="set_insurance_cost">set_insurance_cost</h4>
-<pre><code class="language-python">def set_insurance_cost(year_number: int, cap_cost: CapitalCosts,
-                       vehicle: Vehicle, scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_insurance_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cap_cost</span><span class="p">:</span> <span class="n">CapitalCosts</span><span class="p">,</span>
+                       <span class="n">vehicle</span><span class="p">:</span> <span class="n">Vehicle</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the insurance cost for the given year.</p>
 <p>This method calculates the insurance cost based on the insurance rate and the total value of the vehicle.</p>
 <p>Inputs from scenario:
@@ -1251,9 +1253,9 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co/cost_models/operating_costs.OperatingCosts.set_purchasing_payment_cost"></a></p>
 <h4 id="set_purchasing_payment_cost">set_purchasing_payment_cost</h4>
-<pre><code class="language-python">def set_purchasing_payment_cost(year_number: int, scenario: Scenario,
-                                cap_costs: CapitalCosts)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_purchasing_payment_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+                                <span class="n">cap_costs</span><span class="p">:</span> <span class="n">CapitalCosts</span><span class="p">)</span>
+</code></pre></div>
 <p>Sets the purchasing payment cost for the given year.</p>
 <p>This method calculates the purchasing payment cost based on the purchasing method specified in the scenario.</p>
 <p>Inputs from scenario:
@@ -1282,9 +1284,9 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co/cost_models/operating_costs.OperatingCosts.set_fueling_dwell_labor_cost"></a></p>
 <h4 id="set_fueling_dwell_labor_cost">set_fueling_dwell_labor_cost</h4>
-<pre><code class="language-python">def set_fueling_dwell_labor_cost(scenario: Scenario,
-                                 oppy_costs: OpportunityCosts) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_fueling_dwell_labor_cost</span><span class="p">(</span><span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+                                 <span class="n">oppy_costs</span><span class="p">:</span> <span class="n">OpportunityCosts</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the fueling dwell labor cost for the given year.</p>
 <p>This method calculates the fueling dwell labor cost based on the fueling dwell time and the labor rate.</p>
 <p>Inputs from scenario:
@@ -1300,8 +1302,8 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co/cost_models/operating_costs.OperatingCosts.set_net_oper_cost"></a></p>
 <h4 id="set_net_oper_cost">set_net_oper_cost</h4>
-<pre><code class="language-python">def set_net_oper_cost() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_net_oper_cost</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the net operating cost for the given year.</p>
 <p>This method calculates the net operating cost by summing the various operating cost components.
 The calculation uses the following OperatingCosts elements:
@@ -1314,8 +1316,8 @@ The calculation uses the following OperatingCosts elements:
 - net_oper_cost_dol_per_yr</p>
 <p><a id="t3co/cost_models/operating_costs.OperatingCosts.set_disc_oper_cost"></a></p>
 <h4 id="set_disc_oper_cost">set_disc_oper_cost</h4>
-<pre><code class="language-python">def set_disc_oper_cost(year_number: int, scenario: Scenario) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_disc_oper_cost</span><span class="p">(</span><span class="n">year_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Sets the discounted operating cost for the given year.</p>
 <p>This method calculates the discounted operating cost based on the net operating cost and the discount rate.
 The calculation uses the following OperatingCosts elements:
@@ -1331,8 +1333,8 @@ The calculation uses the following OperatingCosts elements:
 </ul>
 <p><a id="t3co/cost_models/operating_costs.OperatingCosts.__str__"></a></p>
 <h4 id="__str__">__str__</h4>
-<pre><code class="language-python">def __str__() -&gt; str
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</code></pre></div>
 <p>Returns a string representation of the OperatingCosts instance.</p>
 <p><strong>Returns</strong>:</p>
 <ul>

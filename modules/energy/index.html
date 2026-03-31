@@ -43,6 +43,8 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -309,7 +311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../t3co_overview.md" class="md-nav__link">
+      <a href="../../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1150,18 +1152,18 @@
 <h1 id="t3coenergy_modelsenergy">t3co/energy_models/energy</h1>
 <p><a id="t3co/energy_models/energy.Energy"></a></p>
 <h2 id="energy-objects">Energy Objects</h2>
-<pre><code class="language-python">@dataclass
-class Energy()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Energy</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co/energy_models/energy.Energy.__new__"></a></p>
 <h4 id="__new__">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the Energy class.</p>
 <p><a id="t3co/energy_models/energy.Energy.__init__"></a></p>
 <h4 id="__init__">__init__</h4>
-<pre><code class="language-python">def __init__(mpgge: float = None, primary_fuel_range_mi: float = None)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">mpgge</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">primary_fuel_range_mi</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
 <p>Initializes the Energy instance.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1170,13 +1172,13 @@ class Energy()
 </ul>
 <p><a id="t3co/energy_models/energy.Energy.run_fastsim_model"></a></p>
 <h4 id="run_fastsim_model">run_fastsim_model</h4>
-<pre><code class="language-python">def run_fastsim_model(
-    veh_no: int,
-    scenario: Scenario,
-    vehicle_file: Union[str, Path] = gl.RESOURCES_FOLDERPATH / &quot;inputs&quot; /
-    &quot;Demo_FY22_vehicle_model_assumptions.csv&quot;
-) -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">run_fastsim_model</span><span class="p">(</span>
+    <span class="n">veh_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+    <span class="n">vehicle_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">RESOURCES_FOLDERPATH</span> <span class="o">/</span> <span class="s2">&quot;inputs&quot;</span> <span class="o">/</span>
+    <span class="s2">&quot;Demo_FY22_vehicle_model_assumptions.csv&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Runs the FASTSim model to calculate mpgge and primary fuel range.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>

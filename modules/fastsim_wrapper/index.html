@@ -43,6 +43,8 @@
       
     
     
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -309,7 +311,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../t3co_overview.md" class="md-nav__link">
+      <a href="../../T3CO_Overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1153,19 +1155,19 @@
 <h1 id="t3coenergy_modelsfastsim_modelfastsim_wrapper">t3co/energy_models/fastsim_model/fastsim_wrapper</h1>
 <p><a id="t3co/energy_models/fastsim_model/fastsim_wrapper.RunFASTSim"></a></p>
 <h2 id="runfastsim-objects">RunFASTSim Objects</h2>
-<pre><code class="language-python">class RunFASTSim()
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RunFASTSim</span><span class="p">()</span>
+</code></pre></div>
 <p><a id="t3co/energy_models/fastsim_model/fastsim_wrapper.RunFASTSim.__new__"></a></p>
 <h4 id="__new__">__new__</h4>
-<pre><code class="language-python">def __new__(cls, *args, **kwargs)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
 <p>Creates a new instance of the RunFASTSim class.</p>
 <p><a id="t3co/energy_models/fastsim_model/fastsim_wrapper.RunFASTSim.load_vehicle"></a></p>
 <h4 id="load_vehicle">load_vehicle</h4>
-<pre><code class="language-python">def load_vehicle(veh_no: int,
-                 veh_input_path: Union[str, Path],
-                 use_rust: bool = True) -&gt; fastsim.vehicle.Vehicle
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">load_vehicle</span><span class="p">(</span><span class="n">veh_no</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">veh_input_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+                 <span class="n">use_rust</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fastsim</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">Vehicle</span>
+</code></pre></div>
 <p>Loads vehicle object from vehicle number and input CSV filepath.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1178,12 +1180,12 @@
 </ul>
 <p><a id="t3co/energy_models/fastsim_model/fastsim_wrapper.RunFASTSim.load_design_cycle_from_scenario"></a></p>
 <h4 id="load_design_cycle_from_scenario">load_design_cycle_from_scenario</h4>
-<pre><code class="language-python">def load_design_cycle_from_scenario(
-    scenario: Scenario,
-    cyc_file_path: Union[str, Path] = gl.CYCLES_FOLDER,
-    return_rustcycle: bool = True
-) -&gt; Union[fastsim.cycle.Cycle, List[fastsim.cycle.Cycle]]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">load_design_cycle_from_scenario</span><span class="p">(</span>
+    <span class="n">scenario</span><span class="p">:</span> <span class="n">Scenario</span><span class="p">,</span>
+    <span class="n">cyc_file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">CYCLES_FOLDER</span><span class="p">,</span>
+    <span class="n">return_rustcycle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">fastsim</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">Cycle</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">fastsim</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">Cycle</span><span class="p">]]</span>
+</code></pre></div>
 <p>Loads the design cycle used for mpgge and range determination.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1194,11 +1196,11 @@
 <p>Union[fastsim.cycle.Cycle, List[fastsim.cycle.Cycle]]: FASTSim cycle object for current Scenario object.</p>
 <p><a id="t3co/energy_models/fastsim_model/fastsim_wrapper.RunFASTSim.load_design_cycle_from_path"></a></p>
 <h4 id="load_design_cycle_from_path">load_design_cycle_from_path</h4>
-<pre><code class="language-python">def load_design_cycle_from_path(
-    cyc_file_path: Union[str, Path],
-    return_rustcycle: bool = True
-) -&gt; Union[fastsim.cycle.RustCycle, fastsim.cycle.Cycle]
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">load_design_cycle_from_path</span><span class="p">(</span>
+    <span class="n">cyc_file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">return_rustcycle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">fastsim</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">RustCycle</span><span class="p">,</span> <span class="n">fastsim</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">Cycle</span><span class="p">]</span>
+</code></pre></div>
 <p>Loads the Cycle object from the drive cycle filepath.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1210,9 +1212,9 @@
 </ul>
 <p><a id="t3co/energy_models/fastsim_model/fastsim_wrapper.RunFASTSim.get_simdrive"></a></p>
 <h4 id="get_simdrive">get_simdrive</h4>
-<pre><code class="language-python">def get_simdrive(
-        cycle: fastsim.cycle.Cycle) -&gt; fastsim.fastsimrust.RustSimDrive
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_simdrive</span><span class="p">(</span>
+        <span class="n">cycle</span><span class="p">:</span> <span class="n">fastsim</span><span class="o">.</span><span class="n">cycle</span><span class="o">.</span><span class="n">Cycle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fastsim</span><span class="o">.</span><span class="n">fastsimrust</span><span class="o">.</span><span class="n">RustSimDrive</span>
+</code></pre></div>
 <p>Creates a SimDrive object for the given cycle and vehicle.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
@@ -1224,8 +1226,8 @@
 </ul>
 <p><a id="t3co/energy_models/fastsim_model/fastsim_wrapper.RunFASTSim.get_range"></a></p>
 <h4 id="get_range">get_range</h4>
-<pre><code class="language-python">def get_range() -&gt; None
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_range</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
 <p>Calculates the range of the vehicle based on its type and energy storage.</p>
 
 
