@@ -513,13 +513,91 @@ def export_results_to_csv(
     )
 
 
-def run_t3co(config: Config, save_results: bool = True) -> None:
+DEFAULT_PLOT_BACKEND = "plotly"
+
+
+def save_default_plots(
+    results_csv: Union[str, Path],
+    backend: str = DEFAULT_PLOT_BACKEND,
+) -> List[Path]:
+    """
+    Generates and saves a default set of TCO charts from a results CSV.
+
+    Writes figures next to the results file: a TCO cost breakdown, a histogram of
+    the discounted TCO, and - when a fuel-type grouping is available - a violin
+    plot. Interactive Plotly charts are saved as HTML; matplotlib charts as PNG.
+
+    The plotting dependencies are optional; if they are missing (or charting
+    fails) the run is unaffected and a note is printed.
+
+    Args:
+        results_csv (Union[str, Path]): Path to the T3CO results CSV.
+        backend (str): "plotly" (interactive HTML) or "matplotlib" (static PNG).
+
+    Returns:
+        List[Path]: Paths of the saved figure files (empty if plotting was skipped).
+    """
+    try:
+        from t3co.visualize.charts import T3COCharts
+    except ImportError as e:
+        print(f"Skipping --plot: {e}")
+        return []
+
+    results_csv = Path(results_csv)
+    try:
+        tc = T3COCharts(filename=results_csv, backend=backend)
+    except Exception as e:
+        print(f"Skipping --plot: could not initialize charts ({type(e).__name__}: {e})")
+        return []
+
+    ext = "html" if tc.backend == "plotly" else "png"
+    out_dir = results_csv.parent
+    stem = results_csv.stem
+    columns = tc.to_df().columns
+
+    group_col = "vehicle_fuel_type" if "vehicle_fuel_type" in tc.group_columns else "None"
+    subplot_col = "vehicle_type" if "vehicle_type" in columns else "scenario_name"
+
+    figures = {
+        "tco_breakdown": lambda: tc.generate_tco_plots(
+            x_group_col=group_col, subplot_group_col=subplot_col
+        ),
+        "tco_histogram": lambda: tc.generate_histogram(
+            hist_col="discounted_tco_dol", n_bins=10
+        ),
+    }
+    if group_col != "None":
+        figures["tco_violin"] = lambda: tc.generate_violin_plot(
+            x_group_col=group_col, y_group_col="discounted_tco_dol"
+        )
+
+    saved = []
+    for name, make_fig in figures.items():
+        try:
+            fig = make_fig()
+            out = out_dir / f"{stem}_{name}.{ext}"
+            if tc.backend == "plotly":
+                fig.write_html(out)
+            else:
+                fig.savefig(out, bbox_inches="tight", dpi=120)
+            saved.append(out)
+            print(f"Saved plot: {out}")
+        except Exception as e:
+            print(f"  could not generate '{name}' plot ({type(e).__name__}: {e})")
+    return saved
+
+
+def run_t3co(
+    config: Config, save_results: bool = True, plot_backend: str = None
+) -> None:
     """
     Runs the T3CO analysis.
 
     Args:
         config (Config): The configuration instance.
         save_results (bool, optional): Whether to save the results. Defaults to True.
+        plot_backend (str, optional): If set ("plotly" or "matplotlib"), generates and
+            saves default TCO charts next to the results CSV. Defaults to None.
     """
     reports_list = []
     error_list = []
@@ -541,6 +619,8 @@ def run_t3co(config: Config, save_results: bool = True) -> None:
         if len(error_list):
             print(f"Selections {error_list} were skipped due to assumptions errors.")
         print(f"T3CO results saved to: {output_path}")
+        if plot_backend and output_path:
+            save_default_plots(output_path, backend=plot_backend)
 
 
 if __name__ == "__main__":
@@ -780,6 +860,16 @@ if __name__ == "__main__":
         type=str,
         help="AEO scenario case ID (e.g. 'aeo2023ref'). Default: auto-discover reference case.",
     )
+    parser.add_argument(
+        "--plot",
+        nargs="?",
+        const=DEFAULT_PLOT_BACKEND,
+        default=None,
+        choices=["plotly", "matplotlib", "seaborn"],
+        help="Generate TCO charts from the results after the run, saved next to the results CSV. "
+        "Use '--plot' for interactive Plotly HTML (default) or '--plot matplotlib' for static PNGs. "
+        "Requires the 'viz' extra: pip install t3co_go[viz].",
+    )
 
     args = parser.parse_args()
 
@@ -869,7 +959,10 @@ if __name__ == "__main__":
             sort_csv_file(input_path=result_filepath, sort_by="selection")
             print(f"T3CO results saved and sorted to: {result_filepath}")
 
+        if args.plot:
+            save_default_plots(result_filepath, backend=args.plot)
+
     else:
-        run_t3co(config=config, save_results=True)
+        run_t3co(config=config, save_results=True, plot_backend=args.plot)
 
     print(f"T3CO Run time: {time.time() - start}")

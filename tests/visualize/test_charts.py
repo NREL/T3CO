@@ -99,6 +99,23 @@ def test_plotly_ungrouped_tco(results_df):
     assert fig is not None
 
 
+def test_save_default_plots_cli_hook(tmp_path, results_df):
+    """The sweep --plot hook should write chart files next to a results CSV."""
+    pytest.importorskip("plotly.graph_objects")
+    from t3co.cli.sweep import save_default_plots
+
+    csv = tmp_path / "results.csv"
+    results_df.to_csv(csv, index=False)
+    saved = save_default_plots(csv, backend="plotly")
+
+    # breakdown + histogram (+ violin since the data has a fuel-type grouping)
+    assert len(saved) == 3
+    for path in saved:
+        assert path.exists()
+        assert path.suffix == ".html"
+        assert path.parent == tmp_path
+
+
 # ------------------------- matplotlib backend ------------------------- #
 def test_matplotlib_figures(results_df):
     mpl = pytest.importorskip("matplotlib")
