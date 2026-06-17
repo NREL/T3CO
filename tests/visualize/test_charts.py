@@ -118,6 +118,8 @@ def test_save_default_plots_cli_hook(tmp_path, results_df):
 
 # ------------------------- matplotlib backend ------------------------- #
 def test_matplotlib_figures(results_df):
+    # matplotlib ships transitively with pymoo (a core dep), so the cost-breakdown
+    # and histogram plots work without the viz extra; only the violin needs seaborn.
     mpl = pytest.importorskip("matplotlib")
     mpl.use("Agg")  # headless backend for CI
     from matplotlib.figure import Figure
@@ -125,12 +127,21 @@ def test_matplotlib_figures(results_df):
     tc = T3COCharts(results_df=results_df, backend="matplotlib")
 
     tco = tc.generate_tco_plots(x_group_col="vehicle_fuel_type", subplot_group_col="vehicle_type")
-    violin = tc.generate_violin_plot(x_group_col="vehicle_fuel_type", y_group_col="mpgge")
     hist = tc.generate_histogram(hist_col="discounted_tco_dol", n_bins=4)
 
     assert isinstance(tco, Figure)
-    assert isinstance(violin, Figure)
     assert isinstance(hist, Figure)
+
+
+def test_matplotlib_violin_requires_seaborn(results_df):
+    pytest.importorskip("seaborn")  # seaborn is only needed for the violin plot
+    mpl = pytest.importorskip("matplotlib")
+    mpl.use("Agg")
+    from matplotlib.figure import Figure
+
+    tc = T3COCharts(results_df=results_df, backend="matplotlib")
+    violin = tc.generate_violin_plot(x_group_col="vehicle_fuel_type", y_group_col="mpgge")
+    assert isinstance(violin, Figure)
 
 
 def test_seaborn_alias_maps_to_matplotlib(results_df):

@@ -250,17 +250,32 @@ class T3COCharts:
         )
 
     def _require_matplotlib(self):
-        """Lazily imports the matplotlib/seaborn stack with a helpful error."""
+        """Lazily imports matplotlib with a helpful error.
+
+        matplotlib is a transitive dependency of pymoo (a core T3CO requirement),
+        so the cost-breakdown and histogram plots work on a base install. Only the
+        violin plot additionally needs seaborn (see ``_require_seaborn``).
+        """
         try:
             import matplotlib
             import matplotlib.pyplot as plt
-            import seaborn as sns
             from matplotlib.ticker import FuncFormatter
 
-            return matplotlib, plt, sns, FuncFormatter
+            return matplotlib, plt, FuncFormatter
         except ImportError as e:  # pragma: no cover - exercised via error path
             raise ImportError(
-                f"Static (matplotlib/seaborn) plotting is unavailable. {_VIZ_EXTRA_HINT}"
+                f"Static (matplotlib) plotting is unavailable. {_VIZ_EXTRA_HINT}"
+            ) from e
+
+    def _require_seaborn(self):
+        """Lazily imports seaborn (used only for violin plots) with a helpful error."""
+        try:
+            import seaborn as sns
+
+            return sns
+        except ImportError as e:  # pragma: no cover - exercised via error path
+            raise ImportError(
+                f"Violin plots require seaborn. {_VIZ_EXTRA_HINT}"
             ) from e
 
     def _require_plotly(self):
@@ -401,7 +416,7 @@ class T3COCharts:
         legend_pos,
         edgecolor,
     ):
-        _, plt, _, FuncFormatter = self._require_matplotlib()
+        _, plt, FuncFormatter = self._require_matplotlib()
 
         df = self.t3co_results
         cost_cols = self.present_cost_cols()
@@ -498,7 +513,8 @@ class T3COCharts:
         return fig
 
     def _generate_violin_mpl(self, x_group_col, y_group_col, fig_width, fig_height):
-        _, plt, sns, FuncFormatter = self._require_matplotlib()
+        _, plt, FuncFormatter = self._require_matplotlib()
+        sns = self._require_seaborn()
 
         df = self.t3co_results.copy()
         df[y_group_col] = pd.to_numeric(df[y_group_col], errors="coerce").round(5)
@@ -526,7 +542,7 @@ class T3COCharts:
         return fig
 
     def _generate_histogram_mpl(self, hist_col, n_bins, fig_width, fig_height, show_pct):
-        _, plt, _, _ = self._require_matplotlib()
+        _, plt, _ = self._require_matplotlib()
 
         df = self.t3co_results
         values = pd.to_numeric(df[hist_col], errors="coerce").dropna().round(4)
