@@ -55,9 +55,18 @@ Distribution of a metric across categories (e.g. `mpgge` by fuel type).
 
 <img src="../images/violinplot_sample.png" alt="Violin plot" width="400"/>
 
+## Interactive explorer
+
+`generate_interactive_plot()` returns a Plotly scatter with **dropdown menus to choose the x- and y-axis columns** directly on the page — pick any grouping column or numeric output for either axis and the chart updates client-side, no server needed. It always renders with Plotly (interactive only) and leads the combined HTML report.
+
+```python
+tc = T3COCharts(filename="results.csv", backend="plotly")
+tc.generate_interactive_plot(default_x="vehicle_fuel_type", default_y="discounted_tco_dol")
+```
+
 ## Charts from the CLI
 
-Add `--plot` to a sweep run to generate the default charts next to the results CSV. The Plotly backend combines them into a **single self-contained HTML report** (`<results>_charts.html`); matplotlib writes one PNG per chart:
+Add `--plot` to a sweep run to generate the default charts next to the results CSV. The Plotly backend combines the interactive explorer plus the three standard charts into a **single self-contained HTML report** (`<results>_charts.html`); matplotlib writes one PNG per chart:
 
 ```bash
 python -m t3co.cli.sweep --analysis-id=0 --plot             # one combined HTML (Plotly, default)

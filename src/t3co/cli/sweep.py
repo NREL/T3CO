@@ -558,14 +558,16 @@ def save_default_plots(
     group_col = "vehicle_fuel_type" if "vehicle_fuel_type" in tc.group_columns else "None"
     subplot_col = "vehicle_type" if "vehicle_type" in columns else "scenario_name"
 
-    figure_specs = {
-        "tco_breakdown": lambda: tc.generate_tco_plots(
-            x_group_col=group_col, subplot_group_col=subplot_col
-        ),
-        "tco_histogram": lambda: tc.generate_histogram(
-            hist_col="discounted_tco_dol", n_bins=10
-        ),
-    }
+    figure_specs = {}
+    if tc.backend == "plotly":
+        # Interactive x/y column explorer, shown first in the HTML report.
+        figure_specs["explorer"] = lambda: tc.generate_interactive_plot()
+    figure_specs["tco_breakdown"] = lambda: tc.generate_tco_plots(
+        x_group_col=group_col, subplot_group_col=subplot_col
+    )
+    figure_specs["tco_histogram"] = lambda: tc.generate_histogram(
+        hist_col="discounted_tco_dol", n_bins=10
+    )
     if group_col != "None":
         figure_specs["tco_violin"] = lambda: tc.generate_violin_plot(
             x_group_col=group_col, y_group_col="discounted_tco_dol"

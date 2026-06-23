@@ -402,6 +402,133 @@ class T3COCharts:
             return self._generate_histogram_plotly(hist_col, n_bins, fig_width, fig_height, show_pct)
         return self._generate_histogram_mpl(hist_col, n_bins, fig_width, fig_height, show_pct)
 
+    def generate_interactive_plot(
+        self,
+        default_x: str = "vehicle_fuel_type",
+        default_y: str = "discounted_tco_dol",
+        x_cols: List[str] = None,
+        y_cols: List[str] = None,
+    ):
+        """
+        Generates an interactive Plotly scatter with dropdown menus to choose the
+        x- and y-axis columns on the rendered HTML page.
+
+        This is an interactive-only chart and always uses Plotly, regardless of
+        the configured backend. Each dropdown swaps the axis data client-side, so
+        it works in a static, self-contained HTML file.
+
+        Args:
+            default_x (str, optional): Column selected on the x-axis initially. Defaults to "vehicle_fuel_type".
+            default_y (str, optional): Column selected on the y-axis initially. Defaults to "discounted_tco_dol".
+            x_cols (list[str], optional): Columns offered in the x dropdown. Defaults to the grouping
+                columns followed by the numeric output columns present in the results.
+            y_cols (list[str], optional): Columns offered in the y dropdown. Defaults to the numeric
+                output columns followed by the grouping columns present in the results.
+
+        Returns:
+            plotly.graph_objects.Figure: The interactive explorer figure.
+        """
+        go, _, _ = self._require_plotly()
+        df = self.t3co_results
+
+        grouping = [c for c in self.group_columns if c != "None" and c in df.columns]
+        numeric = [c for c in self.value_cols if c in df.columns]
+        numeric_set = set(numeric)
+
+        x_candidates = x_cols or list(dict.fromkeys(grouping + numeric))
+        y_candidates = y_cols or list(dict.fromkeys(numeric + grouping))
+        if not x_candidates or not y_candidates:
+            raise ValueError("No plottable columns available for the interactive plot.")
+        if default_x not in x_candidates:
+            default_x = x_candidates[0]
+        if default_y not in y_candidates:
+            default_y = y_candidates[0]
+
+        def values(col):
+            if col in numeric_set:
+                return pd.to_numeric(df[col], errors="coerce").tolist()
+            return df[col].astype(str).tolist()
+
+        def tickprefix(col):
+            return "$" if "dol" in col else ""
+
+        hover = (
+            df["scenario_name"].astype(str).tolist()
+            if "scenario_name" in df.columns
+            else None
+        )
+
+        fig = go.Figure(
+            go.Scatter(
+                x=values(default_x),
+                y=values(default_y),
+                mode="markers",
+                marker=dict(size=9, color="#1f77b4"),
+                text=hover,
+                hovertemplate=(
+                    "%{text}<br>%{x}<br>%{y}<extra></extra>" if hover else None
+                ),
+            )
+        )
+
+        def axis_buttons(candidates, axis):
+            return [
+                dict(
+                    label=self._label(c),
+                    method="update",
+                    args=[
+                        {axis: [values(c)]},
+                        {
+                            f"{axis}axis.title.text": self._label(c),
+                            f"{axis}axis.tickprefix": tickprefix(c),
+                        },
+                    ],
+                )
+                for c in candidates
+            ]
+
+        fig.update_layout(
+            title=dict(text="Results Explorer", x=0.5, font=dict(size=18)),
+            xaxis_title=self._label(default_x),
+            yaxis_title=self._label(default_y),
+            xaxis_tickprefix=tickprefix(default_x),
+            yaxis_tickprefix=tickprefix(default_y),
+            margin=dict(t=150),
+            updatemenus=[
+                dict(
+                    buttons=axis_buttons(x_candidates, "x"),
+                    active=x_candidates.index(default_x),
+                    direction="down",
+                    showactive=True,
+                    x=0.0,
+                    xanchor="left",
+                    y=1.22,
+                    yanchor="top",
+                ),
+                dict(
+                    buttons=axis_buttons(y_candidates, "y"),
+                    active=y_candidates.index(default_y),
+                    direction="down",
+                    showactive=True,
+                    x=0.32,
+                    xanchor="left",
+                    y=1.22,
+                    yanchor="top",
+                ),
+            ],
+            annotations=[
+                dict(
+                    text="X axis:", x=0.0, xref="paper", xanchor="left",
+                    y=1.28, yref="paper", yanchor="bottom", showarrow=False,
+                ),
+                dict(
+                    text="Y axis:", x=0.32, xref="paper", xanchor="left",
+                    y=1.28, yref="paper", yanchor="bottom", showarrow=False,
+                ),
+            ],
+        )
+        return fig
+
     @staticmethod
     def write_html_report(figures: list, output_path: Union[str, Path]) -> Path:
         """

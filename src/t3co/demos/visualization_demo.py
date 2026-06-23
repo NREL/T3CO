@@ -103,9 +103,11 @@ def render(results_df: pd.DataFrame, backend: str) -> None:
     figs = [("tco_breakdown", tco_fig), ("violin", violin_fig), ("histogram", hist_fig)]
 
     if backend == "plotly":
-        # All charts combined into a single self-contained HTML report.
+        # All charts combined into a single self-contained HTML report, led by an
+        # interactive explorer with dropdowns to pick the x and y columns.
+        report_figs = [tc.generate_interactive_plot()] + [fig for _, fig in figs]
         out = OUT_DIR / "charts_plotly.html"
-        T3COCharts.write_html_report([fig for _, fig in figs], out)
+        T3COCharts.write_html_report(report_figs, out)
         print(f"  wrote {out}")
     else:
         for name, fig in figs:

@@ -99,6 +99,23 @@ def test_plotly_ungrouped_tco(results_df):
     assert fig is not None
 
 
+def test_interactive_plot_has_xy_dropdowns(results_df):
+    pytest.importorskip("plotly.graph_objects")
+    tc = T3COCharts(results_df=results_df, backend="plotly")
+    fig = tc.generate_interactive_plot(default_x="vehicle_fuel_type", default_y="discounted_tco_dol")
+
+    # two dropdown menus: one for X, one for Y
+    menus = fig.layout.updatemenus
+    assert len(menus) == 2
+    # each dropdown offers a button per candidate column, and switching swaps axis data
+    for menu in menus:
+        assert len(menu.buttons) >= 2
+        assert menu.buttons[0].method == "update"
+    # the initial axes reflect the requested defaults
+    assert fig.layout.xaxis.title.text == tc._label("vehicle_fuel_type")
+    assert fig.layout.yaxis.title.text == tc._label("discounted_tco_dol")
+
+
 def test_save_default_plots_cli_hook(tmp_path, results_df):
     """The sweep --plot hook should write ONE combined HTML report next to the CSV."""
     pytest.importorskip("plotly.graph_objects")
@@ -108,14 +125,14 @@ def test_save_default_plots_cli_hook(tmp_path, results_df):
     results_df.to_csv(csv, index=False)
     saved = save_default_plots(csv, backend="plotly")
 
-    # all charts (breakdown + histogram + violin) combined into a single HTML file
+    # explorer + breakdown + histogram + violin, combined into a single HTML file
     assert len(saved) == 1
     report = saved[0]
     assert report.exists()
     assert report.suffix == ".html"
     assert report.parent == tmp_path
-    # the report holds three plots in one page
-    assert report.read_text().count('class="plotly-graph-div"') == 3
+    # the report holds four plots in one page (incl. the interactive explorer)
+    assert report.read_text().count('class="plotly-graph-div"') == 4
 
 
 def test_write_html_report_combines_plots(tmp_path, results_df):
