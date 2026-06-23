@@ -402,6 +402,37 @@ class T3COCharts:
             return self._generate_histogram_plotly(hist_col, n_bins, fig_width, fig_height, show_pct)
         return self._generate_histogram_mpl(hist_col, n_bins, fig_width, fig_height, show_pct)
 
+    @staticmethod
+    def write_html_report(figures: list, output_path: Union[str, Path]) -> Path:
+        """
+        Writes multiple Plotly figures into a single self-contained HTML file.
+
+        The figures are stacked vertically in one page. The Plotly library is
+        embedded once (with the first figure) and reused by the rest, so the
+        report stays fully offline-viewable without inflating to N copies.
+
+        Args:
+            figures (list): Plotly figures to include in the report.
+            output_path (str | Path): Destination ``.html`` file.
+
+        Returns:
+            Path: The written file path.
+        """
+        import plotly.io as pio
+
+        blocks = [
+            pio.to_html(fig, full_html=False, include_plotlyjs=(i == 0))
+            for i, fig in enumerate(figures)
+        ]
+        html = (
+            "<!DOCTYPE html>\n<html><head><meta charset='utf-8'/></head>\n<body>\n"
+            + "\n".join(blocks)
+            + "\n</body></html>\n"
+        )
+        output_path = Path(output_path)
+        output_path.write_text(html, encoding="utf-8")
+        return output_path
+
     # ------------------------------------------------------------------ #
     # matplotlib / seaborn implementations
     # ------------------------------------------------------------------ #

@@ -100,7 +100,7 @@ def test_plotly_ungrouped_tco(results_df):
 
 
 def test_save_default_plots_cli_hook(tmp_path, results_df):
-    """The sweep --plot hook should write chart files next to a results CSV."""
+    """The sweep --plot hook should write ONE combined HTML report next to the CSV."""
     pytest.importorskip("plotly.graph_objects")
     from t3co.cli.sweep import save_default_plots
 
@@ -108,12 +108,30 @@ def test_save_default_plots_cli_hook(tmp_path, results_df):
     results_df.to_csv(csv, index=False)
     saved = save_default_plots(csv, backend="plotly")
 
-    # breakdown + histogram (+ violin since the data has a fuel-type grouping)
-    assert len(saved) == 3
-    for path in saved:
-        assert path.exists()
-        assert path.suffix == ".html"
-        assert path.parent == tmp_path
+    # all charts (breakdown + histogram + violin) combined into a single HTML file
+    assert len(saved) == 1
+    report = saved[0]
+    assert report.exists()
+    assert report.suffix == ".html"
+    assert report.parent == tmp_path
+    # the report holds three plots in one page
+    assert report.read_text().count('class="plotly-graph-div"') == 3
+
+
+def test_write_html_report_combines_plots(tmp_path, results_df):
+    pytest.importorskip("plotly.graph_objects")
+    tc = T3COCharts(results_df=results_df, backend="plotly")
+    figs = [
+        tc.generate_tco_plots(x_group_col="vehicle_fuel_type"),
+        tc.generate_histogram(hist_col="discounted_tco_dol", n_bins=4),
+    ]
+    out = T3COCharts.write_html_report(figs, tmp_path / "report.html")
+    html = out.read_text()
+    # both plots present in one page
+    assert html.count('class="plotly-graph-div"') == 2
+    # self-contained: the library is embedded inline, not loaded from a CDN <script src>
+    assert 'src="https://cdn.plot.ly/plotly' not in html
+    assert len(html) > 1_000_000
 
 
 # ------------------------- matplotlib backend ------------------------- #

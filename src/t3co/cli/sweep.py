@@ -525,7 +525,8 @@ def save_default_plots(
 
     Writes figures next to the results file: a TCO cost breakdown, a histogram of
     the discounted TCO, and - when a fuel-type grouping is available - a violin
-    plot. Interactive Plotly charts are saved as HTML; matplotlib charts as PNG.
+    plot. With the Plotly backend all charts are combined into a single
+    self-contained HTML report; with matplotlib each chart is a separate PNG.
 
     The plotting dependencies are optional; if they are missing (or charting
     fails) the run is unaffected and a note is printed.
@@ -550,7 +551,6 @@ def save_default_plots(
         print(f"Skipping --plot: could not initialize charts ({type(e).__name__}: {e})")
         return []
 
-    ext = "html" if tc.backend == "plotly" else "png"
     out_dir = results_csv.parent
     stem = results_csv.stem
     columns = tc.to_df().columns
@@ -558,7 +558,7 @@ def save_default_plots(
     group_col = "vehicle_fuel_type" if "vehicle_fuel_type" in tc.group_columns else "None"
     subplot_col = "vehicle_type" if "vehicle_type" in columns else "scenario_name"
 
-    figures = {
+    figure_specs = {
         "tco_breakdown": lambda: tc.generate_tco_plots(
             x_group_col=group_col, subplot_group_col=subplot_col
         ),
@@ -567,23 +567,33 @@ def save_default_plots(
         ),
     }
     if group_col != "None":
-        figures["tco_violin"] = lambda: tc.generate_violin_plot(
+        figure_specs["tco_violin"] = lambda: tc.generate_violin_plot(
             x_group_col=group_col, y_group_col="discounted_tco_dol"
         )
 
-    saved = []
-    for name, make_fig in figures.items():
+    # Generate the figures, skipping any individual chart that fails.
+    figures = {}
+    for name, make_fig in figure_specs.items():
         try:
-            fig = make_fig()
-            out = out_dir / f"{stem}_{name}.{ext}"
-            if tc.backend == "plotly":
-                fig.write_html(out)
-            else:
-                fig.savefig(out, bbox_inches="tight", dpi=120)
-            saved.append(out)
-            print(f"Saved plot: {out}")
+            figures[name] = make_fig()
         except Exception as e:
             print(f"  could not generate '{name}' plot ({type(e).__name__}: {e})")
+    if not figures:
+        return []
+
+    saved = []
+    if tc.backend == "plotly":
+        # Combine all charts into a single self-contained HTML report.
+        out = out_dir / f"{stem}_charts.html"
+        T3COCharts.write_html_report(list(figures.values()), out)
+        saved.append(out)
+        print(f"Saved plots: {out}")
+    else:
+        for name, fig in figures.items():
+            out = out_dir / f"{stem}_{name}.png"
+            fig.savefig(out, bbox_inches="tight", dpi=120)
+            saved.append(out)
+            print(f"Saved plot: {out}")
     return saved
 
 

@@ -89,7 +89,6 @@ def render(results_df: pd.DataFrame, backend: str) -> None:
         return
 
     print(f"\n[{backend}] available group columns: {tc.group_columns}")
-    ext = "html" if backend == "plotly" else "png"
 
     tco_fig = tc.generate_tco_plots(
         x_group_col="vehicle_fuel_type",
@@ -101,14 +100,18 @@ def render(results_df: pd.DataFrame, backend: str) -> None:
     hist_fig = tc.generate_histogram(
         hist_col="discounted_tco_dol", n_bins=5, show_pct=True
     )
+    figs = [("tco_breakdown", tco_fig), ("violin", violin_fig), ("histogram", hist_fig)]
 
-    for name, fig in [("tco_breakdown", tco_fig), ("violin", violin_fig), ("histogram", hist_fig)]:
-        out = OUT_DIR / f"{name}_{backend}.{ext}"
-        if backend == "plotly":
-            fig.write_html(out)
-        else:
-            fig.savefig(out, bbox_inches="tight", dpi=120)
+    if backend == "plotly":
+        # All charts combined into a single self-contained HTML report.
+        out = OUT_DIR / "charts_plotly.html"
+        T3COCharts.write_html_report([fig for _, fig in figs], out)
         print(f"  wrote {out}")
+    else:
+        for name, fig in figs:
+            out = OUT_DIR / f"{name}_matplotlib.png"
+            fig.savefig(out, bbox_inches="tight", dpi=120)
+            print(f"  wrote {out}")
 
 
 def main() -> None:
