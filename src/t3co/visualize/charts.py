@@ -13,7 +13,11 @@ Each plot can be rendered with one of two interchangeable backends:
 
 The plotting dependencies are optional. Install them alongside T3CO with::
 
-    pip install t3co_go[viz]
+    pip install "t3co[viz]"
+
+or, from a source checkout::
+
+    pip install -e ".[viz]"
 """
 
 from pathlib import Path
@@ -25,8 +29,8 @@ import pandas as pd
 
 # Pip extra that provides the optional plotting backends.
 _VIZ_EXTRA_HINT = (
-    "This requires the optional plotting dependencies. "
-    "Install them with: pip install t3co_go[viz]"
+    "This requires the optional plotting dependencies. Install them with: "
+    "pip install 't3co[viz]'  (from a source checkout: pip install -e '.[viz]')"
 )
 
 DEFAULT_RESULTS_GUIDE = (

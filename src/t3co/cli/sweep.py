@@ -880,7 +880,7 @@ if __name__ == "__main__":
         choices=["plotly", "matplotlib", "seaborn"],
         help="Generate TCO charts from the results after the run, saved next to the results CSV. "
         "Use '--plot' for interactive Plotly HTML (default) or '--plot matplotlib' for static PNGs. "
-        "Requires the 'viz' extra: pip install t3co_go[viz].",
+        "Requires the 'viz' extra: pip install 't3co[viz]'.",
     )
 
     args = parser.parse_args()

@@ -9,7 +9,7 @@ plots with both backends:
 * ``backend="plotly"``     -> interactive, self-contained HTML files
 
 A backend whose optional dependencies are not installed is skipped with a note;
-install them with ``pip install t3co_go[viz]``.
+install them with ``pip install "t3co[viz]"``.
 
 Run from the repository root::
 
