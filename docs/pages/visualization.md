@@ -66,11 +66,46 @@ tc.generate_interactive_plot(default_x="vehicle_fuel_type", default_y="discounte
 
 ## Charts from the CLI
 
-Add `--plot` to a sweep run to generate the default charts next to the results CSV. The Plotly backend combines the interactive explorer plus the three standard charts into a **single self-contained HTML report** (`<results>_charts.html`); matplotlib writes one PNG per chart:
+Add `--plot` to any sweep run to generate the charts next to the results CSV. Install the extra first:
 
 ```bash
-python -m t3co.cli.sweep --analysis-id=0 --plot             # one combined HTML (Plotly, default)
-python -m t3co.cli.sweep --analysis-id=0 --plot matplotlib  # separate PNGs
+pip install t3co[viz]
 ```
+
+Run an analysis by its `config.analysis_id` — from a **cloned repo** (uses the bundled `T3COConfig.csv`):
+
+```bash
+python -m t3co.cli.sweep --analysis-id=0 --plot
+```
+
+From a **PyPI install**, point `--config` at your copy of the demo inputs (see the [Quick Start](../quick_start.md)):
+
+```bash
+python -m t3co.cli.sweep --analysis-id=0 --config=path/to/demo_inputs/T3COConfig.csv --plot
+```
+
+Choose the backend, limit the selections, or set the output folder:
+
+```bash
+python -m t3co.cli.sweep --analysis-id=0 --plot matplotlib         # static PNGs instead of one HTML
+python -m t3co.cli.sweep --analysis-id=0 --selections "[1,2,3]" --plot
+python -m t3co.cli.sweep --analysis-id=0 --dst-dir=/abs/path/out --plot
+```
+
+### Where the output goes
+
+Charts land next to the results CSV, in `config.dst_dir` (or `--dst-dir`):
+
+```
+results_<timestamp>_sel_<selections>.csv
+results_<timestamp>_sel_<selections>_charts.html          # --plot: explorer + 3 charts in one file
+results_<timestamp>_sel_<selections>_tco_breakdown.png    # --plot matplotlib: one PNG per chart
+results_<timestamp>_sel_<selections>_tco_histogram.png
+results_<timestamp>_sel_<selections>_tco_violin.png
+```
+
+!!! note
+    A **relative** `dst_dir` / `--dst-dir` resolves against the config file's folder, not your current
+    working directory. Pass an absolute path to control exactly where the output lands.
 
 The [`visualization_demo.py`](https://github.com/NatLabRockies/T3CO/tree/main/src/t3co/demos/visualization_demo.py) script shows the full programmatic workflow in both backends.
