@@ -62,7 +62,13 @@ def _normalize_drive_cycle_arg(drive_cycle):
 
 
 def _argument_was_provided(argv: list[str], *flags: str) -> bool:
-    return any(flag in argv for flag in flags)
+    # Match both the space form (``--flag value``) and the equals form
+    # (``--flag=value``); the latter is a single argv token.
+    return any(
+        token == flag or token.startswith(f"{flag}=")
+        for token in argv
+        for flag in flags
+    )
 
 
 def apply_cli_overrides(config: Config, args, argv: list[str] | None = None) -> Config:
@@ -302,10 +308,14 @@ def create_results_filepath(config: Config) -> Path:
             .replace(",", "-")
         )
         result_filename = f"results_{ts}_sel_{selections_string[:20]}.csv".strip("_")
-    output_path = get_path_object(config.dst_dir) / result_filename
+    # Create an absolute output directory up front: get_path_object resolves
+    # absolute paths strictly (they must exist), while a relative dst_dir is
+    # joined onto the resources folder and created below.
+    if Path(config.dst_dir).is_absolute():
+        Path(config.dst_dir).mkdir(parents=True, exist_ok=True)
 
-    if not output_path.exists():
-        output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path = get_path_object(config.dst_dir) / result_filename
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     return output_path
 
