@@ -563,18 +563,16 @@ def save_default_plots(
 
     out_dir = results_csv.parent
     stem = results_csv.stem
-    columns = tc.to_df().columns
 
     group_col = "vehicle_fuel_type" if "vehicle_fuel_type" in tc.group_columns else "None"
-    subplot_col = "vehicle_type" if "vehicle_type" in columns else "scenario_name"
 
     figure_specs = {}
     if tc.backend == "plotly":
         # Interactive x/y column explorer, shown first in the HTML report.
         figure_specs["explorer"] = lambda: tc.generate_interactive_plot()
-    figure_specs["tco_breakdown"] = lambda: tc.generate_tco_plots(
-        x_group_col=group_col, subplot_group_col=subplot_col
-    )
+    # One separate stacked bar per scenario (ungrouped); pass grouping columns
+    # explicitly to arrange the bars into subplots instead.
+    figure_specs["tco_breakdown"] = lambda: tc.generate_tco_plots()
     figure_specs["tco_histogram"] = lambda: tc.generate_histogram(
         hist_col="discounted_tco_dol", n_bins=10
     )

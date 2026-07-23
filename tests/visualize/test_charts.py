@@ -99,6 +99,32 @@ def test_plotly_ungrouped_tco(results_df):
     assert fig is not None
 
 
+def test_ungrouped_tco_bars_are_separate_per_scenario(results_df):
+    pytest.importorskip("plotly.graph_objects")
+    tc = T3COCharts(results_df=results_df, backend="plotly")
+    fig = tc.generate_tco_plots()  # ungrouped -> one bar per scenario
+    bar_traces = [t for t in fig.data if t.type == "bar"]
+    n = len(results_df)
+    assert bar_traces
+    for t in bar_traces:
+        # each cost-component trace spans one distinct x per scenario (not merged onto one)
+        assert len(set(t.x)) == n
+
+
+def test_grouped_tco_keeps_bars_separate_when_label_repeats():
+    pytest.importorskip("plotly.graph_objects")
+    df = _make_results()
+    df["scenario_fuel_type"] = "diesel"  # single fuel -> one subplot
+    df["scenario_vocation"] = "Long haul"  # subplot label repeats for every row
+    tc = T3COCharts(results_df=df, backend="plotly")
+    fig = tc.generate_tco_plots(x_group_col="vehicle_fuel_type", subplot_group_col="vehicle_type")
+    bar_traces = [t for t in fig.data if t.type == "bar"]
+    assert bar_traces
+    for t in bar_traces:
+        # unique positions even though the vehicle_type label is identical for all rows
+        assert len(set(t.x)) == len(df)
+
+
 def test_interactive_plot_has_xy_dropdowns(results_df):
     pytest.importorskip("plotly.graph_objects")
     tc = T3COCharts(results_df=results_df, backend="plotly")

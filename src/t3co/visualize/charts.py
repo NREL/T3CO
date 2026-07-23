@@ -764,15 +764,19 @@ class T3COCharts:
                 if sub.empty:
                     continue
 
+                # Unique x positions so each scenario stays a separate stacked
+                # bar, even when the label column repeats within the subplot
+                # (otherwise barmode="stack" would merge them onto one bar).
+                xpos = list(range(len(sub)))
                 if grouped and subplot_group_col in sub.columns:
-                    xvals = [str(v) for v in sub[subplot_group_col]]
+                    ticktext = [str(v) for v in sub[subplot_group_col]]
                 else:
-                    xvals = [str(v) for v in sub["scenario_name"]]
+                    ticktext = [str(v) for v in sub["scenario_name"]]
 
                 for col, color in cost_cols.items():
                     fig.add_trace(
                         go.Bar(
-                            x=xvals,
+                            x=xpos,
                             y=sub[col],
                             name=self._label(col),
                             marker_color=color,
@@ -786,7 +790,7 @@ class T3COCharts:
 
                 fig.add_trace(
                     go.Scatter(
-                        x=xvals,
+                        x=xpos,
                         y=sub["discounted_tco_dol"],
                         mode="markers",
                         name=self._label("discounted_tco_dol"),
@@ -798,6 +802,10 @@ class T3COCharts:
                     col=j + 1,
                 )
                 shown.add("_disc_tco")
+
+                fig.update_xaxes(
+                    tickmode="array", tickvals=xpos, ticktext=ticktext, row=i + 1, col=j + 1
+                )
 
         fig.update_layout(
             barmode="stack",
