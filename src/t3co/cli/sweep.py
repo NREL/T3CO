@@ -570,9 +570,13 @@ def save_default_plots(
     if tc.backend == "plotly":
         # Interactive x/y column explorer, shown first in the HTML report.
         figure_specs["explorer"] = lambda: tc.generate_interactive_plot()
-    # One separate stacked bar per scenario (ungrouped); pass grouping columns
-    # explicitly to arrange the bars into subplots instead.
-    figure_specs["tco_breakdown"] = lambda: tc.generate_tco_plots()
+        # TCO breakdown with a client-side "Group by" dropdown that facets the
+        # scenarios into subplots (returns an HTML fragment, not a figure).
+        figure_specs["tco_breakdown"] = lambda: tc.grouped_tco_html()
+    else:
+        # One separate stacked bar per scenario (ungrouped); pass grouping
+        # columns explicitly to arrange the bars into subplots instead.
+        figure_specs["tco_breakdown"] = lambda: tc.generate_tco_plots()
     figure_specs["tco_histogram"] = lambda: tc.generate_histogram(
         hist_col="discounted_tco_dol", n_bins=10
     )

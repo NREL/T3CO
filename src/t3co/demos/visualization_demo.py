@@ -90,27 +90,29 @@ def render(results_df: pd.DataFrame, backend: str) -> None:
 
     print(f"\n[{backend}] available group columns: {tc.group_columns}")
 
-    tco_fig = tc.generate_tco_plots(
-        x_group_col="vehicle_fuel_type",
-        y_group_col="None",
-        subplot_group_col="vehicle_type",
-        bar_width=0.7,
-    )
     violin_fig = tc.generate_violin_plot(x_group_col="vehicle_fuel_type", y_group_col="mpgge")
     hist_fig = tc.generate_histogram(
         hist_col="discounted_tco_dol", n_bins=5, show_pct=True
     )
-    figs = [("tco_breakdown", tco_fig), ("violin", violin_fig), ("histogram", hist_fig)]
 
     if backend == "plotly":
-        # All charts combined into a single self-contained HTML report, led by an
-        # interactive explorer with dropdowns to pick the x and y columns.
-        report_figs = [tc.generate_interactive_plot()] + [fig for _, fig in figs]
+        # One self-contained HTML report: an interactive x/y explorer, the TCO
+        # breakdown with a "Group by" dropdown (faceted subplots), then the
+        # histogram and violin.
+        report_items = [
+            tc.generate_interactive_plot(),
+            tc.grouped_tco_html(),
+            hist_fig,
+            violin_fig,
+        ]
         out = OUT_DIR / "charts_plotly.html"
-        T3COCharts.write_html_report(report_figs, out)
+        T3COCharts.write_html_report(report_items, out)
         print(f"  wrote {out}")
     else:
-        for name, fig in figs:
+        tco_fig = tc.generate_tco_plots(
+            x_group_col="vehicle_fuel_type", subplot_group_col="vehicle_type", bar_width=0.7
+        )
+        for name, fig in [("tco_breakdown", tco_fig), ("violin", violin_fig), ("histogram", hist_fig)]:
             out = OUT_DIR / f"{name}_matplotlib.png"
             fig.savefig(out, bbox_inches="tight", dpi=120)
             print(f"  wrote {out}")

@@ -64,6 +64,15 @@ tc = T3COCharts(filename="results.csv", backend="plotly")
 tc.generate_interactive_plot(default_x="vehicle_fuel_type", default_y="discounted_tco_dol")
 ```
 
+## Grouped breakdown with a "Group by" dropdown
+
+`grouped_tco_html()` returns an HTML fragment whose **"Group by" dropdown** facets the TCO breakdown into subplots by any category (fuel type, vehicle type, weight class, …), sharing one cost-component legend; "None" shows one bar per scenario. Switching is client-side, so it works in a static file. Pass `orient="y"` to facet into rows instead of columns.
+
+```python
+tc = T3COCharts(filename="results.csv", backend="plotly")
+T3COCharts.write_html_report([tc.grouped_tco_html()], "breakdown.html")
+```
+
 ## Charts from the CLI
 
 Add `--plot` to any sweep run to generate the charts next to the results CSV. Install the extra first:

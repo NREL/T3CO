@@ -299,6 +299,21 @@ class T3COCharts:
         """Returns the human-readable label for a column, falling back to its name."""
         return self.full_form_dict.get(col, col)
 
+    @staticmethod
+    def _clean_plotly_text(text: str) -> str:
+        """
+        Strips matplotlib mathtext markers from a guide label for Plotly.
+
+        Guide labels use matplotlib conventions - ``$...$`` for italic units and
+        ``\\$`` for a literal dollar - which render literally in Plotly. Turn
+        ``[$MPGGE$]`` into ``[MPGGE]`` and ``[\\$]`` into ``[$]``.
+        """
+        return str(text).replace("\\$", "\x00").replace("$", "").replace("\x00", "$")
+
+    def _plotly_label(self, col: str) -> str:
+        """Human-readable label cleaned of matplotlib mathtext, for Plotly charts."""
+        return self._clean_plotly_text(self._label(col))
+
     def _group_values(self, group_col: str) -> list:
         """Returns the distinct values to iterate over for a grouping column."""
         if group_col == "None":
@@ -478,12 +493,12 @@ class T3COCharts:
         def axis_buttons(candidates, axis):
             return [
                 dict(
-                    label=self._label(c),
+                    label=self._plotly_label(c),
                     method="update",
                     args=[
                         {axis: [values(c)]},
                         {
-                            f"{axis}axis.title.text": self._label(c),
+                            f"{axis}axis.title.text": self._plotly_label(c),
                             f"{axis}axis.tickprefix": tickprefix(c),
                         },
                     ],
@@ -493,11 +508,13 @@ class T3COCharts:
 
         fig.update_layout(
             title=dict(text="Results Explorer", x=0.5, font=dict(size=18)),
-            xaxis_title=self._label(default_x),
-            yaxis_title=self._label(default_y),
+            xaxis_title=self._plotly_label(default_x),
+            yaxis_title=self._plotly_label(default_y),
             xaxis_tickprefix=tickprefix(default_x),
             yaxis_tickprefix=tickprefix(default_y),
-            margin=dict(t=150),
+            # Stack the two dropdowns on separate rows so the wide menus (long
+            # column labels) don't overlap each other or their captions.
+            margin=dict(t=270),
             updatemenus=[
                 dict(
                     buttons=axis_buttons(x_candidates, "x"),
@@ -506,7 +523,7 @@ class T3COCharts:
                     showactive=True,
                     x=0.0,
                     xanchor="left",
-                    y=1.22,
+                    y=1.44,
                     yanchor="top",
                 ),
                 dict(
@@ -514,47 +531,115 @@ class T3COCharts:
                     active=y_candidates.index(default_y),
                     direction="down",
                     showactive=True,
-                    x=0.32,
+                    x=0.0,
                     xanchor="left",
-                    y=1.22,
+                    y=1.16,
                     yanchor="top",
                 ),
             ],
             annotations=[
                 dict(
-                    text="X axis:", x=0.0, xref="paper", xanchor="left",
-                    y=1.28, yref="paper", yanchor="bottom", showarrow=False,
+                    text="<b>X axis:</b>", x=0.0, xref="paper", xanchor="left",
+                    y=1.50, yref="paper", yanchor="bottom", showarrow=False,
                 ),
                 dict(
-                    text="Y axis:", x=0.32, xref="paper", xanchor="left",
-                    y=1.28, yref="paper", yanchor="bottom", showarrow=False,
+                    text="<b>Y axis:</b>", x=0.0, xref="paper", xanchor="left",
+                    y=1.22, yref="paper", yanchor="bottom", showarrow=False,
                 ),
             ],
         )
         return fig
 
-    @staticmethod
-    def write_html_report(figures: list, output_path: Union[str, Path]) -> Path:
+    def grouped_tco_html(
+        self, group_cols: List[str] = None, orient: str = "x", div_id: str = "tco_grouped"
+    ) -> str:
         """
-        Writes multiple Plotly figures into a single self-contained HTML file.
+        Builds an HTML fragment: a "Group by" dropdown that switches the TCO
+        breakdown between subplot views, one per category, sharing the
+        cost-component legend.
 
-        The figures are stacked vertically in one page. The Plotly library is
-        embedded once (with the first figure) and reused by the rest, so the
-        report stays fully offline-viewable without inflating to N copies.
+        For each category the scenarios are faceted into subplots (columns when
+        ``orient="x"``, rows when ``orient="y"``); "None" shows a single plot with
+        one separate bar per scenario. Only the selected view is shown; switching
+        is pure client-side JavaScript, so it works in a static HTML file.
 
         Args:
-            figures (list): Plotly figures to include in the report.
+            group_cols (list[str], optional): Categories offered in the dropdown.
+                Defaults to the available grouping columns.
+            orient (str, optional): "x" to facet into subplot columns, "y" into rows.
+                Defaults to "x".
+            div_id (str, optional): Base id for the generated elements.
+
+        Returns:
+            str: An HTML fragment. The Plotly library is not embedded here;
+            ``write_html_report`` embeds it once for the whole report.
+        """
+        import plotly.io as pio
+
+        self._require_plotly()  # fail early with the viz-extra hint
+        group_options = ["None"] + [
+            c
+            for c in (group_cols or self.group_columns)
+            if c != "None" and c in self.t3co_results.columns
+        ]
+
+        divs, options = [], []
+        for idx, g in enumerate(group_options):
+            if g == "None":
+                fig = self.generate_tco_plots()
+            elif orient == "y":
+                fig = self.generate_tco_plots(y_group_col=g)
+            else:
+                fig = self.generate_tco_plots(x_group_col=g)
+            inner = pio.to_html(fig, full_html=False, include_plotlyjs=False)
+            display = "block" if idx == 0 else "none"
+            divs.append(f'<div id="{div_id}_{idx}" style="display:{display}">{inner}</div>')
+            label = "None (per scenario)" if g == "None" else self._plotly_label(g)
+            options.append(f'<option value="{idx}">{label}</option>')
+
+        select_id = f"{div_id}_select"
+        header = (
+            '<div style="text-align:center;font-family:sans-serif;margin:14px 0 4px;">'
+            '<label style="font-weight:bold;margin-right:6px;">Group by:</label>'
+            f'<select id="{select_id}" style="padding:4px;font-size:14px;">'
+            + "".join(options)
+            + "</select></div>"
+        )
+        js = (
+            "<script>(function(){var s=document.getElementById('%s'),n=%d;"
+            "s.addEventListener('change',function(){for(var i=0;i<n;i++){"
+            "document.getElementById('%s_'+i).style.display="
+            "(String(i)===s.value)?'block':'none';}});})();</script>"
+            % (select_id, len(group_options), div_id)
+        )
+        return header + "".join(divs) + js
+
+    @staticmethod
+    def write_html_report(items: list, output_path: Union[str, Path]) -> Path:
+        """
+        Writes Plotly figures and/or HTML fragments into one self-contained file.
+
+        Items may be Plotly figures or raw HTML fragment strings (e.g. from
+        :meth:`grouped_tco_html`). The Plotly library is embedded once at the top
+        and reused by every figure and fragment, so the report stays fully
+        offline-viewable without inflating to N copies.
+
+        Args:
+            items (list): Plotly figures and/or HTML fragment strings, in order.
             output_path (str | Path): Destination ``.html`` file.
 
         Returns:
             Path: The written file path.
         """
         import plotly.io as pio
+        from plotly.offline import get_plotlyjs
 
-        blocks = [
-            pio.to_html(fig, full_html=False, include_plotlyjs=(i == 0))
-            for i, fig in enumerate(figures)
-        ]
+        blocks = [f"<script>{get_plotlyjs()}</script>"]
+        for item in items:
+            if isinstance(item, str):
+                blocks.append(item)
+            else:
+                blocks.append(pio.to_html(item, full_html=False, include_plotlyjs=False))
         html = (
             "<!DOCTYPE html>\n<html><head><meta charset='utf-8'/></head>\n<body>\n"
             + "\n".join(blocks)
@@ -778,7 +863,7 @@ class T3COCharts:
                         go.Bar(
                             x=xpos,
                             y=sub[col],
-                            name=self._label(col),
+                            name=self._plotly_label(col),
                             marker_color=color,
                             legendgroup=col,
                             showlegend=col not in shown,
@@ -793,7 +878,7 @@ class T3COCharts:
                         x=xpos,
                         y=sub["discounted_tco_dol"],
                         mode="markers",
-                        name=self._label("discounted_tco_dol"),
+                        name=self._plotly_label("discounted_tco_dol"),
                         marker=dict(color="red", symbol="diamond", size=9),
                         legendgroup="_disc_tco",
                         showlegend="_disc_tco" not in shown,
@@ -803,22 +888,33 @@ class T3COCharts:
                 )
                 shown.add("_disc_tco")
 
+                # automargin expands the bottom margin so long, angled scenario
+                # labels are never clipped.
                 fig.update_xaxes(
-                    tickmode="array", tickvals=xpos, ticktext=ticktext, row=i + 1, col=j + 1
+                    tickmode="array",
+                    tickvals=xpos,
+                    ticktext=ticktext,
+                    tickangle=-40,
+                    automargin=True,
+                    row=i + 1,
+                    col=j + 1,
                 )
 
         fig.update_layout(
             barmode="stack",
             bargap=max(0.0, 1.0 - bar_width),
             title=dict(text="Total Cost of Ownership Breakdown", x=0.5, font=dict(size=20)),
-            legend_title_text="Cost Components",
+            legend=dict(traceorder="reversed", title_text="Cost Components"),
+            margin=dict(t=90),
             width=min(400 + ncols * fig_x_size * 60, 2400),
-            height=min(300 + nrows * fig_y_size * 55, 2000),
+            height=min(360 + nrows * fig_y_size * 55, 2000),
         )
         fig.update_yaxes(tickprefix="$", tickformat=",.0f")
         fig.update_yaxes(title_text="Cost [$]", row=(nrows + 1) // 2, col=1)
         if x_group_col != "None":
-            fig.update_xaxes(title_text=self._label(x_group_col), row=nrows, col=(ncols + 1) // 2)
+            fig.update_xaxes(
+                title_text=self._plotly_label(x_group_col), row=nrows, col=(ncols + 1) // 2
+            )
         return fig
 
     def _generate_violin_plotly(self, x_group_col, y_group_col, fig_width, fig_height):
@@ -838,8 +934,8 @@ class T3COCharts:
             fig.update_yaxes(tickprefix="$", tickformat=",.0f")
         fig.update_layout(
             title=dict(text="Violin Plot", x=0.5, font=dict(size=18)),
-            xaxis_title=self._label(x_group_col),
-            yaxis_title=self._label(y_group_col),
+            xaxis_title=self._plotly_label(x_group_col),
+            yaxis_title=self._plotly_label(y_group_col),
             width=int(fig_width * 96),
             height=int(fig_height * 96),
             showlegend=False,
@@ -860,7 +956,7 @@ class T3COCharts:
         )
         fig.update_layout(
             title=dict(text="Histogram Plot", x=0.5, font=dict(size=18)),
-            xaxis_title=self._label(hist_col),
+            xaxis_title=self._plotly_label(hist_col),
             yaxis_title="Percentage of Scenarios [%]" if show_pct else "Number of Scenarios",
             width=int(fig_width * 96),
             height=int(fig_height * 96),

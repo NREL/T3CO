@@ -125,6 +125,25 @@ def test_grouped_tco_keeps_bars_separate_when_label_repeats():
         assert len(set(t.x)) == len(df)
 
 
+def test_grouped_tco_html_has_group_by_select(results_df):
+    pytest.importorskip("plotly.graph_objects")
+    tc = T3COCharts(results_df=results_df, backend="plotly")
+    html = tc.grouped_tco_html()
+    assert isinstance(html, str)
+    # a "Group by" dropdown with an option per category (plus "None")
+    assert "Group by:" in html
+    assert "<select" in html and html.count("<option") >= 2
+    # one plotly figure per group option, each in its own toggled div
+    assert html.count("tco_grouped_") >= 2
+    assert html.count('class="plotly-graph-div"') >= 2
+
+
+def test_plotly_label_strips_mathtext():
+    tc = T3COCharts(results_df=_make_results(), backend="plotly")
+    assert tc._clean_plotly_text("[$MPGGE$]") == "[MPGGE]"
+    assert tc._clean_plotly_text("[\\$]") == "[$]"
+
+
 def test_interactive_plot_has_xy_dropdowns(results_df):
     pytest.importorskip("plotly.graph_objects")
     tc = T3COCharts(results_df=results_df, backend="plotly")
@@ -137,9 +156,9 @@ def test_interactive_plot_has_xy_dropdowns(results_df):
     for menu in menus:
         assert len(menu.buttons) >= 2
         assert menu.buttons[0].method == "update"
-    # the initial axes reflect the requested defaults
-    assert fig.layout.xaxis.title.text == tc._label("vehicle_fuel_type")
-    assert fig.layout.yaxis.title.text == tc._label("discounted_tco_dol")
+    # the initial axes reflect the requested defaults (labels cleaned for Plotly)
+    assert fig.layout.xaxis.title.text == tc._plotly_label("vehicle_fuel_type")
+    assert fig.layout.yaxis.title.text == tc._plotly_label("discounted_tco_dol")
 
 
 def test_save_default_plots_cli_hook(tmp_path, results_df):
@@ -151,14 +170,17 @@ def test_save_default_plots_cli_hook(tmp_path, results_df):
     results_df.to_csv(csv, index=False)
     saved = save_default_plots(csv, backend="plotly")
 
-    # explorer + breakdown + histogram + violin, combined into a single HTML file
+    # explorer + grouped breakdown + histogram + violin, combined into one HTML file
     assert len(saved) == 1
     report = saved[0]
     assert report.exists()
     assert report.suffix == ".html"
     assert report.parent == tmp_path
-    # the report holds four plots in one page (incl. the interactive explorer)
-    assert report.read_text().count('class="plotly-graph-div"') == 4
+    html = report.read_text()
+    # the grouped-breakdown "Group by" dropdown is present, and the report holds
+    # several plots (the breakdown alone contributes one figure per group option)
+    assert "Group by:" in html
+    assert html.count('class="plotly-graph-div"') >= 4
 
 
 def test_write_html_report_combines_plots(tmp_path, results_df):
