@@ -568,8 +568,8 @@ def save_default_plots(
 
     figure_specs = {}
     if tc.backend == "plotly":
-        # Interactive x/y column explorer, shown first in the HTML report.
-        figure_specs["explorer"] = lambda: tc.generate_interactive_plot()
+        # Interactive x/y column explorer (HTML fragment), shown first.
+        figure_specs["explorer"] = lambda: tc.interactive_explorer_html()
         # TCO breakdown with a client-side "Group by" dropdown that facets the
         # scenarios into subplots (returns an HTML fragment, not a figure).
         figure_specs["tco_breakdown"] = lambda: tc.grouped_tco_html()

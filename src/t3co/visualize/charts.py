@@ -421,20 +421,21 @@ class T3COCharts:
             return self._generate_histogram_plotly(hist_col, n_bins, fig_width, fig_height, show_pct)
         return self._generate_histogram_mpl(hist_col, n_bins, fig_width, fig_height, show_pct)
 
-    def generate_interactive_plot(
+    def interactive_explorer_html(
         self,
         default_x: str = "vehicle_fuel_type",
         default_y: str = "discounted_tco_dol",
         x_cols: List[str] = None,
         y_cols: List[str] = None,
-    ):
+        div_id: str = "explorer",
+    ) -> str:
         """
-        Generates an interactive Plotly scatter with dropdown menus to choose the
-        x- and y-axis columns on the rendered HTML page.
+        Builds an HTML fragment: a scatter with two ``<select>`` dropdowns to
+        choose the x- and y-axis columns.
 
-        This is an interactive-only chart and always uses Plotly, regardless of
-        the configured backend. Each dropdown swaps the axis data client-side, so
-        it works in a static, self-contained HTML file.
+        The dropdowns are plain HTML controls (so they lay out cleanly) that swap
+        the axis data client-side via ``Plotly.restyle``; it works in a static,
+        self-contained HTML file. Always uses Plotly regardless of the backend.
 
         Args:
             default_x (str, optional): Column selected on the x-axis initially. Defaults to "vehicle_fuel_type".
@@ -443,10 +444,15 @@ class T3COCharts:
                 columns followed by the numeric output columns present in the results.
             y_cols (list[str], optional): Columns offered in the y dropdown. Defaults to the numeric
                 output columns followed by the grouping columns present in the results.
+            div_id (str, optional): Base id for the generated elements.
 
         Returns:
-            plotly.graph_objects.Figure: The interactive explorer figure.
+            str: An HTML fragment. ``write_html_report`` embeds Plotly once.
         """
+        import json
+
+        import plotly.io as pio
+
         go, _, _ = self._require_plotly()
         df = self.t3co_results
 
@@ -468,7 +474,7 @@ class T3COCharts:
                 return pd.to_numeric(df[col], errors="coerce").tolist()
             return df[col].astype(str).tolist()
 
-        def tickprefix(col):
+        def prefix(col):
             return "$" if "dol" in col else ""
 
         hover = (
@@ -476,6 +482,7 @@ class T3COCharts:
             if "scenario_name" in df.columns
             else None
         )
+        plot_id = f"{div_id}_plot"
 
         fig = go.Figure(
             go.Scatter(
@@ -484,71 +491,58 @@ class T3COCharts:
                 mode="markers",
                 marker=dict(size=9, color="#1f77b4"),
                 text=hover,
-                hovertemplate=(
-                    "%{text}<br>%{x}<br>%{y}<extra></extra>" if hover else None
-                ),
+                hovertemplate="%{text}<br>%{x}<br>%{y}<extra></extra>" if hover else None,
             )
         )
-
-        def axis_buttons(candidates, axis):
-            return [
-                dict(
-                    label=self._plotly_label(c),
-                    method="update",
-                    args=[
-                        {axis: [values(c)]},
-                        {
-                            f"{axis}axis.title.text": self._plotly_label(c),
-                            f"{axis}axis.tickprefix": tickprefix(c),
-                        },
-                    ],
-                )
-                for c in candidates
-            ]
-
         fig.update_layout(
             title=dict(text="Results Explorer", x=0.5, font=dict(size=18)),
-            xaxis_title=self._plotly_label(default_x),
-            yaxis_title=self._plotly_label(default_y),
-            xaxis_tickprefix=tickprefix(default_x),
-            yaxis_tickprefix=tickprefix(default_y),
-            # Stack the two dropdowns on separate rows so the wide menus (long
-            # column labels) don't overlap each other or their captions.
-            margin=dict(t=270),
-            updatemenus=[
-                dict(
-                    buttons=axis_buttons(x_candidates, "x"),
-                    active=x_candidates.index(default_x),
-                    direction="down",
-                    showactive=True,
-                    x=0.0,
-                    xanchor="left",
-                    y=1.44,
-                    yanchor="top",
-                ),
-                dict(
-                    buttons=axis_buttons(y_candidates, "y"),
-                    active=y_candidates.index(default_y),
-                    direction="down",
-                    showactive=True,
-                    x=0.0,
-                    xanchor="left",
-                    y=1.16,
-                    yanchor="top",
-                ),
-            ],
-            annotations=[
-                dict(
-                    text="<b>X axis:</b>", x=0.0, xref="paper", xanchor="left",
-                    y=1.50, yref="paper", yanchor="bottom", showarrow=False,
-                ),
-                dict(
-                    text="<b>Y axis:</b>", x=0.0, xref="paper", xanchor="left",
-                    y=1.22, yref="paper", yanchor="bottom", showarrow=False,
-                ),
-            ],
+            xaxis=dict(title_text=self._plotly_label(default_x), tickprefix=prefix(default_x)),
+            yaxis=dict(title_text=self._plotly_label(default_y), tickprefix=prefix(default_y)),
+            margin=dict(t=60),
+            height=520,
         )
-        return fig
+        plot_html = pio.to_html(
+            fig, full_html=False, include_plotlyjs=False, div_id=plot_id
+        )
+
+        all_cols = list(dict.fromkeys(x_candidates + y_candidates))
+        data_js = "var XV={},LB={},PF={};".format(
+            json.dumps({c: values(c) for c in all_cols}),
+            json.dumps({c: self._plotly_label(c) for c in all_cols}),
+            json.dumps({c: prefix(c) for c in all_cols}),
+        )
+
+        def opts(candidates, selected):
+            return "".join(
+                '<option value="{0}"{1}>{2}</option>'.format(
+                    c, " selected" if c == selected else "", self._plotly_label(c)
+                )
+                for c in candidates
+            )
+
+        xsel, ysel = f"{div_id}_xsel", f"{div_id}_ysel"
+        controls = (
+            '<div style="font-family:sans-serif;text-align:center;margin:10px 0;">'
+            '<label style="font-weight:bold;margin:0 6px;">X axis:</label>'
+            f'<select id="{xsel}" style="padding:4px;font-size:14px;margin-right:20px;">'
+            f"{opts(x_candidates, default_x)}</select>"
+            '<label style="font-weight:bold;margin:0 6px;">Y axis:</label>'
+            f'<select id="{ysel}" style="padding:4px;font-size:14px;">'
+            f"{opts(y_candidates, default_y)}</select></div>"
+        )
+        js = (
+            "<script>(function(){"
+            + data_js
+            + f"var p='{plot_id}',"
+            + f"xs=document.getElementById('{xsel}'),ys=document.getElementById('{ysel}');"
+            + "function upd(){var xc=xs.value,yc=ys.value;"
+            + "Plotly.restyle(p,{x:[XV[xc]],y:[XV[yc]]});"
+            + "Plotly.relayout(p,{'xaxis.title.text':LB[xc],'xaxis.tickprefix':PF[xc],"
+            + "'yaxis.title.text':LB[yc],'yaxis.tickprefix':PF[yc]});}"
+            + "xs.addEventListener('change',upd);ys.addEventListener('change',upd);"
+            + "})();</script>"
+        )
+        return controls + plot_html + js
 
     def grouped_tco_html(
         self, group_cols: List[str] = None, orient: str = "x", div_id: str = "tco_grouped"
@@ -585,12 +579,14 @@ class T3COCharts:
 
         divs, options = [], []
         for idx, g in enumerate(group_options):
+            # Label the individual bars by scenario so the per-bar ticks identify
+            # scenarios while the group value labels the subplot on the x-axis.
             if g == "None":
-                fig = self.generate_tco_plots()
+                fig = self.generate_tco_plots(subplot_group_col="scenario_name")
             elif orient == "y":
-                fig = self.generate_tco_plots(y_group_col=g)
+                fig = self.generate_tco_plots(y_group_col=g, subplot_group_col="scenario_name")
             else:
-                fig = self.generate_tco_plots(x_group_col=g)
+                fig = self.generate_tco_plots(x_group_col=g, subplot_group_col="scenario_name")
             inner = pio.to_html(fig, full_html=False, include_plotlyjs=False)
             display = "block" if idx == 0 else "none"
             divs.append(f'<div id="{div_id}_{idx}" style="display:{display}">{inner}</div>')
@@ -832,7 +828,8 @@ class T3COCharts:
             rows=nrows,
             cols=ncols,
             shared_yaxes=True,
-            column_titles=[str(x) for x in x_groups] if x_group_col != "None" else None,
+            # x-group values are placed on the x-axis (as a separate line below the
+            # scenario ticks) rather than as titles on top; y-groups stay on rows.
             row_titles=[str(y) for y in y_groups] if y_group_col != "None" else None,
             horizontal_spacing=0.04,
             vertical_spacing=0.08,
@@ -912,9 +909,12 @@ class T3COCharts:
         fig.update_yaxes(tickprefix="$", tickformat=",.0f")
         fig.update_yaxes(title_text="Cost [$]", row=(nrows + 1) // 2, col=1)
         if x_group_col != "None":
-            fig.update_xaxes(
-                title_text=self._plotly_label(x_group_col), row=nrows, col=(ncols + 1) // 2
-            )
+            # Label each column with its group value on the x-axis, as a separate
+            # line under the scenario tick labels.
+            for j, xv in enumerate(x_groups):
+                fig.update_xaxes(
+                    title_text=f"<b>{xv}</b>", title_font=dict(size=15), row=nrows, col=j + 1
+                )
         return fig
 
     def _generate_violin_plotly(self, x_group_col, y_group_col, fig_width, fig_height):

@@ -144,21 +144,19 @@ def test_plotly_label_strips_mathtext():
     assert tc._clean_plotly_text("[\\$]") == "[$]"
 
 
-def test_interactive_plot_has_xy_dropdowns(results_df):
+def test_interactive_explorer_html_has_xy_selects(results_df):
     pytest.importorskip("plotly.graph_objects")
     tc = T3COCharts(results_df=results_df, backend="plotly")
-    fig = tc.generate_interactive_plot(default_x="vehicle_fuel_type", default_y="discounted_tco_dol")
-
-    # two dropdown menus: one for X, one for Y
-    menus = fig.layout.updatemenus
-    assert len(menus) == 2
-    # each dropdown offers a button per candidate column, and switching swaps axis data
-    for menu in menus:
-        assert len(menu.buttons) >= 2
-        assert menu.buttons[0].method == "update"
-    # the initial axes reflect the requested defaults (labels cleaned for Plotly)
-    assert fig.layout.xaxis.title.text == tc._plotly_label("vehicle_fuel_type")
-    assert fig.layout.yaxis.title.text == tc._plotly_label("discounted_tco_dol")
+    html = tc.interactive_explorer_html(
+        default_x="vehicle_fuel_type", default_y="discounted_tco_dol"
+    )
+    assert isinstance(html, str)
+    # two <select> dropdowns (X and Y), each with an option per candidate column
+    assert "X axis:" in html and "Y axis:" in html
+    assert html.count("<select") == 2
+    # one scatter plot and client-side restyle wiring
+    assert html.count('class="plotly-graph-div"') == 1
+    assert "Plotly.restyle" in html
 
 
 def test_save_default_plots_cli_hook(tmp_path, results_df):

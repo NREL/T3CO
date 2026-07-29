@@ -57,11 +57,11 @@ Distribution of a metric across categories (e.g. `mpgge` by fuel type).
 
 ## Interactive explorer
 
-`generate_interactive_plot()` returns a Plotly scatter with **dropdown menus to choose the x- and y-axis columns** directly on the page — pick any grouping column or numeric output for either axis and the chart updates client-side, no server needed. It always renders with Plotly (interactive only) and leads the combined HTML report.
+`interactive_explorer_html()` returns an HTML fragment: a Plotly scatter with two **`<select>` dropdowns to choose the x- and y-axis columns** — pick any grouping column or numeric output for either axis and the chart updates client-side, no server needed. It leads the combined HTML report.
 
 ```python
 tc = T3COCharts(filename="results.csv", backend="plotly")
-tc.generate_interactive_plot(default_x="vehicle_fuel_type", default_y="discounted_tco_dol")
+T3COCharts.write_html_report([tc.interactive_explorer_html()], "explorer.html")
 ```
 
 ## Grouped breakdown with a "Group by" dropdown

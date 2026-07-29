@@ -100,7 +100,7 @@ def render(results_df: pd.DataFrame, backend: str) -> None:
         # breakdown with a "Group by" dropdown (faceted subplots), then the
         # histogram and violin.
         report_items = [
-            tc.generate_interactive_plot(),
+            tc.interactive_explorer_html(),
             tc.grouped_tco_html(),
             hist_fig,
             violin_fig,
