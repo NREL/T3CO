@@ -90,20 +90,15 @@ def render(results_df: pd.DataFrame, backend: str) -> None:
 
     print(f"\n[{backend}] available group columns: {tc.group_columns}")
 
-    violin_fig = tc.generate_violin_plot(x_group_col="vehicle_fuel_type", y_group_col="mpgge")
-    hist_fig = tc.generate_histogram(
-        hist_col="discounted_tco_dol", n_bins=5, show_pct=True
-    )
-
     if backend == "plotly":
-        # One self-contained HTML report: an interactive x/y explorer, the TCO
-        # breakdown with a "Group by" dropdown (faceted subplots), then the
-        # histogram and violin.
+        # One self-contained HTML report titled "T3CO Results Explorer": a custom
+        # x/y scatter, the TCO breakdown with a "Group by" dropdown (faceted
+        # subplots), then a histogram and violin, each with their own dropdowns.
         report_items = [
             tc.interactive_explorer_html(),
             tc.grouped_tco_html(),
-            hist_fig,
-            violin_fig,
+            tc.interactive_histogram_html(),
+            tc.interactive_violin_html(default_y="mpgge"),
         ]
         out = OUT_DIR / "charts_plotly.html"
         T3COCharts.write_html_report(report_items, out)
@@ -112,6 +107,8 @@ def render(results_df: pd.DataFrame, backend: str) -> None:
         tco_fig = tc.generate_tco_plots(
             x_group_col="vehicle_fuel_type", subplot_group_col="vehicle_type", bar_width=0.7
         )
+        violin_fig = tc.generate_violin_plot(x_group_col="vehicle_fuel_type", y_group_col="mpgge")
+        hist_fig = tc.generate_histogram(hist_col="discounted_tco_dol", n_bins=5, show_pct=True)
         for name, fig in [("tco_breakdown", tco_fig), ("violin", violin_fig), ("histogram", hist_fig)]:
             out = OUT_DIR / f"{name}_matplotlib.png"
             fig.savefig(out, bbox_inches="tight", dpi=120)

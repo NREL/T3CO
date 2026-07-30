@@ -568,22 +568,27 @@ def save_default_plots(
 
     figure_specs = {}
     if tc.backend == "plotly":
-        # Interactive x/y column explorer (HTML fragment), shown first.
+        # Interactive HTML fragments with their own dropdowns.
         figure_specs["explorer"] = lambda: tc.interactive_explorer_html()
         # TCO breakdown with a client-side "Group by" dropdown that facets the
-        # scenarios into subplots (returns an HTML fragment, not a figure).
+        # scenarios into subplots.
         figure_specs["tco_breakdown"] = lambda: tc.grouped_tco_html()
+        figure_specs["tco_histogram"] = lambda: tc.interactive_histogram_html(n_bins=10)
+        if group_col != "None":
+            figure_specs["tco_violin"] = lambda: tc.interactive_violin_html(
+                default_x=group_col, default_y="discounted_tco_dol"
+            )
     else:
         # One separate stacked bar per scenario (ungrouped); pass grouping
         # columns explicitly to arrange the bars into subplots instead.
         figure_specs["tco_breakdown"] = lambda: tc.generate_tco_plots()
-    figure_specs["tco_histogram"] = lambda: tc.generate_histogram(
-        hist_col="discounted_tco_dol", n_bins=10
-    )
-    if group_col != "None":
-        figure_specs["tco_violin"] = lambda: tc.generate_violin_plot(
-            x_group_col=group_col, y_group_col="discounted_tco_dol"
+        figure_specs["tco_histogram"] = lambda: tc.generate_histogram(
+            hist_col="discounted_tco_dol", n_bins=10
         )
+        if group_col != "None":
+            figure_specs["tco_violin"] = lambda: tc.generate_violin_plot(
+                x_group_col=group_col, y_group_col="discounted_tco_dol"
+            )
 
     # Generate the figures, skipping any individual chart that fails.
     figures = {}

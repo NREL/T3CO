@@ -144,6 +144,36 @@ def test_plotly_label_strips_mathtext():
     assert tc._clean_plotly_text("[\\$]") == "[$]"
 
 
+def test_interactive_histogram_html_has_column_select(results_df):
+    pytest.importorskip("plotly.graph_objects")
+    tc = T3COCharts(results_df=results_df, backend="plotly")
+    html = tc.interactive_histogram_html()
+    assert "Column:" in html
+    assert html.count("<select") == 1 and html.count("<option") >= 2
+    assert html.count('class="plotly-graph-div"') == 1
+    assert "Plotly.restyle" in html
+
+
+def test_interactive_violin_html_has_xy_selects(results_df):
+    pytest.importorskip("plotly.graph_objects")
+    tc = T3COCharts(results_df=results_df, backend="plotly")
+    html = tc.interactive_violin_html()
+    assert "X axis:" in html and "Y axis:" in html
+    assert html.count("<select") == 2
+    assert html.count('class="plotly-graph-div"') == 1
+    assert "Plotly.restyle" in html
+
+
+def test_report_has_pinned_title(tmp_path):
+    go = pytest.importorskip("plotly.graph_objects")
+    out = T3COCharts.write_html_report(
+        [go.Figure(go.Scatter(x=[1], y=[1]))], tmp_path / "r.html"
+    )
+    html = out.read_text()
+    assert "T3CO Results Explorer" in html
+    assert "position:sticky" in html
+
+
 def test_interactive_explorer_html_has_xy_selects(results_df):
     pytest.importorskip("plotly.graph_objects")
     tc = T3COCharts(results_df=results_df, backend="plotly")

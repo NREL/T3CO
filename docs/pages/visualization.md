@@ -73,6 +73,27 @@ tc = T3COCharts(filename="results.csv", backend="plotly")
 T3COCharts.write_html_report([tc.grouped_tco_html()], "breakdown.html")
 ```
 
+## Interactive histogram and violin
+
+`interactive_histogram_html()` adds a **column dropdown** to the histogram, and `interactive_violin_html()` adds **x- and y-axis dropdowns** to the violin — both client-side.
+
+## The combined report
+
+`write_html_report(items, path, title="T3CO Results Explorer")` stitches figures and HTML fragments into one self-contained page with a pinned title at the top. The `--plot` report combines the custom scatter, the grouped breakdown, and the interactive histogram and violin:
+
+```python
+tc = T3COCharts(filename="results.csv", backend="plotly")
+T3COCharts.write_html_report(
+    [
+        tc.interactive_explorer_html(),
+        tc.grouped_tco_html(),
+        tc.interactive_histogram_html(),
+        tc.interactive_violin_html(),
+    ],
+    "charts.html",
+)
+```
+
 ## Charts from the CLI
 
 Add `--plot` to any sweep run to generate the charts next to the results CSV. Install the extra first:

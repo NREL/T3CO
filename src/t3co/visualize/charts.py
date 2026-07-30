@@ -57,7 +57,7 @@ class T3COCharts:
     # Cost components shown (stacked) in the TCO breakdown plot, with their colors.
     # These are bare Ledger fields and survive the 2.0 flattening unchanged.
     COST_COLS = {
-        "residual_cost_dol": "#6C7B8B",
+        "residual_cost_dol": "#2F4F4F",
         "glider_cost_dol": "#8b7355",
         "fuel_converter_cost_dol": "#228B22",
         "fuel_storage_cost_dol": "#8B4513",
@@ -495,7 +495,7 @@ class T3COCharts:
             )
         )
         fig.update_layout(
-            title=dict(text="Results Explorer", x=0.5, font=dict(size=18)),
+            title=dict(text="Custom Scatter", x=0.5, font=dict(size=18)),
             xaxis=dict(title_text=self._plotly_label(default_x), tickprefix=prefix(default_x)),
             yaxis=dict(title_text=self._plotly_label(default_y), tickprefix=prefix(default_y)),
             margin=dict(t=60),
@@ -610,8 +610,213 @@ class T3COCharts:
         )
         return header + "".join(divs) + js
 
+    def interactive_histogram_html(
+        self,
+        default_col: str = "discounted_tco_dol",
+        cols: List[str] = None,
+        n_bins: int = 10,
+        show_pct: bool = False,
+        div_id: str = "histogram",
+    ) -> str:
+        """
+        Builds an HTML fragment: a histogram with a ``<select>`` dropdown to pick
+        the plotted column. Switching restyles the data client-side (Plotly
+        recomputes the bins), so it works in a static HTML file.
+
+        Args:
+            default_col (str, optional): Column shown initially. Defaults to "discounted_tco_dol".
+            cols (list[str], optional): Columns offered in the dropdown. Defaults to the
+                numeric output columns present in the results.
+            n_bins (int, optional): Number of bins. Defaults to 10.
+            show_pct (bool, optional): If True, the y-axis shows percent instead of count.
+                Defaults to False.
+            div_id (str, optional): Base id for the generated elements.
+
+        Returns:
+            str: An HTML fragment. ``write_html_report`` embeds Plotly once.
+        """
+        import json
+
+        import plotly.io as pio
+
+        go, _, _ = self._require_plotly()
+        df = self.t3co_results
+
+        candidates = cols or [c for c in self.value_cols if c in df.columns]
+        if not candidates:
+            raise ValueError("No numeric columns available for the histogram.")
+        if default_col not in candidates:
+            default_col = candidates[0]
+
+        def values(col):
+            return pd.to_numeric(df[col], errors="coerce").tolist()
+
+        def prefix(col):
+            return "$" if "dol" in col else ""
+
+        plot_id = f"{div_id}_plot"
+        fig = go.Figure(
+            go.Histogram(
+                x=values(default_col),
+                nbinsx=n_bins,
+                histnorm="percent" if show_pct else None,
+            )
+        )
+        fig.update_layout(
+            title=dict(text="Histogram", x=0.5, font=dict(size=18)),
+            xaxis=dict(title_text=self._plotly_label(default_col), tickprefix=prefix(default_col)),
+            yaxis_title="Percentage of Scenarios [%]" if show_pct else "Number of Scenarios",
+            margin=dict(t=60),
+            height=460,
+            bargap=0.05,
+        )
+        plot_html = pio.to_html(fig, full_html=False, include_plotlyjs=False, div_id=plot_id)
+
+        data_js = "var HV={},HL={},HP={};".format(
+            json.dumps({c: values(c) for c in candidates}),
+            json.dumps({c: self._plotly_label(c) for c in candidates}),
+            json.dumps({c: prefix(c) for c in candidates}),
+        )
+        sel = f"{div_id}_sel"
+        controls = (
+            '<div style="font-family:sans-serif;text-align:center;margin:10px 0;">'
+            '<label style="font-weight:bold;margin:0 6px;">Column:</label>'
+            f'<select id="{sel}" style="padding:4px;font-size:14px;">'
+            + "".join(
+                '<option value="{0}"{1}>{2}</option>'.format(
+                    c, " selected" if c == default_col else "", self._plotly_label(c)
+                )
+                for c in candidates
+            )
+            + "</select></div>"
+        )
+        js = (
+            "<script>(function(){"
+            + data_js
+            + f"var p='{plot_id}',s=document.getElementById('{sel}');"
+            + "s.addEventListener('change',function(){var c=s.value;"
+            + "Plotly.restyle(p,{x:[HV[c]]});"
+            + "Plotly.relayout(p,{'xaxis.title.text':HL[c],'xaxis.tickprefix':HP[c]});});"
+            + "})();</script>"
+        )
+        return controls + plot_html + js
+
+    def interactive_violin_html(
+        self,
+        default_x: str = "vehicle_fuel_type",
+        default_y: str = "discounted_tco_dol",
+        x_cols: List[str] = None,
+        y_cols: List[str] = None,
+        div_id: str = "violin",
+    ) -> str:
+        """
+        Builds an HTML fragment: a violin plot with two ``<select>`` dropdowns to
+        choose the x (category) and y (numeric) columns, driven client-side by
+        ``Plotly.restyle`` so it works in a static HTML file.
+
+        Args:
+            default_x (str, optional): Category column on the x-axis. Defaults to "vehicle_fuel_type".
+            default_y (str, optional): Numeric column on the y-axis. Defaults to "discounted_tco_dol".
+            x_cols (list[str], optional): Categories offered in the x dropdown. Defaults to the
+                grouping columns present in the results.
+            y_cols (list[str], optional): Columns offered in the y dropdown. Defaults to the numeric
+                output columns present in the results.
+            div_id (str, optional): Base id for the generated elements.
+
+        Returns:
+            str: An HTML fragment. ``write_html_report`` embeds Plotly once.
+        """
+        import json
+
+        import plotly.io as pio
+
+        go, _, _ = self._require_plotly()
+        df = self.t3co_results
+
+        x_candidates = x_cols or [c for c in self.group_columns if c != "None" and c in df.columns]
+        y_candidates = y_cols or [c for c in self.value_cols if c in df.columns]
+        if not x_candidates or not y_candidates:
+            raise ValueError("No plottable columns available for the violin plot.")
+        if default_x not in x_candidates:
+            default_x = x_candidates[0]
+        if default_y not in y_candidates:
+            default_y = y_candidates[0]
+
+        def xvalues(col):
+            return df[col].astype(str).tolist()
+
+        def yvalues(col):
+            return pd.to_numeric(df[col], errors="coerce").tolist()
+
+        def prefix(col):
+            return "$" if "dol" in col else ""
+
+        plot_id = f"{div_id}_plot"
+        fig = go.Figure(
+            go.Violin(
+                x=xvalues(default_x),
+                y=yvalues(default_y),
+                box_visible=True,
+                meanline_visible=True,
+                points="all",
+            )
+        )
+        fig.update_layout(
+            title=dict(text="Violin Plot", x=0.5, font=dict(size=18)),
+            xaxis_title=self._plotly_label(default_x),
+            yaxis=dict(title_text=self._plotly_label(default_y), tickprefix=prefix(default_y)),
+            margin=dict(t=60),
+            height=500,
+            showlegend=False,
+        )
+        plot_html = pio.to_html(fig, full_html=False, include_plotlyjs=False, div_id=plot_id)
+
+        labels = {c: self._plotly_label(c) for c in x_candidates + y_candidates}
+        data_js = "var VX={},VY={},VL={},VP={};".format(
+            json.dumps({c: xvalues(c) for c in x_candidates}),
+            json.dumps({c: yvalues(c) for c in y_candidates}),
+            json.dumps(labels),
+            json.dumps({c: prefix(c) for c in y_candidates}),
+        )
+
+        def opts(candidates, selected):
+            return "".join(
+                '<option value="{0}"{1}>{2}</option>'.format(
+                    c, " selected" if c == selected else "", self._plotly_label(c)
+                )
+                for c in candidates
+            )
+
+        xsel, ysel = f"{div_id}_xsel", f"{div_id}_ysel"
+        controls = (
+            '<div style="font-family:sans-serif;text-align:center;margin:10px 0;">'
+            '<label style="font-weight:bold;margin:0 6px;">X axis:</label>'
+            f'<select id="{xsel}" style="padding:4px;font-size:14px;margin-right:20px;">'
+            f"{opts(x_candidates, default_x)}</select>"
+            '<label style="font-weight:bold;margin:0 6px;">Y axis:</label>'
+            f'<select id="{ysel}" style="padding:4px;font-size:14px;">'
+            f"{opts(y_candidates, default_y)}</select></div>"
+        )
+        js = (
+            "<script>(function(){"
+            + data_js
+            + f"var p='{plot_id}',"
+            + f"xs=document.getElementById('{xsel}'),ys=document.getElementById('{ysel}');"
+            + "function upd(){var xc=xs.value,yc=ys.value;"
+            + "Plotly.restyle(p,{x:[VX[xc]],y:[VY[yc]]});"
+            + "Plotly.relayout(p,{'xaxis.title.text':VL[xc],"
+            + "'yaxis.title.text':VL[yc],'yaxis.tickprefix':VP[yc]});}"
+            + "xs.addEventListener('change',upd);ys.addEventListener('change',upd);"
+            + "})();</script>"
+        )
+        return controls + plot_html + js
+
     @staticmethod
-    def write_html_report(items: list, output_path: Union[str, Path]) -> Path:
+    def write_html_report(
+        items: list,
+        output_path: Union[str, Path],
+        title: str = "T3CO Results Explorer",
+    ) -> Path:
         """
         Writes Plotly figures and/or HTML fragments into one self-contained file.
 
@@ -623,6 +828,8 @@ class T3COCharts:
         Args:
             items (list): Plotly figures and/or HTML fragment strings, in order.
             output_path (str | Path): Destination ``.html`` file.
+            title (str, optional): Page heading, kept pinned at the top of the
+                report. Pass a falsy value to omit it. Defaults to "T3CO Results Explorer".
 
         Returns:
             Path: The written file path.
@@ -631,6 +838,13 @@ class T3COCharts:
         from plotly.offline import get_plotlyjs
 
         blocks = [f"<script>{get_plotlyjs()}</script>"]
+        if title:
+            blocks.append(
+                '<h1 style="position:sticky;top:0;z-index:1000;margin:0;'
+                "padding:12px;text-align:center;font-family:sans-serif;"
+                "background:#f5f6fa;border-bottom:1px solid #ccc;"
+                f'color:#2a3f5f;">{title}</h1>'
+            )
         for item in items:
             if isinstance(item, str):
                 blocks.append(item)
