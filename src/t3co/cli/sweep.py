@@ -9,7 +9,7 @@ import shutil
 import tempfile
 import time
 from functools import partial
-from multiprocessing import Pool
+from multiprocessing import Pool, current_process
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
@@ -250,10 +250,26 @@ def generate_ledger(selection: int, config: Config) -> Dict:
     )
 
 
+def _population_pool_is_available() -> bool:
+    """Whether this process may open a pool to evaluate an NSGA2 population.
+
+    T3CO has two independent levels of multiprocessing: ``--run-multi``
+    parallelizes across selections, and ``config.parallel`` parallelizes the
+    population inside a single optimization. Under ``--run-multi`` each
+    selection already runs in a daemonic pool worker, and daemonic processes
+    may not start children, so opening the inner pool there raises
+    "AssertionError: daemonic processes are not allowed to have children".
+
+    The selections are already saturating the CPUs in that case, so the inner
+    pool would buy nothing even if it were permitted.
+    """
+    return not current_process().daemon
+
+
 def run_optimization(vehicle: Vehicle, scenario: Scenario, config: Config):
     pool = None
     runner = None
-    if config.parallel:
+    if config.parallel and _population_pool_is_available():
         pool = Pool(config.n_processes)
         runner = StarmapParallelization(pool.starmap)
 
