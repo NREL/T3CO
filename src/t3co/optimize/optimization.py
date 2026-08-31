@@ -274,14 +274,27 @@ def build_termination(
     f_tol: float = 0.001,
     n_max_gen: int = 1000,
     n_max_evals: int = None,
+    n_last: int = 5,
+    nth_gen: int = 1,
 ):
     """Build termination using ``MODT`` (pymoo multi-objective default
-    termination), matching the T3CO 1.x approach."""
+    termination), matching the T3CO 1.x approach.
+
+    ``n_last`` and ``nth_gen`` are T3CO's names for pymoo's ``period`` and
+    ``n_skip``: ``period`` is how many recent generations must all look
+    converged before the run stops, and ``n_skip`` is how many generations are
+    skipped between convergence checks. pymoo defaults them to 50 and 5, and
+    ``RobustTermination`` seeds its sliding window with zeros, so leaving them
+    unset imposes a hard floor of 50 generations no matter how quickly the
+    search settles.
+    """
     return MODT(
         xtol=x_tol,
         ftol=f_tol,
         n_max_gen=n_max_gen,
         n_max_evals=n_max_evals,
+        period=n_last,
+        n_skip=max(nth_gen - 1, 0),
     )
 
 
@@ -311,6 +324,8 @@ def run_optimization(selection, parallel=True, n_processes=4):
             x_tol=float(config.x_tol),
             f_tol=float(config.f_tol),
             n_max_gen=int(config.n_max_gen),
+            n_last=int(config.n_last),
+            nth_gen=int(config.nth_gen),
         )
 
         res = minimize(

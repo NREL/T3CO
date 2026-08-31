@@ -82,6 +82,13 @@ def apply_cli_overrides(config: Config, args, argv: list[str] | None = None) -> 
         (("--pop-size",), "pop_size", int(args.pop_size)),
         (("--nth-gen",), "nth_gen", args.nth_gen),
         (("--n-last",), "n_last", args.n_last),
+        # getattr keeps apply_cli_overrides usable with argparse namespaces
+        # built before this flag existed.
+        (
+            ("--n-processes",),
+            "n_processes",
+            int(getattr(args, "n_processes", config.n_processes)),
+        ),
     ]
 
     for flags, attr_name, value in override_specs:
@@ -96,6 +103,9 @@ def apply_cli_overrides(config: Config, args, argv: list[str] | None = None) -> 
 
     if _argument_was_provided(argv, "--skip-all-opt", "--skopt"):
         config.skip_all_opt = True
+
+    if _argument_was_provided(argv, "--no-parallel"):
+        config.parallel = False
 
     return config
 
@@ -129,6 +139,8 @@ def _build_optimization_termination(config: Config):
         x_tol=float(config.x_tol),
         f_tol=float(config.f_tol),
         n_max_gen=int(config.n_max_gen),
+        n_last=int(config.n_last),
+        nth_gen=int(config.nth_gen),
     )
 
 
@@ -719,6 +731,17 @@ if __name__ == "__main__":
         default=5,
         type=int,
         help="Number of generations to look back for establishing convergence during optimization",
+    )
+    parser.add_argument(
+        "--n-processes",
+        default=9,
+        type=int,
+        help="Number of processes used to evaluate an NSGA2 population within a single optimization",
+    )
+    parser.add_argument(
+        "--no-parallel",
+        action="store_true",
+        help="Evaluate each NSGA2 population serially instead of in a process pool",
     )
     parser.add_argument(
         "--range-overshoot-tol",
