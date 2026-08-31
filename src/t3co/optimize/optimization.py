@@ -7,6 +7,7 @@ from pymoo.algorithms.soo.nonconvex.nelder import NelderMead
 from pymoo.algorithms.soo.nonconvex.pattern import PatternSearch
 from pymoo.algorithms.soo.nonconvex.pso import PSO
 from pymoo.core.problem import ElementwiseProblem
+from pymoo.operators.sampling.lhs import LatinHypercubeSampling as LHS
 
 try:
     from pymoo.parallelization.starmap import StarmapParallelization
@@ -234,15 +235,23 @@ class VehicleDesignOpt(ElementwiseProblem):
             out["G"] = g
 
 
-def build_algorithm(algo: str, pop_size: int = 25):
+def build_algorithm(algo: str, pop_size: int = 25, sampling=None):
     """Build a pymoo algorithm by name.
 
     Supported algorithms mirror T3CO 1.x: NSGA2, PatternSearch,
     NelderMead, and PSO.
+
+    NSGA2 is seeded with Latin Hypercube sampling to match T3CO v1.0.11
+    (``t3co/moopack/moo.py``); pymoo's own default is uniform random
+    sampling, which spreads the initial population less evenly.
     """
     name = algo.upper() if algo else "NSGA2"
     if name == "NSGA2":
-        return NSGA2(pop_size=pop_size, eliminate_duplicates=True)
+        return NSGA2(
+            pop_size=pop_size,
+            eliminate_duplicates=True,
+            sampling=sampling if sampling is not None else LHS(),
+        )
     if name == "PATTERNSEARCH":
         return PatternSearch()
     if name == "NELDERMEAD":
