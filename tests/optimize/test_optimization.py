@@ -123,6 +123,48 @@ class TestVehicleDesignOpt:
             assert out["G"][0] == 2
             assert out["G"][1] == -1
 
+    @pytest.mark.parametrize(
+        "constraint_range, expected_n_ieq_constr", [(False, 2), (True, 3)]
+    )
+    def test_declared_constraint_count_matches_evaluate(
+        self,
+        mock_vehicle,
+        mock_scenario,
+        mock_config,
+        constraint_range,
+        expected_n_ieq_constr,
+    ):
+        """n_ieq_constr must match the G vector _evaluate actually returns.
+
+        pymoo sizes its constraint array from n_ieq_constr, so any mismatch
+        makes the whole optimization fail on the first generation.
+        """
+        mock_vehicle.veh_pt_type = gl.BEV
+        mock_scenario.constraint_accel = True
+        mock_scenario.max_time_0_to_60mph_at_gvwr_s = 10
+        mock_scenario.max_time_0_to_30mph_at_gvwr_s = 5
+        mock_scenario.constraint_grade = False
+        mock_scenario.constraint_range = constraint_range
+        mock_scenario.target_range_mi = 600
+
+        problem = VehicleDesignOpt(mock_vehicle, mock_scenario, mock_config)
+        assert problem.n_ieq_constr == expected_n_ieq_constr
+
+        out = {}
+        with (
+            patch("t3co.optimize.optimization.Energy") as MockEnergy,
+            patch("t3co.optimize.optimization.Ledger") as MockLedger,
+        ):
+            energy = MockEnergy.return_value
+            energy.zero_to_sixty_loaded = 9
+            energy.zero_to_thirty_loaded = 4
+            energy.primary_fuel_range_mi = 700
+            MockLedger.return_value.discounted_tco_dol = 50000
+
+            problem._evaluate(np.array([50, 100]), out)
+
+        assert len(out["G"]) == problem.n_ieq_constr
+
 
 def test_run_optimization():
     with (
