@@ -6,7 +6,7 @@ from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.algorithms.soo.nonconvex.nelder import NelderMead
 from pymoo.algorithms.soo.nonconvex.pattern import PatternSearch
 from pymoo.algorithms.soo.nonconvex.pso import PSO
-from pymoo.core.problem import ElementwiseProblem
+from pymoo.core.problem import ElementwiseProblem, LoopedElementwiseEvaluation
 from pymoo.operators.sampling.lhs import LatinHypercubeSampling as LHS
 
 try:
@@ -142,7 +142,12 @@ class VehicleDesignOpt(ElementwiseProblem):
             n_ieq_constr=n_ieq_constr,
             xl=xl,
             xu=xu,
-            elementwise_runner=runner,
+            # pymoo's own default is LoopedElementwiseEvaluation(); passing
+            # runner through when it is None would replace that default with
+            # None and make every evaluation raise TypeError.
+            elementwise_runner=(
+                runner if runner is not None else LoopedElementwiseEvaluation()
+            ),
         )
 
     def apply_design_variables(self, x, vehicle=None):
