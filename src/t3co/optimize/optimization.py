@@ -136,6 +136,11 @@ class VehicleDesignOpt(ElementwiseProblem):
             if scenario.min_speed_at_1p25pct_grade_in_5min_mph > 0:
                 n_ieq_constr += 1
 
+        if scenario.constraint_range:
+            # Must mirror the range constraint appended in _evaluate.
+            if scenario.target_range_mi > 0:
+                n_ieq_constr += 1
+
         super().__init__(
             n_var=n_var,
             n_obj=1,
